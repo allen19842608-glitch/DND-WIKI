@@ -1,0 +1,237 @@
+{
+  "main": {
+    "id": "94e03a47fbc1bdf9",
+    "type": "split",
+    "children": [
+      {
+        "id": "98b6cb9f153265c5",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "07ea313c7f188021",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "附件/翻譯詞彙表.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "翻譯詞彙表"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "cbf5ab7a7c954824",
+    "type": "split",
+    "children": [
+      {
+        "id": "e77f00fa752667a2",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "0954ff85f6b41bbe",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "byModifiedTime",
+                "autoReveal": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-folder-closed",
+              "title": "檔案瀏覽器"
+            }
+          },
+          {
+            "id": "8d53f7dcded1a036",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "搜尋"
+            }
+          },
+          {
+            "id": "52f12970104a27a5",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "書籤"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 359.5
+  },
+  "right": {
+    "id": "2f2880eba1c6d75d",
+    "type": "split",
+    "children": [
+      {
+        "id": "54b46cc0beb09fe6",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "eb6392c3ab041aba",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "AGENTS.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "AGENTS 的反向連結"
+            }
+          },
+          {
+            "id": "1adef6bfb4ed0c65",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "AGENTS.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "AGENTS 的對外連結"
+            }
+          },
+          {
+            "id": "803f4f9141020288",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "標籤"
+            }
+          },
+          {
+            "id": "345efc82eb5c5976",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "所有屬性"
+            }
+          },
+          {
+            "id": "bc0c05927dee5804",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "AGENTS.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "AGENTS 的大綱"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:開啟快速切換": false,
+      "graph:查看關聯圖": false,
+      "canvas:建立新畫布": false,
+      "daily-notes:開啟今天的每日筆記": false,
+      "templates:插入模板": false,
+      "command-palette:開啟命令面板": false,
+      "bases:建立新的 base": false
+    }
+  },
+  "active": "07ea313c7f188021",
+  "lastOpenFiles": [
+    "wiki/規則/生命值與休息/死亡與復活.md",
+    "附件/翻譯詞彙表.md",
+    "原始資料/城主指南2024/魔法物品詳述",
+    "原始資料/城主指南2024/新增資料夾",
+    "原始資料/城主指南2024/魔法物品/魔法物品的獨特特性.md",
+    "原始資料/城主指南2024/魔法物品/魔法物品.md",
+    "原始資料/城主指南2024/魔法物品/激活魔法物品.md",
+    "原始資料/城主指南2024/魔法物品/智能魔法物品.md",
+    "原始資料/城主指南2024/魔法物品/神器.md",
+    "原始資料/城主指南2024/魔法物品/獎勵魔法物品.md",
+    "原始資料/城主指南2024/魔法物品/製作魔法物品.md",
+    "原始資料/城主指南2024/魔法物品/詛咒物品.md",
+    "原始資料/城主指南2024/魔法物品/下個黎明.md",
+    "原始資料/城主指南2024/魔法物品/魔法物品的類別.md",
+    "原始資料/城主指南2024/魔法物品",
+    "原始資料/城主指南2024",
+    "原始資料/城主旨南2024/魔法物品",
+    "原始資料/城主旨南2024/新增資料夾",
+    "原始資料/城主旨南2024",
+    "原始資料/新增資料夾",
+    "wiki/種族/提夫林.md",
+    "原始資料/玩家手冊2024/裝備/工具.md",
+    "原始資料/玩家手冊2024/裝備/坐騎與載具.md",
+    "原始資料/玩家手冊2024/裝備/護甲.md",
+    "原始資料/玩家手冊2024/裝備/詞條.md",
+    "原始資料/玩家手冊2024/裝備/其他工具.md",
+    "原始資料/玩家手冊2024/裝備/製作裝備.md",
+    "原始資料/玩家手冊2024/裝備/服務.md",
+    "原始資料/玩家手冊2024/裝備/武器.md",
+    "原始資料/玩家手冊2024/裝備/冒險裝備.md",
+    "原始資料/玩家手冊2024/裝備/工匠工具.md",
+    "原始資料/玩家手冊2024/裝備",
+    "原始資料/玩家手冊2024/新增資料夾",
+    "原始資料/玩家手冊2024/專長/戰鬥風格專長.md",
+    "原始資料/玩家手冊2024/專長/傳奇恩惠專長.md",
+    "原始資料/玩家手冊2024/專長/通用專長.md",
+    "原始資料/DND5e_chm-main/DND5e_chm-main/玩家手册/个性与背景/个性与背景.files/image009.jpg",
+    "原始資料/DND5e_chm-main/DND5e_chm-main/玩家手册/个性与背景/个性与背景.files/image007.jpg",
+    "原始資料/DND5e_chm-main/DND5e_chm-main/玩家手册/个性与背景/个性与背景.files/image005.jpg",
+    "原始資料/DND5e_chm-main/DND5e_chm-main/玩家手册/个性与背景/个性与背景.files/image004.jpg",
+    "原始資料/DND5e_chm-main/DND5e_chm-main/玩家手册/个性与背景/个性与背景.files/image003.jpg",
+    "原始資料/DND5e_chm-main/DND5e_chm-main/玩家手册/个性与背景/个性与背景.files/image001.jpg",
+    "原始資料/DND5e_chm-main/DND5e_chm-main/第三方/鬼魅幽谷/艾弗瑞斯之巢/附录B/Dawndrinker.jpg",
+    "原始資料/DND5e_chm-main/DND5e_chm-main/第三方/瓦尔达的秘密尖塔/玩家包2/魔宠/pet-rock.jpg",
+    "原始資料/DND5e_chm-main/DND5e_chm-main/第三方/瓦尔达的秘密尖塔/玩家包1/种族/geppettin.jpg",
+    "原始資料/DND5e_chm-main/DND5e_chm-main/第三方/歪曲之月/附录A/魔宠/Salmon_of_Knowledge.jpg"
+  ]
+}
