@@ -1,0 +1,614 @@
+import fs from "node:fs";
+import path from "node:path";
+import process from "node:process";
+import { spawnSync } from "node:child_process";
+import { fileURLToPath, pathToFileURL } from "node:url";
+import { LineCounter, parseDocument } from "yaml";
+
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const WIKI_ROOT = path.join(ROOT, "wiki");
+
+const REQUIRED_FIELDS = [
+  "title",
+  "category",
+  "version",
+  "tags",
+  "sources",
+  "source_type",
+  "confidence",
+  "rules_sources",
+  "errata",
+  "updated",
+];
+
+const CATEGORIES = new Set([
+  "職業",
+  "法術",
+  "種族",
+  "背景",
+  "專長",
+  "怪物",
+  "規則機制",
+  "戰役設定",
+]);
+const VERSIONS = new Set([
+  "2024-Core",
+  "2014-Legacy",
+  "UA-Playtest",
+  "Homebrew",
+  "AL-Organized-Play",
+]);
+const CONFIDENCE = new Set(["confirmed", "interpreted", "pending"]);
+const AUTHORITIES = new Set(["官方", "UA", "自訂", "社群"]);
+const TRANSLATIONS = new Set(["official", "community", "none", "unknown"]);
+const SOURCE_TYPES = new Map([
+  ["官方", "official"],
+  ["UA", "ua"],
+  ["自訂", "homebrew"],
+  ["社群", "community"],
+]);
+const IMPORTANT_INDEX_DIRS = [
+  "wiki/職業",
+  "wiki/背景",
+  "wiki/法術/戲法",
+  "wiki/法術/1環",
+  "wiki/法術/2環",
+  "wiki/法術/3環",
+  "wiki/法術/4環",
+  "wiki/法術/5環",
+  "wiki/法術/6環",
+  "wiki/法術/7環",
+  "wiki/法術/8環",
+  "wiki/法術/9環",
+  "wiki/規則/核心檢定",
+  "wiki/規則/動作與戰鬥",
+  "wiki/規則/狀態",
+  "wiki/規則/生命值與休息",
+  "wiki/規則/移動與探索",
+  "wiki/規則/施法規則",
+  "wiki/規則/環境與危害",
+  "wiki/規則/裝備與物件",
+  "wiki/規則/勘誤與版本",
+];
+
+function posix(value) {
+  return value.split(path.sep).join("/");
+}
+
+function repoRelative(absolutePath) {
+  return posix(path.relative(ROOT, absolutePath));
+}
+
+function walk(root, includeDirectories = false) {
+  const results = [];
+  if (!fs.existsSync(root)) return results;
+  for (const entry of fs.readdirSync(root, { withFileTypes: true })) {
+    const absolute = path.join(root, entry.name);
+    if (entry.isDirectory()) {
+      if (includeDirectories) results.push(absolute);
+      results.push(...walk(absolute, includeDirectories));
+    } else if (entry.isFile()) {
+      results.push(absolute);
+    }
+  }
+  return results;
+}
+
+export function extractFrontmatter(text) {
+  const normalized = text.replace(/^\uFEFF/, "").replace(/\r\n/g, "\n");
+  if (!normalized.startsWith("---\n")) return null;
+  const end = normalized.indexOf("\n---\n", 4);
+  if (end < 0) return null;
+  return {
+    yaml: normalized.slice(4, end),
+    body: normalized.slice(end + 5),
+    bodyStartLine: normalized.slice(0, end + 5).split("\n").length,
+  };
+}
+
+export function deriveSourceType(sources) {
+  if (!Array.isArray(sources) || sources.length === 0) return null;
+  const authorities = new Set(sources.map((source) => source?.authority));
+  if (authorities.has(undefined) || authorities.has(null)) return null;
+  if (authorities.size > 1) return "mixed";
+  return SOURCE_TYPES.get([...authorities][0]) ?? null;
+}
+
+export function parseWikiLink(inner) {
+  const normalized = inner.replace(/\\\|/g, "|");
+  const pipe = normalized.indexOf("|");
+  const targetWithFragment = (pipe < 0 ? normalized : normalized.slice(0, pipe)).trim();
+  const alias = pipe < 0 ? null : normalized.slice(pipe + 1).trim();
+  const target = targetWithFragment.split("#", 1)[0].split("^", 1)[0].trim();
+  return { target, alias };
+}
+
+function extractWikiLinks(body) {
+  const links = [];
+  const lines = body.split(/\r?\n/);
+  let inFence = false;
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index];
+    if (/^\s*```/.test(line)) {
+      inFence = !inFence;
+      continue;
+    }
+    if (inFence) continue;
+    const regex = /\[\[([^\]]+)\]\]/g;
+    for (const match of line.matchAll(regex)) {
+      links.push({
+        ...parseWikiLink(match[1]),
+        raw: match[0],
+        inner: match[1],
+        line: index + 1,
+        tableLine: /^\s*\|/.test(line),
+      });
+    }
+  }
+  return links;
+}
+
+function runGit(args) {
+  const result = spawnSync("git", ["-c", "core.quotepath=false", ...args], { cwd: ROOT, encoding: "utf8" });
+  if (result.status !== 0) return [];
+  return result.stdout.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+}
+
+function changedWikiFiles() {
+  const candidates = new Set([
+    ...runGit(["diff", "--name-only", "--diff-filter=ACMR", "HEAD"]),
+    ...runGit(["diff", "--cached", "--name-only", "--diff-filter=ACMR"]),
+    ...runGit(["ls-files", "--others", "--exclude-standard"]),
+  ]);
+  return [...candidates]
+    .map((file) => file.replace(/\\/g, "/"))
+    .filter((file) => file.startsWith("wiki/") && file.endsWith(".md"));
+}
+
+function addDiagnostic(diagnostics, severity, file, line, code, message) {
+  diagnostics.push({ severity, file, line: line || 1, code, message });
+}
+
+function validateQuotedStrings(frontmatter, file, diagnostics) {
+  const stringKeys = new Set([
+    "title", "category", "entry_type", "parent_class", "version", "source_type",
+    "confidence", "updated", "file", "locator", "authority", "translation",
+  ]);
+  const lines = frontmatter.split("\n");
+  for (let index = 0; index < lines.length; index += 1) {
+    const match = lines[index].match(/^\s*(?:-\s+)?([A-Za-z_]+):\s*(.+?)\s*$/);
+    if (!match || !stringKeys.has(match[1])) continue;
+    const value = match[2];
+    if (value === "[]" || (value.startsWith('"') && value.endsWith('"'))) continue;
+    addDiagnostic(
+      diagnostics,
+      "error",
+      file,
+      index + 2,
+      "YAML_QUOTE",
+      `字串欄位 ${match[1]} 必須使用雙引號。`,
+    );
+  }
+  for (let index = 0; index < lines.length; index += 1) {
+    if (!/^\s+-\s+/.test(lines[index])) continue;
+    if (/^\s+-\s+[A-Za-z_]+:/.test(lines[index])) continue;
+    const value = lines[index].replace(/^\s+-\s+/, "").trim();
+    if (!(value.startsWith('"') && value.endsWith('"'))) {
+      addDiagnostic(
+        diagnostics,
+        "error",
+        file,
+        index + 2,
+        "YAML_LIST_QUOTE",
+        "字串清單項目必須使用雙引號。",
+      );
+    }
+  }
+}
+
+function validateHeadings(body, bodyStartLine, file, diagnostics) {
+  const lines = body.split(/\r?\n/);
+  let previous = 0;
+  let inFence = false;
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index];
+    if (/^\s*```/.test(line)) {
+      inFence = !inFence;
+      continue;
+    }
+    if (inFence) continue;
+    const match = line.match(/^(#{1,6})\s+\S/);
+    if (!match) continue;
+    const level = match[1].length;
+    if (previous > 0 && level > previous + 1) {
+      addDiagnostic(
+        diagnostics,
+        "error",
+        file,
+        bodyStartLine + index,
+        "HEADING_JUMP",
+        `標題由 H${previous} 跳至 H${level}。`,
+      );
+    }
+    previous = level;
+  }
+}
+
+function makePathCatalog() {
+  const all = walk(ROOT, true).map(repoRelative);
+  const exact = new Set(all);
+  const lower = new Map(all.map((item) => [item.toLocaleLowerCase("en-US"), item]));
+  return { exact, lower };
+}
+
+function validateSourcePath(sourcePath, file, line, diagnostics, catalog) {
+  if (typeof sourcePath !== "string") return;
+  const normalized = sourcePath.replace(/\\/g, "/");
+  if (sourcePath !== normalized) {
+    addDiagnostic(diagnostics, "error", file, line, "SOURCE_SEPARATOR", "來源路徑必須使用正斜線 /。" );
+  }
+  if (!normalized.startsWith("原始資料/")) {
+    addDiagnostic(diagnostics, "error", file, line, "SOURCE_SCOPE", "sources.file 必須位於原始資料/。" );
+  }
+  const key = normalized.replace(/\/$/, "");
+  if (!catalog.exact.has(key)) {
+    const caseMatch = catalog.lower.get(key.toLocaleLowerCase("en-US"));
+    const detail = caseMatch ? `實際路徑大小寫為 ${caseMatch}。` : "目標不存在。";
+    addDiagnostic(diagnostics, "error", file, line, "SOURCE_MISSING", `來源路徑無法精確解析：${normalized}；${detail}`);
+  }
+}
+
+function validateFrontmatter(record, diagnostics, catalog) {
+  const { rel, fm, data } = record;
+  for (const field of REQUIRED_FIELDS) {
+    if (!(field in data)) {
+      addDiagnostic(diagnostics, "error", rel, 1, "YAML_REQUIRED", `缺少必要欄位 ${field}。`);
+    }
+  }
+  if (data.category !== undefined && !CATEGORIES.has(data.category)) {
+    addDiagnostic(diagnostics, "error", rel, 1, "CATEGORY_ENUM", `category 值不合法：${data.category}`);
+  }
+  if (data.version !== undefined && !VERSIONS.has(data.version)) {
+    addDiagnostic(diagnostics, "error", rel, 1, "VERSION_ENUM", `version 值不合法：${data.version}`);
+  }
+  if (data.confidence !== undefined && !CONFIDENCE.has(data.confidence)) {
+    addDiagnostic(diagnostics, "error", rel, 1, "CONFIDENCE_ENUM", `confidence 值不合法：${data.confidence}`);
+  }
+  if (!Array.isArray(data.tags) || data.tags.length < 2 || data.tags.length > 3) {
+    addDiagnostic(diagnostics, "error", rel, 1, "TAGS_SCHEMA", "tags 必須是含 2–3 個字串的區塊清單。" );
+  } else if (data.tags.some((tag) => typeof tag !== "string")) {
+    addDiagnostic(diagnostics, "error", rel, 1, "TAGS_TYPE", "tags 的每個項目都必須是字串。" );
+  }
+  for (const field of ["rules_sources", "errata"]) {
+    if (!Array.isArray(data[field]) || data[field].some((item) => typeof item !== "string")) {
+      addDiagnostic(diagnostics, "error", rel, 1, "ARRAY_SCHEMA", `${field} 必須是字串陣列。`);
+    }
+  }
+  if ("rules_source" in data) {
+    addDiagnostic(diagnostics, "warning", rel, 1, "LEGACY_FIELD", "舊欄位 rules_source 應遷移為 rules_sources。" );
+  }
+  if ("last_modified_by" in data) {
+    addDiagnostic(diagnostics, "warning", rel, 1, "LEGACY_FIELD", "last_modified_by 已由 Git 作者紀錄取代。" );
+  }
+  if (typeof data.updated !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(data.updated)) {
+    addDiagnostic(diagnostics, "error", rel, 1, "UPDATED_FORMAT", "updated 必須是雙引號包覆的 YYYY-MM-DD。" );
+  } else {
+    const date = new Date(`${data.updated}T00:00:00Z`);
+    if (Number.isNaN(date.valueOf()) || date.toISOString().slice(0, 10) !== data.updated) {
+      addDiagnostic(diagnostics, "error", rel, 1, "UPDATED_DATE", `updated 不是有效日期：${data.updated}`);
+    }
+  }
+  if (!Array.isArray(data.sources) || data.sources.length === 0) {
+    addDiagnostic(diagnostics, "error", rel, 1, "SOURCES_SCHEMA", "sources 必須是至少含一筆來源的物件清單。" );
+  } else {
+    for (const source of data.sources) {
+      if (!source || typeof source !== "object" || Array.isArray(source)) {
+        addDiagnostic(diagnostics, "error", rel, 1, "SOURCE_OBJECT", "sources 的每個項目必須是物件。" );
+        continue;
+      }
+      for (const field of ["file", "locator", "authority"]) {
+        if (typeof source[field] !== "string" || source[field].trim() === "") {
+          addDiagnostic(diagnostics, "error", rel, 1, "SOURCE_REQUIRED", `來源缺少字串欄位 ${field}。`);
+        }
+      }
+      if (typeof source.authority === "string" && !AUTHORITIES.has(source.authority)) {
+        addDiagnostic(diagnostics, "error", rel, 1, "AUTHORITY_ENUM", `authority 值不合法：${source.authority}`);
+      }
+      if (source.translation !== undefined && !TRANSLATIONS.has(source.translation)) {
+        addDiagnostic(diagnostics, "error", rel, 1, "TRANSLATION_ENUM", `translation 值不合法：${source.translation}`);
+      }
+      validateSourcePath(source.file, rel, 1, diagnostics, catalog);
+      if (typeof source.file === "string" && /\.html?$/i.test(source.file) && typeof source.locator === "string") {
+        if (!source.locator.includes("#") && !/L\d+.*(?:標題|表格|：|:)/.test(source.locator)) {
+          addDiagnostic(diagnostics, "error", rel, 1, "HTML_LOCATOR", "HTML 來源定位必須使用 #錨點，或 L行號加標題／表格列名稱。" );
+        }
+      }
+    }
+  }
+  const derived = deriveSourceType(data.sources);
+  if (derived && data.source_type !== derived) {
+    addDiagnostic(diagnostics, "error", rel, 1, "SOURCE_TYPE", `source_type 應由來源推導為 ${derived}，目前為 ${data.source_type}。`);
+  }
+  const basename = path.posix.basename(rel);
+  if (data.category === "職業" && basename !== "職業索引.md") {
+    if (!new Set(["職業", "子職"]).has(data.entry_type)) {
+      addDiagnostic(diagnostics, "warning", rel, 1, "ENTRY_TYPE", "職業條目缺少合法的 entry_type。" );
+    }
+    if (data.entry_type === "子職") {
+      if (typeof data.parent_class !== "string" || !data.parent_class) {
+        addDiagnostic(diagnostics, "error", rel, 1, "PARENT_CLASS", "子職必須填寫 parent_class。" );
+      } else {
+        const parentFolder = rel.split("/").at(-2);
+        if (parentFolder !== data.parent_class) {
+          addDiagnostic(diagnostics, "error", rel, 1, "PARENT_FOLDER", `parent_class ${data.parent_class} 與資料夾 ${parentFolder} 不一致。`);
+        }
+        if (Array.isArray(data.tags) && data.tags[1] !== `子職_${data.parent_class}`) {
+          addDiagnostic(diagnostics, "error", rel, 1, "PARENT_TAG", `第二標籤應為 子職_${data.parent_class}。`);
+        }
+      }
+    } else if (data.entry_type === "職業" && "parent_class" in data) {
+      addDiagnostic(diagnostics, "error", rel, 1, "PARENT_CLASS_EXTRA", "職業總覽不得填寫 parent_class。" );
+    }
+  }
+  if (data.confidence === "pending" && !record.body.includes("本條目包含待確認譯名")) {
+    addDiagnostic(diagnostics, "error", rel, record.bodyStartLine, "PENDING_WARNING", "pending 條目缺少待確認譯名警告區塊。" );
+  }
+  validateQuotedStrings(fm, rel, diagnostics);
+}
+
+function buildWikiCatalog(records) {
+  const exact = new Map();
+  const byBasename = new Map();
+  for (const record of records) {
+    exact.set(record.rel, record);
+    const basename = path.posix.basename(record.rel, ".md");
+    const values = byBasename.get(basename) ?? [];
+    values.push(record);
+    byBasename.set(basename, values);
+  }
+  return { exact, byBasename };
+}
+
+function resolveWikiTarget(target, catalog) {
+  if (!target) return { status: "empty" };
+  let clean = target.replace(/\\/g, "/");
+  if (clean.startsWith("wiki/")) return { status: "invalid-prefix", target: clean };
+  if (clean.endsWith(".md")) return { status: "invalid-extension", target: clean };
+  if (clean.includes("/")) {
+    const rel = `wiki/${clean}.md`;
+    return catalog.exact.has(rel) ? { status: "ok", record: catalog.exact.get(rel) } : { status: "missing", target: clean };
+  }
+  const matches = catalog.byBasename.get(clean) ?? [];
+  if (matches.length === 1) return { status: "ok", record: matches[0] };
+  if (matches.length > 1) return { status: "ambiguous", target: clean, matches };
+  return { status: "missing", target: clean };
+}
+
+function validateLinks(record, diagnostics, catalog) {
+  for (const link of record.links) {
+    const absoluteLine = record.bodyStartLine + link.line - 1;
+    if (link.tableLine && link.alias && !link.inner.includes("\\|")) {
+      addDiagnostic(diagnostics, "error", record.rel, absoluteLine, "TABLE_PIPE", "表格中的 Wiki 連結別名管道符號必須寫成 \\|。" );
+    }
+    if (link.target.includes("(") || link.target.includes(")")) {
+      addDiagnostic(diagnostics, "error", record.rel, absoluteLine, "LINK_TARGET_NAME", `Wiki 連結目標不得包含英文括號名稱：${link.target}`);
+    }
+    const resolved = resolveWikiTarget(link.target, catalog);
+    if (resolved.status === "ok" || resolved.status === "empty") continue;
+    if (resolved.status === "ambiguous") {
+      addDiagnostic(
+        diagnostics,
+        "error",
+        record.rel,
+        absoluteLine,
+        "LINK_AMBIGUOUS",
+        `Wiki 連結 ${link.target} 有多個目標：${resolved.matches.map((item) => item.rel).join("、")}。`,
+      );
+    } else if (resolved.status === "invalid-prefix") {
+      addDiagnostic(diagnostics, "error", record.rel, absoluteLine, "LINK_PREFIX", `Wiki 連結不得包含 wiki/ 前綴：${link.target}`);
+    } else if (resolved.status === "invalid-extension") {
+      addDiagnostic(diagnostics, "error", record.rel, absoluteLine, "LINK_EXTENSION", `Wiki 連結不得包含 .md：${link.target}`);
+    } else {
+      addDiagnostic(diagnostics, "error", record.rel, absoluteLine, "LINK_DEAD", `Wiki 連結目標不存在：${link.target}`);
+    }
+  }
+}
+
+function findDirectoryIndex(directoryRel, records) {
+  const directoryName = path.posix.basename(directoryRel);
+  const direct = records.filter((record) => path.posix.dirname(record.rel) === directoryRel);
+  const named = direct.filter((record) => path.posix.basename(record.rel).endsWith("索引.md"));
+  if (named.length === 1) return named[0];
+  const overview = direct.find((record) => path.posix.basename(record.rel, ".md") === directoryName);
+  return overview ?? null;
+}
+
+function validateIndexes(records, diagnostics, catalog, scope) {
+  for (const directoryRel of IMPORTANT_INDEX_DIRS) {
+    const index = findDirectoryIndex(directoryRel, records);
+    if (!index) {
+      addDiagnostic(diagnostics, "error", directoryRel, 1, "INDEX_REQUIRED", "重點目錄缺少索引頁。" );
+      continue;
+    }
+    if (!scope.has(index.rel)) continue;
+    const linked = new Set();
+    for (const link of index.links) {
+      const resolved = resolveWikiTarget(link.target, catalog);
+      if (resolved.status === "ok") linked.add(resolved.record.rel);
+    }
+    const siblings = records.filter((record) =>
+      path.posix.dirname(record.rel) === directoryRel && record.rel !== index.rel,
+    );
+    for (const sibling of siblings) {
+      if (!linked.has(sibling.rel)) {
+        addDiagnostic(diagnostics, "warning", index.rel, 1, "INDEX_MISSING_ENTRY", `索引未收錄 ${path.posix.basename(sibling.rel)}。`);
+      }
+      const hasBacklink = sibling.links.some((link) => {
+        const resolved = resolveWikiTarget(link.target, catalog);
+        return resolved.status === "ok" && resolved.record.rel === index.rel;
+      });
+      if (!hasBacklink) {
+        addDiagnostic(diagnostics, "error", sibling.rel, 1, "INDEX_BACKLINK", `條目未連回索引 ${path.posix.basename(index.rel)}。`);
+      }
+    }
+    const duplicateTargets = new Map();
+    for (const link of index.links) {
+      const resolved = resolveWikiTarget(link.target, catalog);
+      if (resolved.status !== "ok") continue;
+      duplicateTargets.set(resolved.record.rel, (duplicateTargets.get(resolved.record.rel) ?? 0) + 1);
+    }
+    for (const [target, count] of duplicateTargets) {
+      if (count > 1) {
+        addDiagnostic(diagnostics, "warning", index.rel, 1, "INDEX_DUPLICATE", `索引重複連結 ${target}，共 ${count} 次。`);
+      }
+    }
+  }
+}
+
+function validateSubclassLinks(records, diagnostics, catalog, scope) {
+  for (const record of records) {
+    if (!scope.has(record.rel) || record.data?.entry_type !== "子職" || typeof record.data.parent_class !== "string") continue;
+    const parentRel = `wiki/職業/${record.data.parent_class}.md`;
+    const parent = catalog.exact.get(parentRel);
+    if (!parent) {
+      addDiagnostic(diagnostics, "error", record.rel, 1, "PARENT_MISSING", `找不到父職業頁 ${parentRel}。`);
+      continue;
+    }
+    const subclassTarget = path.posix.basename(record.rel, ".md");
+    const childLinksParent = record.links.some((link) => resolveWikiTarget(link.target, catalog).record?.rel === parentRel);
+    const parentLinksChild = parent.links.some((link) => resolveWikiTarget(link.target, catalog).record?.rel === record.rel);
+    if (!childLinksParent) {
+      addDiagnostic(diagnostics, "error", record.rel, 1, "PARENT_BACKLINK", `子職頁未連回 ${record.data.parent_class}。`);
+    }
+    if (!parentLinksChild) {
+      addDiagnostic(diagnostics, "error", parent.rel, 1, "SUBCLASS_LINK", `職業總覽未連結子職 ${subclassTarget}。`);
+    }
+  }
+}
+
+function expandScope(initial, records, catalog) {
+  const initialSet = new Set(initial);
+  const scope = new Set(initialSet);
+  for (const record of records) {
+    const related = record.links
+      .map((link) => resolveWikiTarget(link.target, catalog))
+      .filter((result) => result.status === "ok")
+      .map((result) => result.record.rel);
+    if (initialSet.has(record.rel)) {
+      for (const target of related) scope.add(target);
+    } else if (related.some((target) => initialSet.has(target))) {
+      scope.add(record.rel);
+    }
+  }
+  return scope;
+}
+
+function githubEscape(value) {
+  return String(value).replace(/%/g, "%25").replace(/\r/g, "%0D").replace(/\n/g, "%0A");
+}
+
+function printDiagnostics(diagnostics, scopeSize, totalSize) {
+  const order = ["error", "warning", "info"];
+  const labels = { error: "錯誤", warning: "警告", info: "資訊" };
+  for (const severity of order) {
+    const items = diagnostics.filter((item) => item.severity === severity);
+    console.log(`\n${labels[severity]} (${items.length})`);
+    if (items.length === 0) {
+      console.log("  無");
+      continue;
+    }
+    for (const item of items) {
+      console.log(`  ${item.file}:${item.line} [${item.code}] ${item.message}`);
+      if (process.env.GITHUB_ACTIONS === "true") {
+        const command = severity === "error" ? "error" : severity === "warning" ? "warning" : "notice";
+        console.log(`::${command} file=${githubEscape(item.file)},line=${item.line},title=${githubEscape(item.code)}::${githubEscape(item.message)}`);
+      }
+    }
+  }
+  console.log(`\n檢查範圍：${scopeSize}/${totalSize} 個 Wiki 頁面`);
+}
+
+export function lintWiki({ all = false } = {}) {
+  const diagnostics = [];
+  const pathCatalog = makePathCatalog();
+  const markdownFiles = walk(WIKI_ROOT).filter((file) => file.endsWith(".md"));
+  const records = [];
+
+  for (const absolute of markdownFiles) {
+    const rel = repoRelative(absolute);
+    const text = fs.readFileSync(absolute, "utf8");
+    const extracted = extractFrontmatter(text);
+    if (!extracted) {
+      records.push({ absolute, rel, text, body: text, bodyStartLine: 1, fm: "", data: null, links: extractWikiLinks(text) });
+      continue;
+    }
+    const lineCounter = new LineCounter();
+    const document = parseDocument(extracted.yaml, { lineCounter, prettyErrors: true, uniqueKeys: true });
+    let data = null;
+    if (document.errors.length === 0) {
+      try {
+        data = document.toJS();
+      } catch {
+        data = null;
+      }
+    }
+    records.push({
+      absolute,
+      rel,
+      text,
+      fm: extracted.yaml,
+      body: extracted.body,
+      bodyStartLine: extracted.bodyStartLine,
+      data,
+      yamlErrors: document.errors,
+      lineCounter,
+      links: extractWikiLinks(extracted.body),
+    });
+  }
+
+  const catalog = buildWikiCatalog(records);
+  const initial = all ? records.map((record) => record.rel) : changedWikiFiles();
+  const scope = all ? new Set(initial) : expandScope(initial, records, catalog);
+
+  if (!all && initial.length === 0) {
+    addDiagnostic(diagnostics, "info", "wiki", 1, "NO_CHANGES", "沒有可辨識的 Wiki 異動；如需全庫檢查請使用 --all。" );
+  }
+
+  for (const record of records) {
+    if (!scope.has(record.rel)) continue;
+    if (!record.fm) {
+      addDiagnostic(diagnostics, "warning", record.rel, 1, "FRONTMATTER_MISSING", "既有頁面缺少 Frontmatter，需安排遷移。" );
+      validateHeadings(record.body, 1, record.rel, diagnostics);
+      validateLinks(record, diagnostics, catalog);
+      continue;
+    }
+    if (record.yamlErrors.length > 0 || !record.data) {
+      for (const error of record.yamlErrors) {
+        const position = Array.isArray(error.pos) ? record.lineCounter.linePos(error.pos[0]) : null;
+        addDiagnostic(diagnostics, "error", record.rel, (position?.line ?? 1) + 1, "YAML_PARSE", error.message.split("\n")[0]);
+      }
+      continue;
+    }
+    validateFrontmatter(record, diagnostics, pathCatalog);
+    validateHeadings(record.body, record.bodyStartLine, record.rel, diagnostics);
+    validateLinks(record, diagnostics, catalog);
+  }
+
+  validateIndexes(records, diagnostics, catalog, scope);
+  validateSubclassLinks(records, diagnostics, catalog, scope);
+  printDiagnostics(diagnostics, scope.size, records.length);
+  return {
+    diagnostics,
+    errors: diagnostics.filter((item) => item.severity === "error").length,
+    warnings: diagnostics.filter((item) => item.severity === "warning").length,
+    information: diagnostics.filter((item) => item.severity === "info").length,
+    scopeSize: scope.size,
+    totalSize: records.length,
+  };
+}
+
+const isMain = process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href;
+if (isMain) {
+  const result = lintWiki({ all: process.argv.includes("--all") });
+  process.exitCode = result.errors > 0 ? 1 : 0;
+}
