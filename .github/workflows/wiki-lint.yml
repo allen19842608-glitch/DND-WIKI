@@ -1,0 +1,57 @@
+name: Wiki Lint
+
+on:
+  pull_request:
+    paths:
+      - "AGENTS.md"
+      - "wiki/**"
+      - "原始資料/**"
+      - "模板/**"
+      - "附件/**"
+      - "scripts/**"
+      - "tests/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/wiki-lint.yml"
+  push:
+    branches:
+      - "main"
+    paths:
+      - "AGENTS.md"
+      - "wiki/**"
+      - "原始資料/**"
+      - "模板/**"
+      - "附件/**"
+      - "scripts/**"
+      - "tests/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/wiki-lint.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Validate Wiki
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Run unit tests
+        run: npm test
+
+      - name: Lint the full Wiki
+        run: npm run lint:all
