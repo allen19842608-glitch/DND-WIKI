@@ -1,0 +1,200 @@
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import { execFileSync } from "node:child_process";
+
+const root = process.cwd();
+const rawRoot = path.join(root, "原始資料", "玩家手冊2024", "角色職業");
+const outputRoot = path.join(root, "wiki", "職業");
+const glossaryPath = path.join(root, "附件", "翻譯詞彙表.md");
+const force = process.argv.includes("--force");
+const dryRun = process.argv.includes("--dry-run");
+const replace = process.argv.includes("--replace");
+const diff = process.argv.includes("--diff");
+const only = process.argv.includes("--only") ? process.argv[process.argv.indexOf("--only") + 1] : undefined;
+
+function translationMap() {
+  const translations = new Map();
+  for (const line of fs.readFileSync(glossaryPath, "utf8").split(/\r?\n/)) {
+    const cells = line.split("|").slice(1, -1).map((cell) => cell.trim());
+    if (cells.length < 5 || cells[0] === "英文" || cells[0].startsWith(":")) continue;
+    if (cells[4] === "approved") translations.set(cells[0], cells[1]);
+  }
+  return translations;
+}
+
+const translations = translationMap();
+
+function existingNameByEnglish(directory, english) {
+  if (!fs.existsSync(directory)) return undefined;
+  for (const file of fs.readdirSync(directory).filter((name) => name.endsWith(".md"))) {
+    const text = fs.readFileSync(path.join(directory, file), "utf8");
+    const title = text.match(/^title:\s+"(.+?)"\s*$/m)?.[1] ?? text.match(/^#\s+(.+)$/m)?.[1];
+    const currentEnglish = title?.match(/\(([^()]*)\)$/)?.[1];
+    if (currentEnglish === english || (currentEnglish && normalizeEnglish(currentEnglish) === normalizeEnglish(english))) return path.basename(file, ".md");
+  }
+  return undefined;
+}
+
+function normalizeEnglish(value) {
+  return value.toLowerCase().replace(/\b(?:the|a|an)\b/g, "").replace(/[^a-z0-9]/g, "");
+}
+
+function canonicalMeta(meta, existingDirectory) {
+  return {
+    ...meta,
+    rawChinese: meta.chinese,
+    chinese: existingNameByEnglish(existingDirectory, meta.english)
+      ?? translations.get(meta.english)
+      ?? [...translations.entries()].find(([english]) => normalizeEnglish(english) === normalizeEnglish(meta.english))?.[1]
+      ?? meta.chinese,
+  };
+}
+
+function q(value) {
+  return String(value ?? "").replace(/"/g, '\\"');
+}
+
+function findTitle(lines) {
+  const line = lines.find((value) => /^#{1,2}\s+/.test(value));
+  const match = line?.match(/^#{1,2}\s+(.+?)\s+([A-Za-z].*)$/);
+  if (!match) throw new Error("找不到「# 中文名稱 English Name」標題。");
+  return { chinese: match[1].trim(), english: match[2].trim() };
+}
+
+function sourceLocator(lines, title) {
+  const index = lines.findIndex((line) => line.includes(title));
+  return `L${index + 1} 標題：${title}`;
+}
+
+function tableAfter(lines, marker) {
+  const index = lines.findIndex((line) => marker.test(line));
+  if (index < 0) return [];
+  const table = [];
+  for (let i = index + 1; i < lines.length; i += 1) {
+    if (!lines[i].trim()) {
+      if (table.length) break;
+      continue;
+    }
+    if (!lines[i].trim().startsWith("|")) {
+      if (table.length) break;
+      continue;
+    }
+    table.push(lines[i].trim());
+  }
+  return table;
+}
+
+function tableRows(table) {
+  return table.slice(2).map((line) => line.split("|").slice(1, -1).map((cell) => cell.trim()));
+}
+
+function classTraits(lines) {
+  const rows = tableRows(tableAfter(lines, /核心特質|Core .*Traits/));
+  const find = (name) => rows.find(([label]) => name.test(label))?.[1] ?? "無";
+  return {
+    primary: find(/主要屬性|Primary Ability/),
+    hitDie: find(/生命.*骰|Hit Point Die/),
+    saves: find(/豁免.*熟練|Saving Throw/),
+    skills: find(/技能.*熟練|Skill Proficiencies/),
+    weapons: find(/武器.*熟練|Weapon Proficiencies/),
+    armor: find(/護甲.*(?:受訓|訓練)|Armor Training/),
+    equipment: find(/起始裝備|Starting Equipment/),
+  };
+}
+
+function featureBlocks(lines) {
+  const features = [];
+  for (let i = 0; i < lines.length; i += 1) {
+    const match = lines[i].match(/^\*\*(\d+)級：?\s*(.+?)\s+([A-Za-z].*?)\*\*$/);
+    if (!match) continue;
+    const [, level, chinese, english] = match;
+    const body = [];
+    for (let j = i + 1; j < lines.length && !/^\*\*\d+級：/.test(lines[j]); j += 1) {
+      if (lines[j].trim()) body.push(lines[j].trim());
+    }
+    features.push({ level, chinese: chinese.trim(), english: english.trim(), body: body.join(" ") });
+  }
+  return features;
+}
+
+function frontmatter({ chinese, english, entryType, parentClass, source, locator }) {
+  const tags = entryType === "職業" ? `  - "職業_${chinese}"` : `  - "子職_${parentClass}"`;
+  const parent = entryType === "子職" ? `parent_class: "${q(parentClass)}"\n` : "";
+  return `---\ntitle: "${q(chinese)} (${q(english)})"\ncategory: "職業"\nentry_type: "${entryType}"\n${parent}version: "2024-Core"\ntags:\n  - "玩家手冊2024"\n${tags}\nsources:\n  - file: "${q(source)}"\n    locator: "${q(locator)}"\n    authority: "官方"\n    translation: "community"\nsource_type: "official"\nconfidence: "confirmed"\nrules_sources:\n  - "Player’s Handbook (2024)"\nerrata: []\nupdated: "2026-08-10"\n---`;
+}
+
+function detailBlocks(features) {
+  return features.map((feature) => {
+    const limit = /短休|長休|黎明|每天|次數|持續|充能|無法再次|恢復/.test(feature.body)
+      ? `\n- **限制與恢復**：${feature.body.match(/[^。]*(?:短休|長休|黎明|每天|次數|持續|充能|無法再次|恢復)[^。]*。?/g)?.join("") ?? "詳見效果與數值。"}`
+      : "";
+    return `#### ${feature.level} 級：${feature.chinese} (${feature.english})\n\n- **效果與數值**：${feature.body || "待依來源補齊。"}${limit}`;
+  }).join("\n\n");
+}
+
+function classPage(meta, lines, source, subclasses) {
+  const traits = classTraits(lines);
+  const featureTable = tableAfter(lines, /特性.*Features|Features/);
+  const features = featureBlocks(lines);
+  const role = lines.slice(1).find((line) => line.trim() && !line.startsWith("**") && !line.startsWith("#"))?.trim() ?? "依來源摘要。";
+  const subclassLinks = subclasses.map((subclass) => `- [[${subclass.chinese}|${subclass.chinese} (${subclass.english})]]：導覽：此子職的規則詳見對應頁面。`).join("\n") || "- 無。";
+  return `${frontmatter({ ...meta, entryType: "職業", source, locator: sourceLocator(lines, meta.rawChinese ?? meta.chinese) })}\n\n# ${meta.chinese} (${meta.english})\n\n**職業定位**：${role}\n\n## ⚙️ 規則條文 (Rule Text)\n\n### ${meta.chinese}核心特質 (Core ${meta.english} Traits)\n\n| 項目 | 內容 |\n| :--- | :--- |\n| **主要屬性 (Primary Ability)** | ${traits.primary} |\n| **生命骰 (Hit Point Die)** | ${traits.hitDie} |\n| **豁免檢定熟練** | ${traits.saves} |\n| **技能熟練** | ${traits.skills} |\n| **武器熟練** | ${traits.weapons} |\n| **護甲訓練** | ${traits.armor} |\n| **起始裝備** | ${traits.equipment} |\n\n### 📊 ${meta.chinese}特性 (Class Features)\n\n${featureTable.length ? featureTable.join("\n") : "來源未提供可解析的職業特性表。"}\n\n### 🛡️ 職業特性詳解 (Class Features Description)\n\n${detailBlocks(features)}\n\n### 🧭 ${meta.chinese}子職 (Subclass)\n\n${subclassLinks}\n\n## 🔗 相關連結\n\n- 無。\n`;
+}
+
+function subclassPage(meta, lines, source, parentClass) {
+  const features = featureBlocks(lines);
+  const role = lines.slice(1).find((line) => line.trim() && !line.startsWith("**") && !line.startsWith("#"))?.trim() ?? "依來源摘要。";
+  const rows = features.map((feature) => `| ${feature.level} | ${feature.chinese} |`).join("\n");
+  return `${frontmatter({ ...meta, entryType: "子職", parentClass, source, locator: sourceLocator(lines, meta.rawChinese ?? meta.chinese) })}\n\n# ${meta.chinese} (${meta.english})\n\n**子職定位**：${role}\n\n## ⚙️ 規則條文 (Rule Text)\n\n### 子職特性表\n\n| 職業等級 | 子職特性 |\n| :--: | :--- |\n${rows || "| 依來源 | 待補齊 |"}\n\n### 子職特性詳解\n\n${detailBlocks(features)}\n\n## 🔗 相關連結\n\n- [[${parentClass}|${parentClass}]]\n`;
+}
+
+for (const classDir of fs.readdirSync(rawRoot, { withFileTypes: true }).filter((item) => item.isDirectory())) {
+  const rawParentClass = classDir.name;
+  const sourceDir = path.join(rawRoot, rawParentClass);
+  const sourceFiles = fs.readdirSync(sourceDir).filter((name) => name.endsWith(".md") && !name.includes("法術列表"));
+  const classSource = sourceFiles.find((file) => file === `${rawParentClass}.md`);
+  if (!classSource) { console.warn(`略過：${sourceDir}（找不到職業總覽檔）`); continue; }
+  const parentMeta = canonicalMeta(findTitle(fs.readFileSync(path.join(sourceDir, classSource), "utf8").split(/\r?\n/)), outputRoot);
+  const parentClass = parentMeta.chinese;
+  const outputDir = path.join(outputRoot, parentClass);
+  const subclasses = sourceFiles.filter((file) => file !== `${rawParentClass}.md`).flatMap((file) => {
+    const lines = fs.readFileSync(path.join(sourceDir, file), "utf8").split(/\r?\n/);
+    try { return featureBlocks(lines).length ? [canonicalMeta(findTitle(lines), outputDir)] : []; } catch { return []; }
+  });
+  for (const file of sourceFiles) {
+    const input = path.join(sourceDir, file);
+    const lines = fs.readFileSync(input, "utf8").split(/\r?\n/);
+    const entryType = file === `${rawParentClass}.md` ? "職業" : "子職";
+    let meta;
+    try { meta = canonicalMeta(findTitle(lines), entryType === "職業" ? outputRoot : outputDir); } catch { console.warn(`略過：${path.relative(root, input)}（標題格式不符）`); continue; }
+    if (entryType === "子職" && featureBlocks(lines).length === 0) {
+      console.log(`略過非子職補充資料：${path.relative(root, input)}`);
+      continue;
+    }
+    const output = entryType === "職業" ? path.join(outputRoot, `${meta.chinese}.md`) : path.join(outputDir, `${meta.chinese}.md`);
+    if (only && !path.relative(root, output).replaceAll("\\", "/").includes(only)) continue;
+    if (fs.existsSync(output) && !replace && !dryRun && !diff) {
+      console.log(`保留既有頁面（僅預覽或使用 --replace 才覆寫）：${path.relative(root, output)}`);
+      continue;
+    }
+    const source = path.relative(root, input).replaceAll("\\", "/");
+    const page = entryType === "職業" ? classPage(meta, lines, source, subclasses) : subclassPage(meta, lines, source, parentClass);
+    if (diff) {
+      const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "dnd-class-preview-"));
+      const candidate = path.join(tempDir, path.basename(output));
+      fs.writeFileSync(candidate, page, "utf8");
+      try {
+        execFileSync("git", ["diff", "--no-index", "--", fs.existsSync(output) ? output : candidate, candidate], { stdio: "inherit" });
+      } catch (error) {
+        if (error.status !== 1) throw error;
+      } finally {
+        fs.rmSync(tempDir, { recursive: true, force: true });
+      }
+      continue;
+    }
+    if (!dryRun) fs.mkdirSync(outputDir, { recursive: true });
+    if (!dryRun) fs.writeFileSync(output, page, "utf8");
+    console.log(`${dryRun ? "預覽" : "匯入"}：${path.relative(root, output)}`);
+  }
+}

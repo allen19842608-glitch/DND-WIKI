@@ -7,6 +7,10 @@ import { LineCounter, parseDocument } from "yaml";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const WIKI_ROOT = path.join(ROOT, "wiki");
+// 原始資料不隨 GitHub Actions 提交；本機維護時可做實體存在檢查，CI 則只
+// 驗證路徑格式與範圍，避免部分 checkout 的舊來源造成誤判。
+const RAW_SOURCES_AVAILABLE = process.env.GITHUB_ACTIONS !== "true"
+  && fs.existsSync(path.join(ROOT, "原始資料"));
 
 const REQUIRED_FIELDS = [
   "title",
@@ -28,6 +32,7 @@ const CATEGORIES = new Set([
   "背景",
   "專長",
   "怪物",
+  "魔法物品",
   "規則機制",
   "戰役設定",
 ]);
@@ -47,9 +52,18 @@ const SOURCE_TYPES = new Map([
   ["自訂", "homebrew"],
   ["社群", "community"],
 ]);
-const IMPORTANT_INDEX_DIRS = [
+// 這些目錄的索引是「完整列舉型」：同層每個已建立條目都必須被索引收錄，
+// 且條目本身必須連回該索引。僅作跨分類入口的索引（例如 wiki/索引.md）
+// 不放入此清單，避免把導覽頁誤判為遺漏條目。
+const COMPLETE_INDEX_DIRS = [
   "wiki/職業",
   "wiki/背景",
+  "wiki/種族",
+  "wiki/魔法物品",
+  "wiki/專長/起源專長",
+  "wiki/專長/通用專長",
+  "wiki/專長/戰鬥風格專長",
+  "wiki/專長/史詩恩賜專長",
   "wiki/法術/戲法",
   "wiki/法術/1環",
   "wiki/法術/2環",
@@ -250,6 +264,7 @@ function validateSourcePath(sourcePath, file, line, diagnostics, catalog) {
   if (!normalized.startsWith("原始資料/")) {
     addDiagnostic(diagnostics, "error", file, line, "SOURCE_SCOPE", "sources.file 必須位於原始資料/。" );
   }
+  if (!RAW_SOURCES_AVAILABLE) return;
   const key = normalized.replace(/\/$/, "");
   if (!catalog.exact.has(key)) {
     const caseMatch = catalog.lower.get(key.toLocaleLowerCase("en-US"));
@@ -330,11 +345,20 @@ function validateFrontmatter(record, diagnostics, catalog) {
     addDiagnostic(diagnostics, "error", rel, 1, "SOURCE_TYPE", `source_type 應由來源推導為 ${derived}，目前為 ${data.source_type}。`);
   }
   const basename = path.posix.basename(rel);
-  if (data.category === "職業" && basename !== "職業索引.md") {
+  if (typeof data.title === "string" && /索引|\bIndex\b/.test(data.title) && !/索引\.md$|_index\.md$/i.test(basename)) {
+    addDiagnostic(diagnostics, "error", rel, 1, "INDEX_FILENAME", "索引頁的檔名必須以「索引.md」或「_index.md」結尾。" );
+  }
+    if (data.category === "職業" && basename !== "職業索引.md") {
     if (!new Set(["職業", "子職"]).has(data.entry_type)) {
       addDiagnostic(diagnostics, "warning", rel, 1, "ENTRY_TYPE", "職業條目缺少合法的 entry_type。" );
     }
+    if (data.category === "魔法物品" && /^- \*\*(?:效果 \d+|物品效果)\*\*：/m.test(record.body)) {
+      addDiagnostic(diagnostics, "error", rel, record.bodyStartLine, "MAGIC_ITEM_EFFECT_NAME", "魔法物品效果必須使用具體規則名稱，不得使用泛用效果標籤。" );
+    }
     if (data.entry_type === "子職") {
+      if (/本特性尚未完成逐條規則摘要|待依來源定位.*補完|本頁已依子職結構重建/.test(record.body)) {
+        addDiagnostic(diagnostics, "warning", rel, record.bodyStartLine, "SUBCLASS_INCOMPLETE", "子職仍含未完成規則摘要或重建占位標記。" );
+      }
       if (typeof data.parent_class !== "string" || !data.parent_class) {
         addDiagnostic(diagnostics, "error", rel, 1, "PARENT_CLASS", "子職必須填寫 parent_class。" );
       } else {
@@ -423,8 +447,31 @@ function findDirectoryIndex(directoryRel, records) {
   return overview ?? null;
 }
 
+function isIndexRecord(record) {
+  const basename = path.posix.basename(record.rel);
+  return /索引\.md$|_index\.md$/i.test(basename)
+    || (typeof record.data?.title === "string" && /索引|\bIndex\b/.test(record.data.title));
+}
+
 function validateIndexes(records, diagnostics, catalog, scope) {
-  for (const directoryRel of IMPORTANT_INDEX_DIRS) {
+  // 所有索引頁皆檢查是否重複列出同一個已解析條目。死鏈由 validateLinks
+  // 以 LINK_DEAD 錯誤處理，會直接指出有問題的索引頁與連結目標。
+  for (const index of records.filter(isIndexRecord)) {
+    if (!scope.has(index.rel)) continue;
+    const duplicateTargets = new Map();
+    for (const link of index.links) {
+      const resolved = resolveWikiTarget(link.target, catalog);
+      if (resolved.status !== "ok") continue;
+      duplicateTargets.set(resolved.record.rel, (duplicateTargets.get(resolved.record.rel) ?? 0) + 1);
+    }
+    for (const [target, count] of duplicateTargets) {
+      if (count > 1) {
+        addDiagnostic(diagnostics, "warning", index.rel, 1, "INDEX_DUPLICATE", `索引重複連結 ${target}，共 ${count} 次。`);
+      }
+    }
+  }
+
+  for (const directoryRel of COMPLETE_INDEX_DIRS) {
     const index = findDirectoryIndex(directoryRel, records);
     if (!index) {
       addDiagnostic(diagnostics, "error", directoryRel, 1, "INDEX_REQUIRED", "重點目錄缺少索引頁。" );
@@ -449,17 +496,6 @@ function validateIndexes(records, diagnostics, catalog, scope) {
       });
       if (!hasBacklink) {
         addDiagnostic(diagnostics, "error", sibling.rel, 1, "INDEX_BACKLINK", `條目未連回索引 ${path.posix.basename(index.rel)}。`);
-      }
-    }
-    const duplicateTargets = new Map();
-    for (const link of index.links) {
-      const resolved = resolveWikiTarget(link.target, catalog);
-      if (resolved.status !== "ok") continue;
-      duplicateTargets.set(resolved.record.rel, (duplicateTargets.get(resolved.record.rel) ?? 0) + 1);
-    }
-    for (const [target, count] of duplicateTargets) {
-      if (count > 1) {
-        addDiagnostic(diagnostics, "warning", index.rel, 1, "INDEX_DUPLICATE", `索引重複連結 ${target}，共 ${count} 次。`);
       }
     }
   }
