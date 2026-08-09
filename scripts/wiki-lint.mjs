@@ -7,6 +7,9 @@ import { LineCounter, parseDocument } from "yaml";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const WIKI_ROOT = path.join(ROOT, "wiki");
+// 原始資料通常不納入 Git；本機維護時可做實體存在檢查，CI 則只驗證
+// 路徑格式與範圍，避免因 Actions checkout 未附來源而誤報。
+const RAW_SOURCES_AVAILABLE = fs.existsSync(path.join(ROOT, "原始資料"));
 
 const REQUIRED_FIELDS = [
   "title",
@@ -260,6 +263,7 @@ function validateSourcePath(sourcePath, file, line, diagnostics, catalog) {
   if (!normalized.startsWith("原始資料/")) {
     addDiagnostic(diagnostics, "error", file, line, "SOURCE_SCOPE", "sources.file 必須位於原始資料/。" );
   }
+  if (!RAW_SOURCES_AVAILABLE) return;
   const key = normalized.replace(/\/$/, "");
   if (!catalog.exact.has(key)) {
     const caseMatch = catalog.lower.get(key.toLocaleLowerCase("en-US"));
