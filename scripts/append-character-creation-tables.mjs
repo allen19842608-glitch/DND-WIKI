@@ -11,6 +11,8 @@ const targets = new Map([
   ["飾品.md", ["飾品.md"]],
 ]);
 const destination = path.join(root, "wiki", "規則", "角色建立與成長");
+const apply = process.argv.includes("--apply");
+const only = process.argv.includes("--only") ? process.argv[process.argv.indexOf("--only") + 1] : undefined;
 
 function tablesFrom(file) {
   const lines = fs.readFileSync(path.join(raw, file), "utf8").split(/\r?\n/);
@@ -28,10 +30,12 @@ function tablesFrom(file) {
 }
 
 for (const [target, inputs] of targets) {
+  if (only && !target.includes(only)) continue;
   const output = path.join(destination, target);
   let text = fs.readFileSync(output, "utf8");
   text = text.replace(/\n## 完整來源表格[\s\S]*?(?=\n## 🔗 相關連結)/, "");
   const tables = inputs.flatMap(tablesFrom);
   if (tables.length) text = text.replace("\n## 🔗 相關連結", `\n## 完整來源表格\n\n${tables.join("\n\n")}\n\n## 🔗 相關連結`);
-  fs.writeFileSync(output, text, "utf8");
+  if (apply) fs.writeFileSync(output, text, "utf8");
+  console.log(`${apply ? "更新" : "預覽"}：${path.relative(root, output)}`);
 }

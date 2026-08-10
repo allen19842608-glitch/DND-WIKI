@@ -3,10 +3,23 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "ingest:classes": "node scripts/ingest-classes.mjs",
+    "policy:show": "node scripts/wiki-maintenance.mjs policy",
+    "source:find": "node scripts/wiki-maintenance.mjs source-find",
+    "glossary:lookup": "node scripts/wiki-maintenance.mjs glossary",
+    "sources:status": "node scripts/wiki-maintenance.mjs manifest",
+    "sources:update": "node scripts/wiki-maintenance.mjs manifest --update",
+    "sources:unabsorbed": "node scripts/wiki-maintenance.mjs unabsorbed",
+    "sources:reconcile-feats": "node scripts/reconcile-feat-sources.mjs",
+    "indexes:check": "node scripts/wiki-maintenance.mjs indexes",
+    "indexes:sync": "node scripts/wiki-maintenance.mjs indexes --apply",
+    "ingest": "node scripts/ingest.mjs",
+    "ingest:classes": "node scripts/ingest-classes.mjs --dry-run",
     "lint": "node scripts/wiki-lint.mjs",
     "lint:all": "node scripts/wiki-lint.mjs --all",
-    "test": "node --test"
+    "test": "node --test",
+    "check": "npm run test && npm run lint",
+    "check:all": "npm run test && npm run lint:all",
+    "prepare:commit": "node scripts/wiki-maintenance.mjs indexes --changed --apply && npm run check"
   },
   "devDependencies": {
     "yaml": "2.9.0"

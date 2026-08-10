@@ -2,11 +2,14 @@ import fs from "node:fs";
 import path from "node:path";
 
 const root = process.cwd();
-const itemType = process.argv[2] ?? "戒指";
+const itemType = process.argv.slice(2).find((value) => !value.startsWith("--")) ?? "戒指";
 const force = process.argv.includes("--force");
+const apply = process.argv.includes("--apply");
+const only = process.argv.includes("--only") ? process.argv[process.argv.indexOf("--only") + 1] : undefined;
+const updated = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Taipei" }).format(new Date());
 const sourceDir = path.join(root, "原始資料", "城主指南2024", "第七章_寶藏", "魔法物品詳述", itemType);
 const outputDir = path.join(root, "wiki", "魔法物品", itemType);
-fs.mkdirSync(outputDir, { recursive: true });
+if (apply) fs.mkdirSync(outputDir, { recursive: true });
 
 function effectName(text) {
   const boldName = text.match(/^(?:\*\s+)?\*\*([^*]+?)\*\*[。.]?/);
@@ -91,6 +94,7 @@ for (const file of fs.readdirSync(sourceDir).filter((name) => name.endsWith(".md
     const [, chinese, english] = match;
     const filename = chinese.replace(/[\\/:*?"<>|\[\]()]/g, "");
     const destination = path.join(outputDir, `${filename}.md`);
+    if (only && !filename.includes(only) && !english.toLowerCase().includes(only.toLowerCase())) continue;
     if (fs.existsSync(destination) && !force) continue;
     const meta = lines.slice(i + 1, i + 4).map((line) => line.trim()).find((line) => /^\*[^*]+\*$/.test(line)) ?? "";
     const itemCategory = meta.match(/^\*(.+?)(?:，)?(?:普通|非普通|珍稀|極珍稀|傳說|神器|多種稀有度)(?:（[^）]+）)?\*$/)?.[1] ?? itemType;
@@ -118,8 +122,8 @@ for (const file of fs.readdirSync(sourceDir).filter((name) => name.endsWith(".md
     const descriptionSection = descriptions.length ? `\n## 物品描述\n\n${descriptions.join("\n\n")}\n` : "";
     const effectsSection = effects ? `\n### 物品效果\n\n${effects}` : "";
     const dmSection = effects ? `\n## 💡 實戰應用與裁量 (DM Ruling)\n\n- **常見誤區**：啟用、充能與限制均依各效果的來源描述。\n` : "";
-    const page = `---\ntitle: "${chinese} (${english})"\ncategory: "魔法物品"\nversion: "2024-Core"\ntags:\n  - "城主指南2024"\n  - "魔法物品_${itemType}"\nsources:\n  - file: "${source}"\n    locator: "L${i + 1} 標題：${chinese}"\n    authority: "官方"\n    translation: "community"\nsource_type: "official"\nconfidence: "confirmed"\nrules_sources:\n  - "Dungeon Master's Guide (2024)"\nerrata: []\nupdated: "2026-08-10"\n---\n\n# ${chinese} (${english})${descriptionSection}\n## ⚙️ 規則條文 (Rule Text)\n\n### 物品資料\n\n| 項目 | 內容 |\n| :--- | :--- |\n| 類別 (Category) | ${itemCategory} |\n| 稀有度 (Rarity) | ${rarity} |\n| 同調 (Attunement) | ${attunement} |\n| 消耗品 (Consumable) | 否 |\n| 充能 (Charges) | 依效果說明 |\n${effectsSection}${randomTables}${dmSection}\n## 🔗 相關連結\n\n- 無。\n`;
-    fs.writeFileSync(destination, page, "utf8");
-    console.log(path.relative(root, destination));
+    const page = `---\ntitle: "${chinese} (${english})"\ncategory: "魔法物品"\nversion: "2024-Core"\ntags:\n  - "城主指南2024"\n  - "魔法物品_${itemType}"\nsources:\n  - file: "${source}"\n    locator: "L${i + 1} 標題：${chinese}"\n    authority: "官方"\n    translation: "community"\nsource_type: "official"\nconfidence: "confirmed"\nrules_sources:\n  - "Dungeon Master's Guide (2024)"\nerrata: []\nupdated: "${updated}"\n---\n\n# ${chinese} (${english})${descriptionSection}\n## ⚙️ 規則條文 (Rule Text)\n\n### 物品資料\n\n| 項目 | 內容 |\n| :--- | :--- |\n| 類別 (Category) | ${itemCategory} |\n| 稀有度 (Rarity) | ${rarity} |\n| 同調 (Attunement) | ${attunement} |\n| 消耗品 (Consumable) | 否 |\n| 充能 (Charges) | 依效果說明 |\n${effectsSection}${randomTables}${dmSection}\n## 🔗 相關連結\n\n- 無。\n`;
+    if (apply) fs.writeFileSync(destination, page, "utf8");
+    console.log(`${apply ? "匯入" : "預覽"}：${path.relative(root, destination)}`);
   }
 }

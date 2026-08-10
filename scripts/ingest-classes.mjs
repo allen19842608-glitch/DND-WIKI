@@ -12,6 +12,7 @@ const dryRun = process.argv.includes("--dry-run");
 const replace = process.argv.includes("--replace");
 const diff = process.argv.includes("--diff");
 const only = process.argv.includes("--only") ? process.argv[process.argv.indexOf("--only") + 1] : undefined;
+const updated = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Taipei" }).format(new Date());
 
 function translationMap() {
   const translations = new Map();
@@ -122,7 +123,7 @@ function frontmatter({ chinese, english, entryType, parentClass, source, locator
   const tags = entryType === "職業" ? `  - "職業_${chinese}"` : `  - "子職_${parentClass}"`;
   const parent = entryType === "子職" ? `parent_class: "${q(parentClass)}"\n` : "";
   const supplemental = supplementalSource ? `\n  - file: "${q(supplementalSource)}"\n    locator: "L1 標題：${q(chinese)}法術列表"\n    authority: "官方"\n    translation: "community"` : "";
-  return `---\ntitle: "${q(chinese)} (${q(english)})"\ncategory: "職業"\nentry_type: "${entryType}"\n${parent}version: "2024-Core"\ntags:\n  - "玩家手冊2024"\n${tags}\nsources:\n  - file: "${q(source)}"\n    locator: "${q(locator)}"\n    authority: "官方"\n    translation: "community"${supplemental}\nsource_type: "official"\nconfidence: "confirmed"\nrules_sources:\n  - "Player’s Handbook (2024)"\nerrata: []\nupdated: "2026-08-10"\n---`;
+  return `---\ntitle: "${q(chinese)} (${q(english)})"\ncategory: "職業"\nentry_type: "${entryType}"\n${parent}version: "2024-Core"\ntags:\n  - "玩家手冊2024"\n${tags}\nsources:\n  - file: "${q(source)}"\n    locator: "${q(locator)}"\n    authority: "官方"\n    translation: "community"${supplemental}\nsource_type: "official"\nconfidence: "confirmed"\nrules_sources:\n  - "Player’s Handbook (2024)"\nerrata: []\nupdated: "${updated}"\n---`;
 }
 
 function detailBlocks(features) {
@@ -205,7 +206,7 @@ for (const classDir of fs.readdirSync(rawRoot, { withFileTypes: true }).filter((
     let meta;
     try { meta = canonicalMeta(findTitle(lines), entryType === "職業" ? outputRoot : outputDir); } catch { console.warn(`略過：${path.relative(root, input)}（標題格式不符）`); continue; }
     if (entryType === "子職" && featureBlocks(lines).length === 0) {
-      console.log(`略過非子職補充資料：${path.relative(root, input)}`);
+      if (!only) console.log(`略過非子職補充資料：${path.relative(root, input)}`);
       continue;
     }
     const output = entryType === "職業" ? path.join(outputRoot, `${meta.chinese}.md`) : path.join(outputDir, `${meta.chinese}.md`);
