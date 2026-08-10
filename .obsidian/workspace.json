@@ -4,21 +4,21 @@
     "type": "split",
     "children": [
       {
-        "id": "e823f9c0390893c6",
+        "id": "369dd1b7bf577799",
         "type": "tabs",
         "children": [
           {
-            "id": "90fdde3855f4cc53",
+            "id": "99207186ff079ac2",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "附件/翻譯詞彙表.md",
+                "file": "wiki/法術/3環/亡靈召喚術.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "翻譯詞彙表"
+              "title": "亡靈召喚術"
             }
           }
         ]
@@ -40,7 +40,7 @@
             "state": {
               "type": "file-explorer",
               "state": {
-                "sortOrder": "byModifiedTime",
+                "sortOrder": "alphabetical",
                 "autoReveal": false,
                 "showSearch": false,
                 "searchQuery": ""
@@ -55,7 +55,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "tag:#Mordenkainen",
+                "query": "",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -76,8 +76,7 @@
               "title": "書籤"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "horizontal",
@@ -186,44 +185,44 @@
       "bases:建立新的 base": false
     }
   },
-  "active": "90fdde3855f4cc53",
+  "active": "99207186ff079ac2",
   "lastOpenFiles": [
-    "wiki/法術/2環/祕法鎖.md",
-    "wiki/法術/9環/祈願術.md",
-    "wiki/法術/9環/復仇風暴.md",
-    "wiki/法術/9環/怪影殺手.md",
-    "wiki/法術/9環/完全復生術.md",
-    "wiki/法術/9環/完全變形術.md",
-    "wiki/法術/9環/時間停止.md",
-    "wiki/法術/9環/律令醫療.md",
-    "wiki/法術/9環/形體變化.md",
-    "wiki/法術/9環/虹光法牆.md",
-    "wiki/法術/9環/律令死亡.md",
-    "wiki/法術/2環/人工生命僕從.md",
-    "wiki/法術/9環/流星爆.md",
-    "wiki/法術/9環/群體醫療術.md",
-    "wiki/法術/8環/焚雲術.md",
-    "wiki/法術/9環/禁錮術.md",
-    "wiki/法術/9環/異界之門.md",
-    "wiki/法術/9環/預見術.md",
-    "wiki/法術/9環/星界投影.md",
-    "wiki/法術/8環/海嘯術.md",
-    "wiki/法術/8環/心靈感應.md",
-    "wiki/法術/8環/陽炎爆.md",
-    "wiki/法術/8環/律令震懾.md",
-    "wiki/法術/8環/心靈屏障.md",
-    "wiki/法術/8環/迷宮術.md",
-    "wiki/法術/8環/八環法術索引.md",
-    "原始資料/玩家手冊2024/術語匯編",
-    "原始資料/玩家手冊2024/新增資料夾",
-    "原始資料/玩家手冊2024/角色職業/魔契師",
-    "原始資料/玩家手冊2024/角色職業/新增資料夾",
-    "原始資料/玩家手冊2024/角色職業/德魯伊",
-    "原始資料/玩家手冊2024/角色職業/遊蕩者",
-    "原始資料/玩家手冊2024/角色職業/遊俠",
-    "原始資料/玩家手冊2024/角色職業/野蠻人",
-    "原始資料/玩家手冊2024/角色職業/戰士",
-    "原始資料/玩家手冊2024/角色職業/牧師",
+    "wiki/法術/4環/四環索引.md",
+    "wiki/法術/2環/二環索引.md",
+    "wiki/專長/史詩恩賜專長/史詩恩賜專長.md",
+    "wiki/法術/3環/三環法術索引.md",
+    "wiki/法術/法術索引.md",
+    "wiki/法術/戲法/戲法法術索引.md",
+    "wiki/法術/9環/九環法術索引.md",
+    "wiki/法術/1環/一環法術索引.md",
+    "wiki/索引.md",
+    "wiki/法術/5環/五環法術索引.md",
+    "wiki/法術/4環/四環法術索引.md",
+    "wiki/法術/2環/二環法術索引.md",
+    "wiki/冒險者聯盟/冒險者聯盟索引.md",
+    "wiki/魔法物品/魔法物品索引.md",
+    "wiki/背景/背景索引.md",
+    "wiki/魔法物品/護甲/魔咒護甲.md",
+    "wiki/專長/起源專長/起源專長索引.md",
+    "wiki/專長/史詩恩賜專長/史詩恩賜專長索引.md",
+    "wiki/專長/戰鬥風格專長/戰鬥風格專長索引.md",
+    "wiki/專長/通用專長/通用專長索引.md",
+    "scripts/ingest-classes.mjs",
+    "wiki/魔法物品/護甲/表情盾.md",
+    "wiki/魔法物品/護甲/活化盾.md",
+    "wiki/魔法物品/護甲/盾牌.md",
+    "wiki/魔法物品/護甲/秘銀甲.md",
+    "wiki/魔法物品/護甲/閃爍甲.md",
+    "wiki/魔法物品/護甲/堅不可摧護甲.md",
+    "scripts/ingest-magic-items.mjs",
+    "原始資料/城主指南2024/第七章_寶藏/魔法物品詳述/護甲",
+    "原始資料/城主指南2024/第七章_寶藏/魔法物品詳述/新增資料夾",
+    "原始資料/城主指南2024/第七章_寶藏/魔法物品詳述/戒指",
+    "原始資料/城主指南2024/第七章_寶藏/魔法物品詳述/權杖",
+    "原始資料/城主指南2024/第七章_寶藏/魔法物品詳述",
+    "原始資料/城主指南2024/第七章_寶藏/魔法物品",
+    "原始資料/城主指南2024/第七章_寶藏",
+    "原始資料/城主指南2024/第七章",
     "原始資料/玩家手冊2024/The_Multiverse.jpg",
     "原始資料/DND5e_chm-main/DND5e_chm-main/玩家手册/个性与背景/个性与背景.files/image009.jpg",
     "原始資料/DND5e_chm-main/DND5e_chm-main/玩家手册/个性与背景/个性与背景.files/image007.jpg",
