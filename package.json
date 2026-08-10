@@ -1,0 +1,17 @@
+{
+  "name": "dnd-wiki-maintenance",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "ingest:classes": "node scripts/ingest-classes.mjs",
+    "lint": "node scripts/wiki-lint.mjs",
+    "lint:all": "node scripts/wiki-lint.mjs --all",
+    "test": "node --test"
+  },
+  "devDependencies": {
+    "yaml": "2.9.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
