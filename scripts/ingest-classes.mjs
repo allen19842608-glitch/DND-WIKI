@@ -113,33 +113,66 @@ function featureBlocks(lines) {
     for (let j = i + 1; j < lines.length && !/^\*\*\d+級：/.test(lines[j]); j += 1) {
       if (lines[j].trim()) body.push(lines[j].trim());
     }
-    features.push({ level, chinese: chinese.trim(), english: english.trim(), body: body.join(" ") });
+    features.push({ level, chinese: chinese.trim(), english: english.trim(), body });
   }
   return features;
 }
 
-function frontmatter({ chinese, english, entryType, parentClass, source, locator }) {
+function frontmatter({ chinese, english, entryType, parentClass, source, locator, supplementalSource }) {
   const tags = entryType === "職業" ? `  - "職業_${chinese}"` : `  - "子職_${parentClass}"`;
   const parent = entryType === "子職" ? `parent_class: "${q(parentClass)}"\n` : "";
-  return `---\ntitle: "${q(chinese)} (${q(english)})"\ncategory: "職業"\nentry_type: "${entryType}"\n${parent}version: "2024-Core"\ntags:\n  - "玩家手冊2024"\n${tags}\nsources:\n  - file: "${q(source)}"\n    locator: "${q(locator)}"\n    authority: "官方"\n    translation: "community"\nsource_type: "official"\nconfidence: "confirmed"\nrules_sources:\n  - "Player’s Handbook (2024)"\nerrata: []\nupdated: "2026-08-10"\n---`;
+  const supplemental = supplementalSource ? `\n  - file: "${q(supplementalSource)}"\n    locator: "L1 標題：${q(chinese)}法術列表"\n    authority: "官方"\n    translation: "community"` : "";
+  return `---\ntitle: "${q(chinese)} (${q(english)})"\ncategory: "職業"\nentry_type: "${entryType}"\n${parent}version: "2024-Core"\ntags:\n  - "玩家手冊2024"\n${tags}\nsources:\n  - file: "${q(source)}"\n    locator: "${q(locator)}"\n    authority: "官方"\n    translation: "community"${supplemental}\nsource_type: "official"\nconfidence: "confirmed"\nrules_sources:\n  - "Player’s Handbook (2024)"\nerrata: []\nupdated: "2026-08-10"\n---`;
 }
 
 function detailBlocks(features) {
   return features.map((feature) => {
-    const limit = /短休|長休|黎明|每天|次數|持續|充能|無法再次|恢復/.test(feature.body)
-      ? `\n- **限制與恢復**：${feature.body.match(/[^。]*(?:短休|長休|黎明|每天|次數|持續|充能|無法再次|恢復)[^。]*。?/g)?.join("") ?? "詳見效果與數值。"}`
-      : "";
-    return `#### ${feature.level} 級：${feature.chinese} (${feature.english})\n\n- **效果與數值**：${feature.body || "待依來源補齊。"}${limit}`;
+    const blocks = [];
+    let prose = [];
+    for (let i = 0; i < feature.body.length; i += 1) {
+      const line = feature.body[i];
+      if (!line.startsWith("|")) { prose.push(line); continue; }
+      let title;
+      if (prose.length && /^\*\*.+\*\*$/.test(prose.at(-1))) title = prose.pop().slice(2, -2);
+      const table = [];
+      while (i < feature.body.length && feature.body[i].startsWith("|")) table.push(feature.body[i++]);
+      i -= 1;
+      blocks.push({ prose: prose.join(" "), title, table });
+      prose = [];
+    }
+    const opening = blocks.length ? blocks[0].prose : prose.join(" ");
+    if (blocks.length) blocks[0].prose = "";
+    const trailing = blocks.length ? prose.join(" ") : "";
+    const readable = (value) => value
+      .replace(/\s+\*\s+/g, "\n  - ")
+      .replace(/\*\*([^*。]+?)\s+([A-Za-z][^*。]*?)。\*\*/g, "**$1 ($2)**：")
+      .replace(/\*\*([^*。]+?)。\*\*/g, "**$1**：");
+    const renderedTables = blocks.map((block) => `${block.prose ? `\n\n${readable(block.prose)}` : ""}\n\n##### ${block.title ?? "相關表格"}\n\n${block.table.join("\n")}`).join("");
+    return `#### ${feature.level} 級：${feature.chinese} (${feature.english})\n\n- **效果與數值**：${readable(opening) || "待依來源補齊。"}${renderedTables}${trailing ? `\n\n${readable(trailing)}` : ""}`;
   }).join("\n\n");
 }
 
-function classPage(meta, lines, source, subclasses) {
+function spellListBlock(meta, spellLines) {
+  if (!spellLines?.length) return "";
+  const ranks = { 一: "1", 二: "2", 三: "3", 四: "4", 五: "5", 六: "6", 七: "7", 八: "8", 九: "9" };
+  const body = spellLines.slice(1).join("\n").trim()
+    .replaceAll(/\*\*戲法[^*]*\*\*/g, `#### 戲法（0 環${meta.chinese}法術）`)
+    .replaceAll(/\*\*([一二三四五六七八九0-9]+)環[^*]*\*\*/g, (_, rank) => `#### ${ranks[rank] ?? rank} 環${meta.chinese}法術`);
+  return `\n\n### ${meta.chinese}法術列表 (${meta.english} Spell List)\n\n法術依環位與英文首字母排序；「特殊」欄的 C、R、M 分別表示專注、儀式與材料成分。\n\n${body}`;
+}
+
+function classPage(meta, lines, source, subclasses, spellSource, spellLines) {
   const traits = classTraits(lines);
   const featureTable = tableAfter(lines, /特性.*Features|Features/);
   const features = featureBlocks(lines);
   const role = lines.slice(1).find((line) => line.trim() && !line.startsWith("**") && !line.startsWith("#"))?.trim() ?? "依來源摘要。";
   const subclassLinks = subclasses.map((subclass) => `- [[${subclass.chinese}|${subclass.chinese} (${subclass.english})]]：導覽：此子職的規則詳見對應頁面。`).join("\n") || "- 無。";
-  return `${frontmatter({ ...meta, entryType: "職業", source, locator: sourceLocator(lines, meta.rawChinese ?? meta.chinese) })}\n\n# ${meta.chinese} (${meta.english})\n\n**職業定位**：${role}\n\n## ⚙️ 規則條文 (Rule Text)\n\n### ${meta.chinese}核心特質 (Core ${meta.english} Traits)\n\n| 項目 | 內容 |\n| :--- | :--- |\n| **主要屬性 (Primary Ability)** | ${traits.primary} |\n| **生命骰 (Hit Point Die)** | ${traits.hitDie} |\n| **豁免檢定熟練** | ${traits.saves} |\n| **技能熟練** | ${traits.skills} |\n| **武器熟練** | ${traits.weapons} |\n| **護甲訓練** | ${traits.armor} |\n| **起始裝備** | ${traits.equipment} |\n\n### 📊 ${meta.chinese}特性 (Class Features)\n\n${featureTable.length ? featureTable.join("\n") : "來源未提供可解析的職業特性表。"}\n\n### 🛡️ 職業特性詳解 (Class Features Description)\n\n${detailBlocks(features)}\n\n### 🧭 ${meta.chinese}子職 (Subclass)\n\n${subclassLinks}\n\n## 🔗 相關連結\n\n- 無。\n`;
+  const optionLink = meta.english === "Sorcerer"
+    ? "- [[規則/施法規則/超魔法選項|超魔法選項 (Metamagic Options)]]\n"
+    : meta.english === "Warlock"
+      ? "- [[規則/施法規則/魔能祈喚選項|魔能祈喚選項 (Eldritch Invocation Options)]]\n"
+      : "";
+  return `${frontmatter({ ...meta, entryType: "職業", source, locator: sourceLocator(lines, meta.rawChinese ?? meta.chinese), supplementalSource: spellSource })}\n\n# ${meta.chinese} (${meta.english})\n\n**職業定位**：${role}\n\n## ⚙️ 規則條文 (Rule Text)\n\n### ${meta.chinese}核心特質 (Core ${meta.english} Traits)\n\n| 項目 | 內容 |\n| :--- | :--- |\n| **主要屬性 (Primary Ability)** | ${traits.primary} |\n| **生命骰 (Hit Point Die)** | ${traits.hitDie} |\n| **豁免檢定熟練** | ${traits.saves} |\n| **技能熟練** | ${traits.skills} |\n| **武器熟練** | ${traits.weapons} |\n| **護甲訓練** | ${traits.armor} |\n| **起始裝備** | ${traits.equipment} |\n\n### 📊 ${meta.chinese}特性 (Class Features)\n\n${featureTable.length ? featureTable.join("\n") : "來源未提供可解析的職業特性表。"}\n\n### 🛡️ 職業特性詳解 (Class Features Description)\n\n${detailBlocks(features)}${spellListBlock(meta, spellLines)}\n\n### 🧭 ${meta.chinese}子職 (Subclass)\n\n${subclassLinks}\n\n## 🔗 相關連結\n\n${optionLink}- [[職業索引|職業索引 (Classes Index)]]\n`;
 }
 
 function subclassPage(meta, lines, source, parentClass) {
@@ -157,6 +190,9 @@ for (const classDir of fs.readdirSync(rawRoot, { withFileTypes: true }).filter((
   if (!classSource) { console.warn(`略過：${sourceDir}（找不到職業總覽檔）`); continue; }
   const parentMeta = canonicalMeta(findTitle(fs.readFileSync(path.join(sourceDir, classSource), "utf8").split(/\r?\n/)), outputRoot);
   const parentClass = parentMeta.chinese;
+  const spellFile = fs.readdirSync(sourceDir).find((name) => name.endsWith("法術列表.md"));
+  const spellSource = spellFile ? path.relative(root, path.join(sourceDir, spellFile)).replaceAll("\\", "/") : undefined;
+  const spellLines = spellFile ? fs.readFileSync(path.join(sourceDir, spellFile), "utf8").split(/\r?\n/) : undefined;
   const outputDir = path.join(outputRoot, parentClass);
   const subclasses = sourceFiles.filter((file) => file !== `${rawParentClass}.md`).flatMap((file) => {
     const lines = fs.readFileSync(path.join(sourceDir, file), "utf8").split(/\r?\n/);
@@ -179,7 +215,7 @@ for (const classDir of fs.readdirSync(rawRoot, { withFileTypes: true }).filter((
       continue;
     }
     const source = path.relative(root, input).replaceAll("\\", "/");
-    const page = entryType === "職業" ? classPage(meta, lines, source, subclasses) : subclassPage(meta, lines, source, parentClass);
+    const page = entryType === "職業" ? classPage(meta, lines, source, subclasses, spellSource, spellLines) : subclassPage(meta, lines, source, parentClass);
     if (diff) {
       const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "dnd-class-preview-"));
       const candidate = path.join(tempDir, path.basename(output));
