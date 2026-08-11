@@ -273,6 +273,225 @@ function validateSourcePath(sourcePath, file, line, diagnostics, catalog) {
   }
 }
 
+const GENERIC_MAGIC_ITEM_EFFECT_NAMES = new Set([
+  "特殊能力",
+  "豁免防護",
+  "物品效果",
+]);
+
+function normalizeEffectText(value) {
+  return value.replace(/\s+/g, "").replace(/[。；，、]/g, "");
+}
+
+function normalizeEffectName(value) {
+  return normalizeEffectText(value).replace(/[（）()：:]/g, "");
+}
+
+const EFFECT_NAME_SPLIT_SUFFIX = /(?:持續時間|持續|時長|限制與恢復|限制|恢復|使用次數|充能|耗盡與風險|耗盡|風險)$/;
+
+export function validateMagicItemStructure(record, diagnostics) {
+  if (record.data?.category !== "魔法物品") return;
+  const pathParts = record.rel.split("/");
+  if (pathParts.length < 4 || pathParts[0] !== "wiki" || pathParts[1] !== "魔法物品") return;
+  const lines = record.body.split(/\r?\n/);
+  const itemDataStart = lines.findIndex((line) => /^###\s+物品資料\s*$/.test(line));
+  if (itemDataStart < 0) {
+    addDiagnostic(
+      diagnostics,
+      "warning",
+      record.rel,
+      record.bodyStartLine,
+      "MAGIC_ITEM_TEMPLATE_SECTION",
+      "魔法物品條目缺少必要的「### 物品資料」區塊。",
+    );
+  } else {
+    for (const field of ["類別 (Category)", "稀有度 (Rarity)", "同調 (Attunement)", "消耗品 (Consumable)"]) {
+      if (!record.body.includes(`| ${field} |`)) {
+        addDiagnostic(
+          diagnostics,
+          "warning",
+          record.rel,
+          record.bodyStartLine + itemDataStart,
+          "MAGIC_ITEM_TEMPLATE_FIELD",
+          `物品資料缺少必要欄位「${field}」。`,
+        );
+      }
+    }
+  }
+  const sectionStart = lines.findIndex((line) => /^###\s+物品效果\s*$/.test(line));
+  if (sectionStart < 0) {
+    addDiagnostic(
+      diagnostics,
+      "warning",
+      record.rel,
+      record.bodyStartLine,
+      "MAGIC_ITEM_TEMPLATE_SECTION",
+      "魔法物品條目缺少必要的「### 物品效果」區塊。",
+    );
+    return;
+  }
+  let sectionEnd = lines.length;
+  for (let index = sectionStart + 1; index < lines.length; index += 1) {
+    if (/^##\s+/.test(lines[index])) {
+      sectionEnd = index;
+      break;
+    }
+  }
+
+  for (let index = sectionStart + 1; index < sectionEnd; index += 1) {
+    const line = lines[index];
+    if (/^\s+- \*\*啟用／觸發\*\*：.*依效果所列時機/.test(line)) {
+      addDiagnostic(
+        diagnostics,
+        "warning",
+        record.rel,
+        record.bodyStartLine + index,
+        "MAGIC_ITEM_TRIGGER_PLACEHOLDER",
+        "啟用／觸發不得使用「依效果所列時機」等占位文字；應依來源具體填寫或刪除該列。",
+      );
+    }
+    if (/^\|\s*充能 \(Charges\)\s*\|\s*依效果說明\s*\|\s*$/.test(line)) {
+      addDiagnostic(
+        diagnostics,
+        "warning",
+        record.rel,
+        record.bodyStartLine + index,
+        "MAGIC_ITEM_CHARGE_PLACEHOLDER",
+        "充能欄不得使用「依效果說明」；應移至「使用、充能與恢復」並填寫實際規則。",
+      );
+    }
+  }
+
+  const effectStarts = [];
+  for (let index = sectionStart + 1; index < sectionEnd; index += 1) {
+    const match = lines[index].match(/^- \*\*(.+?)\*\*：\s*$/);
+    if (match) effectStarts.push({ index, name: match[1].trim() });
+  }
+
+  for (let effectIndex = 0; effectIndex < effectStarts.length; effectIndex += 1) {
+    const effect = effectStarts[effectIndex];
+    const end = effectStarts[effectIndex + 1]?.index ?? sectionEnd;
+    const segment = lines.slice(effect.index + 1, end);
+    const nameIsGeneric = GENERIC_MAGIC_ITEM_EFFECT_NAMES.has(effect.name)
+      || /^效果\s*\d+$/.test(effect.name);
+    if (nameIsGeneric) {
+      addDiagnostic(
+        diagnostics,
+        "warning",
+        record.rel,
+        record.bodyStartLine + effect.index,
+        "MAGIC_ITEM_EFFECT_NAME",
+        `魔法物品效果「${effect.name}」過於泛用；應改用具體規則名稱。`,
+      );
+    }
+
+    const effectLine = segment.find((line) => /^\s+- \*\*效果\*\*：\S/.test(line));
+    if (!effectLine) {
+      addDiagnostic(
+        diagnostics,
+        "warning",
+        record.rel,
+        record.bodyStartLine + effect.index,
+        "MAGIC_ITEM_EFFECT_EMPTY",
+        `效果「${effect.name}」缺少非空的「效果」內容。`,
+      );
+      continue;
+    }
+    const effectValue = effectLine.replace(/^\s+- \*\*效果\*\*：/, "").trim();
+    for (let segmentIndex = 0; segmentIndex < segment.length; segmentIndex += 1) {
+      const limitMatch = segment[segmentIndex].match(/^\s+- \*\*限制與恢復\*\*：(.*\S)\s*$/);
+      if (limitMatch && normalizeEffectText(limitMatch[1]) === normalizeEffectText(effectValue)) {
+        addDiagnostic(
+          diagnostics,
+          "warning",
+          record.rel,
+          record.bodyStartLine + effect.index + segmentIndex + 1,
+          "MAGIC_ITEM_LIMIT_DUPLICATE",
+          `效果「${effect.name}」的「限制與恢復」與效果全文重複；應只保留實際限制或恢復規則。`,
+        );
+      }
+    }
+    if (/(?:以|按)\s*\d+\s*(?:或|、|至)\s*\d+\s*(?:枚|支|瓶).*(?:為一組|售賣)|價值等同於.*藥水/.test(effectValue)) {
+      addDiagnostic(
+        diagnostics,
+        "warning",
+        record.rel,
+        record.bodyStartLine + effect.index,
+        "MAGIC_ITEM_EFFECT_METADATA",
+        `效果「${effect.name}」看似包裝或價值資料；應移至物品資料。`,
+      );
+    }
+  }
+
+  for (let index = 0; index < effectStarts.length; index += 1) {
+    const current = effectStarts[index];
+    const currentName = normalizeEffectName(current.name);
+    const earlier = effectStarts.slice(0, index);
+    const repeatedPrior = earlier.find((prior) => normalizeEffectName(prior.name) === currentName);
+    if (repeatedPrior) {
+      addDiagnostic(
+        diagnostics,
+        "warning",
+        record.rel,
+        record.bodyStartLine + current.index,
+        "MAGIC_ITEM_EFFECT_NAME_DUPLICATE",
+        `效果名稱「${current.name}」與前項「${repeatedPrior.name}」重複；應合併或改用具體不同的規則名稱。`,
+      );
+      continue;
+    }
+    const splitPrior = earlier.find((prior) => {
+      const priorName = normalizeEffectName(prior.name);
+      const suffix = currentName.slice(priorName.length);
+      return currentName.startsWith(priorName) && EFFECT_NAME_SPLIT_SUFFIX.test(suffix);
+    });
+    if (splitPrior) {
+      addDiagnostic(
+        diagnostics,
+        "warning",
+        record.rel,
+        record.bodyStartLine + current.index,
+        "MAGIC_ITEM_EFFECT_NAME_DUPLICATE",
+        `效果名稱「${current.name}」疑似將「${splitPrior.name}」的持續、限制或恢復規則拆成另一項；應合併為同一效果。`,
+      );
+    }
+  }
+
+  const curseInEffects = effectStarts.find((effect) => effect.name === "詛咒");
+  if (curseInEffects) {
+    addDiagnostic(
+      diagnostics,
+      "warning",
+      record.rel,
+      record.bodyStartLine + curseInEffects.index,
+      "MAGIC_ITEM_CURSE_SECTION",
+      "詛咒應遷移至條件式「### 詛咒」段落，不應列於一般物品效果。",
+    );
+  }
+  const curseStart = lines.findIndex((line) => /^###\s+詛咒\s*$/.test(line));
+  if (curseStart >= 0) {
+    let curseEnd = lines.length;
+    for (let index = curseStart + 1; index < lines.length; index += 1) {
+      if (/^#{1,3}\s+/.test(lines[index])) {
+        curseEnd = index;
+        break;
+      }
+    }
+    const curseBody = lines.slice(curseStart + 1, curseEnd).join("\n");
+    for (const required of ["詛咒效果", "解除方式"]) {
+      if (!curseBody.includes(`**${required}**：`)) {
+        addDiagnostic(
+          diagnostics,
+          "warning",
+          record.rel,
+          record.bodyStartLine + curseStart,
+          "MAGIC_ITEM_CURSE_FIELD",
+          `詛咒段落缺少「${required}」。`,
+        );
+      }
+    }
+  }
+}
+
 function validateFrontmatter(record, diagnostics, catalog) {
   const { rel, fm, data } = record;
   for (const field of REQUIRED_FIELDS) {
@@ -351,9 +570,6 @@ function validateFrontmatter(record, diagnostics, catalog) {
     if (data.category === "職業" && basename !== "職業索引.md") {
     if (!new Set(["職業", "子職"]).has(data.entry_type)) {
       addDiagnostic(diagnostics, "warning", rel, 1, "ENTRY_TYPE", "職業條目缺少合法的 entry_type。" );
-    }
-    if (data.category === "魔法物品" && /^- \*\*(?:效果 \d+|物品效果)\*\*：/m.test(record.body)) {
-      addDiagnostic(diagnostics, "error", rel, record.bodyStartLine, "MAGIC_ITEM_EFFECT_NAME", "魔法物品效果必須使用具體規則名稱，不得使用泛用效果標籤。" );
     }
     if (data.entry_type === "子職") {
       if (/本特性尚未完成逐條規則摘要|待依來源定位.*補完|本頁已依子職結構重建/.test(record.body)) {
@@ -626,6 +842,7 @@ export function lintWiki({ all = false } = {}) {
       continue;
     }
     validateFrontmatter(record, diagnostics, pathCatalog);
+    validateMagicItemStructure(record, diagnostics);
     validateHeadings(record.body, record.bodyStartLine, record.rel, diagnostics);
     validateLinks(record, diagnostics, catalog);
   }

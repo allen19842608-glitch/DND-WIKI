@@ -10,6 +10,12 @@ const updated = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Taipei" }).fo
 const sourceDir = path.join(root, "原始資料", "城主指南2024", "第七章_寶藏", "魔法物品詳述", itemType);
 const outputDir = path.join(root, "wiki", "魔法物品", itemType);
 if (apply) fs.mkdirSync(outputDir, { recursive: true });
+const existingEnglishTitles = new Set(
+  fs.readdirSync(path.join(root, "wiki", "魔法物品"), { recursive: true })
+    .filter((name) => name.endsWith(".md"))
+    .map((name) => fs.readFileSync(path.join(root, "wiki", "魔法物品", name), "utf8").match(/^title: ".+ \((.+)\)"$/m)?.[1])
+    .filter(Boolean),
+);
 
 function effectName(text) {
   const boldName = text.match(/^(?:\*\s+)?\*\*([^*]+?)\*\*[。.]?/);
@@ -48,6 +54,7 @@ function effectName(text) {
   if (/魔法.*動作.*脫下.*護甲/.test(text)) return "快速脫甲";
   if (/\bAC\b.*加值|護甲等級.*加值/.test(text)) return "護甲等級加值";
   if (/游泳速度/.test(text)) return "游泳速度";
+  if (/無法恢復生命值/.test(text)) return "阻礙生命恢復";
   if (/恢復.*生命值|生命值.*恢復/.test(text)) return "生命恢復";
   if (/施展.*祈願術/.test(text)) return "祈願術";
   if (/施展.*心靈遙控/.test(text)) return "心靈遙控";
@@ -71,7 +78,7 @@ function normalizeText(text) {
 
 function limitRecovery(text) {
   const sentences = normalizeText(text).match(/[^。]*。/g) ?? [];
-  const limits = sentences.filter((sentence) => /直至|每日黎明|每天|長休|短休|充能耗盡|無法再次使用|最多\s*\d|持續\s*\d|死亡|消失/.test(sentence));
+  const limits = sentences.filter((sentence) => /直至|每日黎明|每天|長休|短休|充能耗盡|無法再次使用|死亡|消失/.test(sentence));
   return limits.length ? `\n  - **限制與恢復**：${limits.join("")}` : "";
 }
 
@@ -86,28 +93,31 @@ function isDescription(text) {
     && !/(?:獲得|可以|能夠|具有|當你|受到|執行|消耗|恢復)/.test(text);
 }
 
-for (const file of fs.readdirSync(sourceDir).filter((name) => name.endsWith(".md"))) {
-  const lines = fs.readFileSync(path.join(sourceDir, file), "utf8").split(/\r?\n/);
+for (const sourcePath of fs.readdirSync(sourceDir, { recursive: true })
+  .filter((name) => name.endsWith(".md"))
+  .map((name) => path.join(sourceDir, name))) {
+  const lines = fs.readFileSync(sourcePath, "utf8").split(/\r?\n/);
   for (let i = 0; i < lines.length; i += 1) {
-    const match = lines[i].match(/^#{2,3}\s+(.+?)\s+([A-Za-z].*)$/);
+    const match = lines[i].match(/^#{2,6}\s+(.+?)\s+([A-Za-z].*)$/);
     if (!match) continue;
     const [, chinese, english] = match;
     const filename = chinese.replace(/[\\/:*?"<>|\[\]()]/g, "");
     const destination = path.join(outputDir, `${filename}.md`);
     if (only && !filename.includes(only) && !english.toLowerCase().includes(only.toLowerCase())) continue;
-    if (fs.existsSync(destination) && !force) continue;
-    const meta = lines.slice(i + 1, i + 4).map((line) => line.trim()).find((line) => /^\*[^*]+\*$/.test(line)) ?? "";
-    const itemCategory = meta.match(/^\*(.+?)(?:，)?(?:普通|非普通|珍稀|極珍稀|傳說|神器|多種稀有度)(?:（[^）]+）)?\*$/)?.[1] ?? itemType;
-    const rarity = meta.match(/[），]，(普通|非普通|珍稀|極珍稀|傳說|神器)/)?.[1] ?? path.basename(file, ".md");
+    if ((fs.existsSync(destination) || existingEnglishTitles.has(english.trim())) && !force) continue;
+    const meta = lines.slice(i + 1, i + 4).map((line) => line.trim()).find((line) => /^(?:\*|_).+(?:\*|_)$/.test(line)) ?? "";
+    const metaText = meta.replace(/^[*_]|[*_]$/g, "");
+    const itemCategory = metaText.match(/^(.+?)(?:，)?(?:普通|非普通|珍稀|極珍稀|傳說|神器|多種稀有度)(?:（[^）]+）)?$/)?.[1] ?? itemType;
+    const rarity = metaText.match(/[），](普通|非普通|珍稀|極珍稀|傳說|神器)/)?.[1] ?? path.basename(sourcePath, ".md");
     const attunement = meta.includes("需同調") ? "需要" : "不需要";
     const paragraphs = [];
     const tables = [];
     let table = [];
-    for (let j = i + 1; j < lines.length && !/^#{2,3}\s+/.test(lines[j]); j += 1) {
+    for (let j = i + 1; j < lines.length && !/^#{2,6}\s+/.test(lines[j]); j += 1) {
       const text = lines[j].trim();
       if (text.startsWith("|")) { table.push(text); continue; }
       if (table.length) { tables.push(table.join("\n")); table = []; }
-      if (text && !/^\*[^*]+\*$/.test(text)) {
+      if (text && !/^(?:\*|_).+(?:\*|_)$/.test(text)) {
         if (/^\*\s+/.test(text) && paragraphs.length) paragraphs[paragraphs.length - 1] += `\n${text}`;
         else paragraphs.push(text);
       }
@@ -115,9 +125,16 @@ for (const file of fs.readdirSync(sourceDir).filter((name) => name.endsWith(".md
     if (table.length) tables.push(table.join("\n"));
     const descriptions = paragraphs.filter(isDescription);
     const effectParagraphs = paragraphs.filter((text) => !isDescription(text));
-    const possession = itemType === "權杖" ? "持握" : "著裝";
-    const effects = effectParagraphs.map((text) => `- **${effectName(text)}**：\n  - **啟用／觸發**：${possession}${attunement === "需要" ? "並同調" : ""}期間；依效果所列時機。\n  - **效果與數值**：${normalizeText(text).replace(/\n/g, "\n    ")}${limitRecovery(text)}`).join("\n\n");
-    const source = `原始資料/城主指南2024/第七章_寶藏/魔法物品詳述/${itemType}/${file}`;
+    const activation = {
+      "護甲": `著裝${attunement === "需要" ? "並同調" : ""}期間；依效果所列時機。`,
+      "武器": `持握${attunement === "需要" ? "並同調" : ""}期間；依效果所列時機。`,
+      "戒指": `佩戴${attunement === "需要" ? "並同調" : ""}期間；依效果所列時機。`,
+      "權杖": `持握${attunement === "需要" ? "並同調" : ""}期間；依效果所列時機。`,
+      "法杖": `持握${attunement === "需要" ? "並同調" : ""}期間；依效果所列時機。`,
+      "魔杖": `持握${attunement === "需要" ? "並同調" : ""}期間；依效果所列時機。`,
+    }[itemType] ?? "依效果所列時機。";
+    const effects = effectParagraphs.map((text) => `- **${effectName(text)}**：\n  - **啟用／觸發**：${activation}\n  - **效果與數值**：${normalizeText(text).replace(/\n/g, "\n    ")}${limitRecovery(text)}`).join("\n\n");
+    const source = path.relative(root, sourcePath).split(path.sep).join("/");
     const randomTables = tables.length ? `\n### 隨機表\n\n${tables.join("\n\n")}\n` : "";
     const descriptionSection = descriptions.length ? `\n## 物品描述\n\n${descriptions.join("\n\n")}\n` : "";
     const effectsSection = effects ? `\n### 物品效果\n\n${effects}` : "";
