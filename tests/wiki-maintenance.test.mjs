@@ -3,7 +3,7 @@ import path from "node:path";
 import { spawnSync } from "node:child_process";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
-import { extractWikiSourceFiles, splitMarkdownRow } from "../scripts/wiki-maintenance.mjs";
+import { extractWikiSourceFiles, splitMarkdownRow, wikiLinkTargets } from "../scripts/wiki-maintenance.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -11,6 +11,13 @@ test("Markdown 表格解析保留跳脫的 Wiki 連結管道符號", () => {
   assert.deepEqual(
     splitMarkdownRow("| [[長休\\|長休 (Long Rest)]] | 規則 |"),
     ["[[長休|長休 (Long Rest)]]", "規則"],
+  );
+});
+
+test("索引連結解析保留跳脫管道符號前的目標", () => {
+  assert.deepEqual(
+    wikiLinkTargets("| [[警報術\\|警報術 (Alarm)]] | 防護 | R |"),
+    ["警報術"],
   );
 });
 

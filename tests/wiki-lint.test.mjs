@@ -4,6 +4,7 @@ import {
   deriveSourceType,
   extractFrontmatter,
   parseWikiLink,
+  validateMagicItemStructure,
 } from "../scripts/wiki-lint.mjs";
 
 test("extractFrontmatter separates YAML and body", () => {
@@ -30,5 +31,96 @@ test("parseWikiLink removes heading fragments", () => {
     target: "職業/奇械師/煉金師",
     alias: "煉金師",
   });
+});
+
+test("魔法物品結構檢查標示泛稱、占位觸發與重複限制", () => {
+  const diagnostics = [];
+  validateMagicItemStructure({
+    rel: "wiki/魔法物品/奇物/測試.md",
+    bodyStartLine: 20,
+    data: { category: "魔法物品" },
+    body: [
+      "### 物品資料",
+      "",
+      "| 項目 | 內容 |",
+      "| :--- | :--- |",
+      "| 類別 (Category) | 奇物 |",
+      "| 稀有度 (Rarity) | 普通 |",
+      "| 同調 (Attunement) | 不需要 |",
+      "| 消耗品 (Consumable) | 否 |",
+      "",
+      "### 物品效果",
+      "",
+      "- **特殊能力**：",
+      "  - **啟用／觸發**：著裝期間；依效果所列時機。",
+      "  - **效果**：通常以 10 或 20 枚為一組售賣。",
+      "  - **限制與恢復**：通常以 10 或 20 枚為一組售賣。",
+      "",
+      "- **空效果**：",
+      "  - **啟用／觸發**：持握期間。",
+      "",
+      "## 💡 實戰應用與裁量 (DM Ruling)",
+    ].join("\n"),
+  }, diagnostics);
+  assert.deepEqual(
+    new Set(diagnostics.map((item) => item.code)),
+    new Set([
+      "MAGIC_ITEM_EFFECT_NAME",
+      "MAGIC_ITEM_TRIGGER_PLACEHOLDER",
+      "MAGIC_ITEM_LIMIT_DUPLICATE",
+      "MAGIC_ITEM_EFFECT_METADATA",
+      "MAGIC_ITEM_EFFECT_EMPTY",
+    ]),
+  );
+});
+
+test("魔法物品結構檢查標示重複或拆分的效果名稱", () => {
+  const diagnostics = [];
+  validateMagicItemStructure({
+    rel: "wiki/魔法物品/奇物/測試.md",
+    bodyStartLine: 20,
+    data: { category: "魔法物品" },
+    body: [
+      "### 物品效果",
+      "",
+      "- **防護靈光**：",
+      "  - **效果**：提供防護。",
+      "",
+      "- **防護靈光持續時間**：",
+      "  - **效果**：持續 10 分鐘。",
+      "",
+      "- **防護靈光**：",
+      "  - **效果**：提供不同防護。",
+    ].join("\n"),
+  }, diagnostics);
+  assert.deepEqual(
+    diagnostics
+      .filter((item) => item.code === "MAGIC_ITEM_EFFECT_NAME_DUPLICATE")
+      .map((item) => item.message),
+    [
+      "效果名稱「防護靈光持續時間」疑似將「防護靈光」的持續、限制或恢復規則拆成另一項；應合併為同一效果。",
+      "效果名稱「防護靈光」與前項「防護靈光」重複；應合併或改用具體不同的規則名稱。",
+    ],
+  );
+});
+
+test("魔法物品結構檢查要求主要區塊與物品資料欄位", () => {
+  const diagnostics = [];
+  validateMagicItemStructure({
+    rel: "wiki/魔法物品/奇物/測試.md",
+    bodyStartLine: 20,
+    data: { category: "魔法物品" },
+    body: [
+      "### 物品資料",
+      "",
+      "| 項目 | 內容 |",
+      "| :--- | :--- |",
+      "| 類別 (Category) | 奇物 |",
+    ].join("\n"),
+  }, diagnostics);
+  assert.deepEqual(
+    new Set(diagnostics.map((item) => item.code)),
+    new Set(["MAGIC_ITEM_TEMPLATE_FIELD", "MAGIC_ITEM_TEMPLATE_SECTION"]),
+  );
 });
 

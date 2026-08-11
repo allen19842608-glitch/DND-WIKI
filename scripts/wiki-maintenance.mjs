@@ -261,8 +261,12 @@ function changedWikiDirectories() {
 }
 
 function wikiLinkTargets(text) {
-  return [...text.matchAll(/\[\[([^\]|#^]+)(?:[|#^][^\]]*)?\]\]/g)]
-    .map((match) => path.posix.basename(match[1].trim()));
+  return [...text.matchAll(/\[\[([^\]]+)\]\]/g)]
+    .map((match) => {
+      const inner = match[1].replace(/\\\|/g, "|");
+      const target = inner.split(/[|#^]/, 1)[0].trim();
+      return path.posix.basename(target);
+    });
 }
 
 function pageTitle(file) {
@@ -342,4 +346,4 @@ if (path.resolve(process.argv[1] ?? "") === fileURLToPath(import.meta.url)) {
   }
 }
 
-export { extractWikiSourceFiles, splitMarkdownRow };
+export { extractWikiSourceFiles, splitMarkdownRow, wikiLinkTargets };
