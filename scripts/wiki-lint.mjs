@@ -291,6 +291,7 @@ const EFFECT_NAME_SPLIT_SUFFIX = /(?:持續時間|持續|時長|限制與恢復|
 
 export function validateMagicItemStructure(record, diagnostics) {
   if (record.data?.category !== "魔法物品") return;
+  if (Array.isArray(record.data?.tags) && record.data.tags.includes("魔法物品_索引")) return;
   const pathParts = record.rel.split("/");
   if (pathParts.length < 4 || pathParts[0] !== "wiki" || pathParts[1] !== "魔法物品") return;
   const lines = record.body.split(/\r?\n/);
@@ -612,7 +613,8 @@ function buildWikiCatalog(records) {
 function resolveWikiTarget(target, catalog) {
   if (!target) return { status: "empty" };
   let clean = target.replace(/\\/g, "/");
-  if (clean.startsWith("wiki/")) return { status: "invalid-prefix", target: clean };
+  // 此庫的 Obsidian vault 根目錄是專案根目錄；允許以 wiki/ 指向編譯資料夾。
+  if (clean.startsWith("wiki/")) clean = clean.slice("wiki/".length);
   if (clean.endsWith(".md")) return { status: "invalid-extension", target: clean };
   if (clean.includes("/")) {
     const rel = `wiki/${clean}.md`;

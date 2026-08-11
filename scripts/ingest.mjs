@@ -15,11 +15,15 @@ const category = option("--category");
 const apply = values.includes("--apply");
 const only = option("--only");
 const itemType = option("--type") ?? "戒指";
+const source = option("--source");
+const report = option("--report");
+const includeOverviews = values.includes("--include-overviews");
+const pruneStale = values.includes("--prune-stale");
 const replace = values.includes("--replace");
 const diff = values.includes("--diff");
 
 if (!category) {
-  process.stderr.write("缺少 --category。可用：職業、魔法物品、角色建立與成長。\n");
+  process.stderr.write("缺少 --category。可用：職業、魔法物品、角色建立與成長、怪物。\n");
   process.exit(1);
 }
 
@@ -40,6 +44,21 @@ if (category === "職業") {
   script = "scripts/append-character-creation-tables.mjs";
   if (apply) args.push("--apply");
   if (only) args.push("--only", only);
+} else if (category === "怪物") {
+  script = "scripts/ingest-monsters.mjs";
+  if (!source) {
+    process.stderr.write("怪物吸收必須指定 --source，例如：原始資料/怪物圖鑑2025。\n");
+    process.exit(1);
+  }
+  args.push("--source", source);
+  if (report) args.push("--report", report);
+  if (includeOverviews) args.push("--include-overviews");
+  if (pruneStale) args.push("--prune-stale");
+  if (apply) args.push("--apply");
+  if (!apply) args.push("--dry-run");
+  if (only) args.push("--only", only);
+  if (replace) args.push("--replace");
+  if (diff) args.push("--diff");
 } else {
   process.stderr.write(`不支援的 category：${category}\n`);
   process.exit(1);
