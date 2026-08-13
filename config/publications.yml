@@ -64,6 +64,41 @@ publications:
         translation: "community"
         status: "available"
 
+  XGE2017:
+    entity_id: "publication:XGE2017"
+    concept_id: "publication:xanathars-guide-to-everything"
+    title_zh: "珊娜薩的萬事指南"
+    title_en: "Xanathar’s Guide to Everything"
+    publisher: "Wizards of the Coast"
+    year: 2017
+    ruleset: "2014"
+    content_scope: "expansion"
+    status: "legacy"
+    authority: "官方"
+    canonical_rules_source: "Xanathar’s Guide to Everything (2017)"
+    wiki:
+      tag: "珊娜薩的萬事指南2017"
+      tag_aliases: []
+      supported_versions:
+        - "2014-Legacy"
+    source_assets:
+      - id: "XGE2017_ZH_MARKDOWN"
+        path: "原始資料/珊娜薩的萬事指南"
+        format: "directory"
+        role: "translation"
+        language: "zh-Hans"
+        authority: "官方"
+        translation: "community"
+        status: "available"
+      - id: "XGE2017_EN_PDF"
+        path: "原始資料/珊娜薩的萬事指南/Xanathars_Guide_to_Everything.pdf"
+        format: "pdf"
+        role: "rules_text"
+        language: "en"
+        authority: "官方"
+        translation: "none"
+        status: "available"
+
   PHB2014:
     entity_id: "publication:PHB2014"
     concept_id: "publication:players-handbook"
@@ -540,12 +575,9 @@ al_reference_books:
     availability: "available"
     campaigns: ["FR", "DL", "RV", "CR"]
     planned_source_root: "原始資料/待匯入出版品/WBW"
-  - id: "XGE"
-    title_zh: null
-    title_en: "Xanathar’s Guide to Everything"
+  - publication_id: "XGE2017"
     availability: "available"
     campaigns: ["FR", "DL", "EB", "RV", "CR"]
-    planned_source_root: "原始資料/待匯入出版品/XGE"
   - id: "ONE_GRUNG_ABOVE"
     title_zh: null
     title_en: "One Grung Above"

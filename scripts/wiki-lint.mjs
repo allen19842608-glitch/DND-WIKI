@@ -592,6 +592,15 @@ function validateFrontmatter(record, diagnostics, catalog, publications) {
   if (typeof data.concept_id !== "string" || !/^concept:[a-z0-9][a-z0-9:-]*$/.test(data.concept_id)) {
     addDiagnostic(diagnostics, "error", rel, 1, "CONCEPT_ID", "concept_id 必須為 concept: 開頭的 ASCII 穩定識別碼。" );
   }
+  const xgeOptionType = typeof data.entity_id === "string" && data.entity_id.match(/^entry:XGE2017:(subclass|spell|feat):/);
+  if (xgeOptionType) {
+    if (!new Set(["compatible", "superseded"]).has(data.compatibility_2024)) {
+      addDiagnostic(diagnostics, "error", rel, 1, "XGE_2024_COMPATIBILITY", "XGE 角色選項必須標示 compatibility_2024: compatible 或 superseded。" );
+    }
+    if (data.compatibility_2024 === "superseded" && typeof data.replacement_2024 !== "string") {
+      addDiagnostic(diagnostics, "error", rel, 1, "XGE_2024_REPLACEMENT", "已由 2024 取代的 XGE 條目必須標示 replacement_2024。" );
+    }
+  }
   for (const field of ["rules_sources", "errata"]) {
     if (!Array.isArray(data[field]) || data[field].some((item) => typeof item !== "string")) {
       addDiagnostic(diagnostics, "error", rel, 1, "ARRAY_SCHEMA", `${field} 必須是字串陣列。`);
@@ -646,7 +655,7 @@ function validateFrontmatter(record, diagnostics, catalog, publications) {
   if (typeof data.title === "string" && /索引|\bIndex\b/.test(data.title) && !/索引\.md$|_index\.md$/i.test(basename)) {
     addDiagnostic(diagnostics, "error", rel, 1, "INDEX_FILENAME", "索引頁的檔名必須以「索引.md」或「_index.md」結尾。" );
   }
-    if (data.category === "職業" && basename !== "職業索引.md") {
+    if (data.category === "職業" && !/索引\.md$/.test(basename)) {
     if (!new Set(["職業", "子職"]).has(data.entry_type)) {
       addDiagnostic(diagnostics, "warning", rel, 1, "ENTRY_TYPE", "職業條目缺少合法的 entry_type。" );
     }
@@ -823,6 +832,7 @@ function validateSubclassLinks(records, diagnostics, catalog, scope) {
     if (!childLinksParent) {
       addDiagnostic(diagnostics, "error", record.rel, 1, "PARENT_BACKLINK", `子職頁未連回 ${record.data.parent_class}。`);
     }
+    if (record.data.version === "2014-Legacy" && record.rel.startsWith("wiki/職業/2014/")) continue;
     if (!parentLinksChild) {
       addDiagnostic(diagnostics, "error", parent.rel, 1, "SUBCLASS_LINK", `職業總覽未連結子職 ${subclassTarget}。`);
     }

@@ -25,6 +25,8 @@
     "ingest:species": "node scripts/ingest-species.mjs",
     "ingest:spells": "node scripts/ingest-spells.mjs",
     "ingest:feats": "node scripts/ingest-feats.mjs",
+    "ingest:xge-common-magic-items": "node scripts/ingest-xge-common-magic-items.mjs",
+    "sync:xge-2024-compatibility": "node scripts/sync-xge-2024-compatibility.mjs",
     "lint": "node scripts/wiki-lint.mjs",
     "lint:all": "node scripts/wiki-lint.mjs --all",
     "test": "node --test",

@@ -1,0 +1,11 @@
+publication_id: "XGE2017"
+source_root: "原始資料/珊娜薩的萬事指南"
+ruleset: "2014"
+outputs:
+  classes: "wiki/職業/2014"
+  spells: "wiki/法術/2014"
+  rules: "wiki/規則"
+inputs:
+  character_options: "角色選項"
+  spells: "法術/法術詳述"
+  dungeon_master_tools: "地下城主工具"
