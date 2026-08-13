@@ -1,17 +1,25 @@
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
+import { frontmatter, loadPublication, option as publicationOption } from "./ingest-publication-utils.mjs";
 
 const root = process.cwd();
 const sourceRoot = path.join(root, "原始資料", "怪物圖鑑2025", "附錄B");
 const wikiRoot = path.join(root, "wiki", "怪物");
 const apply = process.argv.includes("--apply");
 const updated = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Taipei" }).format(new Date());
+const publicationId = publicationOption(process.argv.slice(2), "--publication") ?? "MM2025";
+const publication = loadPublication(publicationId);
 
 if (!fs.existsSync(sourceRoot)) throw new Error("找不到原始資料/怪物圖鑑2025/附錄B。");
 
 function quote(value) { return String(value).replaceAll('"', '\\"'); }
 function sourcePath(file) { return path.relative(root, file).replaceAll("\\", "/"); }
+function withRegistryFrontmatter(page, { title, source, locator }) {
+  const headerEnd = page.indexOf("\n---", 4);
+  if (headerEnd < 0) throw new Error("匯入器產物缺少 Frontmatter 結尾。");
+  return `${frontmatter({ publicationId, publication, kind: "monster-index", concept: title, title, category: "怪物", tag: "怪物_索引", source, locator })}${page.slice(headerEnd + 4)}`;
+}
 
 const monsterLinks = [];
 for (const relative of fs.readdirSync(wikiRoot, { recursive: true })) {
@@ -55,7 +63,13 @@ const indexSource = path.join(sourceRoot, "附錄B：怪物速查.md");
 const indexIntro = fs.readFileSync(indexSource, "utf8").replace(/^# .+\r?\n\r?\n?/, "").trim();
 const index = `---\ntitle: "怪物速查 (Monster Lists)"\ncategory: "怪物"\nversion: "2024-Core"\ntags:\n  - "怪物圖鑑2025"\n  - "怪物_索引"\nsources:\n  - file: "${sourcePath(indexSource)}"\n    locator: "L1 標題：附錄 B：怪物速查"\n    authority: "官方"\n    translation: "community"\nsource_type: "official"\nconfidence: "confirmed"\nrules_sources:\n  - "Monster Manual (2025)"\nerrata: []\nupdated: "${updated}"\n---\n\n# 怪物速查 (Monster Lists)\n\n${indexIntro}\n\n## 附錄導覽\n\n- [[wiki/怪物/棲息地分組|怪物棲息地分組 (Monsters by Habitat)]]\n- [[wiki/怪物/挑戰等級分組|怪物挑戰等級分組 (Monsters by Challenge Rating)]]\n- [[wiki/怪物/怪物轉換|怪物轉換 (Monster Conversions)]]\n- [[wiki/怪物/怪物群類|怪物群類 (Monsters by Group)]]\n`;
 
-const outputs = [{ target: path.join(wikiRoot, "怪物速查索引.md"), content: index }, ...specs.map((spec) => ({ target: path.join(wikiRoot, spec.target), content: page(spec) }))];
+const outputs = [
+  { target: path.join(wikiRoot, "怪物速查索引.md"), content: withRegistryFrontmatter(index, { title: "怪物速查 (Monster Lists)", source: sourcePath(indexSource), locator: "L1 標題：附錄 B：怪物速查" }) },
+  ...specs.map((spec) => ({
+    target: path.join(wikiRoot, spec.target),
+    content: withRegistryFrontmatter(page(spec), { title: spec.title, source: sourcePath(path.join(sourceRoot, spec.file)), locator: `L1 標題：${spec.title.split(" (")[0]}` }),
+  })),
+];
 console.log(`怪物資料卡連結：${monsterLinks.length}`);
 console.log(`附錄 B 頁面：${outputs.length}`);
 for (const output of outputs) console.log(`${apply ? "寫入" : "預覽"}：${path.relative(root, output.target)}`);

@@ -21,9 +21,10 @@ const includeOverviews = values.includes("--include-overviews");
 const pruneStale = values.includes("--prune-stale");
 const replace = values.includes("--replace");
 const diff = values.includes("--diff");
+const publication = option("--publication");
 
 if (!category) {
-  process.stderr.write("缺少 --category。可用：職業、魔法物品、角色建立與成長、怪物。\n");
+  process.stderr.write("缺少 --category。可用：職業、種族、法術、專長、魔法物品、角色建立與成長、怪物。\n");
   process.exit(1);
 }
 
@@ -40,6 +41,12 @@ if (category === "職業") {
   args.push(itemType, apply ? "--apply" : "--dry-run");
   if (only) args.push("--only", only);
   if (replace) args.push("--force");
+} else if (["種族", "法術", "專長"].includes(category)) {
+  script = { 種族: "scripts/ingest-species.mjs", 法術: "scripts/ingest-spells.mjs", 專長: "scripts/ingest-feats.mjs" }[category];
+  if (apply) args.push("--apply");
+  if (replace) args.push("--replace");
+  if (only) args.push("--only", only);
+  if (source) args.push("--source", source);
 } else if (category === "角色建立與成長") {
   script = "scripts/append-character-creation-tables.mjs";
   if (apply) args.push("--apply");
@@ -63,6 +70,8 @@ if (category === "職業") {
   process.stderr.write(`不支援的 category：${category}\n`);
   process.exit(1);
 }
+
+if (publication) args.push("--publication", publication);
 
 process.stdout.write(`${apply ? "套用" : "預覽"}：${category}\n`);
 const result = spawnSync(process.execPath, [script, ...args], { cwd: root, encoding: "utf8", stdio: "inherit" });

@@ -1,14 +1,19 @@
 import fs from "node:fs";
 import path from "node:path";
+import { frontmatter, loadIngestProfile, loadPublication, option as publicationOption } from "./ingest-publication-utils.mjs";
 
 const root = process.cwd();
-const itemType = process.argv.slice(2).find((value) => !value.startsWith("--")) ?? "戒指";
+const cliArgs = process.argv.slice(2);
+const itemType = cliArgs.find((value, index) => !value.startsWith("--") && !["--only", "--publication"].includes(cliArgs[index - 1])) ?? "戒指";
 const force = process.argv.includes("--force");
 const apply = process.argv.includes("--apply");
 const only = process.argv.includes("--only") ? process.argv[process.argv.indexOf("--only") + 1] : undefined;
 const updated = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Taipei" }).format(new Date());
-const sourceDir = path.join(root, "原始資料", "城主指南2024", "第七章_寶藏", "魔法物品詳述", itemType);
-const outputDir = path.join(root, "wiki", "魔法物品", itemType);
+const publicationId = publicationOption(process.argv.slice(2), "--publication") ?? "DMG2024";
+const publication = loadPublication(publicationId);
+const profile = loadIngestProfile(publicationId);
+const sourceDir = path.join(root, profile.source_root, profile.inputs.magic_items ?? "第七章_寶藏/魔法物品詳述", itemType);
+const outputDir = path.join(root, profile.outputs.magic_items ?? "wiki/魔法物品", itemType);
 if (apply) fs.mkdirSync(outputDir, { recursive: true });
 const existingEnglishTitles = new Set(
   fs.readdirSync(path.join(root, "wiki", "魔法物品"), { recursive: true })
@@ -140,7 +145,9 @@ for (const sourcePath of fs.readdirSync(sourceDir, { recursive: true })
     const effectsSection = effects ? `\n### 物品效果\n\n${effects}` : "";
     const dmSection = effects ? `\n## 💡 實戰應用與裁量 (DM Ruling)\n\n- **常見誤區**：啟用、充能與限制均依各效果的來源描述。\n` : "";
     const page = `---\ntitle: "${chinese} (${english})"\ncategory: "魔法物品"\nversion: "2024-Core"\ntags:\n  - "城主指南2024"\n  - "魔法物品_${itemType}"\nsources:\n  - file: "${source}"\n    locator: "L${i + 1} 標題：${chinese}"\n    authority: "官方"\n    translation: "community"\nsource_type: "official"\nconfidence: "confirmed"\nrules_sources:\n  - "Dungeon Master's Guide (2024)"\nerrata: []\nupdated: "${updated}"\n---\n\n# ${chinese} (${english})${descriptionSection}\n## ⚙️ 規則條文 (Rule Text)\n\n### 物品資料\n\n| 項目 | 內容 |\n| :--- | :--- |\n| 類別 (Category) | ${itemCategory} |\n| 稀有度 (Rarity) | ${rarity} |\n| 同調 (Attunement) | ${attunement} |\n| 消耗品 (Consumable) | 否 |\n| 充能 (Charges) | 依效果說明 |\n${effectsSection}${randomTables}${dmSection}\n## 🔗 相關連結\n\n- 無。\n`;
-    if (apply) fs.writeFileSync(destination, page, "utf8");
+    const headerEnd = page.indexOf("\n---", 4);
+    const output = `${frontmatter({ publicationId, publication, kind: "magic-item", concept: english, title: `${chinese} (${english})`, category: "魔法物品", tag: `魔法物品_${itemType}`, source, locator: `L${i + 1} 標題：${chinese}` })}${page.slice(headerEnd + 4)}`;
+    if (apply) fs.writeFileSync(destination, output, "utf8");
     console.log(`${apply ? "匯入" : "預覽"}：${path.relative(root, destination)}`);
   }
 }

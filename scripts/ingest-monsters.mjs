@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
 import { execFileSync } from "node:child_process";
+import { identityFields, loadPublication, option as publicationOption, versionForPublication } from "./ingest-publication-utils.mjs";
 
 const root = process.cwd();
 const rawRoot = path.join(root, "原始資料");
@@ -23,6 +24,8 @@ const apply = has("--apply") && !has("--dry-run");
 const replace = has("--replace");
 const diff = has("--diff");
 const updated = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Taipei" }).format(new Date());
+const publicationId = publicationOption(process.argv.slice(2), "--publication") ?? "MM2025";
+const publication = loadPublication(publicationId);
 
 function fail(message) {
   process.stderr.write(`${message}\n`);
@@ -121,6 +124,22 @@ function abilityValues(lines) {
   return values.size === 6 ? values : undefined;
 }
 
+function expandEmbeddedStatBlocks(lines) {
+  const expanded = [];
+  for (const line of lines) {
+    if (!line.startsWith("| ## ") || !line.includes("<br>")) {
+      expanded.push(line);
+      continue;
+    }
+    const imageMarker = line.indexOf(" |  | ![]");
+    const embedded = (imageMarker < 0 ? line.slice(2) : line.slice(2, imageMarker))
+      .replaceAll("<br>", "\n")
+      .replaceAll("\\|", "|");
+    expanded.push(...embedded.split("\n"));
+  }
+  return expanded;
+}
+
 function sectionContent(lines, names) {
   const index = lines.findIndex((line) => /^#{2,4}\s+/.test(line) && names.some((name) => line.includes(name)));
   if (index < 0) return [];
@@ -142,12 +161,24 @@ function renderEntries(lines) {
   return matches.map((match, index) => {
     const start = match.index + match[0].length;
     const end = matches[index + 1]?.index ?? compact.length;
-    return `- **${match[1].trim()}**：${compact.slice(start, end).trim()}`;
+    return `- **${formatEntryName(match[1])}**：${compact.slice(start, end).trim()}`;
   }).join("\n");
 }
 
+function formatEntryName(value) {
+  const cleaned = value.trim().replace(/。$/, "");
+  const match = cleaned.match(/^(?<chinese>.+?)\s+(?<english>[A-Za-z][A-Za-z0-9'’\- ]*(?:（[^）]+）)?)$/);
+  return match ? `${match.groups.chinese}（${match.groups.english}）` : cleaned;
+}
+
+function sectionLead(lines) {
+  const compact = lines.map((line) => line.trim()).filter(Boolean).join(" ");
+  const firstEntry = compact.search(/\*\*[^*]+?\*\*/);
+  return (firstEntry < 0 ? compact : compact.slice(0, firstEntry)).trim();
+}
+
 function normalizeRulesText(value) {
-  return value.replace(/(\d+)\s*尺/g, "$1 呎").replace(/(\d+)\s*天/g, "$1 天");
+  return value.replaceAll("_", "").replace(/(\d+)\s*尺/g, "$1 呎").replace(/(\d+)\s*天/g, "$1 天");
 }
 
 function titleParts(lines, fallback) {
@@ -158,7 +189,7 @@ function titleParts(lines, fallback) {
 }
 
 function candidatesFromFile(file, names) {
-  const lines = fs.readFileSync(file, "utf8").split(/\r?\n/);
+  const lines = expandEmbeddedStatBlocks(fs.readFileSync(file, "utf8").split(/\r?\n/));
   const candidates = [];
   for (let index = 0; index < lines.length; index += 1) {
     const typeLine = lines[index];
@@ -182,6 +213,8 @@ function candidatesFromFile(file, names) {
     const speed = inlineValue(block, ["速度"]);
     const stats = abilityValues(block);
     if (!typeLine || !ac || !hp || !speed || !stats) continue;
+    const legendaryLines = sectionContent(block, ["傳奇動作", "Legendary Actions"]);
+    const lairLines = sectionContent(block, ["巢穴動作", "Lair Actions"]);
     candidates.push({
       chinese: chinese.trim(), english: english?.trim(), block, stats,
       type: typeLine.trim().slice(1, -1), ac, hp, speed,
@@ -196,7 +229,8 @@ function candidatesFromFile(file, names) {
       actions: renderEntries(sectionContent(block, ["動作", "Actions"])),
       bonusActions: renderEntries(sectionContent(block, ["附贈動作", "Bonus Actions"])),
       reactions: renderEntries(sectionContent(block, ["反應", "Reactions"])),
-      legendary: renderEntries(sectionContent(block, ["傳奇動作", "巢穴動作", "Legendary Actions", "Lair Actions"])),
+      legendaryLead: sectionLead(legendaryLines), legendary: renderEntries(legendaryLines),
+      lairLead: sectionLead(lairLines), lair: renderEntries(lairLines),
       source: path.relative(root, file).replaceAll("\\", "/"), locator: `L${(titleLine?.lineIndex ?? index) + 1} 標題：${chinese.trim()}`,
     });
   }
@@ -221,6 +255,15 @@ function overviewFromFile(file) {
 function quote(value) { return String(value).replaceAll('"', '\\"'); }
 function displayName(entry) { return entry.english ? `${entry.chinese} (${entry.english})` : entry.chinese; }
 
+function withRegistryFrontmatter(page, values) {
+  const headerEnd = page.indexOf("\n---", 4);
+  if (headerEnd < 0) throw new Error("匯入器產物缺少 Frontmatter 結尾。");
+  const identity = identityFields(values);
+  return page.replace(/^---\ntitle: ([^\n]+)\n/, `---\ntitle: $1\n${identity}\n`)
+    .replace(/\nversion: "2024-Core"/, `\nversion: "${versionForPublication(publication)}"`)
+    .replace(/\n  - "怪物圖鑑2025"/, `\n  - "${publication.wiki.tag}"`);
+}
+
 function render(candidate, chinese, overview) {
   const stat = (name) => candidate.stats.get(name);
   const row = (names) => names.flatMap((name) => {
@@ -229,10 +272,11 @@ function render(candidate, chinese, overview) {
   }).join(" | ");
   const optional = (label, value) => value ? `\n**${label}** ${normalizeRulesText(value)}\n` : "";
   const section = (name, value) => value ? `\n### ${name}\n\n${normalizeRulesText(value)}\n` : "";
-  const crTag = candidate.cr ? candidate.cr.replace(/[^0-9A-Za-z]+/g, "_").replace(/^_+|_+$/g, "") : "待確認";
   const title = candidate.english ? `${chinese} (${candidate.english})` : chinese;
   const overviewLink = overview ? `\n- [[wiki/怪物/介紹/${overview.chinese}介紹|${overview.chinese}介紹${overview.english ? ` (${overview.english})` : ""}]]：此怪物類型的介紹與背景。\n` : "";
-  return `---\ntitle: "${quote(title)}"\ncategory: "怪物"\nversion: "2024-Core"\ntags:\n  - "怪物圖鑑2025"\n  - "怪物_CR_${quote(crTag)}"\n  - "生物類型_${quote(candidate.folder)}"\nsources:\n  - file: "${quote(candidate.source)}"\n    locator: "${quote(candidate.locator)}"\n    authority: "官方"\n    translation: "community"\nsource_type: "official"\nconfidence: "confirmed"\nrules_sources:\n  - "Monster Manual (2025)"\nerrata: []\nupdated: "${updated}"\n---\n\n# ${title}\n\n## ⚙️ 規則條文 (Rule Text)\n\n*${normalizeRulesText(candidate.type)}*\n\n**AC** ${normalizeRulesText(candidate.ac)}\n\n**HP** ${normalizeRulesText(candidate.hp)}\n\n**速度** ${normalizeRulesText(candidate.speed)}\n${optional("豁免檢定", candidate.saves)}${optional("技能", candidate.skills)}${optional("感官", candidate.senses)}${optional("語言", candidate.languages)}${optional("傷害抗性／免疫", candidate.resistance)}${optional("狀態免疫", candidate.conditionImmunity)}${optional("裝備", candidate.equipment)}${optional("CR", candidate.cr)}\n|  |  | 調整 | 豁免 |  |  | 調整 | 豁免 |  |  | 調整 | 豁免 |\n| :--- | :---: | :---: | :---: | :--- | :---: | :---: | :---: | :--- | :---: | :---: | :---: |\n| ${row(["力量", "敏捷", "體質"])} |\n| ${row(["智力", "感知", "魅力"])} |\n${section("特性 (Traits)", candidate.traits)}${section("動作 (Actions)", candidate.actions)}${section("附贈動作 (Bonus Actions)", candidate.bonusActions)}${section("反應 (Reactions)", candidate.reactions)}${section("傳奇動作／巢穴動作 (Legendary Actions / Lair Actions)", candidate.legendary)}\n## 🔗 相關連結\n${overviewLink}`;
+  candidate.legendary = candidate.legendaryLead ? `${candidate.legendaryLead}\n\n${candidate.legendary}` : candidate.legendary;
+  candidate.lair = candidate.lairLead ? `${candidate.lairLead}\n\n${candidate.lair}` : candidate.lair;
+  return `---\ntitle: "${quote(title)}"\ncategory: "怪物"\nversion: "2024-Core"\ntags:\n  - "怪物圖鑑2025"\n  - "生物類型_${quote(candidate.folder)}"\nsources:\n  - file: "${quote(candidate.source)}"\n    locator: "${quote(candidate.locator)}"\n    authority: "官方"\n    translation: "community"\nsource_type: "official"\nconfidence: "confirmed"\nrules_sources:\n  - "Monster Manual (2025)"\nerrata: []\nupdated: "${updated}"\n---\n\n# ${title}\n\n## ⚙️ 規則條文 (Rule Text)\n\n*${normalizeRulesText(candidate.type)}*\n\n**AC** ${normalizeRulesText(candidate.ac)}\n\n**HP** ${normalizeRulesText(candidate.hp)}\n\n**速度** ${normalizeRulesText(candidate.speed)}\n${optional("豁免檢定", candidate.saves)}${optional("技能", candidate.skills)}${optional("感官", candidate.senses)}${optional("語言", candidate.languages)}${optional("傷害抗性／免疫", candidate.resistance)}${optional("狀態免疫", candidate.conditionImmunity)}${optional("裝備", candidate.equipment)}${optional("CR", candidate.cr)}\n|  |  | 調整 | 豁免 |  |  | 調整 | 豁免 |  |  | 調整 | 豁免 |\n| :--- | :---: | :---: | :---: | :--- | :---: | :---: | :---: | :--- | :---: | :---: | :---: |\n| ${row(["力量", "敏捷", "體質"])} |\n| ${row(["智力", "感知", "魅力"])} |\n${section("特性 (Traits)", candidate.traits)}${section("動作 (Actions)", candidate.actions)}${section("附贈動作 (Bonus Actions)", candidate.bonusActions)}${section("反應 (Reactions)", candidate.reactions)}${section("傳奇動作 (Legendary Actions)", candidate.legendary)}${section("巢穴動作 (Lair Actions)", candidate.lair)}\n## 🔗 相關連結\n${overviewLink}`;
 }
 
 function renderOverview(overview, related) {
@@ -283,7 +327,10 @@ if (!apply) process.exit(0);
 fs.mkdirSync(wikiRoot, { recursive: true });
 for (const item of report.create) {
   const target = path.join(wikiRoot, item.candidate.folder, `${item.canonical}.md`);
-  const content = render(item.candidate, item.canonical, overviewByDirectory.get(path.dirname(path.resolve(root, item.candidate.source))));
+  const content = withRegistryFrontmatter(
+    render(item.candidate, item.canonical, overviewByDirectory.get(path.dirname(path.resolve(root, item.candidate.source)))),
+    { publicationId, publication, kind: "monster", concept: item.candidate.english ?? item.canonical, title: item.candidate.english ? `${item.canonical} (${item.candidate.english})` : item.canonical, source: item.candidate.source },
+  );
   fs.mkdirSync(path.dirname(target), { recursive: true });
   if (item.existing && path.resolve(item.existing) !== path.resolve(target) && fs.existsSync(item.existing)) fs.renameSync(item.existing, target);
   if (diff && fs.existsSync(target)) {
@@ -301,7 +348,10 @@ for (const overview of overviews) {
   if (fs.existsSync(target) && !replace) continue;
   fs.mkdirSync(path.dirname(target), { recursive: true });
   const related = discovered.filter((candidate) => path.dirname(path.resolve(root, candidate.source)) === overview.directory);
-  fs.writeFileSync(target, renderOverview(overview, related));
+  fs.writeFileSync(target, withRegistryFrontmatter(
+    renderOverview(overview, related),
+    { publicationId, publication, kind: "monster-index", concept: overview.english ?? overview.chinese, title: `${overview.chinese}介紹${overview.english ? ` (${overview.english})` : ""}`, source: overview.source },
+  ));
 }
 if (pruneStale) {
   const stale = fs.readdirSync(wikiRoot, { recursive: true })

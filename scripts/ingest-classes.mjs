@@ -2,16 +2,20 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
+import { identityFields, loadIngestProfile, loadPublication, option as publicationOption, versionForPublication } from "./ingest-publication-utils.mjs";
 
 const root = process.cwd();
-const rawRoot = path.join(root, "原始資料", "玩家手冊2024", "角色職業");
-const outputRoot = path.join(root, "wiki", "職業");
 const glossaryPath = path.join(root, "附件", "翻譯詞彙表.md");
 const force = process.argv.includes("--force");
 const dryRun = process.argv.includes("--dry-run");
 const replace = process.argv.includes("--replace");
 const diff = process.argv.includes("--diff");
 const only = process.argv.includes("--only") ? process.argv[process.argv.indexOf("--only") + 1] : undefined;
+const publicationId = publicationOption(process.argv.slice(2), "--publication") ?? "PHB2024";
+const publication = loadPublication(publicationId);
+const profile = loadIngestProfile(publicationId);
+const rawRoot = path.join(root, profile.source_root, profile.inputs.classes ?? "角色職業");
+const outputRoot = path.join(root, profile.outputs.classes ?? "wiki/職業");
 const updated = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Taipei" }).format(new Date());
 
 function translationMap() {
@@ -123,7 +127,9 @@ function frontmatter({ chinese, english, entryType, parentClass, source, locator
   const tags = entryType === "職業" ? `  - "職業_${chinese}"` : `  - "子職_${parentClass}"`;
   const parent = entryType === "子職" ? `parent_class: "${q(parentClass)}"\n` : "";
   const supplemental = supplementalSource ? `\n  - file: "${q(supplementalSource)}"\n    locator: "L1 標題：${q(chinese)}法術列表"\n    authority: "官方"\n    translation: "community"` : "";
-  return `---\ntitle: "${q(chinese)} (${q(english)})"\ncategory: "職業"\nentry_type: "${entryType}"\n${parent}version: "2024-Core"\ntags:\n  - "玩家手冊2024"\n${tags}\nsources:\n  - file: "${q(source)}"\n    locator: "${q(locator)}"\n    authority: "官方"\n    translation: "community"${supplemental}\nsource_type: "official"\nconfidence: "confirmed"\nrules_sources:\n  - "Player’s Handbook (2024)"\nerrata: []\nupdated: "${updated}"\n---`;
+  const title = `${chinese} (${english})`;
+  const identity = identityFields({ publicationId, publication, kind: entryType === "職業" ? "class" : "subclass", concept: english, title, source });
+  return `---\ntitle: "${q(title)}"\n${identity}\ncategory: "職業"\nentry_type: "${entryType}"\n${parent}version: "${versionForPublication(publication)}"\ntags:\n  - "${q(publication.wiki.tag)}"\n${tags}\nsources:\n  - file: "${q(source)}"\n    locator: "${q(locator)}"\n    authority: "官方"\n    translation: "community"${supplemental}\nsource_type: "official"\nconfidence: "confirmed"\nrules_sources:\n  - "${q(publication.canonical_rules_source)}"\nerrata: []\nupdated: "${updated}"\n---`;
 }
 
 function detailBlocks(features) {

@@ -7,6 +7,8 @@ import { LineCounter, parseDocument } from "yaml";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const WIKI_ROOT = path.join(ROOT, "wiki");
+const PUBLICATIONS_PATH = path.join(ROOT, "config", "publications.yml");
+const TAXONOMY_PATH = path.join(ROOT, "config", "taxonomy.yml");
 // 原始資料不隨 GitHub Actions 提交；本機維護時可做實體存在檢查，CI 則只
 // 驗證路徑格式與範圍，避免部分 checkout 的舊來源造成誤判。
 const RAW_SOURCES_AVAILABLE = process.env.GITHUB_ACTIONS !== "true"
@@ -14,6 +16,11 @@ const RAW_SOURCES_AVAILABLE = process.env.GITHUB_ACTIONS !== "true"
 
 const REQUIRED_FIELDS = [
   "title",
+  "entity_id",
+  "concept_id",
+  "ruleset",
+  "content_scope",
+  "status",
   "category",
   "version",
   "tags",
@@ -24,6 +31,47 @@ const REQUIRED_FIELDS = [
   "errata",
   "updated",
 ];
+
+function loadPublicationRegistry() {
+  const text = fs.readFileSync(PUBLICATIONS_PATH, "utf8");
+  const document = parseDocument(text, { prettyErrors: true, uniqueKeys: true });
+  if (document.errors.length) throw new Error(`出版品註冊表無法解析：${document.errors[0].message}`);
+  const data = document.toJS();
+  if (data?.schema_version !== 2 || !data.publications) throw new Error("出版品註冊表缺少 schema_version: 2 或 publications。");
+  const byTag = new Map();
+  const sourceRootsByRuleset = new Map();
+  for (const [id, publication] of Object.entries(data.publications)) {
+    for (const field of ["entity_id", "concept_id", "ruleset", "content_scope", "status"]) {
+      if (typeof publication[field] !== "string" || publication[field] === "") {
+        throw new Error(`出版品 ${id} 缺少 ${field}。`);
+      }
+    }
+    if (publication.entity_id !== `publication:${id}` || !/^publication:[a-z0-9-]+$/.test(publication.concept_id)) {
+      throw new Error(`出版品 ${id} 的 entity_id 或 concept_id 格式不合法。`);
+    }
+    for (const tag of [publication.wiki?.tag, ...(publication.wiki?.tag_aliases ?? [])]) {
+      if (typeof tag === "string") byTag.set(tag, { id, publication, canonical: publication.wiki?.tag });
+    }
+    for (const asset of publication.source_assets ?? []) {
+      if (typeof asset.path !== "string") continue;
+      const roots = sourceRootsByRuleset.get(publication.ruleset) ?? [];
+      roots.push(asset.path);
+      sourceRootsByRuleset.set(publication.ruleset, roots);
+    }
+  }
+  return { byTag, sourceRootsByRuleset };
+}
+
+function loadTaxonomy() {
+  const text = fs.readFileSync(TAXONOMY_PATH, "utf8");
+  const document = parseDocument(text, { prettyErrors: true, uniqueKeys: true });
+  if (document.errors.length) throw new Error(`資料拓樸設定無法解析：${document.errors[0].message}`);
+  const data = document.toJS();
+  if (data?.schema_version !== 1 || !data.categories || typeof data.categories !== "object") {
+    throw new Error("資料拓樸設定缺少 schema_version: 1 或 categories。");
+  }
+  return data;
+}
 
 const CATEGORIES = new Set([
   "職業",
@@ -59,6 +107,7 @@ const COMPLETE_INDEX_DIRS = [
   "wiki/職業",
   "wiki/背景",
   "wiki/種族",
+  "wiki/種族/2014",
   "wiki/魔法物品",
   "wiki/專長/起源專長",
   "wiki/專長/通用專長",
@@ -74,6 +123,16 @@ const COMPLETE_INDEX_DIRS = [
   "wiki/法術/7環",
   "wiki/法術/8環",
   "wiki/法術/9環",
+  "wiki/法術/2014/戲法",
+  "wiki/法術/2014/1環",
+  "wiki/法術/2014/2環",
+  "wiki/法術/2014/3環",
+  "wiki/法術/2014/4環",
+  "wiki/法術/2014/5環",
+  "wiki/法術/2014/6環",
+  "wiki/法術/2014/7環",
+  "wiki/法術/2014/8環",
+  "wiki/法術/2014/9環",
   "wiki/規則/核心檢定",
   "wiki/規則/動作與戰鬥",
   "wiki/規則/狀態",
@@ -493,7 +552,7 @@ export function validateMagicItemStructure(record, diagnostics) {
   }
 }
 
-function validateFrontmatter(record, diagnostics, catalog) {
+function validateFrontmatter(record, diagnostics, catalog, publications) {
   const { rel, fm, data } = record;
   for (const field of REQUIRED_FIELDS) {
     if (!(field in data)) {
@@ -513,6 +572,25 @@ function validateFrontmatter(record, diagnostics, catalog) {
     addDiagnostic(diagnostics, "error", rel, 1, "TAGS_SCHEMA", "tags 必須是含 2–3 個字串的區塊清單。" );
   } else if (data.tags.some((tag) => typeof tag !== "string")) {
     addDiagnostic(diagnostics, "error", rel, 1, "TAGS_TYPE", "tags 的每個項目都必須是字串。" );
+  }
+  const matchedPublication = Array.isArray(data.tags) ? publications.byTag.get(data.tags[0]) : null;
+  if (!matchedPublication) {
+    addDiagnostic(diagnostics, "error", rel, 1, "PUBLICATION_TAG", "第一標籤必須是出版品註冊表中的書名標籤。" );
+  } else {
+    if (data.tags[0] !== matchedPublication.canonical) {
+      addDiagnostic(diagnostics, "error", rel, 1, "PUBLICATION_TAG_ALIAS", `第一標籤必須使用統一書名標籤 ${matchedPublication.canonical}。`);
+    }
+    for (const field of ["ruleset", "content_scope", "status"]) {
+      if (data[field] !== matchedPublication.publication[field]) {
+        addDiagnostic(diagnostics, "error", rel, 1, "PUBLICATION_METADATA", `${field} 必須與 ${matchedPublication.id} 的出版品註冊資料一致。`);
+      }
+    }
+    if (typeof data.entity_id !== "string" || !data.entity_id.startsWith(`entry:${matchedPublication.id}:`)) {
+      addDiagnostic(diagnostics, "error", rel, 1, "ENTITY_ID", `entity_id 必須以 entry:${matchedPublication.id}: 開頭。`);
+    }
+  }
+  if (typeof data.concept_id !== "string" || !/^concept:[a-z0-9][a-z0-9:-]*$/.test(data.concept_id)) {
+    addDiagnostic(diagnostics, "error", rel, 1, "CONCEPT_ID", "concept_id 必須為 concept: 開頭的 ASCII 穩定識別碼。" );
   }
   for (const field of ["rules_sources", "errata"]) {
     if (!Array.isArray(data[field]) || data[field].some((item) => typeof item !== "string")) {
@@ -622,6 +700,13 @@ function resolveWikiTarget(target, catalog) {
   }
   const matches = catalog.byBasename.get(clean) ?? [];
   if (matches.length === 1) return { status: "ok", record: matches[0] };
+  // 同名的舊版條目以版本資料夾消歧義；未帶路徑的既有連結維持指向唯一的
+  // 現行條目，避免新增 Legacy 版本後將現有法術等子目錄連結判為歧義。
+  const currentMatches = matches.filter((record) => !record.rel.includes("/2014/"));
+  if (currentMatches.length === 1) return { status: "ok", record: currentMatches[0] };
+  const rootMatch = matches.find((record) => record.rel === `wiki/${clean}.md`)
+    ?? matches.find((record) => record.rel.split("/").length === 3);
+  if (rootMatch) return { status: "ok", record: rootMatch };
   if (matches.length > 1) return { status: "ambiguous", target: clean, matches };
   return { status: "missing", target: clean };
 }
@@ -680,11 +765,15 @@ function validateIndexes(records, diagnostics, catalog, scope) {
     for (const link of index.links) {
       const resolved = resolveWikiTarget(link.target, catalog);
       if (resolved.status !== "ok") continue;
-      duplicateTargets.set(resolved.record.rel, (duplicateTargets.get(resolved.record.rel) ?? 0) + 1);
+      const occurrences = duplicateTargets.get(resolved.record.rel) ?? [];
+      occurrences.push(link);
+      duplicateTargets.set(resolved.record.rel, occurrences);
     }
-    for (const [target, count] of duplicateTargets) {
-      if (count > 1) {
-        addDiagnostic(diagnostics, "warning", index.rel, 1, "INDEX_DUPLICATE", `索引重複連結 ${target}，共 ${count} 次。`);
+    for (const [target, occurrences] of duplicateTargets) {
+      // 關聯對照表可合理地讓同一條目出現在多個列（例如一種龍紋對應兩個家族）。
+      // 只對清單或混合結構中的重複導覽連結提出警告。
+      if (occurrences.length > 1 && occurrences.some((link) => !link.tableLine)) {
+        addDiagnostic(diagnostics, "warning", index.rel, 1, "INDEX_DUPLICATE", `索引重複連結 ${target}，共 ${occurrences.length} 次。`);
       }
     }
   }
@@ -782,9 +871,55 @@ function printDiagnostics(diagnostics, scopeSize, totalSize) {
   console.log(`\n檢查範圍：${scopeSize}/${totalSize} 個 Wiki 頁面`);
 }
 
+function validateTaxonomyLocation(record, diagnostics, taxonomy) {
+  const category = taxonomy.categories?.[record.data.category];
+  if (!category) return;
+  const roots = [category.root, ...(category.additional_roots ?? [])];
+  const normalRoots = roots.map((root) => `${root}/`);
+  const legacyRoot = `${category.legacy_root}/`;
+  const allowedFile = (category.allowed_files ?? []).includes(record.rel);
+  if (!allowedFile && !normalRoots.some((root) => record.rel.startsWith(root))) {
+    const expected = [...normalRoots, ...(category.allowed_files ?? [])].join("、");
+    addDiagnostic(diagnostics, "error", record.rel, 1, "TAXONOMY_CATEGORY_PATH", `類別「${record.data.category}」必須位於 ${expected}。`);
+    return;
+  }
+  if (record.data.ruleset === "2014" && category.legacy_root && !record.rel.startsWith(legacyRoot)) {
+    addDiagnostic(diagnostics, "error", record.rel, 1, "TAXONOMY_LEGACY_PATH", `2014 Legacy 條目必須位於 ${category.legacy_root}/。`);
+  }
+  if (record.data.ruleset === "2024" && category.legacy_root && record.rel.startsWith(legacyRoot)) {
+    addDiagnostic(diagnostics, "error", record.rel, 1, "TAXONOMY_CURRENT_PATH", `2024 條目不得位於 2014 Legacy 目錄 ${category.legacy_root}/。`);
+  }
+}
+
+function validateVersionCoverage(record, diagnostics, publications) {
+  const coverage = record.data.version_coverage;
+  if (coverage === undefined) return;
+  if (!Array.isArray(coverage) || coverage.length < 2 || coverage.some((value) => !["2014", "2024"].includes(value)) || new Set(coverage).size !== coverage.length) {
+    addDiagnostic(diagnostics, "error", record.rel, 1, "VERSION_COVERAGE_FORMAT", "version_coverage 必須是無重複的版本清單，且只可使用 2014、2024。" );
+    return;
+  }
+  if (!coverage.includes(record.data.ruleset)) {
+    addDiagnostic(diagnostics, "error", record.rel, 1, "VERSION_COVERAGE_RULESET", "version_coverage 必須包含本條目的 ruleset。" );
+  }
+  if (coverage.includes("2014") && coverage.includes("2024")) {
+    if (record.data.ruleset !== "2024" || record.data.version !== "2024-Core") {
+      addDiagnostic(diagnostics, "error", record.rel, 1, "VERSION_COVERAGE_CANONICAL", "跨 2014／2024 且規則不變的合併條目必須使用 2024 現行頁。" );
+    }
+    const paths = Array.isArray(record.data.sources) ? record.data.sources.map((source) => source?.file).filter((file) => typeof file === "string") : [];
+    for (const ruleset of coverage) {
+      const roots = publications.sourceRootsByRuleset.get(ruleset) ?? [];
+      if (!paths.some((file) => roots.some((root) => file === root || file.startsWith(`${root}/`)))) {
+        addDiagnostic(diagnostics, "error", record.rel, 1, "VERSION_COVERAGE_SOURCE", `version_coverage 包含 ${ruleset} 時，sources 必須包含該版本已註冊的原始來源。`);
+      }
+    }
+  }
+}
+
 export function lintWiki({ all = false } = {}) {
   const diagnostics = [];
   const pathCatalog = makePathCatalog();
+  const publications = loadPublicationRegistry();
+  const taxonomy = loadTaxonomy();
   const markdownFiles = walk(WIKI_ROOT).filter((file) => file.endsWith(".md"));
   const records = [];
 
@@ -843,7 +978,9 @@ export function lintWiki({ all = false } = {}) {
       }
       continue;
     }
-    validateFrontmatter(record, diagnostics, pathCatalog);
+    validateFrontmatter(record, diagnostics, pathCatalog, publications);
+    validateTaxonomyLocation(record, diagnostics, taxonomy);
+    validateVersionCoverage(record, diagnostics, publications);
     validateMagicItemStructure(record, diagnostics);
     validateHeadings(record.body, record.bodyStartLine, record.rel, diagnostics);
     validateLinks(record, diagnostics, catalog);

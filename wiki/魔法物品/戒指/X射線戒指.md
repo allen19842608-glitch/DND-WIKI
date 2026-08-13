@@ -1,9 +1,14 @@
 ---
 title: "X射線戒指 (Ring of X-Ray Vision)"
+entity_id: "entry:DMG2024:entry:b503ca7d83"
+concept_id: "concept:entry:ring-of-x-ray-vision"
+ruleset: "2024"
+content_scope: "core"
+status: "current"
 category: "魔法物品"
 version: "2024-Core"
 tags:
-  - "城主指南2024"
+  - "地下城主指南2024"
   - "魔法物品_戒指"
 sources:
   - file: "原始資料/城主指南2024/第七章_寶藏/魔法物品詳述/戒指/珍稀.md"
