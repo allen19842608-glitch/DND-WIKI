@@ -1,0 +1,103 @@
+# Wiki 資料拓樸
+#
+# 現行規則位於類別根目錄；2014 Legacy 位於該類別的 2014/ 子目錄。
+# 擴充書不建立以書名命名的 Wiki 資料夾，而是與同類別現行條目並列，
+# 並由 publication_id、第一個 tags 項目與 sources 追溯出版品。
+
+schema_version: 1
+
+version_layout:
+  current_ruleset: "2024"
+  current_path: "<category-root>/"
+  legacy_ruleset: "2014"
+  legacy_path: "<category-root>/2014/"
+
+categories:
+  職業:
+    root: "wiki/職業"
+    legacy_root: "wiki/職業/2014"
+    primary_tags:
+      - "職業_"
+      - "子職_"
+      - "職業_索引"
+  種族:
+    root: "wiki/種族"
+    legacy_root: "wiki/種族/2014"
+    primary_tags:
+      - "種族_"
+      - "種族_索引"
+  法術:
+    root: "wiki/法術"
+    legacy_root: "wiki/法術/2014"
+    subdirectories:
+      - "戲法"
+      - "一環"
+      - "二環"
+      - "三環"
+      - "四環"
+      - "五環"
+      - "六環"
+      - "七環"
+      - "八環"
+      - "九環"
+  專長:
+    root: "wiki/專長"
+    legacy_root: "wiki/專長/2014"
+    subdirectories:
+      - "起源專長"
+      - "通用專長"
+      - "戰鬥風格專長"
+      - "史詩恩賜專長"
+    primary_tags:
+      - "專長_起源"
+      - "專長_通用"
+      - "專長_戰鬥風格"
+      - "專長_史詩恩賜"
+      - "專長_索引"
+  背景:
+    root: "wiki/背景"
+    legacy_root: "wiki/背景/2014"
+  魔法物品:
+    root: "wiki/魔法物品"
+    legacy_root: "wiki/魔法物品/2014"
+    subdirectories:
+      - "武器"
+      - "護甲"
+      - "戒指"
+      - "權杖"
+      - "法杖"
+      - "魔杖"
+      - "卷軸"
+      - "藥水"
+      - "奇物"
+  怪物:
+    root: "wiki/怪物"
+    legacy_root: "wiki/怪物/2014"
+  規則機制:
+    root: "wiki/規則"
+    legacy_root: "wiki/規則/2014"
+    allowed_files:
+      - "wiki/索引.md"
+  戰役設定:
+    root: "wiki/戰役設定"
+    grouping: "world"
+    additional_roots:
+      - "wiki/冒險者聯盟"
+
+cross_version:
+  # 規則未改變時只保留現行主頁：ruleset 仍為 2024、第一標籤仍為採用的
+  # 現行出版品，並以 version_coverage 與 sources 同時記錄 2014、2024 來源。
+  # 不得為相同規則建立一份只有年份不同的 2014 複本。
+  unchanged:
+    storage: "current-entry-only"
+    coverage_field: "version_coverage"
+    coverage_values:
+      - "2014"
+      - "2024"
+    required_sources: "both-rulesets"
+  # 僅在規則文字、數值、取得條件或適用範圍確有差異時，才建立兩份條目。
+  changed:
+    storage: "current-entry-and-legacy-entry"
+    legacy_path: "<category-root>/2014/"
+  related_field: "version_counterparts"
+  replacement_field: "supersedes"

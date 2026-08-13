@@ -1,0 +1,15 @@
+publication_id: "PHB2014"
+source_root: "原始資料/玩家手冊2014"
+ruleset: "2014"
+outputs:
+  species: "wiki/種族/2014"
+  classes: "wiki/職業/2014"
+  spells: "wiki/法術/2014"
+  feats: "wiki/專長/2014"
+  backgrounds: "wiki/背景/2014"
+  rules: "wiki/規則/2014"
+inputs:
+  species: "種族"
+  classes: "職業"
+  spells: "魔法/法術詳述"
+  feats: "專長"

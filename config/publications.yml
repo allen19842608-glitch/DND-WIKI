@@ -1,0 +1,560 @@
+# 出版品註冊表
+#
+# 此檔是出版品身分、規則版本與本機原始來源資產的唯一註冊表。
+# 它不取代各 Wiki 條目的 sources.file 與 locator：條目仍必須保有可定位來源。
+# 新增資料前，先登錄出版品，再登錄每一個可引用的原始檔或原始資料目錄。
+#
+# `wiki.tag` 是該出版品的主要 Wiki 標籤；不適用時以 null 表示。舊標籤只能
+# 留在 tag_aliases，供遷移工具辨識，不能再作為新條目的主要標籤。
+
+schema_version: 2
+
+registry:
+  ruleset_values:
+    - "2024"
+    - "2014"
+    - "跨版本"
+  content_scope_values:
+    - "core"
+    - "expansion"
+    - "reference"
+    - "organized_play"
+  publication_status_values:
+    - "current"
+    - "legacy"
+    - "superseded"
+    - "planned"
+  asset_format_values:
+    - "directory"
+    - "pdf"
+  asset_role_values:
+    - "rules_text"
+    - "translation"
+    - "reference"
+  translation_values:
+    - "official"
+    - "community"
+    - "none"
+
+publications:
+  ERLW2019:
+    entity_id: "publication:ERLW2019"
+    concept_id: "publication:eberron-rising-from-the-last-war"
+    title_zh: "艾伯倫：從終末戰爭中崛起"
+    title_en: "Eberron: Rising from the Last War"
+    publisher: "Wizards of the Coast"
+    year: 2019
+    ruleset: "2014"
+    content_scope: "expansion"
+    status: "legacy"
+    authority: "官方"
+    canonical_rules_source: "Eberron: Rising from the Last War (2019)"
+    wiki:
+      tag: "艾伯倫從終末戰爭中崛起2019"
+      tag_aliases: []
+      supported_versions:
+        - "2014-Legacy"
+    source_assets:
+      - id: "ERLW2019_ZH_MARKDOWN"
+        path: "原始資料/艾伯倫：從終末戰爭中崛起"
+        format: "directory"
+        role: "translation"
+        language: "zh-Hant"
+        authority: "官方"
+        translation: "community"
+        status: "available"
+
+  PHB2014:
+    entity_id: "publication:PHB2014"
+    concept_id: "publication:players-handbook"
+    title_zh: "玩家手冊"
+    title_en: "Player's Handbook"
+    publisher: "Wizards of the Coast"
+    year: 2014
+    ruleset: "2014"
+    content_scope: "core"
+    status: "legacy"
+    authority: "官方"
+    canonical_rules_source: "Player’s Handbook (2014)"
+    wiki:
+      tag: "玩家手冊2014"
+      tag_aliases: []
+      supported_versions:
+        - "2014-Legacy"
+    source_assets:
+      - id: "PHB2014_ZH_MARKDOWN"
+        path: "原始資料/玩家手冊2014"
+        format: "directory"
+        role: "translation"
+        language: "zh-Hant"
+        authority: "官方"
+        translation: "community"
+        status: "available"
+
+  PHB2024:
+    entity_id: "publication:PHB2024"
+    concept_id: "publication:players-handbook"
+    title_zh: "玩家手冊"
+    title_en: "Player's Handbook"
+    publisher: "Wizards of the Coast"
+    year: 2024
+    ruleset: "2024"
+    content_scope: "core"
+    status: "current"
+    authority: "官方"
+    canonical_rules_source: "Player’s Handbook (2024)"
+    wiki:
+      tag: "玩家手冊2024"
+      tag_aliases: []
+      supported_versions:
+        - "2024-Core"
+    source_assets:
+      - id: "PHB2024_ZH_MARKDOWN"
+        path: "原始資料/玩家手冊2024"
+        format: "directory"
+        role: "translation"
+        language: "zh-Hant"
+        authority: "官方"
+        translation: "community"
+        status: "available"
+      - id: "PHB2024_EN_PDF"
+        path: "原始資料/PHB-2024_v1.pdf"
+        format: "pdf"
+        role: "rules_text"
+        language: "en"
+        authority: "官方"
+        translation: "none"
+        status: "available"
+      - id: "PHB2024_ZH_PDF"
+        path: "原始資料/DND 2024 中文翻譯.pdf"
+        format: "pdf"
+        role: "translation"
+        language: "zh-Hant"
+        authority: "官方"
+        translation: "community"
+        status: "available"
+
+  DMG2024:
+    entity_id: "publication:DMG2024"
+    concept_id: "publication:dungeon-masters-guide"
+    title_zh: "地下城主指南"
+    title_en: "Dungeon Master's Guide"
+    publisher: "Wizards of the Coast"
+    year: 2024
+    ruleset: "2024"
+    content_scope: "core"
+    status: "current"
+    authority: "官方"
+    canonical_rules_source: "Dungeon Master's Guide (2024)"
+    wiki:
+      tag: "地下城主指南2024"
+      tag_aliases:
+        - "城主指南2024"
+      supported_versions:
+        - "2024-Core"
+    source_assets:
+      - id: "DMG2024_ZH_MARKDOWN"
+        path: "原始資料/城主指南2024"
+        format: "directory"
+        role: "translation"
+        language: "zh-Hant"
+        authority: "官方"
+        translation: "community"
+        status: "available"
+
+  MM2025:
+    entity_id: "publication:MM2025"
+    concept_id: "publication:monster-manual"
+    title_zh: "怪物圖鑑"
+    title_en: "Monster Manual"
+    publisher: "Wizards of the Coast"
+    year: 2025
+    ruleset: "2024"
+    content_scope: "core"
+    status: "current"
+    authority: "官方"
+    canonical_rules_source: "Monster Manual (2025)"
+    wiki:
+      tag: "怪物圖鑑2025"
+      tag_aliases: []
+      supported_versions:
+        - "2024-Core"
+    source_assets:
+      - id: "MM2025_ZH_MARKDOWN"
+        path: "原始資料/怪物圖鑑2025"
+        format: "directory"
+        role: "translation"
+        language: "zh-Hant"
+        authority: "官方"
+        translation: "community"
+        status: "available"
+
+  EBER2025:
+    entity_id: "publication:EBER2025"
+    concept_id: "publication:eberron-forge-of-the-artificer"
+    title_zh: "艾伯倫：奇械鍛爐"
+    title_en: "Eberron: Forge of the Artificer"
+    publisher: "Wizards of the Coast"
+    year: 2025
+    ruleset: "2024"
+    content_scope: "expansion"
+    status: "current"
+    authority: "官方"
+    canonical_rules_source: "Eberron: Forge of the Artificer (2025)"
+    wiki:
+      tag: "艾伯倫奇械鍛爐2025"
+      tag_aliases: []
+      supported_versions:
+        - "2024-Core"
+    source_assets:
+      - id: "EBER2025_ZH_MARKDOWN"
+        path: "原始資料/艾伯倫：奇械鍛爐"
+        format: "directory"
+        role: "translation"
+        language: "zh-Hant"
+        authority: "官方"
+        translation: "community"
+        status: "available"
+
+  SRD521:
+    entity_id: "publication:SRD521"
+    concept_id: "publication:system-reference-document"
+    title_zh: "系統參考文件 5.2.1"
+    title_en: "System Reference Document 5.2.1"
+    publisher: "Wizards of the Coast"
+    year: 2025
+    ruleset: "2024"
+    content_scope: "reference"
+    status: "current"
+    authority: "官方"
+    canonical_rules_source: "SRD 5.2.1"
+    wiki:
+      tag: null
+      tag_aliases: []
+      supported_versions:
+        - "2024-Core"
+    source_assets:
+      - id: "SRD521_EN_PDF"
+        path: "原始資料/SRD_CC_v5.2.1.pdf"
+        format: "pdf"
+        role: "reference"
+        language: "en"
+        authority: "官方"
+        translation: "none"
+        status: "available"
+
+  DDAL_PLAYERS_2026_4:
+    entity_id: "publication:DDAL_PLAYERS_2026_4"
+    concept_id: "publication:ddal-players-guide"
+    title_zh: "D&D 冒險者聯盟玩家指南"
+    title_en: "D&D Adventurers League Players Guide"
+    publisher: "Wizards of the Coast"
+    year: 2026
+    ruleset: "2024"
+    content_scope: "organized_play"
+    status: "current"
+    authority: "官方"
+    canonical_rules_source: "D&D Adventurers League Players Guide v2026.4"
+    wiki:
+      tag: "冒險者聯盟玩家指南2026"
+      tag_aliases: []
+      supported_versions:
+        - "AL-Organized-Play"
+    source_assets:
+      - id: "DDAL_PLAYERS_2026_4_EN_PDF"
+        path: "原始資料/D&D Adventurers League Players Guide v2026.4.pdf"
+        format: "pdf"
+        role: "rules_text"
+        language: "en"
+        authority: "官方"
+        translation: "none"
+        status: "available"
+      - id: "DDAL_PLAYERS_2026_4_ZH_PDF"
+        path: "原始資料/DDAL_Players_Guide_v2026.4_泰坦圓桌中譯版.pdf"
+        format: "pdf"
+        role: "translation"
+        language: "zh-Hant"
+        authority: "官方"
+        translation: "community"
+        status: "available"
+
+  DDAL_DM_2026_2:
+    entity_id: "publication:DDAL_DM_2026_2"
+    concept_id: "publication:ddal-dungeon-masters-guide"
+    title_zh: "D&D 冒險者聯盟地下城主指南"
+    title_en: "D&D Adventurers League Dungeon Masters Guide"
+    publisher: "Wizards of the Coast"
+    year: 2026
+    ruleset: "2024"
+    content_scope: "organized_play"
+    status: "current"
+    authority: "官方"
+    canonical_rules_source: "D&D Adventurers League Dungeon Masters Guide v2026.2"
+    wiki:
+      tag: "冒險者聯盟地下城主指南2026"
+      tag_aliases: []
+      supported_versions:
+        - "AL-Organized-Play"
+    source_assets:
+      - id: "DDAL_DM_2026_2_EN_PDF"
+        path: "原始資料/DD_Adventurers_League_Dungeon_Masters_Guide_v2026.2.pdf"
+        format: "pdf"
+        role: "rules_text"
+        language: "en"
+        authority: "官方"
+        translation: "none"
+        status: "available"
+
+  DDAL_ADAPTATION_2026_2:
+    entity_id: "publication:DDAL_ADAPTATION_2026_2"
+    concept_id: "publication:ddal-adaptation-guide"
+    title_zh: "D&D 冒險者聯盟調整指南"
+    title_en: "D&D Adventurers League Adaptation Guide"
+    publisher: "Wizards of the Coast"
+    year: 2026
+    ruleset: "2024"
+    content_scope: "organized_play"
+    status: "current"
+    authority: "官方"
+    canonical_rules_source: "D&D Adventurers League Adaptation Guide v2026.2"
+    wiki:
+      tag: "冒險者聯盟調整指南2026"
+      tag_aliases: []
+      supported_versions:
+        - "AL-Organized-Play"
+    source_assets:
+      - id: "DDAL_ADAPTATION_2026_2_EN_PDF"
+        path: "原始資料/DD_Adventurers_League_Adaptation_Guide_v2026.2.pdf"
+        format: "pdf"
+        role: "rules_text"
+        language: "en"
+        authority: "官方"
+        translation: "none"
+        status: "available"
+
+# 冒險者聯盟玩家指南 v2026.4，附錄 A「Additional Rules Sources」（p. 9）。
+# 這些書目尚未置入本機原始檔時，先以 planned_source_root 保留預定匯入位置。
+# title_zh 只有在詞彙表或可定位中文來源核定後才填入，避免預先臆造譯名。
+al_reference_books:
+  - id: "ASTARIONS_BOOK_OF_HUNGERS"
+    title_zh: null
+    title_en: "Astarion’s Book of Hungers"
+    availability: "available"
+    campaigns: ["FR", "RV"]
+    planned_source_root: "原始資料/待匯入出版品/ASTARIONS_BOOK_OF_HUNGERS"
+  - id: "BGDIA"
+    title_zh: null
+    title_en: "Baldur’s Gate: Descent into Avernus"
+    availability: "available"
+    campaigns: ["FR", "DL", "RV", "CR"]
+    planned_source_root: "原始資料/待匯入出版品/BGDIA"
+  - id: "BPGOG"
+    title_zh: null
+    title_en: "Bigby Presents: Glory of the Giants"
+    availability: "available"
+    campaigns: ["FR", "DL", "EB", "RV", "CR"]
+    planned_source_root: "原始資料/待匯入出版品/BPGOG"
+  - id: "BOMT"
+    title_zh: null
+    title_en: "Book of Many Things"
+    availability: "available"
+    campaigns: ["FR", "DL", "EB", "RV", "CR"]
+    planned_source_root: "原始資料/待匯入出版品/BOMT"
+  - id: "BORDER_KINGDOMS"
+    title_zh: null
+    title_en: "The Border Kingdoms"
+    availability: "available"
+    campaigns: ["FR", "DL", "RV", "CR"]
+    planned_source_root: "原始資料/待匯入出版品/BORDER_KINGDOMS"
+  - id: "COS"
+    title_zh: null
+    title_en: "Curse of Strahd"
+    availability: "available"
+    campaigns: ["FR", "RV"]
+    planned_source_root: "原始資料/待匯入出版品/COS"
+  - id: "DSOTDQ"
+    title_zh: null
+    title_en: "Dragonlance: Shadow of the Dragon Queen"
+    availability: "available"
+    campaigns: ["DL"]
+    planned_source_root: "原始資料/待匯入出版品/DSOTDQ"
+  - publication_id: "DMG2024"
+    availability: "available"
+    campaigns: ["FR", "DL", "EB", "RV", "CR"]
+  - id: "DURNANS_GUIDE_TO_TAVERNKEEPING"
+    title_zh: null
+    title_en: "Durnan’s Guide to Tavernkeeping"
+    availability: "available"
+    campaigns: ["FR", "DL", "RV", "CR"]
+    planned_source_root: "原始資料/待匯入出版品/DURNANS_GUIDE_TO_TAVERNKEEPING"
+  - publication_id: "EBER2025"
+    availability: "available"
+    campaigns: ["FR", "DL", "EB", "RV"]
+  - id: "ERLW"
+    title_zh: null
+    title_en: "Eberron: Rising from the Last War"
+    availability: "available"
+    campaigns: ["EB"]
+    planned_source_root: "原始資料/待匯入出版品/ERLW"
+  - id: "EGW"
+    title_zh: null
+    title_en: "Explorer’s Guide to Wildemount"
+    availability: "available"
+    campaigns: ["CR"]
+    planned_source_root: "原始資料/待匯入出版品/EGW"
+  - id: "FTD"
+    title_zh: null
+    title_en: "Fizban’s Treasury of Dragons"
+    availability: "available"
+    campaigns: ["FR", "DL", "RV"]
+    planned_source_root: "原始資料/待匯入出版品/FTD"
+  - id: "FR_HEROES_OF_FAERUN"
+    title_zh: null
+    title_en: "Forgotten Realms: Heroes of Faerûn"
+    availability: "available"
+    campaigns: ["FR", "DL", "EB", "RV"]
+    planned_source_root: "原始資料/待匯入出版品/FR_HEROES_OF_FAERUN"
+  - id: "GOS"
+    title_zh: null
+    title_en: "Ghosts of Saltmarsh"
+    availability: "available"
+    campaigns: ["FR", "DL", "RV", "CR"]
+    planned_source_root: "原始資料/待匯入出版品/GOS"
+  - id: "HOTDQ"
+    title_zh: null
+    title_en: "Hoard of the Dragon Queen"
+    availability: "available"
+    campaigns: ["FR", "DL", "RV", "CR"]
+    planned_source_root: "原始資料/待匯入出版品/HOTDQ"
+  - id: "IDROTF"
+    title_zh: null
+    title_en: "Icewind Dale: Rime of the Frostmaiden"
+    availability: "available"
+    campaigns: ["FR", "DL", "RV"]
+    planned_source_root: "原始資料/待匯入出版品/IDROTF"
+  - id: "KNUCKLEHEADS"
+    title_zh: null
+    title_en: "Knuckleheads and Other Curiosities"
+    availability: "available"
+    campaigns: ["FR", "DL", "RV", "CR"]
+    planned_source_root: "原始資料/待匯入出版品/KNUCKLEHEADS"
+  - id: "LLK"
+    title_zh: null
+    title_en: "Lost Laboratory of Kwalish"
+    availability: "available"
+    campaigns: ["FR"]
+    planned_source_root: "原始資料/待匯入出版品/LLK"
+  - id: "LOCATHAH_RISING"
+    title_zh: null
+    title_en: "Locathah Rising"
+    availability: "available"
+    campaigns: ["FR", "DL", "RV", "CR"]
+    planned_source_root: "原始資料/待匯入出版品/LOCATHAH_RISING"
+  - id: "MOONSHAE_ISLES_REGIONAL_GUIDE"
+    title_zh: null
+    title_en: "Moonshae Isles Regional Guide"
+    availability: "available"
+    campaigns: ["FR", "DL", "RV", "CR"]
+    planned_source_root: "原始資料/待匯入出版品/MOONSHAE_ISLES_REGIONAL_GUIDE"
+  - id: "MPMM"
+    title_zh: null
+    title_en: "Mordenkainen Presents: Monsters of the Multiverse"
+    availability: "available"
+    campaigns: ["FR", "DL", "EB", "RV", "CR"]
+    planned_source_root: "原始資料/待匯入出版品/MPMM"
+  - id: "OOTA"
+    title_zh: null
+    title_en: "Out of the Abyss"
+    availability: "available"
+    campaigns: ["FR", "DL", "RV", "CR"]
+    planned_source_root: "原始資料/待匯入出版品/OOTA"
+  - id: "PAITM"
+    title_zh: null
+    title_en: "Planescape: Adventures in the Multiverse"
+    availability: "available"
+    campaigns: ["FR"]
+    planned_source_root: "原始資料/待匯入出版品/PAITM"
+  - id: "RATS_OF_WATERDEEP"
+    title_zh: null
+    title_en: "Rats of Waterdeep"
+    availability: "available"
+    campaigns: ["FR", "DL", "RV", "CR"]
+    planned_source_root: "原始資料/待匯入出版品/RATS_OF_WATERDEEP"
+  - id: "ROT"
+    title_zh: null
+    title_en: "Rise of Tiamat"
+    availability: "available"
+    campaigns: ["FR", "DL", "RV", "CR"]
+    planned_source_root: "原始資料/待匯入出版品/ROT"
+  - id: "RUINS_OF_MEZRO"
+    title_zh: null
+    title_en: "Ruins of Mezro"
+    availability: "available"
+    campaigns: ["FR", "DL", "RV", "CR"]
+    planned_source_root: "原始資料/待匯入出版品/RUINS_OF_MEZRO"
+  - id: "SAS"
+    title_zh: null
+    title_en: "Spelljammer: Adventures in Space"
+    availability: "available"
+    campaigns: ["FR"]
+    planned_source_root: "原始資料/待匯入出版品/SAS"
+  - id: "SCAG"
+    title_zh: null
+    title_en: "Sword Coast Adventurer’s Guide"
+    availability: "available"
+    campaigns: ["FR"]
+    planned_source_root: "原始資料/待匯入出版品/SCAG"
+  - id: "TALDOREI_REBORN"
+    title_zh: null
+    title_en: "Tal’Dorei Reborn"
+    availability: "available"
+    campaigns: ["CR"]
+    planned_source_root: "原始資料/待匯入出版品/TALDOREI_REBORN"
+  - id: "TCE"
+    title_zh: null
+    title_en: "Tasha’s Cauldron of Everything"
+    availability: "available"
+    campaigns: ["FR", "DL", "EB", "RV", "CR"]
+    planned_source_root: "原始資料/待匯入出版品/TCE"
+  - id: "TOA"
+    title_zh: null
+    title_en: "Tomb of Annihilation"
+    availability: "available"
+    campaigns: ["FR", "DL", "RV", "CR"]
+    planned_source_root: "原始資料/待匯入出版品/TOA"
+  - id: "RTHW"
+    title_zh: null
+    title_en: "Ravenloft: The Horrors Within"
+    availability: "available"
+    campaigns: ["FR", "DL", "EB", "RV"]
+    planned_source_root: "原始資料/待匯入出版品/RTHW"
+  - id: "VRGTR"
+    title_zh: null
+    title_en: "Van Richten’s Guide to Ravenloft"
+    availability: "available"
+    campaigns: ["RV"]
+    planned_source_root: "原始資料/待匯入出版品/VRGTR"
+  - id: "WBW"
+    title_zh: null
+    title_en: "The Wild Beyond the Witchlight"
+    availability: "available"
+    campaigns: ["FR", "DL", "RV", "CR"]
+    planned_source_root: "原始資料/待匯入出版品/WBW"
+  - id: "XGE"
+    title_zh: null
+    title_en: "Xanathar’s Guide to Everything"
+    availability: "available"
+    campaigns: ["FR", "DL", "EB", "RV", "CR"]
+    planned_source_root: "原始資料/待匯入出版品/XGE"
+  - id: "ONE_GRUNG_ABOVE"
+    title_zh: null
+    title_en: "One Grung Above"
+    availability: "unavailable"
+    campaigns: []
+    planned_source_root: "原始資料/待匯入出版品/ONE_GRUNG_ABOVE"
+  - id: "WGTE"
+    title_zh: null
+    title_en: "Wayfinder’s Guide to Eberron"
+    availability: "unavailable"
+    campaigns: []
+    planned_source_root: "原始資料/待匯入出版品/WGTE"

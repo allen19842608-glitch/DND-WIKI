@@ -45,7 +45,7 @@ function canonicalMonsterName(entry) {
     }
   }
   if (entry.chinese.endsWith("龍雛龍") && entry.english.endsWith(" Dragon Wyrmling")) {
-    return { ...entry, chinese: entry.chinese.slice(0, -2), english: entry.english.slice(0, -10), locatorChinese: entry.chinese };
+    return { ...entry, chinese: entry.chinese.slice(0, -2), english: entry.english.slice(0, -9), locatorChinese: entry.chinese };
   }
   if (entry.chinese === "妖精龍成體" && entry.english === "Faerie Dragon Adult") {
     return { ...entry, chinese: "妖精龍", english: "Faerie Dragon", locatorChinese: entry.chinese };
