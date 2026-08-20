@@ -251,6 +251,60 @@ publications:
         translation: "community"
         status: "available"
 
+  ABH2025:
+    entity_id: "publication:ABH2025"
+    concept_id: "publication:astarions-book-of-hungers"
+    title_zh: "阿斯代倫的飢渴之書"
+    title_en: "Astarion's Book of Hungers"
+    publisher: "Wizards of the Coast"
+    year: 2025
+    ruleset: "2024"
+    content_scope: "expansion"
+    status: "current"
+    authority: "官方"
+    canonical_rules_source: "Astarion's Book of Hungers (2025)"
+    wiki:
+      tag: "阿斯代倫的飢渴之書2025"
+      tag_aliases: []
+      supported_versions:
+        - "2024-Core"
+    source_assets:
+      - id: "ABH2025_ZH_MARKDOWN"
+        path: "原始資料/阿斯代倫的飢渴之書"
+        format: "directory"
+        role: "translation"
+        language: "zh-Hant"
+        authority: "官方"
+        translation: "community"
+        status: "available"
+
+  RTHW2026:
+    entity_id: "publication:RTHW2026"
+    concept_id: "publication:ravenloft-the-horrors-within"
+    title_zh: "鴉閣魔域：魔障深藏"
+    title_en: "Ravenloft: The Horrors Within"
+    publisher: "Wizards of the Coast"
+    year: 2026
+    ruleset: "2024"
+    content_scope: "expansion"
+    status: "current"
+    authority: "官方"
+    canonical_rules_source: "Ravenloft: The Horrors Within (2026)"
+    wiki:
+      tag: "鴉閣魔域魔障深藏2026"
+      tag_aliases: []
+      supported_versions:
+        - "2024-Core"
+    source_assets:
+      - id: "RTHW2026_ZH_MARKDOWN"
+        path: "原始資料/鴉閣魔域：魔障深藏"
+        format: "directory"
+        role: "translation"
+        language: "zh-Hant"
+        authority: "官方"
+        translation: "community"
+        status: "available"
+
   SRD521:
     entity_id: "publication:SRD521"
     concept_id: "publication:system-reference-document"
