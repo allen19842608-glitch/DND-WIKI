@@ -1,0 +1,8 @@
+publication_id: "FRAIF2025"
+source_root: "原始資料/被遺忘的國度：費倫冒險"
+inputs:
+  monsters: "第九章"
+  magic_items: "第八章：魔法物品.md"
+outputs:
+  monsters: "wiki/怪物"
+  magic_items: "wiki/魔法物品"

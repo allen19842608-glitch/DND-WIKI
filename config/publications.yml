@@ -251,6 +251,33 @@ publications:
         translation: "community"
         status: "available"
 
+  FRAIF2025:
+    entity_id: "publication:FRAIF2025"
+    concept_id: "publication:forgotten-realms-adventures-in-faerun"
+    title_zh: "被遺忘的國度：費倫冒險"
+    title_en: "Forgotten Realms: Adventures in Faerûn"
+    publisher: "Wizards of the Coast"
+    year: 2025
+    ruleset: "2024"
+    content_scope: "expansion"
+    status: "current"
+    authority: "官方"
+    canonical_rules_source: "Forgotten Realms: Adventures in Faerûn (2025)"
+    wiki:
+      tag: "被遺忘的國度費倫冒險2025"
+      tag_aliases: []
+      supported_versions:
+        - "2024-Core"
+    source_assets:
+      - id: "FRAIF2025_ZH_MARKDOWN"
+        path: "原始資料/被遺忘的國度：費倫冒險"
+        format: "directory"
+        role: "translation"
+        language: "zh-Hant"
+        authority: "官方"
+        translation: "community"
+        status: "available"
+
   ABH2025:
     entity_id: "publication:ABH2025"
     concept_id: "publication:astarions-book-of-hungers"
