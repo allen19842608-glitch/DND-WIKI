@@ -99,6 +99,41 @@ publications:
         translation: "none"
         status: "available"
 
+  TCE2020:
+    entity_id: "publication:TCE2020"
+    concept_id: "publication:tashas-cauldron-of-everything"
+    title_zh: "塔莎的萬事坩堝"
+    title_en: "Tasha’s Cauldron of Everything"
+    publisher: "Wizards of the Coast"
+    year: 2020
+    ruleset: "2014"
+    content_scope: "expansion"
+    status: "legacy"
+    authority: "官方"
+    canonical_rules_source: "Tasha’s Cauldron of Everything (2020)"
+    wiki:
+      tag: "塔莎的萬事坩堝2020"
+      tag_aliases: []
+      supported_versions:
+        - "2014-Legacy"
+    source_assets:
+      - id: "TCE2020_ZH_MARKDOWN"
+        path: "原始資料/塔莎的萬事坩堝"
+        format: "directory"
+        role: "translation"
+        language: "zh-Hans"
+        authority: "官方"
+        translation: "community"
+        status: "available"
+      - id: "TCE2020_EN_PDF"
+        path: "原始資料/塔莎的萬事坩堝/Tashas_Cauldron_of_Everything.pdf"
+        format: "pdf"
+        role: "rules_text"
+        language: "en"
+        authority: "官方"
+        translation: "none"
+        status: "available"
+
   PHB2014:
     entity_id: "publication:PHB2014"
     concept_id: "publication:players-handbook"

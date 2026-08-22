@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { execFileSync } from "node:child_process";
 import { ROOT, defaultSource, frontmatter, loadIngestProfile, loadPublication, parseOptions, writableCandidate } from "../core/ingest-publication-utils.mjs";
 
 const options = parseOptions();
@@ -8,6 +9,9 @@ const profile = loadIngestProfile(options.publicationId);
 const sourceRoot = options.source ? path.resolve(ROOT, options.source) : defaultSource(publication);
 const inputDir = path.join(sourceRoot, profile.inputs.spells ?? "法術詳述");
 const outputRoot = path.resolve(options.output ? path.join(ROOT, options.output) : path.join(ROOT, profile.outputs.spells ?? "wiki/法術"));
+const openccRoot = process.env.DND_WIKI_OPENCC_PATH ?? "C:\\Users\\Owner\\.codex\\tools\\dnd-wiki-opencc";
+const python = process.env.DND_WIKI_PYTHON ?? "C:\\Users\\Owner\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe";
+const openccProgram = "import sys;sys.path.insert(0,sys.argv[1]);from opencc import OpenCC;sys.stdout.write(OpenCC('s2twp').convert(sys.stdin.read()))";
 
 if (!fs.existsSync(inputDir)) throw new Error(`找不到法術來源目錄：${inputDir}`);
 
@@ -25,12 +29,65 @@ function ringForFile(file) {
   return { number, name: `${numerals[number]}環`, directory: `${number}環` };
 }
 
-function sourceLocator(english) {
-  return `#${english.replaceAll(" ", "_").replaceAll("'", "")}`;
+function sourceLocator(spell) {
+  if (typeof spell === "object") return `#### ${spell.chinese}｜${spell.english}`;
+  return `#${spell.replaceAll(" ", "_").replaceAll("'", "")}`;
+}
+
+function traditional(text) {
+  const language = publication.source_assets?.find((asset) => asset.format === "directory" && asset.status === "available")?.language;
+  if (language !== "zh-Hans") return text;
+  if (!fs.existsSync(openccRoot)) throw new Error(`找不到 OpenCC：${openccRoot}`);
+  return execFileSync(python, ["-c", openccProgram, openccRoot], { input: text, encoding: "utf8", maxBuffer: 32 * 1024 * 1024 });
+}
+
+function normalize(text) {
+  return traditional(text)
+    .replace(/(\d+)\s*尺/g, "$1 呎")
+    .replace(/(\d+)\s*(分鐘|小時|輪|磅)/g, "$1 $2")
+    .replaceAll("尺", "呎").replaceAll("型別", "類型")
+    .replaceAll("聖武士", "聖騎士").replaceAll("邪術師", "契術師").replaceAll("魔契師", "契術師");
 }
 
 function pageName(chinese) {
   return chinese.replaceAll("/", "-").replaceAll("\\", "-");
+}
+
+function walkMarkdown(directory) {
+  return fs.readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
+    const target = path.join(directory, entry.name);
+    return entry.isDirectory() ? walkMarkdown(target) : entry.isFile() && entry.name.endsWith(".md") ? [target] : [];
+  });
+}
+
+function currentCounterpart(english) {
+  const root = path.join(ROOT, "wiki", "法術");
+  return walkMarkdown(root).find((file) => !file.includes(`${path.sep}2014${path.sep}`)
+    && (fs.readFileSync(file, "utf8").match(/^title: "(.+?)"$/m)?.[1] ?? "").includes(`(${english})`));
+}
+
+function wikiTarget(file) {
+  return path.relative(path.join(ROOT, "wiki"), file).split(path.sep).join("/").replace(/\.md$/, "");
+}
+
+function addCurrentBacklink(current, legacyTarget, legacyTitle) {
+  if (!current) return;
+  let content = fs.readFileSync(current, "utf8");
+  const link = `[[${legacyTarget}|${legacyTitle}]]`;
+  if (content.includes(link)) return;
+  content = content.replace(/(## 🔗 相關連結\r?\n\r?\n)/, `$1- ${link}\n`);
+  fs.writeFileSync(current, content, "utf8");
+}
+
+function appendIndexEntries(destination, entries) {
+  if (!fs.existsSync(destination)) return false;
+  let content = fs.readFileSync(destination, "utf8");
+  const additions = entries.filter((entry) => !content.includes(`/${pageName(entry.chinese)}|`))
+    .map((entry) => `- [[法術/2014/${entry.ring.directory}/${pageName(entry.chinese)}|${entry.chinese} (${entry.english}，2014 Legacy)]]`);
+  if (!additions.length) return false;
+  content = content.replace(/\n## 🔗 相關連結/, `\n${additions.join("\n")}\n\n## 🔗 相關連結`);
+  fs.writeFileSync(destination, content, "utf8");
+  return true;
 }
 
 function metadata(meta, ring) {
@@ -49,8 +106,8 @@ function metadata(meta, ring) {
 }
 
 function field(block, name) {
-  const line = block.find((item) => item.startsWith(`**${name}`));
-  return line?.replace(/^\*\*[^：:]+[：:]\*\*\s*/, "").trim() ?? "依來源確認";
+  const line = block.find((item) => new RegExp(`^(?:\\*\\*)?${name}[：:]`).test(item.trim()));
+  return line?.replace(/^(?:\*\*)?[^：:]+[：:](?:\*\*)?\s*/, "").trim() ?? "依來源確認";
 }
 
 function componentsDetail(components) {
@@ -60,7 +117,7 @@ function componentsDetail(components) {
 }
 
 function rulesText(block) {
-  const body = block.filter((line) => !/^_|^\*\*(施法時間|施法距離|法術成分|持續時間)[：:]/.test(line));
+  const body = block.filter((line) => !/^_|^(?:\*\*)?(施法時間|施法距離|法術成分|持續時間)[：:]/.test(line));
   const higher = body.find((line) => /^\*\*升環施法[。.]?\*\*/.test(line));
   const effect = body.filter((line) => line !== higher).join(" ").replace(/\s+/g, " ").trim();
   return {
@@ -92,8 +149,12 @@ function spellPage({ spell, source, ring, block }) {
   const spellTag = `法術_${ring.name}`;
   const indexName = ring.number === 0 ? "戲法法術索引" : `${ring.name}法術索引`;
   const sourceLabel = `${publication.title_zh} ${publication.year}`;
+  const current = currentCounterpart(spell.english);
+  const currentLink = current
+    ? `[[${wikiTarget(current)}|${fs.readFileSync(current, "utf8").match(/^title: "(.+?)"$/m)?.[1] ?? path.basename(current, ".md")}]]`
+    : undefined;
   const lines = [
-    frontmatter({ publicationId: options.publicationId, publication, kind: "spell", concept: spell.english, title: `${spell.chinese} (${spell.english})`, category: "法術", tag: spellTag, source, locator: sourceLocator(spell.english) }),
+    frontmatter({ publicationId: options.publicationId, publication, kind: "spell", concept: spell.english, title: `${spell.chinese} (${spell.english})`, category: "法術", tag: spellTag, source, locator: sourceLocator(spell) }),
     "",
     `# ${spell.chinese} (${spell.english})`,
     "",
@@ -111,7 +172,7 @@ function spellPage({ spell, source, ring, block }) {
     "",
     "## 🔮 法術效果描述",
     "",
-    `- **效果**：${effect || "請依可定位來源補齊效果。"}（來源：${sourceLabel}，法術詳述，${sourceLocator(spell.english)}）`,
+    `- **效果**：${effect || "請依可定位來源補齊效果。"}（來源：${sourceLabel}，法術詳述，${sourceLocator(spell)}）`,
     ...(higher ? [`- **升環施法 (At Higher Levels)**：${higher}`] : []),
     "",
     "## 💡 實戰應用與裁量 (DM Ruling)",
@@ -122,8 +183,10 @@ function spellPage({ spell, source, ring, block }) {
     "## 🔗 相關連結",
     "",
     `- [[法術/2014/${ring.directory}/${indexName}|${indexName} (2014 Legacy)]]`,
+    ...(currentLink ? [`- ${currentLink}`] : []),
     "",
   ];
+  if (current) addCurrentBacklink(current, `法術/2014/${ring.directory}/${pageName(spell.chinese)}`, `${spell.chinese} (${spell.english}，2014 Legacy)`);
   return lines.join("\n");
 }
 
@@ -131,7 +194,7 @@ const spellsByRing = new Map();
 for (const input of fs.readdirSync(inputDir).filter((name) => ringForFile(name))) {
   const ring = ringForFile(input);
   const sourcePath = path.join(inputDir, input);
-  const lines = fs.readFileSync(sourcePath, "utf8").split(/\r?\n/);
+  const lines = normalize(fs.readFileSync(sourcePath, "utf8")).split(/\r?\n/);
   const headings = lines.flatMap((line, index) => {
     const match = line.match(/^####\s+(.+?)[｜|]\s*([A-Za-z][A-Za-z '\-]+)/);
     return match ? [{ index, chinese: match[1].trim(), english: match[2].trim() }] : [];
@@ -142,7 +205,7 @@ for (const input of fs.readdirSync(inputDir).filter((name) => ringForFile(name))
     const block = lines.slice(spell.index + 1, end).filter((line) => line.trim());
     const page = spellPage({ spell, source, ring, block });
     writableCandidate({ destination: path.join(outputRoot, ring.directory, `${pageName(spell.chinese)}.md`), content: page, options });
-    return spell;
+    return { ...spell, ring };
   });
   spellsByRing.set(ring.number, { ring, spells, source });
 }
@@ -151,7 +214,8 @@ for (const { ring, spells, source } of spellsByRing.values()) {
   const indexName = ring.number === 0 ? "戲法法術索引" : `${ring.name}法術索引`;
   const entries = spells.map((spell) => `- [[法術/2014/${ring.directory}/${pageName(spell.chinese)}|${spell.chinese} (${spell.english}，2014 Legacy)]]`).join("\n");
   const content = `${frontmatter({ publicationId: options.publicationId, publication, kind: "spell-index", concept: `${ring.name}-spells`, title: `${ring.name}法術索引 (2014 ${ring.name} Spells Index)`, category: "法術", tag: "法術_索引", source, locator: `${ring.name}法術詳述` })}\n\n# ${ring.name}法術索引 (2014 ${ring.name} Spells Index)\n\n> 收錄《${publication.title_zh} ${publication.year}》的 ${ring.name} 法術。\n\n${entries}\n\n## 🔗 相關連結\n\n- [[法術/2014/法術索引|2014 法術索引 (2014 Spells Index)]]\n`;
-  writableCandidate({ destination: path.join(outputRoot, ring.directory, `${indexName}.md`), content, options });
+  const destination = path.join(outputRoot, ring.directory, `${indexName}.md`);
+  if (!appendIndexEntries(destination, spells)) writableCandidate({ destination, content, options });
 }
 
 if (spellsByRing.size) {
