@@ -3,7 +3,7 @@ import path from "node:path";
 import { spawnSync } from "node:child_process";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
-import { extractWikiSourceFiles, splitMarkdownRow, wikiLinkTargets } from "../scripts/wiki-maintenance.mjs";
+import { extractWikiSourceFiles, splitMarkdownRow, wikiLinkTargets } from "../scripts/core/wiki-maintenance.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -27,7 +27,7 @@ test("來源清單可解析含 BOM 的 Wiki Frontmatter", () => {
 });
 
 test("規範查詢只輸出指定章節", () => {
-  const result = spawnSync(process.execPath, ["scripts/wiki-maintenance.mjs", "policy", "翻譯對照規則"], {
+  const result = spawnSync(process.execPath, ["scripts/core/wiki-maintenance.mjs", "policy", "翻譯對照規則"], {
     cwd: root,
     encoding: "utf8",
   });
@@ -37,7 +37,7 @@ test("規範查詢只輸出指定章節", () => {
 });
 
 test("詞彙查詢可定位既有標準譯名", () => {
-  const result = spawnSync(process.execPath, ["scripts/wiki-maintenance.mjs", "glossary", "Rage"], {
+  const result = spawnSync(process.execPath, ["scripts/core/wiki-maintenance.mjs", "glossary", "Rage"], {
     cwd: root,
     encoding: "utf8",
   });

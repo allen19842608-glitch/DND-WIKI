@@ -189,7 +189,7 @@ publications:
         - "2024-Core"
     source_assets:
       - id: "DMG2024_ZH_MARKDOWN"
-        path: "原始資料/城主指南2024"
+        path: "原始資料/地下城主指南2024"
         format: "directory"
         role: "translation"
         language: "zh-Hant"
@@ -244,6 +244,33 @@ publications:
     source_assets:
       - id: "EBER2025_ZH_MARKDOWN"
         path: "原始資料/艾伯倫：奇械鍛爐"
+        format: "directory"
+        role: "translation"
+        language: "zh-Hant"
+        authority: "官方"
+        translation: "community"
+        status: "available"
+
+  FRHOF2025:
+    entity_id: "publication:FRHOF2025"
+    concept_id: "publication:forgotten-realms-heroes-of-faerun"
+    title_zh: "被遺忘的國度：費倫英雄"
+    title_en: "Forgotten Realms: Heroes of Faerûn"
+    publisher: "Wizards of the Coast"
+    year: 2025
+    ruleset: "2024"
+    content_scope: "expansion"
+    status: "current"
+    authority: "官方"
+    canonical_rules_source: "Forgotten Realms: Heroes of Faerûn (2025)"
+    wiki:
+      tag: "被遺忘的國度費倫英雄2025"
+      tag_aliases: []
+      supported_versions:
+        - "2024-Core"
+    source_assets:
+      - id: "FRHOF2025_ZH_MARKDOWN"
+        path: "原始資料/被遺忘的國度：費倫英雄"
         format: "directory"
         role: "translation"
         language: "zh-Hant"
@@ -525,11 +552,11 @@ al_reference_books:
     campaigns: ["FR", "DL", "RV"]
     planned_source_root: "原始資料/待匯入出版品/FTD"
   - id: "FR_HEROES_OF_FAERUN"
-    title_zh: null
+    title_zh: "被遺忘的國度：費倫英雄"
     title_en: "Forgotten Realms: Heroes of Faerûn"
     availability: "available"
     campaigns: ["FR", "DL", "EB", "RV"]
-    planned_source_root: "原始資料/待匯入出版品/FR_HEROES_OF_FAERUN"
+    planned_source_root: "原始資料/被遺忘的國度：費倫英雄"
   - id: "GOS"
     title_zh: null
     title_en: "Ghosts of Saltmarsh"

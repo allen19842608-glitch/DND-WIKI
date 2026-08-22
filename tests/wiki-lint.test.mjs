@@ -3,9 +3,10 @@ import assert from "node:assert/strict";
 import {
   deriveSourceType,
   extractFrontmatter,
+  lintWiki,
   parseWikiLink,
   validateMagicItemStructure,
-} from "../scripts/wiki-lint.mjs";
+} from "../scripts/core/wiki-lint.mjs";
 
 test("extractFrontmatter separates YAML and body", () => {
   const result = extractFrontmatter('---\ntitle: "測試"\n---\n# 測試\n');
@@ -31,6 +32,21 @@ test("parseWikiLink removes heading fragments", () => {
     target: "職業/奇械師/煉金師",
     alias: "煉金師",
   });
+});
+
+test("lint 可在指定範圍驗證記憶體候選內容", () => {
+  const originalLog = console.log;
+  console.log = () => {};
+  try {
+    const result = lintWiki({
+      files: ["wiki/索引.md"],
+      overrides: new Map([["wiki/索引.md", "---\ntitle: [\n---\n# 索引\n"]]),
+    });
+    assert.ok(result.scopeSize > 0);
+    assert.ok(result.diagnostics.some((item) => item.file === "wiki/索引.md" && item.code === "YAML_PARSE"));
+  } finally {
+    console.log = originalLog;
+  }
 });
 
 test("魔法物品結構檢查標示泛稱、占位觸發與重複限制", () => {

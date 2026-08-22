@@ -1,5 +1,5 @@
 publication_id: "DMG2024"
-source_root: "原始資料/城主指南2024"
+source_root: "原始資料/地下城主指南2024"
 ruleset: "2024"
 outputs:
   magic_items: "wiki/魔法物品"

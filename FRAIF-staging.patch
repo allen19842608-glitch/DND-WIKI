@@ -1,0 +1,63 @@
+diff --git a/config/publications.yml b/config/publications.yml
+--- a/config/publications.yml
++++ b/config/publications.yml
+@@ -251,6 +251,33 @@ publications:
+         translation: "community"
+         status: "available"
+ 
++  FRAIF2025:
++    entity_id: "publication:FRAIF2025"
++    concept_id: "publication:forgotten-realms-adventures-in-faerun"
++    title_zh: "被遺忘的國度：費倫冒險"
++    title_en: "Forgotten Realms: Adventures in Faerûn"
++    publisher: "Wizards of the Coast"
++    year: 2025
++    ruleset: "2024"
++    content_scope: "expansion"
++    status: "current"
++    authority: "官方"
++    canonical_rules_source: "Forgotten Realms: Adventures in Faerûn (2025)"
++    wiki:
++      tag: "被遺忘的國度費倫冒險2025"
++      tag_aliases: []
++      supported_versions:
++        - "2024-Core"
++    source_assets:
++      - id: "FRAIF2025_ZH_MARKDOWN"
++        path: "原始資料/被遺忘的國度：費倫冒險"
++        format: "directory"
++        role: "translation"
++        language: "zh-Hant"
++        authority: "官方"
++        translation: "community"
++        status: "available"
++
+   ABH2025:
+     entity_id: "publication:ABH2025"
+     concept_id: "publication:astarions-book-of-hungers"
+diff --git "a/附件/翻譯詞彙表.md" "b/附件/翻譯詞彙表.md"
+--- "a/附件/翻譯詞彙表.md"
++++ "b/附件/翻譯詞彙表.md"
+@@ -1767,7 +1767,7 @@ updated: "2026-08-20"
+ | Morte's Planar Parade (2023) | 莫提的位面遊記（2023） | MPP（2023） |
+ | The Book of Many Things (2023) | 萬象無常書（2023） | BMT（2023） |
+ | Forgotten Realms: Heroes of Faerun (2025) | 被遺忘的國度：費倫英雄（2025） | FRHoF（2025） |
+-| Forgotten Realms: Adventure of Faerun (2025) | 被遺忘的國度：費倫冒險（2025） | FRAiF（2025） |
++| Forgotten Realms: Adventures in Faerûn (2025) | 被遺忘的國度：費倫冒險（2025） | FRAIF2025 |
+ | Lorwyn: First Light (2025) | 洛溫：初光（2025） | LFL（2025） |
+ | Netheril's Fall (2025) | 耐瑟瑞爾之殞（2025） | NF（2025） |
+ | Astarion's Book of Hungers (2025) | 阿斯代倫的飢渴之書（2025） | ABH（2025） |
+@@ -1750,6 +1841,13 @@ updated: "2026-08-20"
+ 
+ 此表收錄已建立的魔法物品名稱對照；物品規則與完整來源請開啟各條目。
+ 
++| Harper Pin | 豎琴手胸針 | FRAIF2025 | 原始資料/被遺忘的國度：費倫冒險/第八章：魔法物品.md；L9 標題 | approved |
++| Mechanical Wonders | 機巧奇具 | FRAIF2025 | 原始資料/被遺忘的國度：費倫冒險/第八章：魔法物品.md；L18 標題 | approved |
++| Tome of the Dragon | 龍之卷冊 | FRAIF2025 | 原始資料/被遺忘的國度：費倫冒險/第八章：魔法物品.md；L105 標題 | approved |
++| Crown of Horns | 角之王冠 | FRAIF2025 | 原始資料/被遺忘的國度：費倫冒險/第八章：魔法物品.md；L114 標題 | approved |
++| Calimemnon Crystal | 卡林曼農水晶 | FRAIF2025 | 原始資料/被遺忘的國度：費倫冒險/第八章：魔法物品.md；L148 標題 | approved |
++| Orb of Damara | 達瑪剌寶珠 | FRAIF2025 | 原始資料/被遺忘的國度：費倫冒險/第八章：魔法物品.md；L179 標題 | approved |
++
+ ### 隨機表
+ 
+ | 英文 | 本 Wiki 標準譯名 | 來源 ID | 定位 | 狀態 |
