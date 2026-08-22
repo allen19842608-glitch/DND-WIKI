@@ -1,10 +1,60 @@
 import fs from "node:fs";
 import path from "node:path";
 import { ROOT, frontmatter, loadPublication, parseOptions, writableCandidate } from "../core/ingest-publication-utils.mjs";
-const options = parseOptions(); const publicationId = options.publicationId ?? "ERLW2019"; const publication = loadPublication(publicationId);
+const options = parseOptions(); const publicationId = process.argv.includes("--publication") ? options.publicationId : "ERLW2019"; const publication = loadPublication(publicationId);
 const sourceRoot = path.join(ROOT, "原始資料", "艾伯倫：從終末戰爭中崛起", "第六章");
 function source(file) { return path.relative(ROOT, file).split(path.sep).join("/"); }
-function titleBody(raw, fallback) { const title = raw.match(/^#\s+(.+)$/m)?.[1]?.trim() ?? fallback; return [title, raw.replace(/^#\s+.+(?:\r?\n|$)/, "").trim().replace(/^#\s+/gm, "## ").replace(/^###\s+/gm, "## ").replace(/(\d+)\s*尺/g, "$1 呎").replaceAll("尺", "呎")]; }
+function normalizeAbilityScores(body) {
+  const match = /力量　敏捷　體質　智力　感知　魅力\r?\n\r?\n([^\r\n]+)/.exec(body);
+  if (!match) return body;
+  const values = [...match[1].matchAll(/(\d+)\(([+-]\d+)\)/g)];
+  if (values.length !== 6) return body;
+  const score = (index) => [values[index][1], values[index][2], "—"];
+  const row = (first, second, third) => `| **${first[0]}** | ${first[1]} | ${first[2]} | ${first[3]} | **${second[0]}** | ${second[1]} | ${second[2]} | ${second[3]} | **${third[0]}** | ${third[1]} | ${third[2]} | ${third[3]} |`;
+  const names = ["力量", "敏捷", "體質", "智力", "感知", "魅力"];
+  const cells = names.map((name, index) => [name, ...score(index)]);
+  const table = [
+    "|  |  | 調整 | 豁免 |  |  | 調整 | 豁免 |  |  | 調整 | 豁免 |",
+    "| :--- | :---: | :---: | :---: | :--- | :---: | :---: | :---: | :--- | :---: | :---: | :---: |",
+    row(cells[0], cells[1], cells[2]),
+    row(cells[3], cells[4], cells[5]),
+  ].join("\n");
+  return body.replace(match[0], table);
+}
+function normalizeSections(body) {
+  let section = "";
+  return body.split(/\r?\n/).map((line) => {
+    const heading = line.match(/^###\s+(.+)$/);
+    if (heading) {
+      const name = heading[1].trim();
+      if (/^動作 Actions$/.test(name)) { section = "actions"; return "## 動作 (Actions)"; }
+      if (/^附贈動作 Bonus Actions$/.test(name)) { section = "bonus"; return "## 附贈動作 (Bonus Actions)"; }
+      if (/^反應 Reactions?$/.test(name)) { section = "reactions"; return "## 反應 (Reactions)"; }
+      if (/^傳奇動作 Legendary Actions$/.test(name)) { section = "legendary"; return "## 傳奇動作 (Legendary Actions)"; }
+      if (/^(?:特性|特質) Traits?$/.test(name)) { section = "traits"; return "## 特性 (Traits)"; }
+      section = "";
+      return `## ${name}`;
+    }
+    if (section && /^\*\*[^*].*\*\*/.test(line)) {
+      const item = line.replace(/^\*\*(.+?)\s+([A-Za-z][^。]*?)。\*\*(.*)$/, "**$1（$2）**：$3").replace(/^\*\*(.+?)。\*\*(.*)$/, "**$1**：$2");
+      return `- ${item}`;
+    }
+    return line;
+  }).join("\n");
+}
+function titleBody(raw, fallback) {
+  const title = raw.match(/^#\s+(.+)$/m)?.[1]?.trim() ?? fallback;
+  let body = raw.replace(/^#\s+.+(?:\r?\n|$)/, "").trim().replace(/(\d+)\s*尺/g, "$1 呎").replaceAll("尺", "呎");
+  const statStart = body.search(/^\*[^*\n].*\*$/m);
+  const preface = statStart < 0 ? body : body.slice(0, statStart);
+  const earlyTraits = [...preface.matchAll(/^\*\*[^\n]+?。\*\*[^\n]*$/gm)].map((item) => item[0]);
+  if (earlyTraits.length) body = `${preface.replace(/^\*\*[^\n]+?。\*\*[^\n]*$/gm, "").trimEnd()}\n\n${body.slice(statStart)}`;
+  body = body.replace(/^\*\*護甲等級\*\*/gm, "**AC**").replace(/^\*\*生命值\*\*/gm, "**HP**").replace(/^\*\*豁免\*\*/gm, "**豁免檢定**");
+  body = normalizeAbilityScores(body);
+  body = normalizeSections(body);
+  if (earlyTraits.length) body = body.replace(/\n(## (?:動作|附贈動作|反應|傳奇動作) \()/, `\n## 特性 (Traits)\n\n${earlyTraits.map((item) => `- ${item.replace(/^\*\*(.+?)\s+([A-Za-z][^。]*?)。\*\*(.*)$/, "**$1（$2）**：$3")}`).join("\n")}\n\n$1`);
+  return [title, body];
+}
 const indexEntries = [];
 for (const item of fs.readdirSync(sourceRoot, { withFileTypes: true })) {
   if (!item.isFile() || !item.name.endsWith(".md")) continue;
