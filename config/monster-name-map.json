@@ -1,5 +1,11 @@
 {
   "version": "2025",
   "source": "原始資料/怪物圖鑑2025",
-  "names": {}
+  "names": {
+    "邪魔雕像": "Fiendish Icon",
+    "收割魔": "Harvester Devil",
+    "宣令魔": "Speaker Devil",
+    "吸血鬼獄炎魔使": "Vampire Infernalist",
+    "吸血鬼衛士": "Vampire Warden"
+  }
 }

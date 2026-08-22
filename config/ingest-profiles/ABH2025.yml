@@ -1,0 +1,8 @@
+publication_id: "ABH2025"
+source_root: "原始資料/阿斯代倫的飢渴之書"
+inputs:
+  species: "."
+  feats: "."
+outputs:
+  species: "wiki/種族"
+  feats: "wiki/專長"
