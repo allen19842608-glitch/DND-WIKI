@@ -40,7 +40,7 @@ function destination(file) {
   if (chapter === "第四章_創建冒險") return { category: "戰役設定", tag: "戰役設定_戰役創作", file: path.join(wikiRoot, "戰役設定", "戰役創作", "冒險創建", remainder) };
   if (chapter === "第五章_創作戰役") return { category: "戰役設定", tag: "戰役設定_戰役創作", file: path.join(wikiRoot, "戰役設定", "戰役創作", "戰役設計", remainder) };
   if (chapter === "附錄A：設定彙編.md") return { category: "戰役設定", tag: "戰役設定_戰役創作", file: path.join(wikiRoot, "戰役設定", "戰役創作", "設定彙編.md") };
-  const section = chapter.replace(/^第[一二三]章_/, "");
+  const section = chapter === "第三章_地下城主工具箱" ? "" : chapter.replace(/^第[一二三]章_/, "");
   return { category: "規則機制", tag: "規則_地下城主工具箱", file: path.join(wikiRoot, "規則", "地下城主工具箱", section, remainder) };
 }
 
