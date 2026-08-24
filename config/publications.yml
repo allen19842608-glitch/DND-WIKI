@@ -125,6 +125,60 @@ publications:
         authority: "官方"
         translation: "community"
         status: "available"
+
+  FTD2021:
+    entity_id: "publication:FTD2021"
+    concept_id: "publication:fizbans-treasury-of-dragons"
+    title_zh: "費資本的巨龍寶庫"
+    title_en: "Fizban’s Treasury of Dragons"
+    publisher: "Wizards of the Coast"
+    year: 2021
+    ruleset: "2014"
+    content_scope: "expansion"
+    status: "legacy"
+    authority: "官方"
+    canonical_rules_source: "Fizban’s Treasury of Dragons (2021)"
+    wiki:
+      tag: "費資本的巨龍寶庫2021"
+      tag_aliases: []
+      supported_versions:
+        - "2014-Legacy"
+    source_assets:
+      - id: "FTD2021_ZH_MARKDOWN"
+        path: "原始資料/費資本的巨龍寶庫"
+        format: "directory"
+        role: "translation"
+        language: "zh-Hans"
+        authority: "官方"
+        translation: "community"
+        status: "available"
+
+  BPGG2023:
+    entity_id: "publication:BPGG2023"
+    concept_id: "publication:bigby-presents-glory-of-the-giants"
+    title_zh: "畢格比鉅獻：巨人之榮耀"
+    title_en: "Bigby Presents: Glory of the Giants"
+    publisher: "Wizards of the Coast"
+    year: 2023
+    ruleset: "2014"
+    content_scope: "expansion"
+    status: "legacy"
+    authority: "官方"
+    canonical_rules_source: "Bigby Presents: Glory of the Giants (2023)"
+    wiki:
+      tag: "畢格比鉅獻巨人之榮耀2023"
+      tag_aliases: []
+      supported_versions:
+        - "2014-Legacy"
+    source_assets:
+      - id: "BPGG2023_ZH_MARKDOWN"
+        path: "原始資料/畢格比鉅獻：巨人之榮耀"
+        format: "directory"
+        role: "translation"
+        language: "zh-Hans"
+        authority: "官方"
+        translation: "community"
+        status: "available"
       - id: "TCE2020_EN_PDF"
         path: "原始資料/塔莎的萬事坩堝/Tashas_Cauldron_of_Everything.pdf"
         format: "pdf"

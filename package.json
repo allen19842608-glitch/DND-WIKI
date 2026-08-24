@@ -15,6 +15,7 @@
     "ingest": "node scripts/core/ingest.mjs",
     "wiki:patch": "node scripts/ingest/ingest-patches.mjs",
     "ingest:monsters": "node scripts/ingest/ingest-monsters.mjs",
+    "ingest:bpgg-monsters": "node scripts/ingest/ingest-bpgg2023-monsters.mjs",
     "ingest:monster-appendices": "node scripts/ingest/ingest-monster-appendices.mjs",
     "organize:monsters": "node scripts/migrate/organize-monster-wiki.mjs",
     "organize:missing-indexes": "node scripts/migrate/create-missing-indexes.mjs",

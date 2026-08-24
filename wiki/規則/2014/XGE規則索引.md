@@ -52,3 +52,10 @@ updated: "2026-08-14"
 ## 🔗 相關連結
 
 - [[規則索引|規則索引 (Rules Index)]]
+
+<!-- AUTO-INDEX:START -->
+## 自動維護條目
+
+- [[職業總覽|職業總覽 (2014 Legacy)]]
+- [[魔能祈喚|魔能祈喚 (Eldritch Invocations，2014 Legacy)]]
+<!-- AUTO-INDEX:END -->

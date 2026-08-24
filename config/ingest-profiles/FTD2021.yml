@@ -1,0 +1,13 @@
+publication_id: "FTD2021"
+source_root: "原始資料/費資本的巨龍寶庫"
+ruleset: "2014"
+outputs:
+  classes: "wiki/職業/2014"
+  spells: "wiki/法術/2014"
+  feats: "wiki/專長/2014"
+  species: "wiki/種族/2014"
+  magic_items: "wiki/魔法物品/2014"
+inputs:
+  player_options: "玩家選項"
+  spells: "巨龍魔法/法術.md"
+  magic_items: "巨龍魔法"
