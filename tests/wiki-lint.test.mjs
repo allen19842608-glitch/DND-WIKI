@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import fs from "node:fs";
 import {
   deriveSourceType,
   extractFrontmatter,
@@ -44,6 +45,20 @@ test("lint 可在指定範圍驗證記憶體候選內容", () => {
     });
     assert.ok(result.scopeSize > 0);
     assert.ok(result.diagnostics.some((item) => item.file === "wiki/索引.md" && item.code === "YAML_PARSE"));
+  } finally {
+    console.log = originalLog;
+  }
+});
+
+test("2014 Legacy 角色選項必須使用統一的 2024 相容性標示", () => {
+  const file = "wiki/種族/2014/半精靈.md";
+  const original = fs.readFileSync(file, "utf8");
+  const candidate = original.replace('compatibility_2024: "compatible"', 'compatibility_2024: "未分類"');
+  const originalLog = console.log;
+  console.log = () => {};
+  try {
+    const result = lintWiki({ files: [file], overrides: new Map([[file, candidate]]) });
+    assert.ok(result.diagnostics.some((item) => item.file === file && item.code === "LEGACY_2024_COMPATIBILITY"));
   } finally {
     console.log = originalLog;
   }

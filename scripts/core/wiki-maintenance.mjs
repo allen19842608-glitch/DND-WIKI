@@ -294,13 +294,14 @@ function indexesCommand(values) {
   let missingCount = 0;
   let updatedCount = 0;
   for (const indexFile of walk(WIKI_ROOT).filter((file) => file.endsWith("索引.md")).sort()) {
+    let indexText = fs.readFileSync(indexFile, "utf8");
+    if (/^index_scope:\s+"curated"\s*$/m.test(indexText)) continue;
     const directory = path.dirname(indexFile);
     const directoryRel = relative(directory);
     if (changedOnly && !changedDirectories.has(directoryRel)) continue;
     const siblings = fs.readdirSync(directory, { withFileTypes: true })
       .filter((entry) => entry.isFile() && entry.name.endsWith(".md") && !entry.name.endsWith("索引.md"))
       .map((entry) => path.join(directory, entry.name));
-    let indexText = fs.readFileSync(indexFile, "utf8");
     const existing = new Set(wikiLinkTargets(indexText));
     const missing = siblings.filter((file) => !existing.has(path.basename(file, ".md")));
     missingCount += missing.length;

@@ -31,6 +31,7 @@ const REQUIRED_FIELDS = [
   "errata",
   "updated",
 ];
+const COMPATIBILITY_2024 = new Set(["compatible", "conditional", "replaced", "review"]);
 
 function loadPublicationRegistry() {
   const text = fs.readFileSync(PUBLICATIONS_PATH, "utf8");
@@ -592,14 +593,15 @@ function validateFrontmatter(record, diagnostics, catalog, publications) {
   if (typeof data.concept_id !== "string" || !/^concept:[a-z0-9][a-z0-9:-]*$/.test(data.concept_id)) {
     addDiagnostic(diagnostics, "error", rel, 1, "CONCEPT_ID", "concept_id 必須為 concept: 開頭的 ASCII 穩定識別碼。" );
   }
-  const xgeOptionType = typeof data.entity_id === "string" && data.entity_id.match(/^entry:XGE2017:(subclass|spell|feat):/);
-  if (xgeOptionType) {
-    if (!new Set(["compatible", "superseded"]).has(data.compatibility_2024)) {
-      addDiagnostic(diagnostics, "error", rel, 1, "XGE_2024_COMPATIBILITY", "XGE 角色選項必須標示 compatibility_2024: compatible 或 superseded。" );
-    }
-    if (data.compatibility_2024 === "superseded" && typeof data.replacement_2024 !== "string") {
-      addDiagnostic(diagnostics, "error", rel, 1, "XGE_2024_REPLACEMENT", "已由 2024 取代的 XGE 條目必須標示 replacement_2024。" );
-    }
+  const legacyOption = data.ruleset === "2014"
+    && data.status === "legacy"
+    && ["職業", "種族", "背景", "專長"].includes(data.category)
+    && !String(data.title ?? "").includes("索引");
+  if (legacyOption && !COMPATIBILITY_2024.has(data.compatibility_2024)) {
+    addDiagnostic(diagnostics, "error", rel, 1, "LEGACY_2024_COMPATIBILITY", "2014 Legacy 角色選項必須標示 compatibility_2024: compatible、conditional、replaced 或 review。" );
+  }
+  if (legacyOption && data.compatibility_2024 !== undefined && !COMPATIBILITY_2024.has(data.compatibility_2024)) {
+    addDiagnostic(diagnostics, "error", rel, 1, "LEGACY_2024_COMPATIBILITY", "compatibility_2024 值不合法。" );
   }
   for (const field of ["rules_sources", "errata"]) {
     if (!Array.isArray(data[field]) || data[field].some((item) => typeof item !== "string")) {
@@ -753,7 +755,7 @@ function validateLinks(record, diagnostics, catalog) {
 function findDirectoryIndex(directoryRel, records) {
   const directoryName = path.posix.basename(directoryRel);
   const direct = records.filter((record) => path.posix.dirname(record.rel) === directoryRel);
-  const named = direct.filter((record) => path.posix.basename(record.rel).endsWith("索引.md"));
+  const named = direct.filter((record) => path.posix.basename(record.rel).endsWith("索引.md") && record.data.index_scope !== "curated");
   if (named.length === 1) return named[0];
   const overview = direct.find((record) => path.posix.basename(record.rel, ".md") === directoryName);
   return overview ?? null;

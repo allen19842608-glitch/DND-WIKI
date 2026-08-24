@@ -22,6 +22,7 @@
     "link:monster-spells": "node scripts/sync/link-monster-spells.mjs",
     "audit:magic-item-spell-links": "node scripts/audit/audit-magic-item-spell-links.mjs",
     "migrate:staff-charge-structure": "node scripts/migrate/migrate-staff-charge-structure.mjs",
+    "migrate:classify-2014-compatibility": "node scripts/migrate/classify-2014-compatibility.mjs",
     "link:staff-spells": "node scripts/sync/link-staff-spells.mjs",
     "ingest:classes": "node scripts/ingest/ingest-classes.mjs --dry-run",
     "ingest:species": "node scripts/ingest/ingest-species.mjs",
