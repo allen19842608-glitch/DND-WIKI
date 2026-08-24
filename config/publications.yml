@@ -215,6 +215,33 @@ publications:
         translation: "community"
         status: "available"
 
+  MPMM2022:
+    entity_id: "publication:MPMM2022"
+    concept_id: "publication:mordenkainen-presents-monsters-of-the-multiverse"
+    title_zh: "魔鄧肯鉅獻：多元宇宙的怪物"
+    title_en: "Mordenkainen Presents: Monsters of the Multiverse"
+    publisher: "Wizards of the Coast"
+    year: 2022
+    ruleset: "2014"
+    content_scope: "expansion"
+    status: "legacy"
+    authority: "官方"
+    canonical_rules_source: "Mordenkainen Presents: Monsters of the Multiverse (2022)"
+    wiki:
+      tag: "魔鄧肯鉅獻多元宇宙的怪物2022"
+      tag_aliases: []
+      supported_versions:
+        - "2014-Legacy"
+    source_assets:
+      - id: "MPMM2022_ZH_MARKDOWN"
+        path: "原始資料/魔鄧肯鉅獻：多元宇宙的怪物"
+        format: "directory"
+        role: "translation"
+        language: "zh-Hans"
+        authority: "官方"
+        translation: "community"
+        status: "available"
+
   PHB2024:
     entity_id: "publication:PHB2024"
     concept_id: "publication:players-handbook"
@@ -688,12 +715,9 @@ al_reference_books:
     availability: "available"
     campaigns: ["FR", "DL", "RV", "CR"]
     planned_source_root: "原始資料/待匯入出版品/MOONSHAE_ISLES_REGIONAL_GUIDE"
-  - id: "MPMM"
-    title_zh: null
-    title_en: "Mordenkainen Presents: Monsters of the Multiverse"
+  - publication_id: "MPMM2022"
     availability: "available"
     campaigns: ["FR", "DL", "EB", "RV", "CR"]
-    planned_source_root: "原始資料/待匯入出版品/MPMM"
   - id: "OOTA"
     title_zh: null
     title_en: "Out of the Abyss"
