@@ -64,6 +64,39 @@ test("2014 Legacy 角色選項必須使用統一的 2024 相容性標示", () =>
   }
 });
 
+test("非組織遊戲的戰役設定必須標示連續性", () => {
+  const file = "wiki/戰役設定/被遺忘的國度/北地.md";
+  const original = fs.readFileSync(file, "utf8");
+  const candidate = original.replace('setting_continuity: "continuous"\n', "");
+  const originalLog = console.log;
+  console.log = () => {};
+  try {
+    const result = lintWiki({ files: [file], overrides: new Map([[file, candidate]]) });
+    assert.ok(result.diagnostics.some((item) => item.file === file && item.code === "SETTING_CONTINUITY_REQUIRED"));
+  } finally {
+    console.log = originalLog;
+  }
+});
+
+test("setting_continuity 僅限非組織遊戲的戰役設定", () => {
+  const ordinaryFile = "wiki/索引.md";
+  const alFile = "wiki/冒險者聯盟/冒險調整/艾伯倫戰役調整.md";
+  const ordinary = fs.readFileSync(ordinaryFile, "utf8").replace('category: "規則機制"\n', 'category: "規則機制"\nsetting_continuity: "continuous"\n');
+  const al = fs.readFileSync(alFile, "utf8").replace('category: "戰役設定"\n', 'category: "戰役設定"\nsetting_continuity: "continuous"\n');
+  const originalLog = console.log;
+  console.log = () => {};
+  try {
+    const result = lintWiki({
+      files: [ordinaryFile, alFile],
+      overrides: new Map([[ordinaryFile, ordinary], [alFile, al]]),
+    });
+    assert.ok(result.diagnostics.some((item) => item.file === ordinaryFile && item.code === "SETTING_CONTINUITY_CATEGORY"));
+    assert.ok(result.diagnostics.some((item) => item.file === alFile && item.code === "SETTING_CONTINUITY_ORGANIZED_PLAY"));
+  } finally {
+    console.log = originalLog;
+  }
+});
+
 test("魔法物品結構檢查標示泛稱、占位觸發與重複限制", () => {
   const diagnostics = [];
   validateMagicItemStructure({

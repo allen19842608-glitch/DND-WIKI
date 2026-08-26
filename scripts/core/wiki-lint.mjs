@@ -92,6 +92,7 @@ const VERSIONS = new Set([
   "Homebrew",
   "AL-Organized-Play",
 ]);
+const SETTING_CONTINUITY = "continuous";
 const CONFIDENCE = new Set(["confirmed", "interpreted", "pending"]);
 const AUTHORITIES = new Set(["官方", "UA", "自訂", "社群"]);
 const TRANSLATIONS = new Set(["official", "community", "none", "unknown"]);
@@ -565,6 +566,19 @@ function validateFrontmatter(record, diagnostics, catalog, publications) {
   }
   if (data.version !== undefined && !VERSIONS.has(data.version)) {
     addDiagnostic(diagnostics, "error", rel, 1, "VERSION_ENUM", `version 值不合法：${data.version}`);
+  }
+  const isCampaignSetting = data.category === "戰役設定";
+  const isOrganizedPlay = data.content_scope === "organized_play";
+  if (data.setting_continuity !== undefined) {
+    if (!isCampaignSetting) {
+      addDiagnostic(diagnostics, "error", rel, 1, "SETTING_CONTINUITY_CATEGORY", "setting_continuity 僅能用於 category: 戰役設定。" );
+    } else if (isOrganizedPlay) {
+      addDiagnostic(diagnostics, "error", rel, 1, "SETTING_CONTINUITY_ORGANIZED_PLAY", "組織遊戲政策不得使用 setting_continuity。" );
+    } else if (data.setting_continuity !== SETTING_CONTINUITY) {
+      addDiagnostic(diagnostics, "error", rel, 1, "SETTING_CONTINUITY_ENUM", `setting_continuity 僅能為 ${SETTING_CONTINUITY}。`);
+    }
+  } else if (isCampaignSetting && !isOrganizedPlay) {
+    addDiagnostic(diagnostics, "error", rel, 1, "SETTING_CONTINUITY_REQUIRED", "非組織遊戲的戰役設定頁必須標示 setting_continuity: \"continuous\"。" );
   }
   if (data.confidence !== undefined && !CONFIDENCE.has(data.confidence)) {
     addDiagnostic(diagnostics, "error", rel, 1, "CONFIDENCE_ENUM", `confidence 值不合法：${data.confidence}`);
