@@ -23,6 +23,7 @@ const replace = values.includes("--replace");
 const diff = values.includes("--diff");
 const publication = option("--publication");
 const patch = option("--patch");
+const setting = option("--setting");
 
 if (patch) {
   if (category) {
@@ -36,7 +37,7 @@ if (patch) {
 }
 
 if (!category) {
-  process.stderr.write("缺少 --category 或 --patch。類別可用：職業、種族、法術、專長、魔法物品、角色建立與成長、怪物。\n");
+  process.stderr.write("缺少 --category 或 --patch。類別可用：職業、種族、法術、專長、魔法物品、角色建立與成長、怪物、戰役設定。\n");
   process.exit(1);
 }
 
@@ -78,6 +79,19 @@ if (category === "職業") {
   if (only) args.push("--only", only);
   if (replace) args.push("--replace");
   if (diff) args.push("--diff");
+} else if (category === "戰役設定") {
+  if (!publication) {
+    process.stderr.write("戰役設定吸收必須指定 --publication，例如：SCAG2015。\n");
+    process.exit(1);
+  }
+  script = "scripts/ingest/ingest-lore.mjs";
+  if (setting) args.push("--setting", setting);
+  if (itemType && itemType !== "戒指") args.push("--type", itemType);
+  if (only) args.push("--only", only);
+  if (report) args.push("--report", report);
+  else if (values.includes("--report")) args.push("--report");
+  if (diff) args.push("--diff");
+  if (apply) args.push("--apply");
 } else {
   process.stderr.write(`不支援的 category：${category}\n`);
   process.exit(1);

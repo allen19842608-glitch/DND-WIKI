@@ -1,0 +1,54 @@
+schema_version: 1
+
+# 戰役設定採「世界優先、實體類型次之」。世界與類型的 ASCII ID 同時用於
+# concept_id；label 與 directory 則是 Frontmatter 和實際目錄的唯一標準。
+worlds:
+  forgotten-realms:
+    label: "被遺忘的國度"
+    root: "wiki/戰役設定/被遺忘的國度"
+    index: "wiki/戰役設定/被遺忘的國度/被遺忘的國度索引.md"
+  eberron:
+    label: "艾伯倫"
+    root: "wiki/戰役設定/艾伯倫"
+    index: "wiki/戰役設定/艾伯倫/艾伯倫索引.md"
+  greyhawk:
+    label: "灰鷹"
+    root: "wiki/戰役設定/灰鷹"
+    index: "wiki/戰役設定/灰鷹/灰鷹索引.md"
+  ravenloft:
+    label: "鴉閣魔域"
+    root: "wiki/戰役設定/鴉閣魔域"
+    index: "wiki/戰役設定/鴉閣魔域/鴉閣魔域索引.md"
+  multiverse:
+    label: "多元宇宙"
+    root: "wiki/戰役設定/多元宇宙"
+    index: "wiki/戰役設定/多元宇宙/多元宇宙索引.md"
+
+lore_types:
+  worldview:
+    label: "世界觀"
+    directory: "世界觀"
+  history:
+    label: "歷史"
+    directory: "歷史"
+  faith:
+    label: "神祇與信仰"
+    directory: "神祇與信仰"
+  geography:
+    label: "地理"
+    directory: "地理"
+  event:
+    label: "事件"
+    directory: "事件"
+  person:
+    label: "人物"
+    directory: "人物"
+  faction:
+    label: "組織與派系"
+    directory: "組織與派系"
+  culture:
+    label: "文化與族群"
+    directory: "文化與族群"
+  index:
+    label: "索引"
+    directory: "索引"

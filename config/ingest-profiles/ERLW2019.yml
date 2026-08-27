@@ -1,7 +1,13 @@
 publication_id: "ERLW2019"
 source_root: "原始資料/艾伯倫：從終末戰爭中崛起"
+setting: "艾伯倫"
 ruleset: "2014"
 outputs:
   settings: "wiki/戰役設定/艾伯倫"
 inputs:
   chapter_2: "第二章"
+  lore:
+    include:
+      - "第二章"
+      - "第三章"
+      - "第四章"

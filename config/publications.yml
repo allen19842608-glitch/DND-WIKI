@@ -37,6 +37,146 @@ registry:
     - "none"
 
 publications:
+  SCAG2015:
+    entity_id: "publication:SCAG2015"
+    concept_id: "publication:sword-coast-adventurers-guide"
+    title_zh: "劍灣冒險者指南"
+    title_en: "Sword Coast Adventurer's Guide"
+    publisher: "Wizards of the Coast"
+    year: 2015
+    ruleset: "2014"
+    content_scope: "expansion"
+    status: "legacy"
+    authority: "官方"
+    canonical_rules_source: "Sword Coast Adventurer's Guide (2015)"
+    setting: "被遺忘的國度"
+    wiki:
+      tag: "劍灣冒險者指南2015"
+      tag_aliases: []
+      supported_versions:
+        - "2014-Legacy"
+    source_assets:
+      - id: "SCAG2015_ZH_MARKDOWN"
+        path: "原始資料/劍灣冒險者指南"
+        format: "directory"
+        role: "translation"
+        language: "zh-Hant"
+        authority: "官方"
+        translation: "community"
+        status: "available"
+
+  WGE2018:
+    entity_id: "publication:WGE2018"
+    concept_id: "publication:wayfinders-guide-to-eberron"
+    title_zh: "艾伯倫尋路者指南"
+    title_en: "Wayfinder's Guide to Eberron"
+    publisher: "Wizards of the Coast"
+    year: 2018
+    ruleset: "2014"
+    content_scope: "reference"
+    status: "superseded"
+    authority: "官方"
+    canonical_rules_source: "Wayfinder's Guide to Eberron (2018)"
+    setting: "艾伯倫"
+    wiki:
+      tag: "艾伯倫尋路者指南2018"
+      tag_aliases: []
+      supported_versions:
+        - "2014-Legacy"
+    source_assets:
+      - id: "WGE2018_ZH_MARKDOWN"
+        path: "原始資料/艾伯倫尋路者指南"
+        format: "directory"
+        role: "translation"
+        language: "zh-Hans"
+        authority: "官方"
+        translation: "community"
+        status: "available"
+
+  SO2023:
+    entity_id: "publication:SO2023"
+    concept_id: "publication:sigil-and-the-outlands"
+    title_zh: "印記城與外域"
+    title_en: "Sigil and the Outlands"
+    publisher: "Wizards of the Coast"
+    year: 2023
+    ruleset: "2014"
+    content_scope: "expansion"
+    status: "legacy"
+    authority: "官方"
+    canonical_rules_source: "Sigil and the Outlands (2023)"
+    setting: "多元宇宙"
+    wiki:
+      tag: "印記城與外域2023"
+      tag_aliases: []
+      supported_versions:
+        - "2014-Legacy"
+    source_assets:
+      - id: "SO2023_ZH_MARKDOWN"
+        path: "原始資料/印記城與外域"
+        format: "directory"
+        role: "translation"
+        language: "zh-Hans"
+        authority: "官方"
+        translation: "community"
+        status: "available"
+
+  MPP2023:
+    entity_id: "publication:MPP2023"
+    concept_id: "publication:mortes-planar-parade"
+    title_zh: "莫提的位面遊記"
+    title_en: "Morte's Planar Parade"
+    publisher: "Wizards of the Coast"
+    year: 2023
+    ruleset: "2014"
+    content_scope: "expansion"
+    status: "legacy"
+    authority: "官方"
+    canonical_rules_source: "Morte's Planar Parade (2023)"
+    setting: "多元宇宙"
+    wiki:
+      tag: "莫提的位面遊記2023"
+      tag_aliases: []
+      supported_versions:
+        - "2014-Legacy"
+    source_assets:
+      - id: "MPP2023_ZH_MARKDOWN"
+        path: "原始資料/莫提的位面遊記"
+        format: "directory"
+        role: "translation"
+        language: "zh-Hans"
+        authority: "官方"
+        translation: "community"
+        status: "available"
+
+  NF2025:
+    entity_id: "publication:NF2025"
+    concept_id: "publication:netherils-fall"
+    title_zh: "耐瑟瑞爾之隕"
+    title_en: "Netheril's Fall"
+    publisher: "Wizards of the Coast"
+    year: 2025
+    ruleset: "2024"
+    content_scope: "expansion"
+    status: "current"
+    authority: "官方"
+    canonical_rules_source: "Netheril's Fall (2025)"
+    setting: "被遺忘的國度"
+    wiki:
+      tag: "耐瑟瑞爾之隕2025"
+      tag_aliases: []
+      supported_versions:
+        - "2024-Core"
+    source_assets:
+      - id: "NF2025_ZH_MARKDOWN"
+        path: "原始資料/耐瑟瑞爾之殞"
+        format: "directory"
+        role: "translation"
+        language: "zh-Hans"
+        authority: "官方"
+        translation: "community"
+        status: "available"
+
   ERLW2019:
     entity_id: "publication:ERLW2019"
     concept_id: "publication:eberron-rising-from-the-last-war"
@@ -138,6 +278,7 @@ publications:
     status: "legacy"
     authority: "官方"
     canonical_rules_source: "Fizban’s Treasury of Dragons (2021)"
+    setting: "多元宇宙"
     wiki:
       tag: "費資本的巨龍寶庫2021"
       tag_aliases: []
@@ -165,6 +306,7 @@ publications:
     status: "legacy"
     authority: "官方"
     canonical_rules_source: "Bigby Presents: Glory of the Giants (2023)"
+    setting: "多元宇宙"
     wiki:
       tag: "畢格比鉅獻巨人之榮耀2023"
       tag_aliases: []
@@ -460,6 +602,7 @@ publications:
     status: "current"
     authority: "官方"
     canonical_rules_source: "Ravenloft: The Horrors Within (2026)"
+    setting: "鴉閣魔域"
     wiki:
       tag: "鴉閣魔域魔障深藏2026"
       tag_aliases: []

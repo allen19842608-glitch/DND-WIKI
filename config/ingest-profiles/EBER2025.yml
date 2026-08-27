@@ -1,5 +1,6 @@
 publication_id: "EBER2025"
 source_root: "原始資料/艾伯倫：奇械鍛爐"
+setting: "艾伯倫"
 ruleset: "2024"
 outputs:
   classes: "wiki/職業"
@@ -9,3 +10,10 @@ outputs:
   settings: "wiki/戰役設定/艾伯倫"
 inputs:
   species: "第二章"
+  lore:
+    include:
+      - "巨龍預言.md"
+      - "第四章"
+      - "第五章"
+      - "第六章"
+      - "第七章"

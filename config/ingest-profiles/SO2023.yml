@@ -1,0 +1,14 @@
+publication_id: "SO2023"
+source_root: "原始資料/印記城與外域"
+setting: "多元宇宙"
+ruleset: "2014"
+outputs:
+  settings: "wiki/戰役設定/多元宇宙"
+inputs:
+  lore:
+    include:
+      - "前言"
+      - "第二章"
+      - "第三章"
+    exclude:
+      - "前言/使用本書.md"

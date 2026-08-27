@@ -1,5 +1,6 @@
 publication_id: "BPGG2023"
 source_root: "原始資料/畢格比鉅獻：巨人之榮耀"
+setting: "多元宇宙"
 ruleset: "2014"
 outputs:
   classes: "wiki/職業/2014"
@@ -9,3 +10,9 @@ outputs:
 inputs:
   character_options: "角色選項"
   giant_treasure: "巨人寶藏"
+  lore:
+    include:
+      - "迪安卡斯特拉薩迦"
+      - "遊戲中的巨人"
+      - "巨人飛地.md"
+      - "巨人飛地"

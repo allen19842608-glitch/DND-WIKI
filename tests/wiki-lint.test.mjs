@@ -1,6 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import { nonEntityReason, parseBilingualTitle } from "../scripts/ingest/ingest-lore.mjs";
+import { sourceFragment } from "../scripts/migrate/restore-lore-source-text.mjs";
 import {
   deriveSourceType,
   extractFrontmatter,
@@ -8,6 +10,52 @@ import {
   parseWikiLink,
   validateMagicItemStructure,
 } from "../scripts/core/wiki-lint.mjs";
+
+test("故事匯入會以 New Item 轉檔的首個雙語題名作為實體名稱", () => {
+  assert.deepEqual(
+    parseBilingualTitle("# New Item\n\n**定製龍類 Customizing Dragons**\n\n內容。\n", "定製龍類"),
+    { chinese: "定製龍類", english: "Customizing Dragons" },
+  );
+});
+
+test("故事匯入排除章節題名、前言與泛稱人物頁", () => {
+  assert.match(nonEntityReason({ chinese: "第四章：構建艾伯倫冒險", locator: "# 第四章：構建艾伯倫冒險" }), /章節題名/);
+  assert.match(nonEntityReason({ chinese: "前言：通往冒險的無盡之門", locator: "# 前言：通往冒險的無盡之門" }), /前置說明/);
+  assert.match(nonEntityReason({ chinese: "龍紋角色", locator: "# 龍紋角色" }), /泛稱/);
+  assert.match(nonEntityReason({ chinese: "龍紋", english: "NPC", locator: "# 龍紋 NPC" }), /泛稱/);
+  assert.equal(nonEntityReason({ chinese: "班恩", locator: "# 班恩 Bane" }), null);
+});
+
+test("原始正文重建可依父段落與人物定位切出單一人物資料", () => {
+  const source = [
+    "# 卡扎多爾·扎爾的家族",
+    "",
+    "卡扎多爾的子嗣 Cazador's Spawn",
+    "",
+    "**安特溫·都弗雷 Antwun Dufay，** 曾是人類，是卡扎多爾信任的管家。",
+    "**阿斯代倫·安庫因 Astarion Ancunín，** 曾是精靈治安官。",
+  ].join("\n");
+  assert.deepEqual(
+    sourceFragment(source, "卡扎多爾的子嗣 Cazador's Spawn：安特溫·都弗雷"),
+    {
+      heading: "卡扎多爾的子嗣 Cazador's Spawn",
+      body: "**安特溫·都弗雷 Antwun Dufay，** 曾是人類，是卡扎多爾信任的管家。",
+    },
+  );
+});
+
+test("原始正文重建可依行號定位切出人物資料", () => {
+  const source = [
+    "# 卡扎多爾·扎爾的家族",
+    "",
+    "**安特溫·都弗雷 Antwun Dufay，** 曾是人類，是卡扎多爾信任的管家。",
+    "**阿斯代倫·安庫因 Astarion Ancunín，** 曾是精靈治安官。",
+  ].join("\n");
+  assert.equal(
+    sourceFragment(source, "L3：安特溫·都弗雷 Antwun Dufay").body,
+    "**安特溫·都弗雷 Antwun Dufay，** 曾是人類，是卡扎多爾信任的管家。",
+  );
+});
 
 test("extractFrontmatter separates YAML and body", () => {
   const result = extractFrontmatter('---\ntitle: "測試"\n---\n# 測試\n');
@@ -65,7 +113,7 @@ test("2014 Legacy 角色選項必須使用統一的 2024 相容性標示", () =>
 });
 
 test("非組織遊戲的戰役設定必須標示連續性", () => {
-  const file = "wiki/戰役設定/被遺忘的國度/北地.md";
+  const file = "wiki/戰役設定/被遺忘的國度/地理/北地.md";
   const original = fs.readFileSync(file, "utf8");
   const candidate = original.replace('setting_continuity: "continuous"\n', "");
   const originalLog = console.log;
@@ -92,6 +140,61 @@ test("setting_continuity 僅限非組織遊戲的戰役設定", () => {
     });
     assert.ok(result.diagnostics.some((item) => item.file === ordinaryFile && item.code === "SETTING_CONTINUITY_CATEGORY"));
     assert.ok(result.diagnostics.some((item) => item.file === alFile && item.code === "SETTING_CONTINUITY_ORGANIZED_PLAY"));
+  } finally {
+    console.log = originalLog;
+  }
+});
+
+test("故事資料頁必須標示世界、類型與穩定概念 ID", () => {
+  const file = "wiki/戰役設定/被遺忘的國度/地理/北地.md";
+  const original = fs.readFileSync(file, "utf8");
+  const missing = original
+    .replace('setting: "被遺忘的國度"\n', "")
+    .replace('lore_type: "地理"\n', "");
+  const wrongConcept = original.replace(
+    "concept:setting:forgotten-realms:geography:",
+    "concept:setting:eberron:geography:",
+  );
+  const originalLog = console.log;
+  console.log = () => {};
+  try {
+    const missingResult = lintWiki({ files: [file], overrides: new Map([[file, missing]]) });
+    assert.ok(missingResult.diagnostics.some((item) => item.file === file && item.code === "SETTING_REQUIRED"));
+    assert.ok(missingResult.diagnostics.some((item) => item.file === file && item.code === "LORE_TYPE_REQUIRED"));
+    const conceptResult = lintWiki({ files: [file], overrides: new Map([[file, wrongConcept]]) });
+    assert.ok(conceptResult.diagnostics.some((item) => item.file === file && item.code === "LORE_CONCEPT_ID"));
+  } finally {
+    console.log = originalLog;
+  }
+});
+
+test("世界與類型必須符合戰役設定路徑", () => {
+  const file = "wiki/戰役設定/被遺忘的國度/地理/北地.md";
+  const original = fs.readFileSync(file, "utf8");
+  const candidate = original
+    .replace('setting: "被遺忘的國度"', 'setting: "艾伯倫"')
+    .replace('lore_type: "地理"', 'lore_type: "世界觀"');
+  const originalLog = console.log;
+  console.log = () => {};
+  try {
+    const result = lintWiki({ files: [file], overrides: new Map([[file, candidate]]) });
+    assert.ok(result.diagnostics.some((item) => item.file === file && item.code === "SETTING_PATH"));
+    assert.ok(result.diagnostics.some((item) => item.file === file && item.code === "LORE_TYPE_PATH"));
+  } finally {
+    console.log = originalLog;
+  }
+});
+
+test("人物怪物資料卡必須有怪物頁反向連結", () => {
+  const person = "wiki/戰役設定/被遺忘的國度/人物/阿斯代倫・安庫因.md";
+  const monster = "wiki/怪物/亡靈/初生吸血鬼.md";
+  const original = fs.readFileSync(monster, "utf8");
+  const candidate = original.replace("戰役設定/被遺忘的國度/人物/阿斯代倫・安庫因", "戰役設定/被遺忘的國度/人物/阿斯代倫・安庫因-缺失");
+  const originalLog = console.log;
+  console.log = () => {};
+  try {
+    const result = lintWiki({ files: [person, monster], overrides: new Map([[monster, candidate]]) });
+    assert.ok(result.diagnostics.some((item) => item.file === person && item.code === "PERSON_STAT_BACKLINK"));
   } finally {
     console.log = originalLog;
   }

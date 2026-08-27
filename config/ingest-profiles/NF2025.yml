@@ -1,0 +1,15 @@
+publication_id: "NF2025"
+source_root: "原始資料/耐瑟瑞爾之殞"
+setting: "被遺忘的國度"
+ruleset: "2024"
+outputs:
+  settings: "wiki/戰役設定/被遺忘的國度"
+inputs:
+  lore:
+    include:
+      - "."
+    exclude:
+      - "耐瑟怪物"
+      - "魔法物品"
+      - "使用此擴展包.md"
+      - "附錄B：生物圖集.md"

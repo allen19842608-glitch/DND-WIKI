@@ -1,0 +1,11 @@
+publication_id: "RTHW2026"
+source_root: "原始資料/鴉閣魔域：魔障深藏"
+setting: "鴉閣魔域"
+ruleset: "2024"
+outputs:
+  settings: "wiki/戰役設定/鴉閣魔域"
+inputs:
+  lore:
+    include:
+      - "前言/鴉閣秘辛.md"
+      - "前言/迷霧之地.md"

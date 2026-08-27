@@ -1,0 +1,12 @@
+publication_id: "SCAG2015"
+source_root: "原始資料/劍灣冒險者指南"
+setting: "被遺忘的國度"
+ruleset: "2014"
+outputs:
+  settings: "wiki/戰役設定/被遺忘的國度"
+inputs:
+  lore:
+    extract_named_sections: true
+    include:
+      - "歡迎來到國度"
+      - "劍灣與北地"

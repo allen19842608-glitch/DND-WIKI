@@ -1,0 +1,10 @@
+publication_id: "MPP2023"
+source_root: "原始資料/莫提的位面遊記"
+setting: "多元宇宙"
+ruleset: "2014"
+outputs:
+  settings: "wiki/戰役設定/多元宇宙"
+inputs:
+  lore:
+    include:
+      - "外域中的居民.md"

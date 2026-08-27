@@ -1,0 +1,17 @@
+publication_id: "FRHOF2025"
+source_root: "原始資料/被遺忘的國度：費倫英雄"
+setting: "被遺忘的國度"
+ruleset: "2024"
+outputs:
+  settings: "wiki/戰役設定/被遺忘的國度"
+inputs:
+  lore:
+    include:
+      - "第二章"
+      - "第三章"
+    exclude:
+      # 僅為出版品章節題名，非可獨立追溯的世界觀實體。
+      - "第二章/第二章：諸國度指南.md"
+      - "第三章/第三章：費倫諸神.md"
+      # 僅為讀者／角色活動概述，非命名的世界觀實體。
+      - "第二章/冒險者們.md"

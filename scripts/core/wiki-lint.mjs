@@ -9,6 +9,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", ".
 const WIKI_ROOT = path.join(ROOT, "wiki");
 const PUBLICATIONS_PATH = path.join(ROOT, "config", "publications.yml");
 const TAXONOMY_PATH = path.join(ROOT, "config", "taxonomy.yml");
+const LORE_PATH = path.join(ROOT, "config", "lore.yml");
 // 原始資料不隨 GitHub Actions 提交；本機維護時可做實體存在檢查，CI 則只
 // 驗證路徑格式與範圍，避免部分 checkout 的舊來源造成誤判。
 const RAW_SOURCES_AVAILABLE = process.env.GITHUB_ACTIONS !== "true"
@@ -72,6 +73,31 @@ function loadTaxonomy() {
     throw new Error("資料拓樸設定缺少 schema_version: 1 或 categories。");
   }
   return data;
+}
+
+function loadLoreRegistry() {
+  const text = fs.readFileSync(LORE_PATH, "utf8");
+  const document = parseDocument(text, { prettyErrors: true, uniqueKeys: true });
+  if (document.errors.length) throw new Error(`故事資料設定無法解析：${document.errors[0].message}`);
+  const data = document.toJS();
+  if (data?.schema_version !== 1 || !data.worlds || !data.lore_types) {
+    throw new Error("故事資料設定缺少 schema_version: 1、worlds 或 lore_types。");
+  }
+  const worldsByLabel = new Map();
+  const typesByLabel = new Map();
+  for (const [id, world] of Object.entries(data.worlds)) {
+    if (!/^[a-z0-9][a-z0-9-]*$/.test(id) || typeof world?.label !== "string" || typeof world?.root !== "string") {
+      throw new Error(`故事世界 ${id} 缺少合法 ID、label 或 root。`);
+    }
+    worldsByLabel.set(world.label, { id, ...world });
+  }
+  for (const [id, loreType] of Object.entries(data.lore_types)) {
+    if (!/^[a-z0-9][a-z0-9-]*$/.test(id) || typeof loreType?.label !== "string" || typeof loreType?.directory !== "string") {
+      throw new Error(`故事類型 ${id} 缺少合法 ID、label 或 directory。`);
+    }
+    typesByLabel.set(loreType.label, { id, ...loreType });
+  }
+  return { worldsByLabel, typesByLabel };
 }
 
 const CATEGORIES = new Set([
@@ -554,7 +580,7 @@ export function validateMagicItemStructure(record, diagnostics) {
   }
 }
 
-function validateFrontmatter(record, diagnostics, catalog, publications) {
+function validateFrontmatter(record, diagnostics, catalog, publications, lore) {
   const { rel, fm, data } = record;
   for (const field of REQUIRED_FIELDS) {
     if (!(field in data)) {
@@ -579,6 +605,41 @@ function validateFrontmatter(record, diagnostics, catalog, publications) {
     }
   } else if (isCampaignSetting && !isOrganizedPlay) {
     addDiagnostic(diagnostics, "error", rel, 1, "SETTING_CONTINUITY_REQUIRED", "非組織遊戲的戰役設定頁必須標示 setting_continuity: \"continuous\"。" );
+  }
+  const lorePath = rel.match(/^wiki\/戰役設定\/([^/]+)(?:\/(.+))?\.md$/);
+  const settingDirectory = lorePath?.[1];
+  const isGlobalSettingIndex = rel === "wiki/戰役設定/戰役設定索引.md";
+  const isCampaignTool = settingDirectory === "戰役創作";
+  const isLorePage = isCampaignSetting && !isOrganizedPlay && !isGlobalSettingIndex && !isCampaignTool;
+  if ((data.setting !== undefined || data.lore_type !== undefined) && !isCampaignSetting) {
+    addDiagnostic(diagnostics, "error", rel, 1, "LORE_FIELD_CATEGORY", "setting 與 lore_type 僅能用於 category: 戰役設定。" );
+  }
+  if (isLorePage) {
+    const world = lore.worldsByLabel.get(data.setting);
+    const loreType = lore.typesByLabel.get(data.lore_type);
+    if (typeof data.setting !== "string" || !world) {
+      addDiagnostic(diagnostics, "error", rel, 1, "SETTING_REQUIRED", "故事資料頁的 setting 必須是 config/lore.yml 已登錄的世界中文名。" );
+    } else if (settingDirectory !== data.setting || !rel.startsWith(`${world.root}/`)) {
+      addDiagnostic(diagnostics, "error", rel, 1, "SETTING_PATH", `setting 必須與世界目錄 ${world.root} 一致。`);
+    }
+    if (typeof data.lore_type !== "string" || !loreType) {
+      addDiagnostic(diagnostics, "error", rel, 1, "LORE_TYPE_REQUIRED", "故事資料頁的 lore_type 必須是 config/lore.yml 已登錄的類型。" );
+    }
+    if (world && loreType) {
+      const expectedConceptPrefix = `concept:setting:${world.id}:${loreType.id}:`;
+      if (typeof data.concept_id !== "string" || !data.concept_id.startsWith(expectedConceptPrefix)) {
+        addDiagnostic(diagnostics, "error", rel, 1, "LORE_CONCEPT_ID", `concept_id 必須以 ${expectedConceptPrefix} 開頭。`);
+      }
+      const pathWithinWorld = rel.slice(world.root.length + 1).split("/");
+      if (loreType.id !== "index" && pathWithinWorld.length > 1 && pathWithinWorld[0] !== loreType.directory) {
+        addDiagnostic(diagnostics, "error", rel, 1, "LORE_TYPE_PATH", `lore_type: ${loreType.label} 的條目必須位於 ${world.root}/${loreType.directory}/。`);
+      }
+      if (loreType.id !== "index" && pathWithinWorld.length === 1) {
+        addDiagnostic(diagnostics, "error", rel, 1, "LORE_TYPE_PATH", `非索引故事條目必須位於世界下的類型目錄。`);
+      }
+    }
+  } else if ((isOrganizedPlay || isCampaignTool) && (data.setting !== undefined || data.lore_type !== undefined)) {
+    addDiagnostic(diagnostics, "error", rel, 1, "LORE_FIELD_SCOPE", "組織遊戲與戰役創作工具不得使用 setting 或 lore_type。" );
   }
   if (data.confidence !== undefined && !CONFIDENCE.has(data.confidence)) {
     addDiagnostic(diagnostics, "error", rel, 1, "CONFIDENCE_ENUM", `confidence 值不合法：${data.confidence}`);
@@ -897,6 +958,27 @@ function printDiagnostics(diagnostics, scopeSize, totalSize) {
   console.log(`\n檢查範圍：${scopeSize}/${totalSize} 個 Wiki 頁面`);
 }
 
+function validatePersonStatLinks(record, diagnostics, catalog) {
+  if (record.data?.category !== "戰役設定" || record.data?.lore_type !== "人物") return;
+  if (!/^## 怪物資料卡\s*$/m.test(record.body)) return;
+  const monsterLinks = record.links
+    .map((link) => resolveWikiTarget(link.target, catalog))
+    .filter((resolved) => resolved.status === "ok" && resolved.record.rel.startsWith("wiki/怪物/"));
+  if (!monsterLinks.length) {
+    addDiagnostic(diagnostics, "error", record.rel, record.bodyStartLine, "PERSON_STAT_LINK", "人物頁的「怪物資料卡」區塊必須連至既有怪物條目。" );
+    return;
+  }
+  for (const resolved of monsterLinks) {
+    const backlinked = resolved.record.links.some((link) => {
+      const target = resolveWikiTarget(link.target, catalog);
+      return target.status === "ok" && target.record.rel === record.rel;
+    });
+    if (!backlinked) {
+      addDiagnostic(diagnostics, "error", record.rel, record.bodyStartLine, "PERSON_STAT_BACKLINK", `怪物資料卡 ${path.posix.basename(resolved.record.rel, ".md")} 未連回人物頁。`);
+    }
+  }
+}
+
 function validateTaxonomyLocation(record, diagnostics, taxonomy) {
   const category = taxonomy.categories?.[record.data.category];
   if (!category) return;
@@ -946,6 +1028,7 @@ export function lintWiki({ all = false, files, overrides } = {}) {
   const pathCatalog = makePathCatalog();
   const publications = loadPublicationRegistry();
   const taxonomy = loadTaxonomy();
+  const lore = loadLoreRegistry();
   const markdownFiles = walk(WIKI_ROOT).filter((file) => file.endsWith(".md"));
   const records = [];
 
@@ -1007,12 +1090,13 @@ export function lintWiki({ all = false, files, overrides } = {}) {
       }
       continue;
     }
-    validateFrontmatter(record, diagnostics, pathCatalog, publications);
+    validateFrontmatter(record, diagnostics, pathCatalog, publications, lore);
     validateTaxonomyLocation(record, diagnostics, taxonomy);
     validateVersionCoverage(record, diagnostics, publications);
     validateMagicItemStructure(record, diagnostics);
     validateHeadings(record.body, record.bodyStartLine, record.rel, diagnostics);
     validateLinks(record, diagnostics, catalog);
+    validatePersonStatLinks(record, diagnostics, catalog);
   }
 
   validateIndexes(records, diagnostics, catalog, scope);
@@ -1030,6 +1114,12 @@ export function lintWiki({ all = false, files, overrides } = {}) {
 
 const isMain = process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href;
 if (isMain) {
-  const result = lintWiki({ all: process.argv.includes("--all") });
+  const loreOnly = process.argv.includes("--lore");
+  const files = loreOnly
+    ? walk(path.join(WIKI_ROOT, "戰役設定"))
+      .filter((file) => file.endsWith(".md"))
+      .map(repoRelative)
+    : undefined;
+  const result = lintWiki({ all: process.argv.includes("--all"), files });
   process.exitCode = result.errors > 0 ? 1 : 0;
 }

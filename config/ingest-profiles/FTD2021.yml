@@ -1,5 +1,6 @@
 publication_id: "FTD2021"
 source_root: "原始資料/費資本的巨龍寶庫"
+setting: "多元宇宙"
 ruleset: "2014"
 outputs:
   classes: "wiki/職業/2014"
@@ -11,3 +12,8 @@ inputs:
   player_options: "玩家選項"
   spells: "巨龍魔法/法術.md"
   magic_items: "巨龍魔法"
+  lore:
+    include:
+      - "第一世界.md"
+      - "第一世界的輓歌.md"
+      - "遊戲中龍"

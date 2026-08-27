@@ -1,0 +1,10 @@
+publication_id: "WGE2018"
+source_root: "原始資料/艾伯倫尋路者指南"
+setting: "艾伯倫"
+ruleset: "2014"
+outputs:
+  settings: "wiki/戰役設定/艾伯倫"
+inputs:
+  lore:
+    include:
+      - "艾伯倫的種族.md"

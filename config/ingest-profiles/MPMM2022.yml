@@ -1,7 +1,12 @@
 publication_id: "MPMM2022"
 source_root: "原始資料/魔鄧肯鉅獻：多元宇宙的怪物"
+setting: "多元宇宙"
 ruleset: "2014"
 outputs:
   species: "wiki/種族/2014/多元宇宙種族"
+  settings: "wiki/戰役設定/多元宇宙"
 inputs:
   species: "種族"
+  lore:
+    include:
+      - "第一章：奇幻種族.md"
