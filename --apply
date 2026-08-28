@@ -1,0 +1,519 @@
+{
+  "schema_version": 1,
+  "mode": "apply",
+  "errors": [],
+  "warnings": [],
+  "information": [
+    {
+      "page": "wiki/戰役設定/被遺忘的國度/地理/宣揚者.md",
+      "code": "MIRROR_PAGE_LOCATED",
+      "locator": "Sword Coast Adventurer's Guide (2015), p. 76：The Avowed; 5e.tools 鏡像快照"
+    },
+    {
+      "page": "wiki/戰役設定/被遺忘的國度/地理/寇林列島.md",
+      "code": "MIRROR_PAGE_LOCATED",
+      "locator": "Sword Coast Adventurer's Guide (2015), p. 68：Korinn Archipelago; 5e.tools 鏡像快照"
+    },
+    {
+      "page": "wiki/戰役設定/被遺忘的國度/地理/寧布拉爾.md",
+      "code": "MIRROR_PAGE_LOCATED",
+      "locator": "Sword Coast Adventurer's Guide (2015), p. 71：Nimbral; 5e.tools 鏡像快照"
+    },
+    {
+      "page": "wiki/戰役設定/被遺忘的國度/地理/岡達朗.md",
+      "code": "MIRROR_PAGE_LOCATED",
+      "locator": "Sword Coast Adventurer's Guide (2015), p. 69：Gundarlun; 5e.tools 鏡像快照"
+    },
+    {
+      "page": "wiki/戰役設定/被遺忘的國度/地理/巨魔之爪.md",
+      "code": "MIRROR_PAGE_LOCATED",
+      "locator": "Sword Coast Adventurer's Guide (2015), p. 83：Trollclaws; 5e.tools 鏡像快照"
+    },
+    {
+      "page": "wiki/戰役設定/被遺忘的國度/地理/弓谷.md",
+      "code": "MIRROR_PAGE_LOCATED",
+      "locator": "Forgotten Realms: Adventures in Faerûn (2025), p. 54：Archendale; 5e.tools 鏡像快照"
+    },
+    {
+      "page": "wiki/戰役設定/被遺忘的國度/地理/恩瑟.md",
+      "code": "MIRROR_PAGE_LOCATED",
+      "locator": "Sword Coast Adventurer's Guide (2015), p. 14：Unther; 5e.tools 鏡像快照"
+    },
+    {
+      "page": "wiki/戰役設定/被遺忘的國度/地理/戰役谷.md",
+      "code": "MIRROR_PAGE_LOCATED",
+      "locator": "Forgotten Realms: Adventures in Faerûn (2025), p. 56：Battledale; 5e.tools 鏡像快照"
+    },
+    {
+      "page": "wiki/戰役設定/被遺忘的國度/地理/扎哈拉.md",
+      "code": "MIRROR_PAGE_LOCATED",
+      "locator": "Sword Coast Adventurer's Guide (2015), p. 14：Zakhara; 5e.tools 鏡像快照"
+    },
+    {
+      "page": "wiki/戰役設定/被遺忘的國度/地理/托瑞爾及其中各地區.md",
+      "code": "MIRROR_PAGE_LOCATED",
+      "locator": "Sword Coast Adventurer's Guide (2015), p. 9：Toril and Its Lands; 5e.tools 鏡像快照"
+    },
+    {
+      "page": "wiki/戰役設定/被遺忘的國度/地理/斯克努貝爾.md",
+      "code": "MIRROR_PAGE_LOCATED",
+      "locator": "Sword Coast Adventurer's Guide (2015), p. 81：Scornubel; 5e.tools 鏡像快照"
+    },
+    {
+      "page": "wiki/戰役設定/被遺忘的國度/地理/斯卡達拉克.md",
+      "code": "MIRROR_PAGE_LOCATED",
+      "locator": "Sword Coast Adventurer's Guide (2015), p. 67：Skadaurak; 5e.tools 鏡像快照"
+    },
+    {
+      "page": "wiki/戰役設定/被遺忘的國度/地理/明檀.md",
+      "code": "MIRROR_PAGE_LOCATED",
+      "locator": "Sword Coast Adventurer's Guide (2015), p. 66：Mintarn; 5e.tools 鏡像快照"
+    },
+    {
+      "page": "wiki/戰役設定/被遺忘的國度/地理/月影群島.md",
+      "code": "MIRROR_PAGE_LOCATED",
+      "locator": "Sword Coast Adventurer's Guide (2015), p. 67：The Moonshaes; 5e.tools 鏡像快照"
+    },
+    {
+      "page": "wiki/戰役設定/被遺忘的國度/地理/月海.md",
+      "code": "MIRROR_PAGE_LOCATED",
+      "locator": "Sword Coast Adventurer's Guide (2015), p. 12：The Moonsea; 5e.tools 鏡像快照"
+    },
+    {
+      "page": "wiki/戰役設定/被遺忘的國度/地理/東部各地.md",
+      "code": "MIRROR_PAGE_LOCATED",
+      "locator": "Sword Coast Adventurer's Guide (2015), p. 11：Lands to the East; 5e.tools 鏡像快照"
+    },
+    {
+      "page": "wiki/戰役設定/被遺忘的國度/地理/桑比亞.md",
+      "code": "MIRROR_PAGE_LOCATED",
+      "locator": "Sword Coast Adventurer's Guide (2015), p. 12：Sembia; 5e.tools 鏡像快照"
+    },
+    {
+      "page": "wiki/戰役設定/被遺忘的國度/地理/楚爾特.md",
+      "code": "MIRROR_PAGE_LOCATED",
+      "locator": "Sword Coast Adventurer's Guide (2015), p. 9：Chult; 5e.tools 鏡像快照"
+    },
+    {
+      "page": "wiki/戰役設定/被遺忘的國度/地理/歐倫伯.md",
+      "code": "MIRROR_PAGE_LOCATED",
+      "locator": "Sword Coast Adventurer's Guide (2015), p. 70：Orlumbor; 5e.tools 鏡像快照"
+    },
+    {
+      "page": "wiki/戰役設定/被遺忘的國度/地理/歐曼之島.md",
+      "code": "MIRROR_PAGE_LOCATED",
+      "locator": "Sword Coast Adventurer's Guide (2015), p. 69：Oman's Isle; 5e.tools 鏡像快照"
+    }
+  ],
+  "translation_pending": [],
+  "source_conflicts": [],
+  "missing_page_citation": [
+    {
+      "page": "wiki/戰役設定/被遺忘的國度/地理/島國.md",
+      "publication_id": "SCAG2015",
+      "reason": "鏡像未找到同名英文實體；保留章節或原始資料定位。"
+    },
+    {
+      "page": "wiki/戰役設定/被遺忘的國度/地理/幽暗地域.md",
+      "publication_id": "SCAG2015",
+      "reason": "鏡像未找到同名英文實體；保留章節或原始資料定位。"
+    },
+    {
+      "page": "wiki/戰役設定/被遺忘的國度/地理/托瑞爾諸地.md",
+      "publication_id": "SCAG2015",
+      "reason": "鏡像未找到同名英文實體；保留章節或原始資料定位。"
+    },
+    {
+      "page": "wiki/戰役設定/被遺忘的國度/地理/晨曦之主要塞.md",
+      "publication_id": "SCAG2015",
+      "reason": "鏡像未找到同名英文實體；保留章節或原始資料定位。"
+    },
+    {
+      "page": "wiki/戰役設定/被遺忘的國度/地理/毒蛇山脈.md",
+      "publication_id": "SCAG2015",
+      "reason": "鏡像未找到同名英文實體；保留章節或原始資料定位。"
+    }
+  ],
+  "missing_stat_link": [],
+  "disposition": {
+    "rebuild": [
+      {
+        "page": "wiki/戰役設定/被遺忘的國度/地理/宣揚者.md",
+        "changed": false,
+        "sources": [
+          {
+            "file": "原始資料/劍灣冒險者指南/劍灣與北地/獨立國度.md",
+            "locator": "**宣揚者 The Avowed**"
+          },
+          {
+            "file": "原始資料/外部來源鏡像/SCAG2015/book-scag.json",
+            "locator": "Sword Coast Adventurer's Guide (2015), p. 76：The Avowed; 5e.tools 鏡像快照"
+          }
+        ]
+      },
+      {
+        "page": "wiki/戰役設定/被遺忘的國度/地理/寇林列島.md",
+        "changed": false,
+        "sources": [
+          {
+            "file": "原始資料/劍灣冒險者指南/劍灣與北地/島國.md",
+            "locator": "**寇林列島 Korinn Archipelago**"
+          },
+          {
+            "file": "原始資料/外部來源鏡像/SCAG2015/book-scag.json",
+            "locator": "Sword Coast Adventurer's Guide (2015), p. 68：Korinn Archipelago; 5e.tools 鏡像快照"
+          }
+        ]
+      },
+      {
+        "page": "wiki/戰役設定/被遺忘的國度/地理/寧布拉爾.md",
+        "changed": false,
+        "sources": [
+          {
+            "file": "原始資料/劍灣冒險者指南/劍灣與北地/島國.md",
+            "locator": "**寧布拉爾 Nimbral**"
+          },
+          {
+            "file": "原始資料/外部來源鏡像/SCAG2015/book-scag.json",
+            "locator": "Sword Coast Adventurer's Guide (2015), p. 71：Nimbral; 5e.tools 鏡像快照"
+          }
+        ]
+      },
+      {
+        "page": "wiki/戰役設定/被遺忘的國度/地理/岡達朗.md",
+        "changed": false,
+        "sources": [
+          {
+            "file": "原始資料/劍灣冒險者指南/劍灣與北地/島國.md",
+            "locator": "**岡達朗 Gundarlun**"
+          },
+          {
+            "file": "原始資料/外部來源鏡像/SCAG2015/book-scag.json",
+            "locator": "Sword Coast Adventurer's Guide (2015), p. 69：Gundarlun; 5e.tools 鏡像快照"
+          }
+        ]
+      },
+      {
+        "page": "wiki/戰役設定/被遺忘的國度/地理/島國.md",
+        "changed": false,
+        "sources": [
+          {
+            "file": "原始資料/劍灣冒險者指南/劍灣與北地/島國.md",
+            "locator": "# 島國"
+          },
+          {
+            "file": "原始資料/外部來源鏡像/SCAG2015/book-scag.json",
+            "locator": "Sword Coast Adventurer's Guide (2015); 5e.tools 鏡像快照，頁碼待定位"
+          }
+        ]
+      },
+      {
+        "page": "wiki/戰役設定/被遺忘的國度/地理/巨魔之爪.md",
+        "changed": false,
+        "sources": [
+          {
+            "file": "原始資料/劍灣冒險者指南/劍灣與北地/獨立國度.md",
+            "locator": "**巨魔之爪 Trollclaws**"
+          },
+          {
+            "file": "原始資料/外部來源鏡像/SCAG2015/book-scag.json",
+            "locator": "Sword Coast Adventurer's Guide (2015), p. 83：Trollclaws; 5e.tools 鏡像快照"
+          }
+        ]
+      },
+      {
+        "page": "wiki/戰役設定/被遺忘的國度/地理/幽暗地域.md",
+        "changed": false,
+        "sources": [
+          {
+            "file": "原始資料/劍灣冒險者指南/劍灣與北地/幽暗地域.md",
+            "locator": "# 幽暗地域"
+          },
+          {
+            "file": "原始資料/劍灣冒險者指南/歡迎來到國度/劍灣與北地.md",
+            "locator": "**幽暗地域 The Underdark**"
+          },
+          {
+            "file": "原始資料/外部來源鏡像/SCAG2015/book-scag.json",
+            "locator": "Sword Coast Adventurer's Guide (2015); 5e.tools 鏡像快照，頁碼待定位"
+          }
+        ]
+      },
+      {
+        "page": "wiki/戰役設定/被遺忘的國度/地理/弓谷.md",
+        "changed": false,
+        "sources": [
+          {
+            "file": "原始資料/劍灣冒險者指南/歡迎來到國度/托瑞爾諸地.md",
+            "locator": "**谷地 The Dalelands**：列為谷地議會的成員"
+          },
+          {
+            "file": "原始資料/被遺忘的國度：費倫冒險/費倫冒險.md",
+            "locator": "Forgotten Realms: Adventures in Faerûn (2025), p. 54, Chapter 2: The Dalelands, Archendale; 5e.tools 補充來源"
+          },
+          {
+            "file": "原始資料/外部來源鏡像/FRAIF2025/book-fraif.json",
+            "locator": "Forgotten Realms: Adventures in Faerûn (2025), p. 54：Archendale; 5e.tools 鏡像快照"
+          }
+        ]
+      },
+      {
+        "page": "wiki/戰役設定/被遺忘的國度/地理/恩瑟.md",
+        "changed": false,
+        "sources": [
+          {
+            "file": "原始資料/劍灣冒險者指南/歡迎來到國度/托瑞爾諸地.md",
+            "locator": "**恩瑟 Unther**"
+          },
+          {
+            "file": "原始資料/外部來源鏡像/SCAG2015/book-scag.json",
+            "locator": "Sword Coast Adventurer's Guide (2015), p. 14：Unther; 5e.tools 鏡像快照"
+          }
+        ]
+      },
+      {
+        "page": "wiki/戰役設定/被遺忘的國度/地理/戰役谷.md",
+        "changed": false,
+        "sources": [
+          {
+            "file": "原始資料/劍灣冒險者指南/歡迎來到國度/托瑞爾諸地.md",
+            "locator": "**谷地 The Dalelands**：列為谷地議會的成員"
+          },
+          {
+            "file": "原始資料/被遺忘的國度：費倫冒險/費倫冒險.md",
+            "locator": "Forgotten Realms: Adventures in Faerûn (2025), pp. 56–57, Chapter 2: The Dalelands, Battledale; 5e.tools 補充來源"
+          },
+          {
+            "file": "原始資料/外部來源鏡像/FRAIF2025/book-fraif.json",
+            "locator": "Forgotten Realms: Adventures in Faerûn (2025), p. 56：Battledale; 5e.tools 鏡像快照"
+          }
+        ]
+      },
+      {
+        "page": "wiki/戰役設定/被遺忘的國度/地理/扎哈拉.md",
+        "changed": false,
+        "sources": [
+          {
+            "file": "原始資料/劍灣冒險者指南/歡迎來到國度/托瑞爾諸地.md",
+            "locator": "**扎哈拉 Zakhara**"
+          },
+          {
+            "file": "原始資料/外部來源鏡像/SCAG2015/book-scag.json",
+            "locator": "Sword Coast Adventurer's Guide (2015), p. 14：Zakhara; 5e.tools 鏡像快照"
+          }
+        ]
+      },
+      {
+        "page": "wiki/戰役設定/被遺忘的國度/地理/托瑞爾及其中各地區.md",
+        "changed": false,
+        "sources": [
+          {
+            "file": "原始資料/劍灣冒險者指南/歡迎來到國度/托瑞爾諸地.md",
+            "locator": "**托瑞爾及其中各地區 Toril and Its Lands**"
+          },
+          {
+            "file": "原始資料/外部來源鏡像/SCAG2015/book-scag.json",
+            "locator": "Sword Coast Adventurer's Guide (2015), p. 9：Toril and Its Lands; 5e.tools 鏡像快照"
+          }
+        ]
+      },
+      {
+        "page": "wiki/戰役設定/被遺忘的國度/地理/托瑞爾諸地.md",
+        "changed": false,
+        "sources": [
+          {
+            "file": "原始資料/劍灣冒險者指南/歡迎來到國度/托瑞爾諸地.md",
+            "locator": "# 托瑞爾諸地"
+          },
+          {
+            "file": "原始資料/外部來源鏡像/SCAG2015/book-scag.json",
+            "locator": "Sword Coast Adventurer's Guide (2015); 5e.tools 鏡像快照，頁碼待定位"
+          }
+        ]
+      },
+      {
+        "page": "wiki/戰役設定/被遺忘的國度/地理/斯克努貝爾.md",
+        "changed": false,
+        "sources": [
+          {
+            "file": "原始資料/劍灣冒險者指南/劍灣與北地/獨立國度.md",
+            "locator": "**斯克努貝爾 Scornubel**"
+          },
+          {
+            "file": "原始資料/外部來源鏡像/SCAG2015/book-scag.json",
+            "locator": "Sword Coast Adventurer's Guide (2015), p. 81：Scornubel; 5e.tools 鏡像快照"
+          }
+        ]
+      },
+      {
+        "page": "wiki/戰役設定/被遺忘的國度/地理/斯卡達拉克.md",
+        "changed": false,
+        "sources": [
+          {
+            "file": "原始資料/劍灣冒險者指南/劍灣與北地/島國.md",
+            "locator": "**斯卡達拉克 Skadaurak**"
+          },
+          {
+            "file": "原始資料/外部來源鏡像/SCAG2015/book-scag.json",
+            "locator": "Sword Coast Adventurer's Guide (2015), p. 67：Skadaurak; 5e.tools 鏡像快照"
+          }
+        ]
+      },
+      {
+        "page": "wiki/戰役設定/被遺忘的國度/地理/明檀.md",
+        "changed": false,
+        "sources": [
+          {
+            "file": "原始資料/劍灣冒險者指南/劍灣與北地/島國.md",
+            "locator": "**明檀 Mintarn**"
+          },
+          {
+            "file": "原始資料/外部來源鏡像/SCAG2015/book-scag.json",
+            "locator": "Sword Coast Adventurer's Guide (2015), p. 66：Mintarn; 5e.tools 鏡像快照"
+          }
+        ]
+      },
+      {
+        "page": "wiki/戰役設定/被遺忘的國度/地理/晨曦之主要塞.md",
+        "changed": false,
+        "sources": [
+          {
+            "file": "原始資料/劍灣冒險者指南/劍灣與北地/獨立國度.md",
+            "locator": "**晨曦之主要塞 Fort Morninglord**"
+          },
+          {
+            "file": "原始資料/外部來源鏡像/SCAG2015/book-scag.json",
+            "locator": "Sword Coast Adventurer's Guide (2015); 5e.tools 鏡像快照，頁碼待定位"
+          }
+        ]
+      },
+      {
+        "page": "wiki/戰役設定/被遺忘的國度/地理/月影群島.md",
+        "changed": false,
+        "sources": [
+          {
+            "file": "原始資料/劍灣冒險者指南/劍灣與北地/島國.md",
+            "locator": "**月影群島 The Moonshaes**"
+          },
+          {
+            "file": "原始資料/被遺忘的國度：費倫冒險/費倫冒險.md",
+            "locator": "Forgotten Realms: Adventures in Faerûn (2025), pp. 161–183, Chapter 5: The Moonshae Isles; 5e.tools 補充來源"
+          },
+          {
+            "file": "原始資料/外部來源鏡像/SCAG2015/book-scag.json",
+            "locator": "Sword Coast Adventurer's Guide (2015), p. 67：The Moonshaes; 5e.tools 鏡像快照"
+          }
+        ]
+      },
+      {
+        "page": "wiki/戰役設定/被遺忘的國度/地理/月海.md",
+        "changed": false,
+        "sources": [
+          {
+            "file": "原始資料/劍灣冒險者指南/歡迎來到國度/托瑞爾諸地.md",
+            "locator": "**月海 The Moonsea**"
+          },
+          {
+            "file": "原始資料/外部來源鏡像/SCAG2015/book-scag.json",
+            "locator": "Sword Coast Adventurer's Guide (2015), p. 12：The Moonsea; 5e.tools 鏡像快照"
+          }
+        ]
+      },
+      {
+        "page": "wiki/戰役設定/被遺忘的國度/地理/東部各地.md",
+        "changed": false,
+        "sources": [
+          {
+            "file": "原始資料/劍灣冒險者指南/歡迎來到國度/托瑞爾諸地.md",
+            "locator": "**東部各地 Lands to the East**"
+          },
+          {
+            "file": "原始資料/外部來源鏡像/SCAG2015/book-scag.json",
+            "locator": "Sword Coast Adventurer's Guide (2015), p. 11：Lands to the East; 5e.tools 鏡像快照"
+          }
+        ]
+      },
+      {
+        "page": "wiki/戰役設定/被遺忘的國度/地理/桑比亞.md",
+        "changed": false,
+        "sources": [
+          {
+            "file": "原始資料/劍灣冒險者指南/歡迎來到國度/托瑞爾諸地.md",
+            "locator": "**桑比亞 Sembia**"
+          },
+          {
+            "file": "原始資料/外部來源鏡像/SCAG2015/book-scag.json",
+            "locator": "Sword Coast Adventurer's Guide (2015), p. 12：Sembia; 5e.tools 鏡像快照"
+          }
+        ]
+      },
+      {
+        "page": "wiki/戰役設定/被遺忘的國度/地理/楚爾特.md",
+        "changed": true,
+        "sources": [
+          {
+            "file": "原始資料/劍灣冒險者指南/歡迎來到國度/托瑞爾諸地.md",
+            "locator": "**楚爾特 Chult**"
+          },
+          {
+            "file": "原始資料/外部來源鏡像/SCAG2015/book-scag.json",
+            "locator": "Sword Coast Adventurer's Guide (2015), p. 9：Chult; 5e.tools 鏡像快照"
+          }
+        ]
+      },
+      {
+        "page": "wiki/戰役設定/被遺忘的國度/地理/歐倫伯.md",
+        "changed": false,
+        "sources": [
+          {
+            "file": "原始資料/劍灣冒險者指南/劍灣與北地/島國.md",
+            "locator": "**歐倫伯 Orlumbor**"
+          },
+          {
+            "file": "原始資料/外部來源鏡像/SCAG2015/book-scag.json",
+            "locator": "Sword Coast Adventurer's Guide (2015), p. 70：Orlumbor; 5e.tools 鏡像快照"
+          }
+        ]
+      },
+      {
+        "page": "wiki/戰役設定/被遺忘的國度/地理/歐曼之島.md",
+        "changed": false,
+        "sources": [
+          {
+            "file": "原始資料/劍灣冒險者指南/劍灣與北地/島國.md",
+            "locator": "**歐曼之島 Oman's Isle**"
+          },
+          {
+            "file": "原始資料/外部來源鏡像/SCAG2015/book-scag.json",
+            "locator": "Sword Coast Adventurer's Guide (2015), p. 69：Oman's Isle; 5e.tools 鏡像快照"
+          }
+        ]
+      },
+      {
+        "page": "wiki/戰役設定/被遺忘的國度/地理/毒蛇山脈.md",
+        "changed": false,
+        "sources": [
+          {
+            "file": "原始資料/劍灣冒險者指南/劍灣與北地/獨立國度.md",
+            "locator": "**毒蛇山脈 SERPENT HILLS**"
+          },
+          {
+            "file": "原始資料/外部來源鏡像/SCAG2015/book-scag.json",
+            "locator": "Sword Coast Adventurer's Guide (2015); 5e.tools 鏡像快照，頁碼待定位"
+          }
+        ]
+      }
+    ],
+    "excluded": []
+  },
+  "summary": {
+    "total_candidates": 513,
+    "batch": 15,
+    "batches": 21,
+    "selected": 25,
+    "changed": 1,
+    "excluded": 0,
+    "errors": 0,
+    "warnings": 0
+  }
+}

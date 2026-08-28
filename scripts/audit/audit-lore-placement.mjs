@@ -43,6 +43,7 @@ function chineseSubject(value) {
 // 已由詞彙表人類總編輯核定；原始中文來源仍可能保留舊譯名。
 const SOURCE_TITLE_ALIASES = new Map([
   ["無冬城", "絕冬城"],
+  ["耐瑟瑞爾迴歸", "耐瑟瑞爾回歸"],
 ]);
 
 function sameSubject(pageTitle, sourceTitle) {
@@ -103,6 +104,8 @@ function classify(record) {
   const issues = [];
   const source = record.source;
   const title = source.heading;
+  // 戰役創作頁是刻意保留的 DM 工具，不適用於世界觀實體的類型推斷。
+  const isCampaignCreation = record.page.includes("/戰役創作/");
   if (record.primary && /^第[一二三四五六七八九十\d]+章[：:]/u.test(title)) {
     issues.push({ code: "CHAPTER_AS_ENTITY", severity: "error", reason: "出版品章節題名不應建立為命名實體頁。" });
   }
@@ -112,11 +115,11 @@ function classify(record) {
   if (record.primary && record.data.lore_type === "人物" && /角色|NPC|冒險者|對手|人物|英雄|住民/u.test(title)) {
     issues.push({ code: "GENERIC_PERSON_PAGE", severity: "error", reason: "角色類型或 NPC 使用指引不是單一人物實體。" });
   }
-  if (record.primary && /冒險|組建隊伍|構建|扮演|定製|指南|如何/u.test(title) && !/事件|戰役|戰爭/u.test(title)) {
+  if (record.primary && !isCampaignCreation && /冒險|組建隊伍|構建|扮演|定製|指南|如何/u.test(title) && !/事件|戰役|戰爭/u.test(title)) {
     issues.push({ code: "GUIDANCE_AS_ENTITY", severity: "warning", reason: "可能是 DM／玩家指引；需確認應併入總覽或明確作為主題頁。" });
   }
   const expected = expectedTypes(`${source.relative} ${title}`);
-  if (record.primary && expected.length === 1 && expected[0] !== record.data.lore_type) {
+  if (record.primary && !isCampaignCreation && expected.length === 1 && expected[0] !== record.data.lore_type) {
     issues.push({ code: "TYPE_PATH_MISMATCH", severity: "warning", reason: `來源路徑明確指向「${expected[0]}」，但頁面分類為「${record.data.lore_type}」。` });
   }
   if (record.primary && title && !sameSubject(record.data.title, title)) {

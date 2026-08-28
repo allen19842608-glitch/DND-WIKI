@@ -75,6 +75,7 @@ function paragraphs(text) {
       && !/^(?:無|無。|—)$/.test(item)
       && !/^(?:目前來源未提供可獨立整理|本條目尚無可安全重建|無可安全摘要)/.test(item)
       && !/^\||^<!--|^#/.test(item)
+      && !isNonLoreText(item)
       && !/^\*\*引用\*\*/.test(item));
 }
 
@@ -98,6 +99,31 @@ function isSourceDump(text) {
     || /(?:^|\s)(?:Note to the DM|引用\s*DM\s*的筆記)/.test(text)
     || text.length > 700
     || /(?:\[[A-Za-z][^\]]{1,60}\]|\([A-Za-z][^)]{1,60}\)){4,}/.test(text);
+}
+
+function isPlaceholderPage(body) {
+  const map = sections(body);
+  const overview = String(map.get("概覽") ?? "");
+  const history = String(map.get("歷史與現況") ?? "");
+  return /本條目目前僅保留可定位來源；內容待依來源補充|本條目尚無可安全重建的摘要/.test(overview)
+    || (/目前來源未提供可獨立整理的補充歷史/.test(history)
+      && /(?:^|\n)## 重要關係\s*\n\s*無。?\s*(?:\n|$)/.test(body));
+}
+
+function hasEmptyPlaceholderOverview(body) {
+  return /本條目目前僅保留可定位來源；內容待依來源補充|本條目尚無可安全重建的摘要/.test(String(sections(body).get("概覽") ?? ""));
+}
+
+function hasTitleOnlyOverview(body) {
+  const overview = String(sections(body).get("概覽") ?? "").trim();
+  return !/來源：/.test(overview)
+    && overview.length < 100
+    && /[A-Za-z]/.test(overview)
+    && !/[。！？]/.test(overview);
+}
+
+function isNonLoreText(text) {
+  return /^(?:Lead Designer|Designer|Writing|Illustrations?|Credits|設計(?:師|者)|作者|插畫(?:師|者)|致謝)\s*:/im.test(String(text).replaceAll("**", ""));
 }
 
 function meaningfulParagraphs(sectionMap) {
@@ -184,17 +210,62 @@ function addMirrorSource(frontmatter, data) {
   const sourceFile = reference.file.replaceAll('"', '\\"');
   const locator = reference.locator.replaceAll('"', '\\"');
   const existing = new RegExp(`(file: "${sourceFile.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}"\\n\\s+locator: ")[^"]+(")`);
+  const promoteMirrorSource = (value) => {
+    const block = new RegExp(`^  - file: "${sourceFile.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}"\\n(?:    [^\\n]+\\n)+`, "m");
+    const match = value.match(block);
+    if (!match) return value;
+    return value.replace(block, "").replace(/\nsources:\n/, `\nsources:\n${match[0]}`);
+  };
   if ((data.sources ?? []).some((source) => String(source?.file ?? "").replaceAll("\\", "/") === reference.file)) {
     if (/頁碼待定位/.test(reference.locator)) return frontmatter;
-    return frontmatter.replace(existing, (match, start, end) => `${start}${locator}${end}`);
+    return promoteMirrorSource(frontmatter.replace(existing, (match, start, end) => `${start}${locator}${end}`));
   }
   const url = reference.url.replaceAll('"', '\\"');
   const source = `  - file: "${sourceFile}"\n    locator: "${locator}"\n    url: "${url}"\n    authority: "官方"\n    translation: "none"\n`;
-  return frontmatter.replace(/\nsource_type:/, `\n${source}source_type:`);
+  // 英文鏡像對照的是正式出版品原文，故在來源陣列中排在中文社群譯文之前；
+  // 這個順序表達事實校對優先性，並不把 5e.tools 誤標為官方出版者。
+  return frontmatter.replace(/\nsources:\n/, `\nsources:\n${source}`);
 }
 
 function hasChineseSource(data) {
   return (data.sources ?? []).some((source) => source?.translation === "community" || /原始資料\/(?!外部來源鏡像)/.test(String(source?.file ?? "")));
+}
+
+function sourceFragments(text) {
+  const result = [];
+  const add = (value) => {
+    const cleaned = value
+      .replace(/^#{1,6}\s+[^\n]*\n?/, "")
+      .replace(/^\*{1,3}[^\n]*\*{1,3}\s*/, "")
+      .replace(/^\*\s+\*\s+\*\s*$/, "")
+      .replace(/\s+/g, " ")
+      .trim();
+    if (cleaned.length >= 24 && !/^<!--|^\||^\*\*引用\*\*/.test(cleaned) && !isNonLoreText(cleaned) && !/本節直接保留可定位來源的正文/.test(cleaned)) result.push(cleaned);
+  };
+  for (const paragraph of text.split(/\n\s*\n/g)) {
+    const cleaned = paragraph.trim();
+    if (!cleaned || /^\*\s+\*\s+\*$/.test(cleaned)) continue;
+    if (cleaned.length <= 420) {
+      add(cleaned);
+      continue;
+    }
+    const sentences = cleaned.match(/[^。！？\n]+[。！？]|[^。！？\n]+$/g) ?? [];
+    let chunk = "";
+    let sentenceCount = 0;
+    for (const sentence of sentences) {
+      // 原始中文常把整個城市條目排在一個長段落。以一至兩句為一個可讀的
+      // 事實單位，避免摘要橫跨不相干事件，或再次變成未整理的大段正文。
+      if (chunk && (sentenceCount >= 2 || chunk.length + sentence.length > 280)) {
+        add(chunk);
+        chunk = "";
+        sentenceCount = 0;
+      }
+      chunk += sentence;
+      sentenceCount += 1;
+    }
+    add(chunk);
+  }
+  return result;
 }
 
 function sourceParagraphs(data, title) {
@@ -211,14 +282,16 @@ function sourceParagraphs(data, title) {
     const file = path.join(ROOT, source.file);
     if (!fs.existsSync(file)) continue;
     const raw = fs.readFileSync(file, "utf8").replace(/\r/g, "");
+    // 僅含出版資訊／致謝的檔案不是條目正文；不能把人員名單當作世界觀摘要。
+    if (isNonLoreText(raw)) continue;
     const escapedName = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     const heading = new RegExp(`^(?:#{1,6}\\s*|\\*{0,2})${escapedName}(?:\\b|\\s|\\*)`, "mi");
     const match = raw.match(heading);
     const focused = match?.index == null ? raw : raw.slice(match.index);
-    const paragraphs = focused.split(/\n\s*\n/g)
-      .map((item) => item.trim().replace(/^#{1,6}\s+.*$/m, "").trim())
-      .map((item) => item.replace(/^\*{1,2}[^\n]*\*{1,2}\s*/, "").trim())
-      .filter((item) => item.length >= 24 && !/^<!--/.test(item) && !isSourceDump(item));
+    // 劍灣冒險者指南等來源會在同一檔案連續收錄多個條目。只取目前題名到
+    // 下一個以粗體題名與分隔線開頭的條目，避免把相鄰城市誤編入本頁。
+    const entry = focused.split(/\n(?=\*\*[^*\n]+\*\*\s*\n\s*\*\s*\*\s*\*)/)[0];
+    const paragraphs = sourceFragments(entry);
     for (const item of paragraphs) {
       result.push(item);
       if (result.length >= 3) return result;
@@ -234,10 +307,26 @@ function rebuildBody(page) {
     ? "> [!WARNING] 劇透警告\n> 本頁包含可能影響冒險體驗的劇情、祕密身分或結局資訊。\n\n"
     : "";
   const material = meaningfulParagraphs(map);
-  if (!material.length) material.push(...sourceParagraphs(page.data, title));
+  const isPlaceholder = isPlaceholderPage(page.body);
+  const isEmptyOverview = hasEmptyPlaceholderOverview(page.body);
+  const recovered = isPlaceholder ? sourceParagraphs(page.data, title) : [];
+  // 只在頁面確為佔位內容時自動補入中文原始資料；英文原文是事實優先來源，
+  // 但其中文摘要須由編譯流程以可定位原文人工整理，避免把英文全文或未核定專名
+  // 直接寫進 Wiki。既有整理內容不因來源檔很長而被重寫。
+  if (isPlaceholder && !recovered.length) return page.body;
+  if (isEmptyOverview) {
+    material.length = 0;
+    material.push(...recovered);
+  } else if (isPlaceholder) {
+    for (const item of recovered) if (!material.some((existing) => compact(existing) === compact(item))) material.push(item);
+  } else if (!material.length) {
+    material.push(...sourceParagraphs(page.data, title));
+  }
   const note = citation(page.data);
   const overview = material[0] ? `${compact(material[0])}${note && !material[0].includes("來源：") ? note : ""}` : "本條目尚無可安全重建的摘要；請依已列來源補寫。";
-  const history = material.slice(1, 3).map((item) => `- ${compact(item)}`).join("\n") || "- 目前來源未提供可獨立整理的補充歷史。";
+  const history = material.slice(1, 3)
+    .map((item) => `- ${compact(item)}${note && !item.includes("來源：") ? note : ""}`)
+    .join("\n") || "- 目前來源未提供可獨立整理的補充歷史。";
   const related = links(map.get("🔗 相關連結") ?? page.body).filter((link) => /索引$|戰役設定\//.test(link));
   const relatedLines = related.length ? related.map((link) => `- [[${link}]]`).join("\n") : "- 無。";
   const statBlock = page.data.lore_type === "人物" && map.has("怪物資料卡") ? `\n\n## 怪物資料卡\n\n${map.get("怪物資料卡").trim()}` : "";
@@ -247,8 +336,10 @@ function rebuildBody(page) {
 }
 
 function rebuiltText(page) {
+  const body = rebuildBody(page);
+  if (body === page.body) return page.text;
   const updated = addMirrorSource(page.frontmatter, page.data).replace(/^updated:\s*"[^"]*"\s*$/m, `updated: "${today()}"`);
-  return `---\n${updated}\n---\n${rebuildBody(page)}`;
+  return `---\n${updated}\n---\n${body}`;
 }
 
 function diffSummary(current, next) {
@@ -266,12 +357,16 @@ function select(args) {
   const setting = option(args, "--setting");
   const publication = option(args, "--publication");
   const only = option(args, "--only");
+  const onlyStubs = args.includes("--only-stubs");
+  const onlyTitleOverviews = args.includes("--only-title-overviews");
   const batch = Number(option(args, "--batch") ?? "0");
   const candidates = walk(WIKI_ROOT).sort().map((file) => ({ file, page: parsePage(file) }))
     .filter(({ file, page }) => isRebuildable(file, page))
     .filter(({ file, page }) => !setting || page.data.setting === setting)
     .filter(({ file, page }) => !publication || String(page.data.entity_id ?? "").startsWith(`entry:${publication}:`))
-    .filter(({ file }) => !only || rel(file).includes(only));
+    .filter(({ file }) => !only || rel(file).includes(only))
+    .filter(({ page }) => !onlyStubs || isPlaceholderPage(page.body))
+    .filter(({ page }) => !onlyTitleOverviews || hasTitleOnlyOverview(page.body));
   if (batch && (!Number.isInteger(batch) || batch < 1)) throw new Error("--batch 必須是從 1 開始的整數。");
   const start = batch ? (batch - 1) * 25 : 0;
   return { total: candidates.length, selected: batch ? candidates.slice(start, start + 25) : candidates.slice(0, 25), batch: batch || 1, batches: Math.ceil(candidates.length / 25) };
