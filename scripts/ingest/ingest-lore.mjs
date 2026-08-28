@@ -189,6 +189,9 @@ function namedSections(text) {
 }
 
 function sourceEntry(source, locator, publication) {
+  if (source.startsWith("原始資料/外部來源鏡像/")) {
+    return { file: source, locator, authority: publication.authority ?? "官方", translation: "none" };
+  }
   const asset = publication.source_assets?.find((item) => source === item.path || source.startsWith(`${item.path}/`));
   return {
     file: source,
@@ -238,6 +241,9 @@ function mergePage(existing, candidate, publication) {
     next = promoteTag(next, publication.wiki.tag);
   }
   next = next.replace(/^updated: "[^"]+"$/m, `updated: "${today()}"`);
+  // 英文鏡像是校對與完整性基準；既有中文頁只新增可定位來源，避免把未整理
+  // 的整段原文再次複製進 Wiki。中文正文的實質補充仍應由人工摘要後寫入。
+  if (candidate.source.startsWith("原始資料/外部來源鏡像/")) return next;
   const heading = `## 《${publication.title_zh}》（${publication.year}）補充`;
   const supplement = `${heading}\n\n${candidate.body}`;
   if (!next.includes(heading)) {
@@ -291,7 +297,7 @@ function addMonsterBacklink(monsterRel, candidate, apply, changes) {
   if (apply) fs.writeFileSync(file, text, "utf8");
 }
 
-function makeCandidates({ files, publicationId, publication, profile, setting, typeOverride, loreConfig, only }) {
+function makeCandidates({ files, publicationId, publication, profile, sourceRoot, setting, typeOverride, loreConfig, only }) {
   const world = Object.entries(loreConfig.worlds).map(([id, value]) => ({ id, ...value })).find((item) => item.label === setting);
   if (!world) throw new Error(`未在 config/lore.yml 登錄世界：${setting}`);
   const typeCatalog = new Map(Object.entries(loreConfig.lore_types).map(([id, value]) => [value.label, { id, ...value }]));
@@ -313,7 +319,7 @@ function makeCandidates({ files, publicationId, publication, profile, setting, t
   for (const file of files) {
     const text = fs.readFileSync(file, "utf8");
     const source = rel(file);
-    const sourceRelative = path.relative(path.join(ROOT, profile.source_root), file).split(path.sep).join("/");
+    const sourceRelative = path.relative(sourceRoot, file).split(path.sep).join("/");
     const locatorTitle = text.match(/^#\s+(.+)$/m)?.[1]?.trim() ?? path.basename(file, ".md");
     const primary = parseBilingualTitle(text, path.basename(file, ".md"));
     const entries = [{ chinese: primary.chinese, english: primary.english, locator: `# ${locatorTitle}`, body: sourceBody(text) }];
@@ -430,11 +436,18 @@ export function runLoreIngest(args = process.argv.slice(2)) {
   const diff = args.includes("--diff");
   const typeOverride = option(args, "--type");
   const only = option(args, "--only");
-  const sourceRoot = path.join(ROOT, profile.source_root);
-  if (!fs.existsSync(sourceRoot)) throw new Error(`來源根目錄不存在：${profile.source_root}`);
+  const sourceMode = option(args, "--source-mode") ?? "chinese";
+  if (!["chinese", "canonical"].includes(sourceMode)) throw new Error("--source-mode 僅能為 chinese 或 canonical。");
+  const selectedProfile = sourceMode === "canonical"
+    ? { ...profile, inputs: { ...profile.inputs, lore: { include: ["chapters"], exclude: [] } } }
+    : profile;
+  const sourceRootRelative = sourceMode === "canonical" ? profile.canonical_mirror?.output_root : profile.source_root;
+  if (!sourceRootRelative) throw new Error(`出版品 ${publicationId} 未登錄 5e.tools 英文鏡像。`);
+  const sourceRoot = path.join(ROOT, sourceRootRelative);
+  if (!fs.existsSync(sourceRoot)) throw new Error(`來源根目錄不存在：${sourceRootRelative}`);
   const loreConfig = YAML.parse(fs.readFileSync(path.join(ROOT, "config", "lore.yml"), "utf8"));
-  const selection = selectSourceFiles(sourceRoot, profile);
-  const candidates = makeCandidates({ files: selection.included, publicationId, publication, profile, setting, typeOverride, loreConfig, only });
+  const selection = selectSourceFiles(sourceRoot, selectedProfile);
+  const candidates = makeCandidates({ files: selection.included, publicationId, publication, profile: selectedProfile, sourceRoot, setting, typeOverride, loreConfig, only });
   const monsters = monsterCatalog();
   for (const candidate of candidates) candidate.stat_links = statLinks(candidate, monsters);
   const actionable = candidates.filter((candidate) => candidate.status === "新增"
@@ -454,7 +467,7 @@ export function runLoreIngest(args = process.argv.slice(2)) {
     candidate.destinationRel = destinationRel;
     if (content === existing?.text) continue;
     changes.set(destinationRel, content);
-    if (diff) showDiff(candidate, content, existing);
+    if (diff && sourceMode !== "canonical") showDiff(candidate, content, existing);
     if (apply) {
       const destination = path.join(ROOT, ...destinationRel.split("/"));
       fs.mkdirSync(path.dirname(destination), { recursive: true });
@@ -479,7 +492,7 @@ export function runLoreIngest(args = process.argv.slice(2)) {
     mode: apply ? "apply" : "preview",
     publication_id: publicationId,
     setting,
-    filters: { type: typeOverride ?? null, only: only ?? null },
+    filters: { type: typeOverride ?? null, only: only ?? null, source_mode: sourceMode },
     summary: {
       candidates: candidates.length,
       actionable: actionable.length,
@@ -498,6 +511,7 @@ export function runLoreIngest(args = process.argv.slice(2)) {
     manual_review: publicCandidates.filter((item) => ["來源衝突", "譯名待確認"].includes(item.status)),
     candidates: [...publicCandidates, ...excluded],
   };
+  if (diff && sourceMode === "canonical") process.stdout.write(`英文鏡像候選差異：${changes.size} 個 Wiki 條目待人工整理；為避免在終端重複原文，不輸出全文差異。\n`);
   const reportFlag = args.indexOf("--report");
   if (reportFlag >= 0) {
     const supplied = args[reportFlag + 1];

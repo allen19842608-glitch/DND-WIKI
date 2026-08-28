@@ -1,0 +1,34 @@
+schema_version: 1
+publication_id: MM2025
+publication_title: Monster Manual (2025)
+provider: 5e.tools
+upstream_url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/book/book-xmm.json
+retrieved_at: 2026-08-27T14:49:50.638Z
+snapshot:
+  file: 原始資料/外部來源鏡像/MM2025/book-xmm.json
+  sha256: 942af979bf1ead377fb5620fa7af90b22f6ffc799b08c42225fc08afcf1b1209
+chapters:
+  - kind: chapter
+    number: 1
+    title: How to Use a Monster
+    page: 5
+    file: 原始資料/外部來源鏡像/MM2025/chapters/01-How to Use a Monster.md
+    status: complete
+  - kind: chapter
+    number: 2
+    title: Monsters A to Z
+    page: 10
+    file: 原始資料/外部來源鏡像/MM2025/chapters/02-Monsters A to Z.md
+    status: complete
+  - kind: chapter
+    number: 3
+    title: Animals
+    page: 348
+    file: 原始資料/外部來源鏡像/MM2025/chapters/03-Animals.md
+    status: complete
+  - kind: chapter
+    number: 4
+    title: Monster Lists
+    page: 374
+    file: 原始資料/外部來源鏡像/MM2025/chapters/04-Monster Lists.md
+    status: complete

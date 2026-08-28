@@ -114,17 +114,20 @@ function rebuilt(item) {
 }
 
 function run(args = process.argv.slice(2)) {
-  const apply = args.includes("--apply");
+  if (args.includes("--apply")) {
+    throw new Error("此遷移器已停用：Wiki 不再複製完整原始正文。請保留可定位來源，並以編輯整理的概覽、重點與時間線更新條目。");
+  }
+  const apply = false;
   const limit = Number(option(args, "--limit") ?? 25);
   if (!Number.isInteger(limit) || limit < 1 || limit > 25) throw new Error("--limit 必須是 1 到 25 的整數。");
   const tracked = untracked();
   const candidates = walk(WIKI_ROOT).map((file) => candidate(file, tracked)).filter(Boolean).sort((a, b) => a.relative.localeCompare(b.relative, "zh-Hant"));
   const selected = candidates.slice(0, limit);
-  if (apply) for (const item of selected) fs.writeFileSync(path.join(ROOT, ...item.relative.split("/")), rebuilt(item), "utf8");
+  // 保留來源切片工具與候選報告，供人工整理時核對；不得再將原文回填 Wiki。
   const report = { schema_version: 1, mode: apply ? "apply" : "preview", summary: { candidates: candidates.length, selected: selected.length, remaining: candidates.length - selected.length }, information: selected.map((item) => ({ page: item.relative, sources: item.fragments.map((fragment) => ({ file: fragment.sourceFile, locator: fragment.locator })) })) };
   const reportPath = option(args, "--report");
   if (reportPath) fs.writeFileSync(path.resolve(ROOT, reportPath), `${JSON.stringify(report, null, 2)}\n`, "utf8");
-  process.stdout.write(`${apply ? "套用" : "預覽"}原始正文重建：候選 ${report.summary.candidates}；本批 ${report.summary.selected}；剩餘 ${report.summary.remaining}。\n`);
+  process.stdout.write(`預覽原始正文重建候選（已停用回填）：候選 ${report.summary.candidates}；本批 ${report.summary.selected}；剩餘 ${report.summary.remaining}。\n`);
   return report;
 }
 

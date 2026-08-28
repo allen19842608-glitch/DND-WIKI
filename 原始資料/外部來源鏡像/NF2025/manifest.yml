@@ -1,0 +1,53 @@
+schema_version: 1
+publication_id: NF2025
+publication_title: Netheril's Fall (2025)
+provider: 5e.tools
+upstream_url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/book/book-nf.json
+retrieved_at: 2026-08-27T14:49:52.895Z
+snapshot:
+  file: 原始資料/外部來源鏡像/NF2025/book-nf.json
+  sha256: 3b8d23aabc8eb8731831345ad7d1cf8758b2a7c45714f140b0ad59d90d9d3fb6
+chapters:
+  - kind: chapter
+    number: 1
+    title: "Introduction: Witness Netheril's Doom"
+    page: null
+    file: 原始資料/外部來源鏡像/NF2025/chapters/01-Introduction- Witness Netheril's Doom.md
+    status: complete
+  - kind: chapter
+    number: 2
+    title: "Chapter 1: Adventuring in Netheril"
+    page: null
+    file: 原始資料/外部來源鏡像/NF2025/chapters/02-Chapter 1- Adventuring in Netheril.md
+    status: complete
+  - kind: chapter
+    number: 3
+    title: "Chapter 2: Netherese Magical Anomalies"
+    page: null
+    file: 原始資料/外部來源鏡像/NF2025/chapters/03-Chapter 2- Netherese Magical
+      Anomalies.md
+    status: complete
+  - kind: chapter
+    number: 4
+    title: "Chapter 3: Through the Time Gates"
+    page: null
+    file: 原始資料/外部來源鏡像/NF2025/chapters/04-Chapter 3- Through the Time Gates.md
+    status: complete
+  - kind: chapter
+    number: 5
+    title: "Chapter 4: Escape From the Past"
+    page: null
+    file: 原始資料/外部來源鏡像/NF2025/chapters/05-Chapter 4- Escape From the Past.md
+    status: complete
+  - kind: chapter
+    number: 6
+    title: "Appendix A: Magic Items"
+    page: null
+    file: 原始資料/外部來源鏡像/NF2025/chapters/06-Appendix A- Magic Items.md
+    status: complete
+  - kind: chapter
+    number: 7
+    title: "Appendix B: Bestiary"
+    page: null
+    file: 原始資料/外部來源鏡像/NF2025/chapters/07-Appendix B- Bestiary.md
+    status: complete

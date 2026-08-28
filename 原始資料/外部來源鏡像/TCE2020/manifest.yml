@@ -1,0 +1,40 @@
+schema_version: 1
+publication_id: TCE2020
+publication_title: Tasha’s Cauldron of Everything (2020)
+provider: 5e.tools
+upstream_url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/book/book-tce.json
+retrieved_at: 2026-08-27T14:50:00.707Z
+snapshot:
+  file: 原始資料/外部來源鏡像/TCE2020/book-tce.json
+  sha256: 6cf85cd456c4daf5bc9dc5a0d765074ea890f0bf115eb9855d5c864fa261a250
+chapters:
+  - kind: chapter
+    number: 1
+    title: Using This Book
+    page: 4
+    file: 原始資料/外部來源鏡像/TCE2020/chapters/01-Using This Book.md
+    status: complete
+  - kind: chapter
+    number: 2
+    title: Character Options
+    page: 7
+    file: 原始資料/外部來源鏡像/TCE2020/chapters/02-Character Options.md
+    status: complete
+  - kind: chapter
+    number: 3
+    title: Group Patrons
+    page: 83
+    file: 原始資料/外部來源鏡像/TCE2020/chapters/03-Group Patrons.md
+    status: complete
+  - kind: chapter
+    number: 4
+    title: Magical Miscellany
+    page: 105
+    file: 原始資料/外部來源鏡像/TCE2020/chapters/04-Magical Miscellany.md
+    status: complete
+  - kind: chapter
+    number: 5
+    title: Dungeon Master's Tools
+    page: 139
+    file: 原始資料/外部來源鏡像/TCE2020/chapters/05-Dungeon Master's Tools.md
+    status: complete

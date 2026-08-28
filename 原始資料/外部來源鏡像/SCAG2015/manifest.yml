@@ -1,0 +1,46 @@
+schema_version: 1
+publication_id: SCAG2015
+publication_title: Sword Coast Adventurer's Guide (2015)
+provider: 5e.tools
+upstream_url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/book/book-scag.json
+retrieved_at: 2026-08-27T14:49:58.592Z
+snapshot:
+  file: 原始資料/外部來源鏡像/SCAG2015/book-scag.json
+  sha256: 2c0e8b113b24175ccac60e75e5926c5c74ec5cc8dc0b38fb51afafdd49076956
+chapters:
+  - kind: chapter
+    number: 1
+    title: Preface
+    page: 4
+    file: 原始資料/外部來源鏡像/SCAG2015/chapters/01-Preface.md
+    status: complete
+  - kind: chapter
+    number: 2
+    title: Welcome to the Realms
+    page: 7
+    file: 原始資料/外部來源鏡像/SCAG2015/chapters/02-Welcome to the Realms.md
+    status: complete
+  - kind: chapter
+    number: 3
+    title: The Sword Coast and the North
+    page: 43
+    file: 原始資料/外部來源鏡像/SCAG2015/chapters/03-The Sword Coast and the North.md
+    status: complete
+  - kind: chapter
+    number: 4
+    title: Races of the Realms
+    page: 103
+    file: 原始資料/外部來源鏡像/SCAG2015/chapters/04-Races of the Realms.md
+    status: complete
+  - kind: chapter
+    number: 5
+    title: Classes
+    page: 121
+    file: 原始資料/外部來源鏡像/SCAG2015/chapters/05-Classes.md
+    status: complete
+  - kind: chapter
+    number: 6
+    title: Backgrounds
+    page: 145
+    file: 原始資料/外部來源鏡像/SCAG2015/chapters/06-Backgrounds.md
+    status: complete

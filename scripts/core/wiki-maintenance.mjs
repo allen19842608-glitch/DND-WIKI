@@ -109,7 +109,7 @@ function sourceFind(values) {
   const context = Math.min(5, positiveInteger(options.get("--context"), 2));
   const needle = query.toLowerCase();
   let matches = 0;
-  for (const file of walk(RAW_ROOT).filter((candidate) => TEXT_EXTENSIONS.has(path.extname(candidate).toLowerCase()))) {
+  for (const file of [RAW_ROOT].filter(fs.existsSync).flatMap((root) => walk(root)).filter((candidate) => TEXT_EXTENSIONS.has(path.extname(candidate).toLowerCase()))) {
     const rel = relative(file);
     if (sourceFilter && !rel.toLowerCase().includes(sourceFilter)) continue;
     const lines = fs.readFileSync(file, "utf8").split(/\r?\n/);
@@ -183,7 +183,7 @@ function hashFile(file) {
 
 function currentManifest() {
   const references = wikiSourceMap();
-  return walk(RAW_ROOT).sort().map((file) => {
+  return [RAW_ROOT].filter(fs.existsSync).flatMap((root) => walk(root)).sort().map((file) => {
     const rel = relative(file);
     return {
       file: rel,

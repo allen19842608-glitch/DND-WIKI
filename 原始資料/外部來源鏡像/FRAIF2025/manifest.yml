@@ -1,0 +1,77 @@
+schema_version: 1
+publication_id: FRAIF2025
+publication_title: "Forgotten Realms: Adventures in Faerûn (2025)"
+provider: 5e.tools
+upstream_url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/book/book-fraif.json
+retrieved_at: 2026-08-27T14:49:47.173Z
+snapshot:
+  file: 原始資料/外部來源鏡像/FRAIF2025/book-fraif.json
+  sha256: 1468c56c69a56f02e3441b809f616536fa988dbc85d8c2c8afb6ad74cb94e630
+chapters:
+  - kind: chapter
+    number: 1
+    title: Running the Realms
+    page: 11
+    file: 原始資料/外部來源鏡像/FRAIF2025/chapters/01-Running the Realms.md
+    status: complete
+  - kind: chapter
+    number: 2
+    title: The Dalelands
+    page: 45
+    file: 原始資料/外部來源鏡像/FRAIF2025/chapters/02-The Dalelands.md
+    status: complete
+  - kind: chapter
+    number: 3
+    title: Icewind Dale
+    page: 91
+    file: 原始資料/外部來源鏡像/FRAIF2025/chapters/03-Icewind Dale.md
+    status: complete
+  - kind: chapter
+    number: 4
+    title: Calimshan
+    page: 129
+    file: 原始資料/外部來源鏡像/FRAIF2025/chapters/04-Calimshan.md
+    status: complete
+  - kind: chapter
+    number: 5
+    title: Moonshae Isles
+    page: 161
+    file: 原始資料/外部來源鏡像/FRAIF2025/chapters/05-Moonshae Isles.md
+    status: complete
+  - kind: chapter
+    number: 6
+    title: Baldur's Gate
+    page: 191
+    file: 原始資料/外部來源鏡像/FRAIF2025/chapters/06-Baldur's Gate.md
+    status: complete
+  - kind: chapter
+    number: 7
+    title: The Lost Library of Lethchauntos
+    page: 227
+    file: 原始資料/外部來源鏡像/FRAIF2025/chapters/07-The Lost Library of Lethchauntos.md
+    status: complete
+  - kind: chapter
+    number: 8
+    title: Magic Items
+    page: 251
+    file: 原始資料/外部來源鏡像/FRAIF2025/chapters/08-Magic Items.md
+    status: complete
+  - kind: chapter
+    number: 9
+    title: Bestiary
+    page: 271
+    file: 原始資料/外部來源鏡像/FRAIF2025/chapters/09-Bestiary.md
+    status: complete
+  - kind: appendix
+    number: 附錄
+    title: Atlas of Faerûn
+    page: 307
+    file: 原始資料/外部來源鏡像/FRAIF2025/chapters/appendix-Atlas of Faerûn.md
+    status: complete
+datasets:
+  - file: 原始資料/外部來源鏡像/FRAIF2025/datasets/adventure-fraif-tllol.json
+    locator_prefix: "adventure:"
+  - file: 原始資料/外部來源鏡像/FRAIF2025/datasets/bestiary-fraif.json
+    locator_prefix: "monster:"
+  - file: 原始資料/外部來源鏡像/FRAIF2025/datasets/items-fraif.json
+    locator_prefix: "item:"

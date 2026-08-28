@@ -1,6 +1,50 @@
 publication_id: "FRAIF2025"
 source_root: "原始資料/被遺忘的國度：費倫冒險"
 setting: "被遺忘的國度"
+canonical_mirror:
+  provider: "5e.tools"
+  book_id: "FRAiF"
+  url: "https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/book/book-fraif.json"
+  output_root: "原始資料/外部來源鏡像/FRAIF2025"
+  datasets:
+    - file: "原始資料/外部來源鏡像/FRAIF2025/datasets/adventure-fraif-tllol.json"
+      locator_prefix: "adventure:"
+    - file: "原始資料/外部來源鏡像/FRAIF2025/datasets/bestiary-fraif.json"
+      locator_prefix: "monster:"
+    - file: "原始資料/外部來源鏡像/FRAIF2025/datasets/items-fraif.json"
+      locator_prefix: "item:"
+  chapters:
+    - number: 1
+      title: "Running the Realms"
+      page: 11
+    - number: 2
+      title: "The Dalelands"
+      page: 45
+    - number: 3
+      title: "Icewind Dale"
+      page: 91
+    - number: 4
+      title: "Calimshan"
+      page: 129
+    - number: 5
+      title: "Moonshae Isles"
+      page: 161
+    - number: 6
+      title: "Baldur's Gate"
+      page: 191
+    - number: 7
+      title: "The Lost Library of Lethchauntos"
+      page: 227
+    - number: 8
+      title: "Magic Items"
+      page: 251
+    - number: 9
+      title: "Bestiary"
+      page: 271
+    - kind: "appendix"
+      number: "附錄"
+      title: "Atlas of Faerûn"
+      page: 307
 inputs:
   monsters: "第九章"
   magic_items: "第八章：魔法物品.md"
@@ -10,18 +54,6 @@ inputs:
     exclude:
       - "第八章：魔法物品.md"
       - "第九章"
-    supplemental:
-      provider: "5e.tools"
-      url: "https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/book/book-fraif.json"
-      source_anchor: "原始資料/被遺忘的國度：費倫冒險/費倫冒險.md"
-      missing_chapters:
-        - "第 2 章：谷地（p. 45）"
-        - "第 3 章：Icewind Dale（p. 91）"
-        - "第 4 章：卡林珊（p. 129）"
-        - "第 5 章：月影群島（p. 161）"
-        - "第 6 章：博德之門（p. 191）"
-        - "第 7 章：The Lost Library of Lethchauntos（p. 227）"
-        - "附錄：Atlas of Faerûn"
 outputs:
   monsters: "wiki/怪物"
   magic_items: "wiki/魔法物品"

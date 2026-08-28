@@ -10,6 +10,57 @@ import {
   parseWikiLink,
   validateMagicItemStructure,
 } from "../scripts/core/wiki-lint.mjs";
+import { normalizeMirrorCitations } from "../scripts/audit/audit-mirror-citations.mjs";
+import { rebuildLore } from "../scripts/ingest/rebuild-lore.mjs";
+import { audit as auditLorePlacement } from "../scripts/audit/audit-lore-placement.mjs";
+
+test("鏡像正文引用改用中文書名與頁碼，無頁碼引用保留待補", () => {
+  const publication = { id: "FRAIF2025", title: "被遺忘的國度：費倫冒險", aliases: new Set(["FRAiF", "FRAIF2025", "Forgotten Realms: Adventures in Faerûn (2025)"]) };
+  const result = normalizeMirrorCitations("摘要。（來源：FRAiF 2025，pp. 58–59）\n未定。（來源：FRAiF，第二章）", [publication]);
+  assert.match(result.text, /（來源：《被遺忘的國度：費倫冒險》，pp\. 58–59）/);
+  assert.equal(result.changes.length, 1);
+  assert.equal(result.unresolved.length, 1);
+});
+
+test("lint 會標示鏡像條目內未正規化的英文書籍代號引用", () => {
+  const file = "wiki/戰役設定/被遺忘的國度/地理/北地.md";
+  const original = fs.readFileSync(file, "utf8");
+  const candidate = original
+    .replace(/file: "原始資料\/[^"]+"/, 'file: "原始資料/外部來源鏡像/FRAIF2025/chapters/02-The Dalelands.md"')
+    .replace(/locator: "[^"]+"/, 'locator: "Forgotten Realms: Adventures in Faerûn (2025), p. 45"')
+    .replace("# 北地", "# 北地\n\n摘要。（來源：FRAIF2025，p. 45)");
+  const originalLog = console.log;
+  console.log = () => {};
+  try {
+    const result = lintWiki({ files: [file], overrides: new Map([[file, candidate]]) });
+    assert.ok(result.diagnostics.some((item) => item.file === file && item.code === "MIRROR_CITATION_FORMAT"));
+  } finally {
+    console.log = originalLog;
+  }
+});
+
+test("戰役設定重建器預設只選取一批，且不會寫入", () => {
+  const originalLog = process.stdout.write;
+  process.stdout.write = () => true;
+  try {
+    const report = rebuildLore(["--setting", "被遺忘的國度"]);
+    assert.ok(report.summary.selected <= 25);
+    assert.equal(report.mode, "preview");
+  } finally {
+    process.stdout.write = originalLog;
+  }
+});
+
+test("故事資料稽核將中英文題名視為同一來源主題", () => {
+  const originalLog = process.stdout.write;
+  process.stdout.write = () => true;
+  try {
+    const report = auditLorePlacement([]);
+    assert.equal(report.warnings.filter((item) => item.code === "TITLE_SOURCE_MISMATCH").length, 0);
+  } finally {
+    process.stdout.write = originalLog;
+  }
+});
 
 test("故事匯入會以 New Item 轉檔的首個雙語題名作為實體名稱", () => {
   assert.deepEqual(
@@ -93,6 +144,24 @@ test("lint 可在指定範圍驗證記憶體候選內容", () => {
     });
     assert.ok(result.scopeSize > 0);
     assert.ok(result.diagnostics.some((item) => item.file === "wiki/索引.md" && item.code === "YAML_PARSE"));
+  } finally {
+    console.log = originalLog;
+  }
+});
+
+test("5e.tools 外部鏡像可作為可定位來源，但不得冒充原始中文資料", () => {
+  const file = "wiki/戰役設定/被遺忘的國度/地理/北地.md";
+  const original = fs.readFileSync(file, "utf8");
+  const candidate = original.replace(
+    /file: "原始資料\/[^"]+"/,
+    'file: "原始資料/外部來源鏡像/FRAIF2025/chapters/02-The Dalelands.md"',
+  ).replace(/locator: "[^"]+"/, 'locator: "Chapter 2: The Dalelands; p. 45"').replace('translation: "community"', 'translation: "none"');
+  const originalLog = console.log;
+  console.log = () => {};
+  try {
+    const result = lintWiki({ files: [file], overrides: new Map([[file, candidate]]) });
+    assert.equal(result.diagnostics.some((item) => item.code === "SOURCE_SCOPE"), false);
+    assert.equal(result.diagnostics.some((item) => item.code === "SOURCE_MISSING"), false);
   } finally {
     console.log = originalLog;
   }

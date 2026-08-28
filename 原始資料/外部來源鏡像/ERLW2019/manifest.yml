@@ -1,0 +1,101 @@
+schema_version: 1
+publication_id: ERLW2019
+publication_title: "Eberron: Rising from the Last War (2019)"
+provider: 5e.tools
+upstream_url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/book/book-erlw.json
+retrieved_at: 2026-08-27T14:49:44.961Z
+snapshot:
+  file: 原始資料/外部來源鏡像/ERLW2019/book-erlw.json
+  sha256: 05a8f3ed7922f5fd610ab4f36f15ba01b9a8692e6f91480aecdab36943bb5d6b
+chapters:
+  - kind: chapter
+    number: 1
+    title: Welcome to Eberron
+    page: 4
+    file: 原始資料/外部來源鏡像/ERLW2019/chapters/01-Welcome to Eberron.md
+    status: complete
+  - kind: chapter
+    number: 2
+    title: "Chapter 1: Character Creation"
+    page: 17
+    file: 原始資料/外部來源鏡像/ERLW2019/chapters/02-Chapter 1- Character Creation.md
+    status: complete
+  - kind: chapter
+    number: 3
+    title: "Chapter 1: Character Creation - Dragonmarks"
+    page: 37
+    file: 原始資料/外部來源鏡像/ERLW2019/chapters/03-Chapter 1- Character Creation -
+      Dragonmarks.md
+    status: complete
+  - kind: chapter
+    number: 4
+    title: "Chapter 1: Character Creation"
+    page: 54
+    file: 原始資料/外部來源鏡像/ERLW2019/chapters/04-Chapter 1- Character Creation.md
+    status: complete
+  - kind: chapter
+    number: 5
+    title: "Chapter 1: Character Creation - Group Patrons"
+    page: 64
+    file: 原始資料/外部來源鏡像/ERLW2019/chapters/05-Chapter 1- Character Creation - Group
+      Patrons.md
+    status: complete
+  - kind: chapter
+    number: 6
+    title: "Chapter 2: Khorvaire Gazetteer"
+    page: 103
+    file: 原始資料/外部來源鏡像/ERLW2019/chapters/06-Chapter 2- Khorvaire Gazetteer.md
+    status: complete
+  - kind: chapter
+    number: 7
+    title: "Chapter 2: Khorvaire Gazetteer - Distant Lands"
+    page: 132
+    file: 原始資料/外部來源鏡像/ERLW2019/chapters/07-Chapter 2- Khorvaire Gazetteer -
+      Distant Lands.md
+    status: complete
+  - kind: chapter
+    number: 8
+    title: "Chapter 2: Khorvaire Gazetteer - Faiths of Khorvaire"
+    page: 140
+    file: 原始資料/外部來源鏡像/ERLW2019/chapters/08-Chapter 2- Khorvaire Gazetteer -
+      Faiths of Khorvaire.md
+    status: complete
+  - kind: chapter
+    number: 9
+    title: "Chapter 3: Sharn, City of Towers"
+    page: null
+    file: 原始資料/外部來源鏡像/ERLW2019/chapters/09-Chapter 3- Sharn, City of Towers.md
+    status: complete
+  - kind: chapter
+    number: 10
+    title: "Chapter 4: Building Eberron Adventures"
+    page: 183
+    file: 原始資料/外部來源鏡像/ERLW2019/chapters/10-Chapter 4- Building Eberron
+      Adventures.md
+    status: complete
+  - kind: chapter
+    number: 11
+    title: "Chapter 4: Building Eberron Adventures - The Last War"
+    page: 206
+    file: 原始資料/外部來源鏡像/ERLW2019/chapters/11-Chapter 4- Building Eberron
+      Adventures - The Last War.md
+    status: complete
+  - kind: chapter
+    number: 12
+    title: "Chapter 4: Building Eberron Adventures - Sharn"
+    page: 239
+    file: 原始資料/外部來源鏡像/ERLW2019/chapters/12-Chapter 4- Building Eberron
+      Adventures - Sharn.md
+    status: complete
+  - kind: chapter
+    number: 13
+    title: Treasures
+    page: 275
+    file: 原始資料/外部來源鏡像/ERLW2019/chapters/13-Treasures.md
+    status: complete
+  - kind: chapter
+    number: 14
+    title: Friends and Foes
+    page: 283
+    file: 原始資料/外部來源鏡像/ERLW2019/chapters/14-Friends and Foes.md
+    status: complete

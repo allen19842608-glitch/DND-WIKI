@@ -1,0 +1,64 @@
+schema_version: 1
+publication_id: BPGG2023
+publication_title: "Bigby Presents: Glory of the Giants (2023)"
+provider: 5e.tools
+upstream_url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/book/book-bgg.json
+retrieved_at: 2026-08-27T14:49:41.054Z
+snapshot:
+  file: 原始資料/外部來源鏡像/BPGG2023/book-bgg.json
+  sha256: f2736684bc67475e47a596a355fe0bd829fcc32bfaf0ac77d90370061dfa0aa3
+chapters:
+  - kind: chapter
+    number: 1
+    title: Diancastra's Saga
+    page: 4
+    file: 原始資料/外部來源鏡像/BPGG2023/chapters/01-Diancastra's Saga.md
+    status: complete
+  - kind: chapter
+    number: 2
+    title: "Chapter 1: Character Creation"
+    page: 11
+    file: 原始資料/外部來源鏡像/BPGG2023/chapters/02-Chapter 1- Character Creation.md
+    status: complete
+  - kind: chapter
+    number: 3
+    title: "Chapter 2: Giants in Play"
+    page: 21
+    file: 原始資料/外部來源鏡像/BPGG2023/chapters/03-Chapter 2- Giants in Play.md
+    status: complete
+  - kind: chapter
+    number: 4
+    title: "Chapter 3: Giant Adventures"
+    page: 43
+    file: 原始資料/外部來源鏡像/BPGG2023/chapters/04-Chapter 3- Giant Adventures.md
+    status: complete
+  - kind: chapter
+    number: 5
+    title: "Chapter 4: Giant Enclaves"
+    page: 67
+    file: 原始資料/外部來源鏡像/BPGG2023/chapters/05-Chapter 4- Giant Enclaves.md
+    status: complete
+  - kind: chapter
+    number: 6
+    title: "Chapter 5: Giant Treasures"
+    page: 105
+    file: 原始資料/外部來源鏡像/BPGG2023/chapters/06-Chapter 5- Giant Treasures.md
+    status: complete
+  - kind: chapter
+    number: 7
+    title: "Chapter 6: Bestiary"
+    page: 119
+    file: 原始資料/外部來源鏡像/BPGG2023/chapters/07-Chapter 6- Bestiary.md
+    status: complete
+  - kind: chapter
+    number: 8
+    title: "Appendix A: Concept Art"
+    page: 190
+    file: 原始資料/外部來源鏡像/BPGG2023/chapters/08-Appendix A- Concept Art.md
+    status: complete
+  - kind: chapter
+    number: 9
+    title: "Appendix B: Adventure Hooks"
+    page: 192
+    file: 原始資料/外部來源鏡像/BPGG2023/chapters/09-Appendix B- Adventure Hooks.md
+    status: complete

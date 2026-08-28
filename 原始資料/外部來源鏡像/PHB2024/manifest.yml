@@ -1,0 +1,76 @@
+schema_version: 1
+publication_id: PHB2024
+publication_title: Player’s Handbook (2024)
+provider: 5e.tools
+upstream_url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/book/book-xphb.json
+retrieved_at: 2026-08-27T14:49:55.090Z
+snapshot:
+  file: 原始資料/外部來源鏡像/PHB2024/book-xphb.json
+  sha256: e4a613831ab8ad88b14e47fb02a23d6f4bef2f2be0ff92a49d4932accf71a3de
+chapters:
+  - kind: chapter
+    number: 1
+    title: "Introduction: Welcome to Adventure"
+    page: 4
+    file: 原始資料/外部來源鏡像/PHB2024/chapters/01-Introduction- Welcome to Adventure.md
+    status: complete
+  - kind: chapter
+    number: 2
+    title: "Chapter 1: Playing the Game"
+    page: 7
+    file: 原始資料/外部來源鏡像/PHB2024/chapters/02-Chapter 1- Playing the Game.md
+    status: complete
+  - kind: chapter
+    number: 3
+    title: "Chapter 2: Creating a Character"
+    page: 33
+    file: 原始資料/外部來源鏡像/PHB2024/chapters/03-Chapter 2- Creating a Character.md
+    status: complete
+  - kind: chapter
+    number: 4
+    title: "Chapter 3: Character Classes"
+    page: 49
+    file: 原始資料/外部來源鏡像/PHB2024/chapters/04-Chapter 3- Character Classes.md
+    status: complete
+  - kind: chapter
+    number: 5
+    title: "Chapter 4: Character Origins"
+    page: 176
+    file: 原始資料/外部來源鏡像/PHB2024/chapters/05-Chapter 4- Character Origins.md
+    status: complete
+  - kind: chapter
+    number: 6
+    title: "Chapter 5: Feats"
+    page: 199
+    file: 原始資料/外部來源鏡像/PHB2024/chapters/06-Chapter 5- Feats.md
+    status: complete
+  - kind: chapter
+    number: 7
+    title: "Chapter 6: Equipment"
+    page: 213
+    file: 原始資料/外部來源鏡像/PHB2024/chapters/07-Chapter 6- Equipment.md
+    status: complete
+  - kind: chapter
+    number: 8
+    title: "Chapter 7: Spells"
+    page: 235
+    file: 原始資料/外部來源鏡像/PHB2024/chapters/08-Chapter 7- Spells.md
+    status: complete
+  - kind: chapter
+    number: 9
+    title: "Appendix A: The Multiverse"
+    page: 344
+    file: 原始資料/外部來源鏡像/PHB2024/chapters/09-Appendix A- The Multiverse.md
+    status: complete
+  - kind: chapter
+    number: 10
+    title: "Appendix B: Creature Stat Blocks"
+    page: 346
+    file: 原始資料/外部來源鏡像/PHB2024/chapters/10-Appendix B- Creature Stat Blocks.md
+    status: complete
+  - kind: chapter
+    number: 11
+    title: Rules Glossary
+    page: 360
+    file: 原始資料/外部來源鏡像/PHB2024/chapters/11-Rules Glossary.md
+    status: complete

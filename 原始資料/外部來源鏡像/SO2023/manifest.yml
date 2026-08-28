@@ -1,0 +1,41 @@
+schema_version: 1
+publication_id: SO2023
+publication_title: Sigil and the Outlands (2023)
+provider: 5e.tools
+upstream_url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/book/book-sato.json
+retrieved_at: 2026-08-27T14:49:59.855Z
+snapshot:
+  file: 原始資料/外部來源鏡像/SO2023/book-sato.json
+  sha256: 6114e2f6e6ac76bdb3eeadd069737bca54525568b280079d192a4c009f1ca7a6
+chapters:
+  - kind: chapter
+    number: 1
+    title: "Introduction: Infinite Doors to Adventure"
+    page: 4
+    file: 原始資料/外部來源鏡像/SO2023/chapters/01-Introduction- Infinite Doors to
+      Adventure.md
+    status: complete
+  - kind: chapter
+    number: 2
+    title: "Chapter 1: Character Options"
+    page: 7
+    file: 原始資料/外部來源鏡像/SO2023/chapters/02-Chapter 1- Character Options.md
+    status: complete
+  - kind: chapter
+    number: 3
+    title: "Chapter 2: Sigil, the City of Doors"
+    page: 15
+    file: 原始資料/外部來源鏡像/SO2023/chapters/03-Chapter 2- Sigil, the City of Doors.md
+    status: complete
+  - kind: chapter
+    number: 4
+    title: "Chapter 3: The Outlands"
+    page: 61
+    file: 原始資料/外部來源鏡像/SO2023/chapters/04-Chapter 3- The Outlands.md
+    status: complete
+  - kind: chapter
+    number: 5
+    title: Poster Map
+    page: null
+    file: 原始資料/外部來源鏡像/SO2023/chapters/05-Poster Map.md
+    status: complete

@@ -1,0 +1,76 @@
+schema_version: 1
+publication_id: DMG2024
+publication_title: Dungeon Master's Guide (2024)
+provider: 5e.tools
+upstream_url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/book/book-xdmg.json
+retrieved_at: 2026-08-27T14:49:42.923Z
+snapshot:
+  file: 原始資料/外部來源鏡像/DMG2024/book-xdmg.json
+  sha256: 7e0fe64751807c6552bf8cf3bbf8fccf1f0b7e9747d69e5b326a4f477ee3655c
+chapters:
+  - kind: chapter
+    number: 1
+    title: "Chapter 1: The Basics"
+    page: 5
+    file: 原始資料/外部來源鏡像/DMG2024/chapters/01-Chapter 1- The Basics.md
+    status: complete
+  - kind: chapter
+    number: 2
+    title: "Chapter 2: Running the Game"
+    page: 21
+    file: 原始資料/外部來源鏡像/DMG2024/chapters/02-Chapter 2- Running the Game.md
+    status: complete
+  - kind: chapter
+    number: 3
+    title: "Chapter 3: DM's Toolbox"
+    page: 51
+    file: 原始資料/外部來源鏡像/DMG2024/chapters/03-Chapter 3- DM's Toolbox.md
+    status: complete
+  - kind: chapter
+    number: 4
+    title: "Chapter 4: Creating Adventures"
+    page: 105
+    file: 原始資料/外部來源鏡像/DMG2024/chapters/04-Chapter 4- Creating Adventures.md
+    status: complete
+  - kind: chapter
+    number: 5
+    title: "Chapter 5: Creating Campaigns"
+    page: 127
+    file: 原始資料/外部來源鏡像/DMG2024/chapters/05-Chapter 5- Creating Campaigns.md
+    status: complete
+  - kind: chapter
+    number: 6
+    title: "Chapter 6: Cosmology"
+    page: 173
+    file: 原始資料/外部來源鏡像/DMG2024/chapters/06-Chapter 6- Cosmology.md
+    status: complete
+  - kind: chapter
+    number: 7
+    title: "Chapter 7: Treasure"
+    page: 213
+    file: 原始資料/外部來源鏡像/DMG2024/chapters/07-Chapter 7- Treasure.md
+    status: complete
+  - kind: chapter
+    number: 8
+    title: "Chapter 8: Bastions"
+    page: 334
+    file: 原始資料/外部來源鏡像/DMG2024/chapters/08-Chapter 8- Bastions.md
+    status: complete
+  - kind: chapter
+    number: 9
+    title: "Appendix A: Lore Glossary"
+    page: 354
+    file: 原始資料/外部來源鏡像/DMG2024/chapters/09-Appendix A- Lore Glossary.md
+    status: complete
+  - kind: chapter
+    number: 10
+    title: "Appendix B: Maps"
+    page: 365
+    file: 原始資料/外部來源鏡像/DMG2024/chapters/10-Appendix B- Maps.md
+    status: complete
+  - kind: chapter
+    number: 11
+    title: "Appendix C: Tracking Sheets"
+    page: null
+    file: 原始資料/外部來源鏡像/DMG2024/chapters/11-Appendix C- Tracking Sheets.md
+    status: complete

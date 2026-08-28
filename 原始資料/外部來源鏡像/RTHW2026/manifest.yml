@@ -1,0 +1,53 @@
+schema_version: 1
+publication_id: RTHW2026
+publication_title: "Ravenloft: The Horrors Within (2026)"
+provider: 5e.tools
+upstream_url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/book/book-rhw.json
+retrieved_at: 2026-08-27T14:49:56.738Z
+snapshot:
+  file: 原始資料/外部來源鏡像/RTHW2026/book-rhw.json
+  sha256: 3eebb6984b9d40e1d47e60917a4db832684ba3652105c16d12ff46b062082258
+chapters:
+  - kind: chapter
+    number: 1
+    title: "Introduction: Domains of Dread"
+    page: 4
+    file: 原始資料/外部來源鏡像/RTHW2026/chapters/01-Introduction- Domains of Dread.md
+    status: complete
+  - kind: chapter
+    number: 2
+    title: "Chapter 1: Character Options"
+    page: 13
+    file: 原始資料/外部來源鏡像/RTHW2026/chapters/02-Chapter 1- Character Options.md
+    status: complete
+  - kind: chapter
+    number: 3
+    title: "Chapter 2: Domains of Ravenloft"
+    page: 37
+    file: 原始資料/外部來源鏡像/RTHW2026/chapters/03-Chapter 2- Domains of Ravenloft.md
+    status: complete
+  - kind: chapter
+    number: 4
+    title: "Chapter 3: Ravenloft Adventures"
+    page: 191
+    file: 原始資料/外部來源鏡像/RTHW2026/chapters/04-Chapter 3- Ravenloft Adventures.md
+    status: complete
+  - kind: chapter
+    number: 5
+    title: "Chapter 4: Creating Domains of Dread"
+    page: 213
+    file: 原始資料/外部來源鏡像/RTHW2026/chapters/05-Chapter 4- Creating Domains of
+      Dread.md
+    status: complete
+  - kind: chapter
+    number: 6
+    title: "Chapter 5: Denizens of the Mists"
+    page: 233
+    file: 原始資料/外部來源鏡像/RTHW2026/chapters/06-Chapter 5- Denizens of the Mists.md
+    status: complete
+  - kind: chapter
+    number: 7
+    title: "Appendix: Tarokka Deck"
+    page: 284
+    file: 原始資料/外部來源鏡像/RTHW2026/chapters/07-Appendix- Tarokka Deck.md
+    status: complete

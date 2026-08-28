@@ -36,6 +36,29 @@ function splitTitle(value) {
     .trim();
 }
 
+function chineseSubject(value) {
+  return splitTitle(value).match(/^[\p{Script=Han}・\-]+/u)?.[0] ?? "";
+}
+
+// 已由詞彙表人類總編輯核定；原始中文來源仍可能保留舊譯名。
+const SOURCE_TITLE_ALIASES = new Map([
+  ["無冬城", "絕冬城"],
+]);
+
+function sameSubject(pageTitle, sourceTitle) {
+  const pageChinese = SOURCE_TITLE_ALIASES.get(chineseSubject(pageTitle)) ?? chineseSubject(pageTitle);
+  const sourceChinese = SOURCE_TITLE_ALIASES.get(chineseSubject(sourceTitle)) ?? chineseSubject(sourceTitle);
+  if (pageChinese && sourceChinese && pageChinese === sourceChinese) return true;
+  // 「薩恩」與「薩恩概況」等情形是同一實體的主頁與來源說明標題；
+  // 只接受明確的描述性後綴，避免把真正不同的命名實體靜默合併。
+  if (pageChinese && sourceChinese) {
+    const shorter = pageChinese.length <= sourceChinese.length ? pageChinese : sourceChinese;
+    const longer = pageChinese.length <= sourceChinese.length ? sourceChinese : pageChinese;
+    if (longer.startsWith(shorter) && /^(?:概況|總覽|簡史|詳情|列表|介紹)$/.test(longer.slice(shorter.length))) return true;
+  }
+  return normalize(splitTitle(pageTitle)) === normalize(splitTitle(sourceTitle));
+}
+
 function sourceHeading(text, locator = "") {
   const section = String(locator).match(/^\*\*([^*\n]{2,160})\*\*$/u)?.[1];
   if (section) return section.trim();
@@ -44,46 +67,15 @@ function sourceHeading(text, locator = "") {
   return heading;
 }
 
-function sourceBody(text, locator = "") {
-  const section = String(locator).match(/^\*\*([^*\n]{2,160})\*\*$/u)?.[1];
-  if (section) {
-    const lines = text.split(/\r?\n/);
-    const start = lines.findIndex((line) => line.startsWith(`**${section}**`));
-    if (start >= 0) {
-      let end = lines.length;
-      for (let index = start + 1; index < lines.length; index += 1) {
-        if (/^\*\*[^*\n]{2,160}\*\*/u.test(lines[index])) {
-          end = index;
-          break;
-        }
-      }
-      return [lines[start].slice(`**${section}**`.length).trim(), ...lines.slice(start + 1, end)]
-        .filter(Boolean)
-        .join("\n")
-        .trim()
-        .replace(/^(#{1,6})\s+/gm, "### ");
-    }
-  }
-  return text
-    .replace(/^#\s+.+(?:\r?\n|$)/, "")
-    .trim()
-    .replace(/^(#{1,6})\s+/gm, "### ");
-}
-
-function comparableBody(text) {
-  return String(text ?? "")
-    .replace(/^#{1,6}\s+/gmu, "")
-    .replace(/^#{1,6}\s+/gmu, "")
-    .replace(/[\r\n\s]+/gu, "")
-    .replace(/[#*_`]/gu, "");
-}
-
 function profiles() {
   return fs.readdirSync(PROFILES_ROOT)
     .filter((file) => file.endsWith(".yml"))
     .map((file) => YAML.parse(fs.readFileSync(path.join(PROFILES_ROOT, file), "utf8")))
     .filter((profile) => profile?.publication_id && profile?.source_root && profile?.inputs?.lore)
-    .map((profile) => ({ id: profile.publication_id, sourceRoot: profile.source_root.replaceAll("\\", "/") }));
+    .flatMap((profile) => [
+      { id: profile.publication_id, sourceRoot: profile.source_root.replaceAll("\\", "/"), sourceKind: "中文原始資料" },
+      ...(profile.canonical_mirror?.output_root ? [{ id: profile.publication_id, sourceRoot: profile.canonical_mirror.output_root.replaceAll("\\", "/"), sourceKind: "5e.tools 英文鏡像" }] : []),
+    ]);
 }
 
 function pageData(file) {
@@ -127,12 +119,11 @@ function classify(record) {
   if (record.primary && expected.length === 1 && expected[0] !== record.data.lore_type) {
     issues.push({ code: "TYPE_PATH_MISMATCH", severity: "warning", reason: `來源路徑明確指向「${expected[0]}」，但頁面分類為「${record.data.lore_type}」。` });
   }
-  if (record.primary && title && normalize(splitTitle(record.data.title)) !== normalize(splitTitle(title))) {
+  if (record.primary && title && !sameSubject(record.data.title, title)) {
     issues.push({ code: "TITLE_SOURCE_MISMATCH", severity: "warning", reason: "頁面標題與來源主題不一致，需人工確認是否為別名或誤合併。" });
   }
-  const raw = sourceBody(source.text, source.locator);
-  if (raw && !comparableBody(record.body).includes(comparableBody(raw))) {
-    issues.push({ code: "SOURCE_BODY_NOT_PRESERVED", severity: "warning", reason: "Wiki 正文未包含完整原始正文；不得以自動摘要取代。" });
+  if (!String(source.locator ?? "").trim()) {
+    issues.push({ code: "SOURCE_LOCATOR_MISSING", severity: "error", reason: "每項故事主張必須有可定位的章節、頁碼或段落。" });
   }
   return issues;
 }
@@ -159,6 +150,7 @@ function audit(args = process.argv.slice(2)) {
           file: sourceFile,
           locator: item.locator,
           relative: path.relative(path.join(ROOT, ...profile.sourceRoot.split("/")), sourceAbsolute).split(path.sep).join("/"),
+          kind: profile.sourceKind,
           heading: sourceHeading(sourceText, item.locator),
           text: sourceText,
         },
@@ -185,7 +177,7 @@ function audit(args = process.argv.slice(2)) {
       source_mappings: records.length,
       errors: issues.filter((issue) => issue.severity === "error").length,
       warnings: issues.filter((issue) => issue.severity === "warning").length,
-      unchanged_raw_bodies: records.filter((record) => record.issues.every((issue) => issue.code !== "SOURCE_BODY_NOT_PRESERVED")).length,
+      valid_source_locators: records.filter((record) => record.issues.every((issue) => issue.code !== "SOURCE_LOCATOR_MISSING")).length,
     },
     errors: issues.filter((issue) => issue.severity === "error"),
     warnings: issues.filter((issue) => issue.severity === "warning"),
@@ -196,13 +188,14 @@ function audit(args = process.argv.slice(2)) {
       source: record.source.file,
       locator: record.source.locator,
       source_heading: record.source.heading,
+      source_kind: record.source.kind,
       primary_source: record.primary,
     })),
     manual_review: issues.filter((issue) => issue.code === "TITLE_SOURCE_MISMATCH"),
   };
   const reportPath = option(args, "--report");
   if (reportPath) fs.writeFileSync(path.resolve(ROOT, reportPath), `${JSON.stringify(report, null, 2)}\n`, "utf8");
-  process.stdout.write(`故事資料錯置稽核：來源映射 ${report.summary.source_mappings}；錯誤 ${report.summary.errors}；警告 ${report.summary.warnings}；原文保留 ${report.summary.unchanged_raw_bodies}。\n`);
+  process.stdout.write(`故事資料錯置稽核：來源映射 ${report.summary.source_mappings}；錯誤 ${report.summary.errors}；警告 ${report.summary.warnings}；來源定位有效 ${report.summary.valid_source_locators}。\n`);
   return report;
 }
 

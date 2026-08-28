@@ -1,0 +1,58 @@
+schema_version: 1
+publication_id: FTD2021
+publication_title: Fizban’s Treasury of Dragons (2021)
+provider: 5e.tools
+upstream_url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/book/book-ftd.json
+retrieved_at: 2026-08-27T14:49:49.800Z
+snapshot:
+  file: 原始資料/外部來源鏡像/FTD2021/book-ftd.json
+  sha256: 69af92d388a3d73be1a6d74d7bf3a3eb60e328f6bafb881e2a317d06af5d6cf2
+chapters:
+  - kind: chapter
+    number: 1
+    title: Elegy for the First World
+    page: 5
+    file: 原始資料/外部來源鏡像/FTD2021/chapters/01-Elegy for the First World.md
+    status: complete
+  - kind: chapter
+    number: 2
+    title: Character Creation
+    page: 9
+    file: 原始資料/外部來源鏡像/FTD2021/chapters/02-Character Creation.md
+    status: complete
+  - kind: chapter
+    number: 3
+    title: Dragon Magic
+    page: 19
+    file: 原始資料/外部來源鏡像/FTD2021/chapters/03-Dragon Magic.md
+    status: complete
+  - kind: chapter
+    number: 4
+    title: Dragons in Play
+    page: 31
+    file: 原始資料/外部來源鏡像/FTD2021/chapters/04-Dragons in Play.md
+    status: complete
+  - kind: chapter
+    number: 5
+    title: Lairs and Hoards
+    page: 63
+    file: 原始資料/外部來源鏡像/FTD2021/chapters/05-Lairs and Hoards.md
+    status: complete
+  - kind: chapter
+    number: 6
+    title: Draconomicon
+    page: 75
+    file: 原始資料/外部來源鏡像/FTD2021/chapters/06-Draconomicon.md
+    status: complete
+  - kind: chapter
+    number: 7
+    title: Bestiary
+    page: 159
+    file: 原始資料/外部來源鏡像/FTD2021/chapters/07-Bestiary.md
+    status: complete
+  - kind: chapter
+    number: 8
+    title: Creature Lists
+    page: 224
+    file: 原始資料/外部來源鏡像/FTD2021/chapters/08-Creature Lists.md
+    status: complete

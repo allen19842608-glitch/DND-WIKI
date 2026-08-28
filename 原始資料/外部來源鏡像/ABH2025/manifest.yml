@@ -1,0 +1,35 @@
+schema_version: 1
+publication_id: ABH2025
+publication_title: Astarion's Book of Hungers (2025)
+provider: 5e.tools
+upstream_url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/book/book-abh.json
+retrieved_at: 2026-08-27T14:49:40.013Z
+snapshot:
+  file: 原始資料/外部來源鏡像/ABH2025/book-abh.json
+  sha256: e7c3cac0be85a41346f3945ea44468e060c0bc06aeaef355ebe04555becf252f
+chapters:
+  - kind: chapter
+    number: 1
+    title: "Introduction: Vampires Own the Night"
+    page: null
+    file: 原始資料/外部來源鏡像/ABH2025/chapters/01-Introduction- Vampires Own the Night.md
+    status: complete
+  - kind: chapter
+    number: 2
+    title: "Chapter 1: Vampiric Character Options"
+    page: null
+    file: 原始資料/外部來源鏡像/ABH2025/chapters/02-Chapter 1- Vampiric Character
+      Options.md
+    status: complete
+  - kind: chapter
+    number: 3
+    title: "Chapter 2: Creatures of the Night"
+    page: null
+    file: 原始資料/外部來源鏡像/ABH2025/chapters/03-Chapter 2- Creatures of the Night.md
+    status: complete
+  - kind: chapter
+    number: 4
+    title: "Chapter 3: Adventures with Astarion"
+    page: null
+    file: 原始資料/外部來源鏡像/ABH2025/chapters/04-Chapter 3- Adventures with Astarion.md
+    status: complete

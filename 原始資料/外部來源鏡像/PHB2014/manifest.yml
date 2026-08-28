@@ -1,0 +1,100 @@
+schema_version: 1
+publication_id: PHB2014
+publication_title: Player’s Handbook (2014)
+provider: 5e.tools
+upstream_url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/book/book-phb.json
+retrieved_at: 2026-08-27T14:49:54.028Z
+snapshot:
+  file: 原始資料/外部來源鏡像/PHB2014/book-phb.json
+  sha256: c16c0a65dfea9bc028ac6b2ca74a3e61028e5ecf359810d4c2b5055204410390
+chapters:
+  - kind: chapter
+    number: 1
+    title: Introduction
+    page: 5
+    file: 原始資料/外部來源鏡像/PHB2014/chapters/01-Introduction.md
+    status: complete
+  - kind: chapter
+    number: 2
+    title: Step-by-Step Characters
+    page: 11
+    file: 原始資料/外部來源鏡像/PHB2014/chapters/02-Step-by-Step Characters.md
+    status: complete
+  - kind: chapter
+    number: 3
+    title: Races
+    page: 17
+    file: 原始資料/外部來源鏡像/PHB2014/chapters/03-Races.md
+    status: complete
+  - kind: chapter
+    number: 4
+    title: Classes
+    page: 45
+    file: 原始資料/外部來源鏡像/PHB2014/chapters/04-Classes.md
+    status: complete
+  - kind: chapter
+    number: 5
+    title: Personality and Background
+    page: 121
+    file: 原始資料/外部來源鏡像/PHB2014/chapters/05-Personality and Background.md
+    status: complete
+  - kind: chapter
+    number: 6
+    title: Equipment
+    page: 143
+    file: 原始資料/外部來源鏡像/PHB2014/chapters/06-Equipment.md
+    status: complete
+  - kind: chapter
+    number: 7
+    title: Customization Options
+    page: 163
+    file: 原始資料/外部來源鏡像/PHB2014/chapters/07-Customization Options.md
+    status: complete
+  - kind: chapter
+    number: 8
+    title: Using Ability Scores
+    page: 173
+    file: 原始資料/外部來源鏡像/PHB2014/chapters/08-Using Ability Scores.md
+    status: complete
+  - kind: chapter
+    number: 9
+    title: Adventuring
+    page: 181
+    file: 原始資料/外部來源鏡像/PHB2014/chapters/09-Adventuring.md
+    status: complete
+  - kind: chapter
+    number: 10
+    title: Combat
+    page: 189
+    file: 原始資料/外部來源鏡像/PHB2014/chapters/10-Combat.md
+    status: complete
+  - kind: chapter
+    number: 11
+    title: Spellcasting
+    page: 201
+    file: 原始資料/外部來源鏡像/PHB2014/chapters/11-Spellcasting.md
+    status: complete
+  - kind: chapter
+    number: 12
+    title: Spells
+    page: 207
+    file: 原始資料/外部來源鏡像/PHB2014/chapters/12-Spells.md
+    status: complete
+  - kind: chapter
+    number: 13
+    title: Conditions
+    page: 289
+    file: 原始資料/外部來源鏡像/PHB2014/chapters/13-Conditions.md
+    status: complete
+  - kind: chapter
+    number: 14
+    title: Gods of the Multiverse
+    page: 293
+    file: 原始資料/外部來源鏡像/PHB2014/chapters/14-Gods of the Multiverse.md
+    status: complete
+  - kind: chapter
+    number: 15
+    title: The Planes of Existence
+    page: 300
+    file: 原始資料/外部來源鏡像/PHB2014/chapters/15-The Planes of Existence.md
+    status: complete

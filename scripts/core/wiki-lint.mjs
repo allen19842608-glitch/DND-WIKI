@@ -10,8 +10,8 @@ const WIKI_ROOT = path.join(ROOT, "wiki");
 const PUBLICATIONS_PATH = path.join(ROOT, "config", "publications.yml");
 const TAXONOMY_PATH = path.join(ROOT, "config", "taxonomy.yml");
 const LORE_PATH = path.join(ROOT, "config", "lore.yml");
-// 原始資料不隨 GitHub Actions 提交；本機維護時可做實體存在檢查，CI 則只
-// 驗證路徑格式與範圍，避免部分 checkout 的舊來源造成誤判。
+// 原始資料與可追溯的外部鏡像不隨 GitHub Actions 提交；本機維護時可做實體
+// 存在檢查，CI 則只驗證路徑格式與範圍，避免部分 checkout 的舊來源造成誤判。
 const RAW_SOURCES_AVAILABLE = process.env.GITHUB_ACTIONS !== "true"
   && fs.existsSync(path.join(ROOT, "原始資料"));
 
@@ -41,8 +41,10 @@ function loadPublicationRegistry() {
   const data = document.toJS();
   if (data?.schema_version !== 2 || !data.publications) throw new Error("出版品註冊表缺少 schema_version: 2 或 publications。");
   const byTag = new Map();
+  const byId = new Map();
   const sourceRootsByRuleset = new Map();
   for (const [id, publication] of Object.entries(data.publications)) {
+    byId.set(id, publication);
     for (const field of ["entity_id", "concept_id", "ruleset", "content_scope", "status"]) {
       if (typeof publication[field] !== "string" || publication[field] === "") {
         throw new Error(`出版品 ${id} 缺少 ${field}。`);
@@ -61,7 +63,7 @@ function loadPublicationRegistry() {
       sourceRootsByRuleset.set(publication.ruleset, roots);
     }
   }
-  return { byTag, sourceRootsByRuleset };
+  return { byTag, byId, sourceRootsByRuleset };
 }
 
 function loadTaxonomy() {
@@ -958,6 +960,34 @@ function printDiagnostics(diagnostics, scopeSize, totalSize) {
   console.log(`\n檢查範圍：${scopeSize}/${totalSize} 個 Wiki 頁面`);
 }
 
+function validateMirrorCitationFormat(record, diagnostics, publications) {
+  const sourceIds = new Set();
+  for (const source of Array.isArray(record.data?.sources) ? record.data.sources : []) {
+    const file = String(source?.file ?? "").replaceAll("\\", "/");
+    const mirrorId = file.match(/^原始資料\/外部來源鏡像\/([^/]+)\//)?.[1];
+    if (mirrorId) sourceIds.add(mirrorId);
+    const locator = String(source?.locator ?? "");
+    for (const [id, publication] of publications.byId) {
+      if (locator.includes(publication.canonical_rules_source ?? "__none__") || (locator.includes("5e.tools 補充來源") && locator.includes(publication.title_en ?? "__none__"))) sourceIds.add(id);
+    }
+  }
+  if (!sourceIds.size) return;
+  for (const publicationId of sourceIds) {
+    const publication = publications.byId.get(publicationId);
+    if (!publication?.title_zh) continue;
+    const aliases = [publicationId, publication.title_en, publication.canonical_rules_source]
+      .filter((value) => typeof value === "string" && value)
+      .map((value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+    if (!aliases.length) continue;
+    const pattern = new RegExp(`（來源：(?!《${publication.title_zh.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}》)(?:${aliases.join("|")})(?: 20\\d{2})?，\\s*p{1,2}\\.`, "i");
+    const match = record.body.match(pattern);
+    if (match) {
+      const line = record.bodyStartLine + record.body.slice(0, match.index).split(/\r?\n/).length - 1;
+      addDiagnostic(diagnostics, "warning", record.rel, line, "MIRROR_CITATION_FORMAT", `鏡像書籍正文引用應使用《${publication.title_zh}》加頁碼。`);
+    }
+  }
+}
+
 function validatePersonStatLinks(record, diagnostics, catalog) {
   if (record.data?.category !== "戰役設定" || record.data?.lore_type !== "人物") return;
   if (!/^## 怪物資料卡\s*$/m.test(record.body)) return;
@@ -1091,6 +1121,7 @@ export function lintWiki({ all = false, files, overrides } = {}) {
       continue;
     }
     validateFrontmatter(record, diagnostics, pathCatalog, publications, lore);
+    validateMirrorCitationFormat(record, diagnostics, publications);
     validateTaxonomyLocation(record, diagnostics, taxonomy);
     validateVersionCoverage(record, diagnostics, publications);
     validateMagicItemStructure(record, diagnostics);

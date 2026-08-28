@@ -24,6 +24,7 @@ const diff = values.includes("--diff");
 const publication = option("--publication");
 const patch = option("--patch");
 const setting = option("--setting");
+const sourceMode = option("--source-mode");
 
 if (patch) {
   if (category) {
@@ -86,6 +87,7 @@ if (category === "職業") {
   }
   script = "scripts/ingest/ingest-lore.mjs";
   if (setting) args.push("--setting", setting);
+  if (sourceMode) args.push("--source-mode", sourceMode);
   if (itemType && itemType !== "戒指") args.push("--type", itemType);
   if (only) args.push("--only", only);
   if (report) args.push("--report", report);
