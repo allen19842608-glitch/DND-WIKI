@@ -9,6 +9,7 @@ const WIKI_ROOT = path.join(ROOT, "wiki", "戰役設定");
 const CONFIG_PATH = path.join(ROOT, "config", "lore.yml");
 const START = "<!-- AUTO-LORE-INDEX:START -->";
 const END = "<!-- AUTO-LORE-INDEX:END -->";
+const CURATED = "<!-- CURATED-LORE-INDEX -->";
 
 function relative(file) {
   return path.relative(ROOT, file).split(path.sep).join("/");
@@ -108,7 +109,14 @@ function normalizeIndexMetadata(text, record, conceptId) {
 
 function linkTargetsOutsideAuto(text) {
   const outside = text.replace(/<!-- AUTO-LORE-INDEX:START -->[\s\S]*?<!-- AUTO-LORE-INDEX:END -->/, "");
-  return new Set([...outside.matchAll(/\[\[([^|\]#^]+)/g)].map((match) => match[1].trim()));
+  // In a Markdown table, a Wiki-link alias uses `\|`; trim that escape from
+  // the target before comparing it with a repository-relative link target.
+  return new Set([...outside.matchAll(/\[\[([^|\]#^]+)/g)]
+    .map((match) => match[1].trim().replace(/\\$/, "")));
+}
+
+function isCuratedIndex(text) {
+  return text.includes(CURATED);
 }
 
 function write(file, content, apply, changes) {
@@ -145,13 +153,26 @@ export function syncLoreIndexes({ apply = false } = {}) {
       if (!members.length) continue;
       const indexRel = `${world.root}/${loreType.directory}/${loreType.label}索引.md`;
       const indexFile = path.join(ROOT, ...indexRel.split("/"));
-      const entries = members.map((record) => `- [[${linkTarget(record.rel)}|${record.data.title}]]`).join("\n");
+      // A curated table or other manual section can deliberately own a link.
+      // Do not duplicate it in the generated navigation block.
+      const existingIndexText = fs.existsSync(indexFile) ? fs.readFileSync(indexFile, "utf8") : "";
+      const existingIndexTargets = linkTargetsOutsideAuto(existingIndexText);
+      const entries = members
+        .filter((record) => !existingIndexTargets.has(linkTarget(record.rel)))
+        .map((record) => `- [[${linkTarget(record.rel)}|${record.data.title}]]`)
+        .join("\n");
       const conceptId = `concept:setting:${worldId}:index:${typeId}`;
       const body = `本頁彙整${world.label}的${loreType.label}條目。\n\n${START}\n## 條目\n\n${entries}\n${END}\n\n## 🔗 相關連結\n\n- [[${linkTarget(world.index)}|${world.label}索引]]\n- [[戰役設定/戰役設定索引|戰役設定索引]]`;
       let content;
-      if (fs.existsSync(indexFile)) content = normalizeIndexMetadata(
-        replaceAutoBlock(fs.readFileSync(indexFile, "utf8"), `## 條目\n\n${entries}`), representative, conceptId,
-      );
+      if (fs.existsSync(indexFile)) {
+        const current = fs.readFileSync(indexFile, "utf8");
+        const synchronized = replaceAutoBlock(current, `## 條目\n\n${entries}`);
+        // Curated indexes own their source metadata and explanatory sections;
+        // synchronization is limited to the explicitly delimited auto block.
+        content = isCuratedIndex(current)
+          ? synchronized
+          : normalizeIndexMetadata(synchronized, representative, conceptId);
+      }
       else content = indexDocument({
         title: `${loreType.label}索引 (${world.label})`,
         conceptId,
