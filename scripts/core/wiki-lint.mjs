@@ -718,6 +718,9 @@ function validateFrontmatter(record, diagnostics, catalog, publications, lore) {
       if (source.translation !== undefined && !TRANSLATIONS.has(source.translation)) {
         addDiagnostic(diagnostics, "error", rel, 1, "TRANSLATION_ENUM", `translation 值不合法：${source.translation}`);
       }
+      if (typeof source.url === "string" && /forgottenrealms\.fandom\.com\//iu.test(source.url) && source.authority !== "社群") {
+        addDiagnostic(diagnostics, "error", rel, 1, "FANDOM_AUTHORITY", "Forgotten Realms Wiki 是社群設定索引；不得以官方 authority 記為正式來源。" );
+      }
       validateSourcePath(source.file, rel, 1, diagnostics, catalog);
       if (typeof source.file === "string" && /\.html?$/i.test(source.file) && typeof source.locator === "string") {
         if (!source.locator.includes("#") && !/L\d+.*(?:標題|表格|：|:)/.test(source.locator)) {
@@ -729,6 +732,22 @@ function validateFrontmatter(record, diagnostics, catalog, publications, lore) {
   const derived = deriveSourceType(data.sources);
   if (derived && data.source_type !== derived) {
     addDiagnostic(diagnostics, "error", rel, 1, "SOURCE_TYPE", `source_type 應由來源推導為 ${derived}，目前為 ${data.source_type}。`);
+  }
+  const fandomLinks = [...record.body.matchAll(/https?:\/\/forgottenrealms\.fandom\.com\/[^\s)\]]+/giu)];
+  if (fandomLinks.length) {
+    const uncertaintyStart = record.body.search(/^##\s+來源差異與不確定性\s*$/mu);
+    const afterUncertainty = uncertaintyStart >= 0 ? record.body.slice(uncertaintyStart) : "";
+    const afterHeading = afterUncertainty.indexOf("\n") + 1;
+    const nextSection = afterHeading > 0 ? afterUncertainty.slice(afterHeading).search(/^##\s+/mu) : -1;
+    const uncertaintyEnd = uncertaintyStart >= 0 && nextSection >= 0
+      ? uncertaintyStart + afterHeading + nextSection
+      : record.body.length;
+    for (const link of fandomLinks) {
+      if (uncertaintyStart < 0 || link.index < uncertaintyStart || link.index >= uncertaintyEnd) {
+        const line = record.bodyStartLine + record.body.slice(0, link.index).split("\n").length - 1;
+        addDiagnostic(diagnostics, "error", rel, line, "FANDOM_BODY_PLACEMENT", "Forgotten Realms Wiki 連結僅能放在「來源差異與不確定性」，作為社群註腳索引。" );
+      }
+    }
   }
   const basename = path.posix.basename(rel);
   if (typeof data.title === "string" && /索引|\bIndex\b/.test(data.title) && !/索引\.md$|_index\.md$/i.test(basename)) {

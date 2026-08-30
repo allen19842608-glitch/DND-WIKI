@@ -13,6 +13,7 @@ import {
 import { normalizeMirrorCitations } from "../scripts/audit/audit-mirror-citations.mjs";
 import { rebuildLore } from "../scripts/ingest/rebuild-lore.mjs";
 import { audit as auditLorePlacement } from "../scripts/audit/audit-lore-placement.mjs";
+import { buildFrwikiCandidate, collectPagePayloads, extractClaimCandidates, extractDiscoveryIndex, extractOfficialCitations, publicationRecords, sourceAcquisitionQueue } from "../scripts/ingest/discover-frwiki-lore.mjs";
 
 test("鏡像正文引用改用中文書名與頁碼，無頁碼引用保留待補", () => {
   const publication = { id: "FRAIF2025", title: "被遺忘的國度：費倫冒險", aliases: new Set(["FRAiF", "FRAIF2025", "Forgotten Realms: Adventures in Faerûn (2025)"]) };
@@ -20,6 +21,125 @@ test("鏡像正文引用改用中文書名與頁碼，無頁碼引用保留待�
   assert.match(result.text, /（來源：《被遺忘的國度：費倫冒險》，pp\. 58–59）/);
   assert.equal(result.changes.length, 1);
   assert.equal(result.unresolved.length, 1);
+});
+
+test("Fandom 註腳只把可對照的官方出版品送入補充佇列", () => {
+  const config = {
+    provider: { label: "Forgotten Realms Wiki", authority: "社群", role: "entity-discovery-and-citation-index", base_url: "https://example.test/wiki/" },
+    watchlists: { person: { setting: "被遺忘的國度", lore_type: "人物" } },
+  };
+  const records = [
+    { id: "ABH2025", aliases: ["astarionsbookofhungers"], locallyAvailable: true },
+    { id: "FRCS2001", aliases: ["forgottenrealmscampaignsetting"], locallyAvailable: false },
+  ];
+  const citations = extractOfficialCitations("<ref>{{Cite book/Astarion's Book of Hungers|42}}</ref><ref>{{Cite book|title=Forgotten Realms Campaign Setting|page=12}}</ref>", records);
+  assert.equal(citations[0].status, "本機官方原書待逐段核對");
+  assert.equal(citations[0].title, "Astarion's Book of Hungers");
+  assert.equal(citations[0].page, "42");
+  assert.equal(citations[1].status, "官方註腳尚無本機來源");
+  const candidate = buildFrwikiCandidate({ title: "Cazador_Szarr", revisionId: "123", wikitext: "<ref>{{Cite book/Astarion's Book of Hungers|42}}</ref>", type: "person", config, records });
+  assert.equal(candidate.disposition, "可進入官方原文校對佇列");
+  assert.equal(candidate.community_index.authority, "社群");
+});
+
+test("Fandom 註腳有明示書名時不得以文內關鍵字猜測成另一出版品", () => {
+  const records = [
+    { id: "SCAG2015", aliases: ["swordcoastadventurersguide"], locallyAvailable: true },
+  ];
+  const [citation] = extractOfficialCitations("<ref>{{Cite book|title=Faiths & Avatars|page=30}} Sword Coast Adventurer's Guide</ref>", records);
+  assert.equal(citation.title, "Faiths & Avatars");
+  assert.deepEqual(citation.publication_ids, []);
+  assert.equal(citation.status, "未映射註腳");
+});
+
+test("Fandom 書名變體只映射至明確登錄的既有出版品", () => {
+  const phb2014 = publicationRecords().find((record) => record.id === "PHB2014");
+  const [citation] = extractOfficialCitations("<ref>{{Cite book|title=Player's Handbook 5th edition|page=121}}</ref>", [phb2014]);
+  assert.deepEqual(citation.publication_ids, ["PHB2014"]);
+  assert.equal(citation.status, "本機官方原書待逐段核對");
+});
+
+test("Fandom 資訊框的別名、關係與事件只作為盤點提示", () => {
+  const discovery = extractDiscoveryIndex("| aliases = [[The Lady of Mysteries]]\n| portfolio = [[Magic]]\n| born = -339 DR");
+  assert.deepEqual(discovery.aliases, ["The Lady of Mysteries"]);
+  assert.deepEqual(discovery.relationships, [{ field: "portfolio", value: "Magic" }]);
+  assert.deepEqual(discovery.events, [{ field: "born", value: "-339 DR" }]);
+});
+
+test("Fandom 具名註腳會產生可審核的段落候選，而非直接寫入主張", () => {
+  const citations = extractOfficialCitations("<ref name=\"SCAG\">{{Cite book/Sword Coast Adventurer's Guide|35}}</ref>", [{ id: "SCAG2015", aliases: ["swordcoastadventurersguide"], locallyAvailable: true }]);
+  const claims = extractClaimCandidates("== Faith ==\nMystra tends the Weave.<ref name=\"SCAG\" />", citations);
+  assert.deepEqual(claims, [{
+    section: "Faith",
+    excerpt: "Mystra tends the Weave.",
+    citation_reference: 1,
+    publication_ids: ["SCAG2015"],
+    locally_available_ids: ["SCAG2015"],
+    disposition: "比對本機官方原文後可補入",
+  }]);
+});
+
+test("Fandom 未取得原文的出版品註腳會彙整為來源取得佇列", () => {
+  const queue = sourceAcquisitionQueue([
+    {
+      entity: { english_name: "Mystra" },
+      official_citations: [
+        { title: "Faiths & Avatars", page: "42", status: "官方註腳尚無本機來源" },
+        { title: "Faiths & Avatars", page: "42", status: "官方註腳尚無本機來源" },
+        { title: "Sword Coast Adventurer's Guide", page: "35", status: "本機官方原書待逐段核對" },
+      ],
+    },
+    {
+      entity: { english_name: "Selûne" },
+      official_citations: [{ title: "Faiths & Avatars", page: "77", status: "官方註腳尚無本機來源" }],
+    },
+  ]);
+  assert.deepEqual(queue, [{
+    publication_title: "Faiths & Avatars",
+    entities: ["Mystra", "Selûne"],
+    pages: ["42", "77"],
+    statuses: ["官方註腳尚無本機來源"],
+    citations: 3,
+  }]);
+});
+
+test("Fandom 全頁盤點會保留成功頁並回報個別頁面失敗", async () => {
+  const result = await collectPagePayloads(["可用頁", "失效頁"], async (title) => {
+    if (title === "失效頁") throw new Error("找不到 wikitext");
+    return { title, revisionId: "1", wikitext: "" };
+  });
+  assert.equal(result.payloads.length, 1);
+  assert.deepEqual(result.errors, [{ page: "失效頁", error: "找不到 wikitext" }]);
+});
+
+test("lint 不允許把 Forgotten Realms Wiki 標示為官方來源", () => {
+  const original = fs.readFileSync("wiki/戰役設定/被遺忘的國度/地理/北地.md", "utf8");
+  const candidate = original.replace(
+    /url: "https:\/\/raw\.githubusercontent\.com\/5etools-mirror-3\/5etools-src\/main\/data\/book\/book-frhof\.json"/,
+    'url: "https://forgottenrealms.fandom.com/wiki/North"',
+  );
+  const originalLog = console.log;
+  console.log = () => {};
+  try {
+    const result = lintWiki({ files: ["wiki/戰役設定/被遺忘的國度/地理/北地.md"], overrides: new Map([["wiki/戰役設定/被遺忘的國度/地理/北地.md", candidate]]) });
+    assert.ok(result.diagnostics.some((item) => item.code === "FANDOM_AUTHORITY"));
+  } finally {
+    console.log = originalLog;
+  }
+});
+
+test("lint 限制 Forgotten Realms Wiki 連結只能作為來源差異中的社群索引", () => {
+  const file = "wiki/戰役設定/被遺忘的國度/地理/北地.md";
+  const original = fs.readFileSync(file, "utf8");
+  const candidate = original.replace("# 北地", "# 北地\n\n參考：https://forgottenrealms.fandom.com/wiki/North");
+  const originalLog = console.log;
+  console.log = () => {};
+  try {
+    const result = lintWiki({ files: [file], overrides: new Map([[file, candidate]]) });
+    assert.ok(result.diagnostics.some((item) => item.code === "FANDOM_BODY_PLACEMENT"));
+  } finally {
+    console.log = originalLog;
+  }
 });
 
 test("lint 會標示鏡像條目內未正規化的英文書籍代號引用", () => {
@@ -358,5 +478,24 @@ test("魔法物品結構檢查要求主要區塊與物品資料欄位", () => {
     new Set(diagnostics.map((item) => item.code)),
     new Set(["MAGIC_ITEM_TEMPLATE_FIELD", "MAGIC_ITEM_TEMPLATE_SECTION"]),
   );
+});
+
+test("費倫神祇頁的玩家手冊神系表 locator 必須指向正確列", () => {
+  const names = [
+    "歐呂爾", "阿祖斯", "班恩", "本莎芭", "巴爾", "裳緹亞", "希瑞克", "迪尼爾", "埃達絲", "貢德",
+    "海姆", "伊爾馬特", "凱蘭沃", "洛山達", "萊拉", "黎爾拉", "勞薇塔", "獁拉", "馬斯克", "梅麗凱",
+    "密里耳", "米爾寇", "密斯特拉", "歐格瑪", "薩弗拉斯", "塞倫涅", "莎爾", "西凡納斯", "淑妮", "塔洛娜",
+    "塔洛斯", "坦帕斯", "托姆", "泰摩拉", "提爾", "安博裡", "渥金",
+  ];
+  const rawLines = fs.readFileSync("原始資料/玩家手冊2014/神系/被遺忘國度.md", "utf8").split(/\r?\n/);
+  const sourceMarker = "原始資料/外部來源鏡像/PHB2014/book-phb.json";
+  const sourceName = new Map([["萊拉", "蕾拉"], ["西凡納斯", "西凡那斯"]]);
+  for (const name of names) {
+    const page = fs.readFileSync(`wiki/戰役設定/被遺忘的國度/神祇與信仰/${name}.md`, "utf8");
+    assert.match(page, new RegExp(sourceMarker));
+    const match = page.match(/被遺忘國度眾神表；L(\d+)：/u);
+    assert.ok(match, `${name} 缺少玩家手冊中文來源 locator`);
+    assert.match(rawLines[Number(match[1]) - 1] ?? "", new RegExp(sourceName.get(name) ?? name));
+  }
 });
 

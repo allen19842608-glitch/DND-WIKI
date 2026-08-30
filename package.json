@@ -25,6 +25,7 @@
     "audit:lore": "node scripts/audit/audit-lore-ingestion.mjs",
     "audit:lore-placement": "node scripts/audit/audit-lore-placement.mjs",
     "audit:mirror-citations": "node scripts/audit/audit-mirror-citations.mjs",
+    "lore:discover-frwiki": "node scripts/ingest/discover-frwiki-lore.mjs",
     "lore:rebuild": "node scripts/ingest/rebuild-lore.mjs",
     "lore:reclassify": "node scripts/migrate/reclassify-lore.mjs",
     "migrate:staff-charge-structure": "node scripts/migrate/migrate-staff-charge-structure.mjs",

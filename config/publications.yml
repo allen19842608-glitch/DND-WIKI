@@ -342,6 +342,8 @@ publications:
     status: "legacy"
     authority: "官方"
     canonical_rules_source: "Player’s Handbook (2014)"
+    citation_aliases:
+      - "Player's Handbook 5th edition"
     wiki:
       tag: "玩家手冊2014"
       tag_aliases: []
