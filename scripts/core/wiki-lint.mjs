@@ -43,12 +43,16 @@ function loadPublicationRegistry() {
   const byTag = new Map();
   const byId = new Map();
   const sourceRootsByRuleset = new Map();
+  const citationKinds = new Set(data.registry?.citation_kind_values ?? []);
   for (const [id, publication] of Object.entries(data.publications)) {
     byId.set(id, publication);
     for (const field of ["entity_id", "concept_id", "ruleset", "content_scope", "status"]) {
       if (typeof publication[field] !== "string" || publication[field] === "") {
         throw new Error(`出版品 ${id} 缺少 ${field}。`);
       }
+    }
+    if (publication.citation_kind !== undefined && !citationKinds.has(publication.citation_kind)) {
+      throw new Error(`出版品 ${id} 的 citation_kind 不在註冊表列舉值中。`);
     }
     if (publication.entity_id !== `publication:${id}` || !/^publication:[a-z0-9-]+$/.test(publication.concept_id)) {
       throw new Error(`出版品 ${id} 的 entity_id 或 concept_id 格式不合法。`);
@@ -63,7 +67,7 @@ function loadPublicationRegistry() {
       sourceRootsByRuleset.set(publication.ruleset, roots);
     }
   }
-  return { byTag, byId, sourceRootsByRuleset };
+  return { byTag, byId, sourceRootsByRuleset, citationKinds };
 }
 
 function loadTaxonomy() {
@@ -597,6 +601,12 @@ function validateFrontmatter(record, diagnostics, catalog, publications, lore) {
   }
   const isCampaignSetting = data.category === "戰役設定";
   const isOrganizedPlay = data.content_scope === "organized_play";
+  if (isOrganizedPlay && data.version !== "AL-Organized-Play") {
+    addDiagnostic(diagnostics, "error", rel, 1, "ORGANIZED_PLAY_VERSION", "organized_play 條目必須使用 version: AL-Organized-Play。" );
+  }
+  if (!isOrganizedPlay && data.version === "AL-Organized-Play") {
+    addDiagnostic(diagnostics, "error", rel, 1, "AL_VERSION_SCOPE", "AL-Organized-Play 僅能用於 content_scope: organized_play。" );
+  }
   if (data.setting_continuity !== undefined) {
     if (!isCampaignSetting) {
       addDiagnostic(diagnostics, "error", rel, 1, "SETTING_CONTINUITY_CATEGORY", "setting_continuity 僅能用於 category: 戰役設定。" );
@@ -780,6 +790,22 @@ function validateFrontmatter(record, diagnostics, catalog, publications, lore) {
     addDiagnostic(diagnostics, "error", rel, record.bodyStartLine, "PENDING_WARNING", "pending 條目缺少待確認譯名警告區塊。" );
   }
   validateQuotedStrings(fm, rel, diagnostics);
+}
+
+function validatePublicCitationPages(record, diagnostics, publications) {
+  for (const publication of publications.byId.values()) {
+    if (publication.authority === "官方" && publication.citation_kind === "book") continue;
+    const aliases = [publication.citation_title_zh, publication.title_zh, publication.title_en, ...(publication.citation_aliases ?? [])]
+      .filter((value) => typeof value === "string" && value)
+      .map((value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+    if (!aliases.length) continue;
+    const pattern = new RegExp(`（來源：[^）]*(?:${aliases.join("|")})[^）]*(?:\bp{1,2}\.\s*\d+|\d+\s*頁|封面與第\s*\d+\s*頁)[^）]*）`, "iu");
+    const match = record.body.match(pattern);
+    if (match) {
+      const line = record.bodyStartLine + record.body.slice(0, match.index).split(/\r?\n/u).length - 1;
+      addDiagnostic(diagnostics, "error", record.rel, line, "PUBLIC_CITATION_PAGE", "非正式書籍或非官方來源的讀者可見引用不得顯示頁碼。" );
+    }
+  }
 }
 
 function buildWikiCatalog(records) {
@@ -1140,6 +1166,7 @@ export function lintWiki({ all = false, files, overrides } = {}) {
       continue;
     }
     validateFrontmatter(record, diagnostics, pathCatalog, publications, lore);
+    validatePublicCitationPages(record, diagnostics, publications);
     validateMirrorCitationFormat(record, diagnostics, publications);
     validateTaxonomyLocation(record, diagnostics, taxonomy);
     validateVersionCoverage(record, diagnostics, publications);

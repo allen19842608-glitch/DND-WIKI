@@ -2,6 +2,7 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { campaignDesignDestination } from "../core/campaign-design-layout.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const rawRoot = path.join(root, "原始資料", "地下城主指南2024");
@@ -38,7 +39,10 @@ function destination(file) {
   const chapter = parts.shift();
   const remainder = parts.join(path.sep);
   if (chapter === "第四章_創建冒險") return { category: "戰役設定", tag: "戰役設定_戰役創作", file: path.join(wikiRoot, "戰役設定", "戰役創作", "冒險創建", remainder) };
-  if (chapter === "第五章_創作戰役") return { category: "戰役設定", tag: "戰役設定_戰役創作", file: path.join(wikiRoot, "戰役設定", "戰役創作", "戰役設計", remainder) };
+  if (chapter === "第五章_創作戰役") {
+    const target = campaignDesignDestination(remainder);
+    return target ? { category: "戰役設定", tag: "戰役設定_戰役創作", file: path.join(wikiRoot, target) } : null;
+  }
   if (chapter === "附錄A：設定彙編.md") return { category: "戰役設定", tag: "戰役設定_戰役創作", file: path.join(wikiRoot, "戰役設定", "戰役創作", "設定彙編.md") };
   const section = chapter === "第三章_地下城主工具箱" ? "" : chapter.replace(/^第[一二三]章_/, "");
   return { category: "規則機制", tag: "規則_地下城主工具箱", file: path.join(wikiRoot, "規則", "地下城主工具箱", section, remainder) };
@@ -69,6 +73,10 @@ for (const input of walk(rawRoot).sort()) {
   const original = fs.readFileSync(input, "utf8");
   const title = titleOf(original, path.basename(input, ".md"));
   const mapped = destination(input);
+  if (!mapped) {
+    console.log(`略過（由世界觀整理器處理）：${path.relative(root, input)}`);
+    continue;
+  }
   const content = `---\ntitle: "${yaml(title)}"\nentity_id: "entry:DMG2024:entry:${sha(source)}"\nconcept_id: "concept:dmg2024:${sha(title)}"\nruleset: "2024"\ncontent_scope: "core"\nstatus: "current"\ncategory: "${mapped.category}"\nversion: "2024-Core"\ntags:\n  - "地下城主指南2024"\n  - "${mapped.tag}"\nsources:\n  - file: "${source}"\n    locator: "L1 標題：${yaml(title)}；全文"\n    authority: "官方"\n    translation: "community"\nsource_type: "official"\nconfidence: "confirmed"\nrules_sources:\n  - "Dungeon Master's Guide (2024)"\nerrata: []\nupdated: "${date}"\n---\n\n# ${title}\n\n## ⚙️ 規則條文 (Rule Text)\n\n${bodyOf(original) || "本節未提供可獨立編譯的正文。"}\n`;
   if (apply) { fs.mkdirSync(path.dirname(mapped.file), { recursive: true }); fs.writeFileSync(mapped.file, content, "utf8"); }
   console.log(`${apply ? "匯入" : "預覽"}：${path.relative(root, mapped.file)}`);

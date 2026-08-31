@@ -35,6 +35,12 @@ registry:
     - "official"
     - "community"
     - "none"
+  citation_kind_values:
+    - "book"
+    - "guide"
+    - "policy"
+    - "reference"
+    - "errata"
 
 publications:
   SCAG2015:
@@ -651,6 +657,10 @@ publications:
     entity_id: "publication:DDAL_PLAYERS_2026_4"
     concept_id: "publication:ddal-players-guide"
     title_zh: "D&D 冒險者聯盟玩家指南"
+    citation_title_zh: "冒險者聯盟玩家指南"
+    citation_kind: "guide"
+    citation_aliases:
+      - "玩家指南 v2026.4"
     title_en: "D&D Adventurers League Players Guide"
     publisher: "Wizards of the Coast"
     year: 2026
@@ -686,6 +696,10 @@ publications:
     entity_id: "publication:DDAL_DM_2026_2"
     concept_id: "publication:ddal-dungeon-masters-guide"
     title_zh: "D&D 冒險者聯盟地下城主指南"
+    citation_title_zh: "冒險者聯盟地下城主指南"
+    citation_kind: "guide"
+    citation_aliases:
+      - "地下城主指南 v2026.2"
     title_en: "D&D Adventurers League Dungeon Masters Guide"
     publisher: "Wizards of the Coast"
     year: 2026
@@ -713,6 +727,10 @@ publications:
     entity_id: "publication:DDAL_ADAPTATION_2026_2"
     concept_id: "publication:ddal-adaptation-guide"
     title_zh: "D&D 冒險者聯盟調整指南"
+    citation_title_zh: "冒險者聯盟調整指南"
+    citation_kind: "guide"
+    citation_aliases:
+      - "調整指南 v2026.2"
     title_en: "D&D Adventurers League Adaptation Guide"
     publisher: "Wizards of the Coast"
     year: 2026
@@ -739,7 +757,11 @@ publications:
   ALSR_2026_1:
     entity_id: "publication:ALSR_2026_1"
     concept_id: "publication:ddal-service-rewards"
-    title_zh: null
+    title_zh: "冒險者聯盟服務獎勵"
+    citation_title_zh: "冒險者聯盟服務獎勵"
+    citation_kind: "policy"
+    citation_aliases:
+      - "Service Rewards v2026.1"
     title_en: "D&D Adventurers League Service Rewards"
     publisher: "Wizards of the Coast"
     year: 2026

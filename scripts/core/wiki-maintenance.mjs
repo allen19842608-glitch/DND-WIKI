@@ -269,6 +269,11 @@ function wikiLinkTargets(text) {
     });
 }
 
+function autoIndexTargets(text) {
+  const match = text.match(/<!-- AUTO-INDEX:START -->[\s\S]*?<!-- AUTO-INDEX:END -->/);
+  return new Set(match ? wikiLinkTargets(match[0]) : []);
+}
+
 function pageTitle(file) {
   const text = fs.readFileSync(file, "utf8");
   return text.match(/^title:\s+"([^"]+)"/m)?.[1] ?? text.match(/^#\s+(.+)$/m)?.[1] ?? path.basename(file, ".md");
@@ -291,6 +296,11 @@ function indexesCommand(values) {
   const apply = options.has("--apply");
   const changedOnly = options.has("--changed");
   const changedDirectories = changedOnly ? changedWikiDirectories() : null;
+  const wikiNameCounts = new Map();
+  for (const file of walk(WIKI_ROOT).filter((file) => file.endsWith(".md"))) {
+    const name = path.basename(file, ".md");
+    wikiNameCounts.set(name, (wikiNameCounts.get(name) ?? 0) + 1);
+  }
   let missingCount = 0;
   let updatedCount = 0;
   for (const indexFile of walk(WIKI_ROOT).filter((file) => file.endsWith("索引.md")).sort()) {
@@ -302,7 +312,10 @@ function indexesCommand(values) {
     const siblings = fs.readdirSync(directory, { withFileTypes: true })
       .filter((entry) => entry.isFile() && entry.name.endsWith(".md") && !entry.name.endsWith("索引.md"))
       .map((entry) => path.join(directory, entry.name));
-    const existing = new Set(wikiLinkTargets(indexText));
+    const autoTargets = autoIndexTargets(indexText);
+    const manualText = indexText.replace(/\n?<!-- AUTO-INDEX:START -->[\s\S]*?<!-- AUTO-INDEX:END -->\n?/, "\n");
+    const manualTargets = new Set(wikiLinkTargets(manualText));
+    const existing = new Set([...manualTargets, ...autoTargets]);
     const missing = siblings.filter((file) => !existing.has(path.basename(file, ".md")));
     missingCount += missing.length;
     if (!apply) {
@@ -311,16 +324,31 @@ function indexesCommand(values) {
     }
     const start = "<!-- AUTO-INDEX:START -->";
     const end = "<!-- AUTO-INDEX:END -->";
-    const lines = missing.map((file) => `- [[${path.basename(file, ".md")}|${pageTitle(file)}]]`);
-    const block = missing.length ? `${start}\n## 自動維護條目\n\n${lines.join("\n")}\n${end}` : "";
+    const managed = siblings.filter((file) => {
+      const name = path.basename(file, ".md");
+      return autoTargets.has(name) || !manualTargets.has(name);
+    });
+    const lines = managed.map((file) => {
+      const name = path.basename(file, ".md");
+      const target = wikiNameCounts.get(name) === 1 ? name : relative(file).replace(/\.md$/u, "");
+      return `- [[${target}|${pageTitle(file)}]]`;
+    });
+    const block = lines.length ? `${start}\n## 自動維護條目\n\n${lines.join("\n")}\n${end}` : "";
     const pattern = /\n?<!-- AUTO-INDEX:START -->[\s\S]*?<!-- AUTO-INDEX:END -->\n?/;
-    const next = pattern.test(indexText)
-      ? indexText.replace(pattern, block ? `\n\n${block}\n` : "\n")
+    const match = indexText.match(pattern);
+    const next = match
+      ? (() => {
+        const before = indexText.slice(0, match.index).trimEnd();
+        const after = indexText.slice((match.index ?? 0) + match[0].length).replace(/^\r?\n+/, "");
+        const rebuilt = block ? `${before}\n\n${block}` : before;
+        return after ? `${rebuilt}\n\n${after}` : `${rebuilt}\n`;
+      })()
       : block ? `${indexText.trimEnd()}\n\n${block}\n` : indexText;
-    if (next !== indexText) {
-      fs.writeFileSync(indexFile, next, "utf8");
+    const normalizedNext = next.replace(/(?:\r?\n){2,}$/u, "\n");
+    if (normalizedNext !== indexText) {
+      fs.writeFileSync(indexFile, normalizedNext, "utf8");
       updatedCount += 1;
-      indexText = next;
+      indexText = normalizedNext;
     }
     for (const file of missing) if (backlinkPage(file, indexFile)) updatedCount += 1;
   }
@@ -347,4 +375,4 @@ if (path.resolve(process.argv[1] ?? "") === fileURLToPath(import.meta.url)) {
   }
 }
 
-export { extractWikiSourceFiles, splitMarkdownRow, wikiLinkTargets };
+export { autoIndexTargets, extractWikiSourceFiles, splitMarkdownRow, wikiLinkTargets };

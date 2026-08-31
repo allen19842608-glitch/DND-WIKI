@@ -43,6 +43,8 @@
     "ingest:eber-direct-images": "node scripts/ingest/insert-eber-direct-candidate-images.mjs",
     "ingest:xge-common-magic-items": "node scripts/ingest/ingest-xge-common-magic-items.mjs",
     "sync:xge-2024-compatibility": "node scripts/sync/sync-xge-2024-compatibility.mjs",
+    "notion:sync": "node scripts/publish/notion-wiki.mjs",
+    "al:citations": "node scripts/migrate/normalize-al-citations.mjs",
     "lint": "node scripts/core/wiki-lint.mjs",
     "lint:lore": "node scripts/core/wiki-lint.mjs --lore",
     "lint:all": "node scripts/core/wiki-lint.mjs --all",
