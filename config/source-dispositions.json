@@ -1,6 +1,10 @@
 {
   "schema_version": 1,
   "sources": {
+    "原始資料/冒險者聯盟/D&D Adventurers League Service Rewards v2026.1_FormFillable.pdf": {
+      "status": "duplicate",
+      "reason": "官方可填表複本；規則正文與標準版 v2026.1 相同，Wiki 只引用標準版以避免重複吸收。"
+    },
     "原始資料/艾伯倫：奇械鍛爐/第二章/背景/芬蘭尼後裔.md": {
       "status": "empty",
       "reason": "來源僅有標題，沒有可吸收的規則或設定正文。"

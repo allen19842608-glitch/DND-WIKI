@@ -666,7 +666,7 @@ publications:
         - "AL-Organized-Play"
     source_assets:
       - id: "DDAL_PLAYERS_2026_4_EN_PDF"
-        path: "原始資料/D&D Adventurers League Players Guide v2026.4.pdf"
+        path: "原始資料/冒險者聯盟/D&D Adventurers League Players Guide v2026.4.pdf"
         format: "pdf"
         role: "rules_text"
         language: "en"
@@ -674,7 +674,7 @@ publications:
         translation: "none"
         status: "available"
       - id: "DDAL_PLAYERS_2026_4_ZH_PDF"
-        path: "原始資料/DDAL_Players_Guide_v2026.4_泰坦圓桌中譯版.pdf"
+        path: "原始資料/冒險者聯盟/DDAL_Players_Guide_v2026.4_泰坦圓桌中譯版.pdf"
         format: "pdf"
         role: "translation"
         language: "zh-Hant"
@@ -701,7 +701,7 @@ publications:
         - "AL-Organized-Play"
     source_assets:
       - id: "DDAL_DM_2026_2_EN_PDF"
-        path: "原始資料/DD_Adventurers_League_Dungeon_Masters_Guide_v2026.2.pdf"
+        path: "原始資料/冒險者聯盟/DD_Adventurers_League_Dungeon_Masters_Guide_v2026.2.pdf"
         format: "pdf"
         role: "rules_text"
         language: "en"
@@ -728,9 +728,44 @@ publications:
         - "AL-Organized-Play"
     source_assets:
       - id: "DDAL_ADAPTATION_2026_2_EN_PDF"
-        path: "原始資料/DD_Adventurers_League_Adaptation_Guide_v2026.2.pdf"
+        path: "原始資料/冒險者聯盟/DD_Adventurers_League_Adaptation_Guide_v2026.2.pdf"
         format: "pdf"
         role: "rules_text"
+        language: "en"
+        authority: "官方"
+        translation: "none"
+        status: "available"
+
+  ALSR_2026_1:
+    entity_id: "publication:ALSR_2026_1"
+    concept_id: "publication:ddal-service-rewards"
+    title_zh: null
+    title_en: "D&D Adventurers League Service Rewards"
+    publisher: "Wizards of the Coast"
+    year: 2026
+    ruleset: "2024"
+    content_scope: "organized_play"
+    status: "current"
+    authority: "官方"
+    canonical_rules_source: "D&D Adventurers League Service Rewards v2026.1"
+    wiki:
+      tag: "D&D-Adventurers-League-Service-Rewards-2026"
+      tag_aliases: []
+      supported_versions:
+        - "AL-Organized-Play"
+    source_assets:
+      - id: "ALSR_2026_1_EN_PDF"
+        path: "原始資料/冒險者聯盟/D&D Adventurers League Service Rewards v2026.1.pdf"
+        format: "pdf"
+        role: "rules_text"
+        language: "en"
+        authority: "官方"
+        translation: "none"
+        status: "available"
+      - id: "ALSR_2026_1_FORM_PDF"
+        path: "原始資料/冒險者聯盟/D&D Adventurers League Service Rewards v2026.1_FormFillable.pdf"
+        format: "pdf"
+        role: "reference"
         language: "en"
         authority: "官方"
         translation: "none"
