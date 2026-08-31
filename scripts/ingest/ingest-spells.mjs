@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
-import { ROOT, defaultSource, frontmatter, loadIngestProfile, loadPublication, parseOptions, writableCandidate } from "../core/ingest-publication-utils.mjs";
+import { ROOT, defaultSource, frontmatter, loadIngestProfile, loadPublication, parseOptions, writableCandidate, writeIngestReport } from "../core/ingest-publication-utils.mjs";
 
 const options = parseOptions();
 const publication = loadPublication(options.publicationId);
@@ -80,6 +80,7 @@ function addCurrentBacklink(current, legacyTarget, legacyTitle) {
 }
 
 function appendIndexEntries(destination, entries) {
+  if (!options.apply) return false;
   if (!fs.existsSync(destination)) return false;
   let content = fs.readFileSync(destination, "utf8");
   const additions = entries.filter((entry) => !content.includes(`/${pageName(entry.chinese)}|`))
@@ -186,7 +187,7 @@ function spellPage({ spell, source, ring, block }) {
     ...(currentLink ? [`- ${currentLink}`] : []),
     "",
   ];
-  if (current) addCurrentBacklink(current, `法術/2014/${ring.directory}/${pageName(spell.chinese)}`, `${spell.chinese} (${spell.english}，2014 Legacy)`);
+  if (options.apply && current) addCurrentBacklink(current, `法術/2014/${ring.directory}/${pageName(spell.chinese)}`, `${spell.chinese} (${spell.english}，2014 Legacy)`);
   return lines.join("\n");
 }
 
@@ -204,7 +205,7 @@ for (const input of fs.readdirSync(inputDir).filter((name) => ringForFile(name))
     const end = headings[position + 1]?.index ?? lines.length;
     const block = lines.slice(spell.index + 1, end).filter((line) => line.trim());
     const page = spellPage({ spell, source, ring, block });
-    writableCandidate({ destination: path.join(outputRoot, ring.directory, `${pageName(spell.chinese)}.md`), content: page, options });
+    writableCandidate({ destination: path.join(outputRoot, ring.directory, `${pageName(spell.chinese)}.md`), content: page, options, matchValues: [spell.chinese, spell.english, source] });
     return { ...spell, ring };
   });
   spellsByRing.set(ring.number, { ring, spells, source });
@@ -227,3 +228,5 @@ if (spellsByRing.size) {
   const content = `${frontmatter({ publicationId: options.publicationId, publication, kind: "spell-index", concept: "spells-index-2014", title: "2014 法術索引 (2014 Spells Index)", category: "法術", tag: "法術_索引", source, locator: "法術詳述 0–9 環" })}\n\n# 2014 法術索引 (2014 Spells Index)\n\n> 收錄《${publication.title_zh} ${publication.year}》的法術規則。與 2024 規則存在差異，或尚未完成逐條同一性確認的法術，保留在本 Legacy 索引。\n\n| 環階 | 索引 |\n| :---: | :--- |\n${rows}\n\n## 🔗 相關連結\n\n- [[法術索引|法術索引 (Spells Index)]]\n`;
   writableCandidate({ destination: path.join(outputRoot, "法術索引.md"), content, options });
 }
+
+writeIngestReport({ options, publicationId: options.publicationId, category: "spells" });

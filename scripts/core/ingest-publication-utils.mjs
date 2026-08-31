@@ -5,6 +5,9 @@ import { fileURLToPath } from "node:url";
 import YAML from "yaml";
 
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
+export const CHARACTER_OPTION_CATEGORIES = Object.freeze([
+  "classes", "subclasses", "species", "backgrounds", "feats", "spells", "dependencies",
+]);
 
 export function option(args, name) {
   const index = args.indexOf(name);
@@ -19,6 +22,8 @@ export function parseOptions(args = process.argv.slice(2)) {
     publicationId: option(args, "--publication") ?? "PHB2024",
     source: option(args, "--source"),
     output: option(args, "--output"),
+    report: option(args, "--report"),
+    results: [],
   };
 }
 
@@ -39,6 +44,13 @@ export function loadIngestProfile(publicationId) {
   const profile = YAML.parse(fs.readFileSync(profilePath, "utf8"));
   if (profile?.publication_id !== publicationId || typeof profile.source_root !== "string" || typeof profile.outputs !== "object" || typeof profile.inputs !== "object") {
     throw new Error(`匯入設定 ${publicationId} 缺少 publication_id、source_root、inputs 或 outputs。`);
+  }
+  if (profile.character_options !== undefined) {
+    if (!Array.isArray(profile.character_options)) {
+      throw new Error(`匯入設定 ${publicationId} 的 character_options 必須是清單。`);
+    }
+    const invalid = profile.character_options.filter((value) => !CHARACTER_OPTION_CATEGORIES.includes(value));
+    if (invalid.length) throw new Error(`匯入設定 ${publicationId} 含有不支援的 character_options：${invalid.join("、")}`);
   }
   return profile;
 }
@@ -90,21 +102,60 @@ export function frontmatter({ publicationId, publication, kind, concept, title, 
   return `---\ntitle: "${quote(title)}"\nentity_id: "${entityId(publicationId, kind, source, title)}"\nconcept_id: "concept:${kind}:${slug(concept, title)}"\nruleset: "${publication.ruleset}"\ncontent_scope: "${publication.content_scope}"\nstatus: "${publication.status}"\ncategory: "${category}"\nversion: "${versionForPublication(publication)}"\ntags:\n  - "${publication.wiki.tag}"\n  - "${tag}"\nsources:\n  - file: "${quote(source)}"\n    locator: "${quote(locator)}"\n    authority: "官方"\n    translation: "community"\nsource_type: "official"\nconfidence: "interpreted"\nrules_sources:\n  - "${quote(publication.canonical_rules_source)}"\nerrata: []\nupdated: "${today()}"\n---`;
 }
 
-export function writableCandidate({ destination, content, options }) {
+function normalizedFilterValue(value) {
+  return String(value ?? "").normalize("NFKC").toLowerCase().replace(/[\s_—–-]+/g, " ").trim();
+}
+
+function recordResult(options, item) {
+  if (Array.isArray(options.results)) options.results.push(item);
+}
+
+export function writableCandidate({ destination, content, options, matchValues = [] }) {
   const rel = path.relative(ROOT, destination).split(path.sep).join("/");
-  if (options.only && !rel.includes(options.only)) return "filtered";
+  const filter = normalizedFilterValue(options.only);
+  const candidates = [rel, ...matchValues].map(normalizedFilterValue);
+  if (filter && !candidates.some((value) => value.includes(filter))) {
+    recordResult(options, { target: rel, status: "filtered" });
+    return "filtered";
+  }
   if (fs.existsSync(destination) && !options.replace) {
     console.log(`保留既有頁面（使用 --replace 才覆寫）：${rel}`);
+    recordResult(options, { target: rel, status: "skipped", reason: "existing_page_preserved" });
     return "skipped";
   }
   if (!options.apply) {
     console.log(`預覽：${rel}`);
+    recordResult(options, { target: rel, status: "preview" });
     return "preview";
   }
   fs.mkdirSync(path.dirname(destination), { recursive: true });
   fs.writeFileSync(destination, content, "utf8");
   console.log(`匯入：${rel}`);
+  recordResult(options, { target: rel, status: "written" });
   return "written";
+}
+
+export function writeIngestReport({ options, publicationId, category, extra = {} }) {
+  if (!options.report) return;
+  const destination = path.resolve(ROOT, options.report);
+  const rawRoot = path.join(ROOT, "原始資料") + path.sep;
+  if (destination === rawRoot.slice(0, -1) || destination.startsWith(rawRoot)) {
+    throw new Error("匯入報告不得寫入原始資料/。");
+  }
+  const report = {
+    schema_version: 1,
+    publication_id: publicationId,
+    category,
+    mode: options.apply ? "apply" : "preview",
+    replace: options.replace,
+    only: options.only ?? null,
+    generated_at: new Date().toISOString(),
+    results: options.results,
+    ...extra,
+  };
+  fs.mkdirSync(path.dirname(destination), { recursive: true });
+  fs.writeFileSync(destination, `${JSON.stringify(report, null, 2)}\n`, "utf8");
+  console.log(`報告：${path.relative(ROOT, destination).split(path.sep).join("/")}`);
 }
 
 export function walkMarkdown(root) {

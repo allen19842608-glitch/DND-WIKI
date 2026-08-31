@@ -1,6 +1,14 @@
 publication_id: "PHB2024"
 source_root: "原始資料/玩家手冊2024"
 ruleset: "2024"
+character_options:
+  - "classes"
+  - "subclasses"
+  - "species"
+  - "backgrounds"
+  - "feats"
+  - "spells"
+  - "dependencies"
 outputs:
   species: "wiki/種族"
   classes: "wiki/職業"
@@ -13,4 +21,4 @@ inputs:
   classes: "角色職業"
   spells: "法術詳述"
   feats: "專長"
-
+  backgrounds: "角色起源/背景"

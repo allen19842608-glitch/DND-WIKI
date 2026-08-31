@@ -1,9 +1,10 @@
 publication_id: "MM2025"
 source_root: "原始資料/怪物圖鑑2025"
 ruleset: "2024"
+character_options:
+  - "dependencies"
 outputs:
   monsters: "wiki/怪物"
 inputs:
   monsters: "."
   appendices: "附錄B"
-

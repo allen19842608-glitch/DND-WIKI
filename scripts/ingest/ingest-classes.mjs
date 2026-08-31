@@ -2,15 +2,18 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
-import { identityFields, loadIngestProfile, loadPublication, option as publicationOption, versionForPublication } from "../core/ingest-publication-utils.mjs";
+import { identityFields, loadIngestProfile, loadPublication, option as publicationOption, versionForPublication, writeIngestReport } from "../core/ingest-publication-utils.mjs";
 
 const root = process.cwd();
 const glossaryPath = path.join(root, "附件", "翻譯詞彙表.md");
 const force = process.argv.includes("--force");
-const dryRun = process.argv.includes("--dry-run");
+const apply = process.argv.includes("--apply");
+const dryRun = !apply || process.argv.includes("--dry-run");
 const replace = process.argv.includes("--replace");
 const diff = process.argv.includes("--diff");
 const only = process.argv.includes("--only") ? process.argv[process.argv.indexOf("--only") + 1] : undefined;
+const report = publicationOption(process.argv.slice(2), "--report");
+const results = [];
 const publicationId = publicationOption(process.argv.slice(2), "--publication") ?? "PHB2024";
 const publication = loadPublication(publicationId);
 const profile = loadIngestProfile(publicationId);
@@ -216,9 +219,15 @@ for (const classDir of fs.readdirSync(rawRoot, { withFileTypes: true }).filter((
       continue;
     }
     const output = entryType === "職業" ? path.join(outputRoot, `${meta.chinese}.md`) : path.join(outputDir, `${meta.chinese}.md`);
-    if (only && !path.relative(root, output).replaceAll("\\", "/").includes(only)) continue;
+    const filterValues = [path.relative(root, output).replaceAll("\\", "/"), meta.chinese, meta.english, path.relative(root, input).replaceAll("\\", "/")]
+      .map((value) => value.normalize("NFKC").toLowerCase());
+    if (only && !filterValues.some((value) => value.includes(only.normalize("NFKC").toLowerCase()))) {
+      results.push({ target: path.relative(root, output).replaceAll("\\", "/"), status: "filtered" });
+      continue;
+    }
     if (fs.existsSync(output) && !replace && !dryRun && !diff) {
       console.log(`保留既有頁面（僅預覽或使用 --replace 才覆寫）：${path.relative(root, output)}`);
+      results.push({ target: path.relative(root, output).replaceAll("\\", "/"), english_name: meta.english, status: "skipped", reason: "existing_page_preserved" });
       continue;
     }
     const source = path.relative(root, input).replaceAll("\\", "/");
@@ -234,10 +243,18 @@ for (const classDir of fs.readdirSync(rawRoot, { withFileTypes: true }).filter((
       } finally {
         fs.rmSync(tempDir, { recursive: true, force: true });
       }
+      results.push({ target: path.relative(root, output).replaceAll("\\", "/"), english_name: meta.english, status: "diff" });
       continue;
     }
     if (!dryRun) fs.mkdirSync(outputDir, { recursive: true });
     if (!dryRun) fs.writeFileSync(output, page, "utf8");
     console.log(`${dryRun ? "預覽" : "匯入"}：${path.relative(root, output)}`);
+    results.push({ target: path.relative(root, output).replaceAll("\\", "/"), english_name: meta.english, status: dryRun ? "preview" : "written" });
   }
 }
+
+writeIngestReport({
+  options: { apply, replace, only, report, results },
+  publicationId,
+  category: "classes",
+});

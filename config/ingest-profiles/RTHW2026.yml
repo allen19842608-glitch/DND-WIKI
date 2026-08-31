@@ -2,9 +2,23 @@ publication_id: "RTHW2026"
 source_root: "原始資料/鴉閣魔域：魔障深藏"
 setting: "鴉閣魔域"
 ruleset: "2024"
+character_options:
+  - "subclasses"
+  - "species"
+  - "backgrounds"
+  - "feats"
+  - "dependencies"
 outputs:
+  classes: "wiki/職業"
+  species: "wiki/種族"
+  backgrounds: "wiki/背景"
+  feats: "wiki/專長"
   settings: "wiki/戰役設定/鴉閣魔域"
 inputs:
+  subclasses: "第一章/子職"
+  species: "第一章/種族"
+  backgrounds: "第一章/背景"
+  feats: "第一章"
   lore:
     include:
       - "前言/鴉閣秘辛.md"

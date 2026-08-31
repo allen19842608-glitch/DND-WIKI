@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
-import { ROOT, defaultSource, frontmatter, loadIngestProfile, loadPublication, parseOptions, writableCandidate } from "../core/ingest-publication-utils.mjs";
+import { ROOT, defaultSource, frontmatter, loadIngestProfile, loadPublication, parseOptions, writableCandidate, writeIngestReport } from "../core/ingest-publication-utils.mjs";
 
 const options = parseOptions();
 const publication = loadPublication(options.publicationId);
@@ -77,7 +77,9 @@ for (const { input, sourcePath, type } of inputs) {
     const title = `${feat.chinese} (${feat.english}，2014 Legacy)`;
     const page = `${frontmatter({ publicationId: options.publicationId, publication, kind: "feat", concept: feat.english, title, category: "專長", tag: type.tag, source, locator: `**${feat.chinese} ${feat.english}**` })}\n\n# ${title}\n\n- **前置條件 (Prerequisite)**：${prerequisite}\n\n## 🌟 專長效果描述\n\n${effect}\n\n## 🔗 相關連結\n\n- [[專長/2014/專長索引|專長索引 (2014 Legacy)]]\n${currentLink}`;
     const destination = path.join(outputRoot, type.directory, `${pageName(feat.chinese)}.md`);
-    writableCandidate({ destination, content: page, options });
+    writableCandidate({ destination, content: page, options, matchValues: [feat.chinese, feat.english, source] });
     if (options.apply && current) addCurrentBacklink(current, `專長/2014/${type.directory}/${pageName(feat.chinese)}`, title);
   }
 }
+
+writeIngestReport({ options, publicationId: options.publicationId, category: "feats" });

@@ -38,7 +38,7 @@ if (patch) {
 }
 
 if (!category) {
-  process.stderr.write("缺少 --category 或 --patch。類別可用：職業、種族、法術、專長、魔法物品、角色建立與成長、怪物、戰役設定。\n");
+  process.stderr.write("缺少 --category 或 --patch。類別可用：職業、種族、背景、法術、專長、魔法物品、角色建立與成長、怪物、戰役設定。\n");
   process.exit(1);
 }
 
@@ -46,21 +46,24 @@ let script;
 let args = [];
 if (category === "職業") {
   script = "scripts/ingest/ingest-classes.mjs";
-  if (!apply) args.push("--dry-run");
+  if (apply) args.push("--apply");
+  else args.push("--dry-run");
   if (only) args.push("--only", only);
   if (replace) args.push("--replace");
   if (diff) args.push("--diff");
+  if (report) args.push("--report", report);
 } else if (category === "魔法物品") {
   script = "scripts/ingest/ingest-magic-items.mjs";
   args.push(itemType, apply ? "--apply" : "--dry-run");
   if (only) args.push("--only", only);
   if (replace) args.push("--force");
-} else if (["種族", "法術", "專長"].includes(category)) {
-  script = { 種族: "scripts/ingest/ingest-species.mjs", 法術: "scripts/ingest/ingest-spells.mjs", 專長: "scripts/ingest/ingest-feats.mjs" }[category];
+} else if (["種族", "背景", "法術", "專長"].includes(category)) {
+  script = { 種族: "scripts/ingest/ingest-species.mjs", 背景: "scripts/ingest/ingest-backgrounds.mjs", 法術: "scripts/ingest/ingest-spells.mjs", 專長: "scripts/ingest/ingest-feats.mjs" }[category];
   if (apply) args.push("--apply");
   if (replace) args.push("--replace");
   if (only) args.push("--only", only);
   if (source) args.push("--source", source);
+  if (report) args.push("--report", report);
 } else if (category === "角色建立與成長") {
   script = "scripts/ingest/append-character-creation-tables.mjs";
   if (apply) args.push("--apply");

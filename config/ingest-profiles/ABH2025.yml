@@ -1,13 +1,21 @@
 publication_id: "ABH2025"
 source_root: "原始資料/阿斯代倫的飢渴之書"
 setting: "被遺忘的國度"
+ruleset: "2024"
+character_options:
+  - "species"
+  - "backgrounds"
+  - "feats"
+  - "dependencies"
 inputs:
   species: "."
+  backgrounds: "."
   feats: "."
   lore:
     include:
       - "卡扎多爾·扎爾的家族.md"
 outputs:
   species: "wiki/種族"
+  backgrounds: "wiki/背景"
   feats: "wiki/專長"
   settings: "wiki/戰役設定/被遺忘的國度"

@@ -2,9 +2,23 @@ publication_id: "FRHOF2025"
 source_root: "原始資料/被遺忘的國度：費倫英雄"
 setting: "被遺忘的國度"
 ruleset: "2024"
+character_options:
+  - "subclasses"
+  - "backgrounds"
+  - "feats"
+  - "spells"
+  - "dependencies"
 outputs:
+  classes: "wiki/職業"
+  backgrounds: "wiki/背景"
+  feats: "wiki/專長"
+  spells: "wiki/法術"
   settings: "wiki/戰役設定/被遺忘的國度"
 inputs:
+  subclasses: "第一章/子職"
+  backgrounds: "第一章/背景"
+  feats: "第一章/專長"
+  spells: "第五章/新法術.md"
   lore:
     include:
       - "第二章"

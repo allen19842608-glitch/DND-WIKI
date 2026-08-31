@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { ROOT, defaultSource, frontmatter, loadIngestProfile, loadPublication, parseOptions, writableCandidate } from "../core/ingest-publication-utils.mjs";
+import { ROOT, defaultSource, frontmatter, loadIngestProfile, loadPublication, parseOptions, writableCandidate, writeIngestReport } from "../core/ingest-publication-utils.mjs";
 
 const options = parseOptions();
 const publication = loadPublication(options.publicationId);
@@ -45,5 +45,7 @@ for (const input of fs.readdirSync(inputDir, { withFileTypes: true })) {
   const size = value("體型").replace(/（約[^）]+）/g, "").replace("，在選取此種族時選擇", "");
   const speed = value("速度").replaceAll("尺", " 呎").replace(/\s+/g, " ").trim();
   const page = `${frontmatter({ publicationId: options.publicationId, publication, kind: "species", concept: english, title: `${chinese} (${english})`, category: "種族", tag: `種族_${chinese}`, source, locator: `標題：${chinese}` })}\n\n# ${chinese} (${english})\n\n## ⚙️ 規則條文 (Rule Text)\n\n> [!IMPORTANT]\n> **種族摘要**：${firstParagraph || "依可定位來源確認。"}\n\n### 基本資料\n\n| 生物類型 | 體型 | 速度 |\n| :--- | :--- | :--- |\n| ${value("生物類型")} | ${size} | ${speed} |\n\n### 種族特質 (Species Traits)\n\n${traitText || "依可定位來源補齊特質。"}\n\n## 🔗 相關連結\n\n- [[種族索引|種族索引 (Species Index)]]\n`;
-  writableCandidate({ destination: path.join(outputRoot, `${chinese}.md`), content: page, options });
+  writableCandidate({ destination: path.join(outputRoot, `${chinese}.md`), content: page, options, matchValues: [chinese, english, source] });
 }
+
+writeIngestReport({ options, publicationId: options.publicationId, category: "species" });

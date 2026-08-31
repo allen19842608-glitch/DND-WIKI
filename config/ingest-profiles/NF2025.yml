@@ -2,6 +2,7 @@ publication_id: "NF2025"
 source_root: "原始資料/耐瑟瑞爾之殞"
 setting: "被遺忘的國度"
 ruleset: "2024"
+character_options: []
 outputs:
   settings: "wiki/戰役設定/被遺忘的國度"
 inputs:

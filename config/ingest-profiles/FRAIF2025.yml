@@ -1,6 +1,7 @@
 publication_id: "FRAIF2025"
 source_root: "原始資料/被遺忘的國度：費倫冒險"
 setting: "被遺忘的國度"
+character_options: []
 canonical_mirror:
   provider: "5e.tools"
   book_id: "FRAiF"
