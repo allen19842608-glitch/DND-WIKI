@@ -3,7 +3,7 @@ publication_id: PHB2024
 publication_title: Player’s Handbook (2024)
 provider: 5e.tools
 upstream_url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/book/book-xphb.json
-retrieved_at: 2026-08-27T14:49:55.090Z
+retrieved_at: 2026-08-31T07:56:36.375Z
 snapshot:
   file: 原始資料/外部來源鏡像/PHB2024/book-xphb.json
   sha256: e4a613831ab8ad88b14e47fb02a23d6f4bef2f2be0ff92a49d4932accf71a3de
@@ -56,17 +56,17 @@ chapters:
     page: 235
     file: 原始資料/外部來源鏡像/PHB2024/chapters/08-Chapter 7- Spells.md
     status: complete
-  - kind: chapter
+  - kind: appendix
     number: 9
     title: "Appendix A: The Multiverse"
     page: 344
-    file: 原始資料/外部來源鏡像/PHB2024/chapters/09-Appendix A- The Multiverse.md
+    file: 原始資料/外部來源鏡像/PHB2024/chapters/appendix A- The Multiverse.md
     status: complete
-  - kind: chapter
+  - kind: appendix
     number: 10
     title: "Appendix B: Creature Stat Blocks"
     page: 346
-    file: 原始資料/外部來源鏡像/PHB2024/chapters/10-Appendix B- Creature Stat Blocks.md
+    file: 原始資料/外部來源鏡像/PHB2024/chapters/appendix B- Creature Stat Blocks.md
     status: complete
   - kind: chapter
     number: 11

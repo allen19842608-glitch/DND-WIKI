@@ -1,0 +1,376 @@
+schema_version: 1
+publication_id: EBER2025
+publication_title: "Eberron: Forge of the Artificer (2025)"
+provider: 5e.tools
+upstream_url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/book/book-efa.json
+retrieved_at: 2026-08-31T08:10:48.696Z
+snapshot:
+  file: 原始資料/外部來源鏡像/EBER2025/book-efa.json
+  sha256: 6f70ff4ee5713245f456e185c6c1c21a66cdd9bd089fd7ec863710d994943028
+chapters:
+  - kind: chapter
+    number: 1
+    title: "Introduction: Forge of the Artificer"
+    page: 4
+    file: 原始資料/外部來源鏡像/EBER2025/chapters/01-Introduction- Forge of the Artificer.md
+    status: complete
+  - kind: chapter
+    number: 2
+    title: "Chapter 01: The Artificer"
+    page: 7
+    file: 原始資料/外部來源鏡像/EBER2025/chapters/02-Chapter 01- The Artificer.md
+    status: complete
+  - kind: chapter
+    number: 3
+    title: "Chapter 02: Character Options"
+    page: 23
+    file: 原始資料/外部來源鏡像/EBER2025/chapters/03-Chapter 02- Character Options.md
+    status: complete
+  - kind: chapter
+    number: 4
+    title: "Chapter 03: Bastions in Khorvaire"
+    page: 47
+    file: 原始資料/外部來源鏡像/EBER2025/chapters/04-Chapter 03- Bastions in Khorvaire.md
+    status: complete
+  - kind: chapter
+    number: 5
+    title: "Chapter 04: Sharn Inquisitives"
+    page: 53
+    file: 原始資料/外部來源鏡像/EBER2025/chapters/05-Chapter 04- Sharn Inquisitives.md
+    status: complete
+  - kind: chapter
+    number: 6
+    title: "Chapter 05: Dragonmarked Intrigue"
+    page: 67
+    file: 原始資料/外部來源鏡像/EBER2025/chapters/06-Chapter 05- Dragonmarked Intrigue.md
+    status: complete
+  - kind: chapter
+    number: 7
+    title: "Chapter 06: Morgrave Expeditions"
+    page: 87
+    file: 原始資料/外部來源鏡像/EBER2025/chapters/07-Chapter 06- Morgrave Expeditions.md
+    status: complete
+  - kind: chapter
+    number: 8
+    title: "Chapter 07: Elemental Airships"
+    page: 103
+    file: 原始資料/外部來源鏡像/EBER2025/chapters/08-Chapter 07- Elemental Airships.md
+    status: complete
+  - kind: appendix
+    number: 9
+    title: "Appendix: Magic Items"
+    page: 112
+    file: 原始資料/外部來源鏡像/EBER2025/chapters/appendix-Magic Items.md
+    status: complete
+  - kind: appendix
+    number: 10
+    title: "Appendix: Art of Eberron"
+    page: null
+    file: 原始資料/外部來源鏡像/EBER2025/chapters/appendix-Art of Eberron.md
+    status: complete
+images:
+  - path: book/EFA/000-09-003.title-image-construct.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/000-09-003.title-image-construct.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/000-09-003.title-image-construct.webp
+    sha256: a1a83c5c5e64b5fbabc622ea734cfd36cda0513f87dbf6fe0ddca69d59242706
+    bytes: 235180
+  - path: book/EFA/001-01-001.artificer-working-on-an-unfinished-warforged.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/001-01-001.artificer-working-on-an-unfinished-warforged.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/001-01-001.artificer-working-on-an-unfinished-warforged.webp
+    sha256: d0288c34dbcf63c4b80869b6178be658e5d6f7b6e8b5fc4753af17502b94f629
+    bytes: 633038
+  - path: book/EFA/007-02-001.artificer-and-creation-first-meeting.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/007-02-001.artificer-and-creation-first-meeting.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/007-02-001.artificer-and-creation-first-meeting.webp
+    sha256: a5cc0d744d76d421c9eacd38c13a6c0f6dad75c346877f4ca322ca5e70a12882
+    bytes: 376920
+  - path: book/EFA/008-02-005.dragonmarks.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/008-02-005.dragonmarks.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/008-02-005.dragonmarks.webp
+    sha256: 7476181ae09c2ccd3b51d060d3fb90db472d4a1dd0b4f63c7a65b03f06521d5b
+    bytes: 228618
+  - path: book/EFA/009-02-006.greater-dragonmarks.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/009-02-006.greater-dragonmarks.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/009-02-006.greater-dragonmarks.webp
+    sha256: f12a7e611f5a132e7fd9c54c679675feb5a27c7bd5b6e7d2b4577059a0fe86d4
+    bytes: 286598
+  - path: book/EFA/010-02-007.siberys-dragonmarks.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/010-02-007.siberys-dragonmarks.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/010-02-007.siberys-dragonmarks.webp
+    sha256: c8e6a4bc9efbe9598e10ba561c7e1da92f1dc802db0156398cc0796bcbb92af2
+    bytes: 299040
+  - path: book/EFA/036-03-001.mobile-bastion-aboard-lyrandar-sailing-ship.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/036-03-001.mobile-bastion-aboard-lyrandar-sailing-ship.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/036-03-001.mobile-bastion-aboard-lyrandar-sailing-ship.webp
+    sha256: 734b97aecfd02be5cb8da83bbf58ecb7a37945485f973791f225696efa4839d5
+    bytes: 276482
+  - path: book/EFA/038-04-001.battle-smith-inquisitive-on-the-hunt.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/038-04-001.battle-smith-inquisitive-on-the-hunt.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/038-04-001.battle-smith-inquisitive-on-the-hunt.webp
+    sha256: 3d0a1d4c5f2677bccb679fcd0e958d8e6e564b5c618dfae818d5a9dfa54b2d58
+    bytes: 575788
+  - path: book/EFA/039-04-002.inquisitives-in-sharn-keeping-watch.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/039-04-002.inquisitives-in-sharn-keeping-watch.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/039-04-002.inquisitives-in-sharn-keeping-watch.webp
+    sha256: 2889512acda1b64005c6effee4c0ae5280d93cb747dbe15144d9c95dd011d03c
+    bytes: 51774
+  - path: book/EFA/040-04-003.criminals-of-sharn.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/040-04-003.criminals-of-sharn.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/040-04-003.criminals-of-sharn.webp
+    sha256: 1bd5b8454a05f66e41427ea266e7ac9c5a684d9f877967af4cc8b29a2a992405
+    bytes: 108924
+  - path: book/EFA/041-04-004.city-of-towers.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/041-04-004.city-of-towers.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/041-04-004.city-of-towers.webp
+    sha256: 658c847cbe1d8a31de6ab207cf106dd5b87dcbbfad95585a79fbf60a9619a72c
+    bytes: 59982
+  - path: book/EFA/042-05-001.members-of-dragonmarked-houses.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/042-05-001.members-of-dragonmarked-houses.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/042-05-001.members-of-dragonmarked-houses.webp
+    sha256: 45c71de022a3d4620225697b2d27dab91a53fc473cc836daa3a071d71e5361e4
+    bytes: 686234
+  - path: book/EFA/043-05-002.members-of-dragonmarked-houses-in-conflict.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/043-05-002.members-of-dragonmarked-houses-in-conflict.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/043-05-002.members-of-dragonmarked-houses-in-conflict.webp
+    sha256: 9bc5b1887c1ab19a3e6b6d6fb9e8d8d4b9ac1335397e0cdfdbe21c7d402fd94c
+    bytes: 58830
+  - path: book/EFA/044-05-003.tarkanan-marauder-and-ruffian.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/044-05-003.tarkanan-marauder-and-ruffian.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/044-05-003.tarkanan-marauder-and-ruffian.webp
+    sha256: e6a6f0ed299d59b3eee084b8bec9f1a39536661f8616f5077629be0b703f3c3d
+    bytes: 90772
+  - path: book/EFA/045-05-004.agents-of-the-houses.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/045-05-004.agents-of-the-houses.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/045-05-004.agents-of-the-houses.webp
+    sha256: 7cdaf4b6f07163fd6dddb1d0c3e7ba7873ca169f86a42a98bb0b8307c71ee80d
+    bytes: 82382
+  - path: book/EFA/046-05-006.house-cannith.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/046-05-006.house-cannith.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/046-05-006.house-cannith.webp
+    sha256: 7bd9dbf797647a4edeaff11bb533f43cc48f060bee10eb80f62cc6774c6dcac0
+    bytes: 40994
+  - path: book/EFA/047-05-013.house-deneith.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/047-05-013.house-deneith.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/047-05-013.house-deneith.webp
+    sha256: d4dd770b3d43baca260607e861803615352e12bd86bef695bb5f15552733a7b2
+    bytes: 41082
+  - path: book/EFA/048-05-007.house-ghallanda.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/048-05-007.house-ghallanda.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/048-05-007.house-ghallanda.webp
+    sha256: 154f7a72cd1153bc406626d30f42f0c129e927e1b6426d6f1c65c9ba9faa0f9d
+    bytes: 52876
+  - path: book/EFA/049-05-008.house-jorasco.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/049-05-008.house-jorasco.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/049-05-008.house-jorasco.webp
+    sha256: 7344e0be710624b4dcc752d881954f56deadf2a50d5a3c7bfff82a278d2a3d00
+    bytes: 41232
+  - path: book/EFA/050-05-009.house-kundarak.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/050-05-009.house-kundarak.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/050-05-009.house-kundarak.webp
+    sha256: f1c90d8f7361ddc1cc4f58aee9cbd9242afd3bb983ea2723f5c1b58b18308d51
+    bytes: 38804
+  - path: book/EFA/051-05-010.house-lyrandar.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/051-05-010.house-lyrandar.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/051-05-010.house-lyrandar.webp
+    sha256: 67e98d4a07a502ddd600ee987c6fe3ecdc2d83fc4a7e643ce3c6b78540e53a5e
+    bytes: 43358
+  - path: book/EFA/052-05-005.more-agents-of-the-houses.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/052-05-005.more-agents-of-the-houses.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/052-05-005.more-agents-of-the-houses.webp
+    sha256: fd61b7455c08f19fc97d5db114d0b8c25cc73b655b211aa4e127043a03792758
+    bytes: 84722
+  - path: book/EFA/053-05-011.house-medani.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/053-05-011.house-medani.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/053-05-011.house-medani.webp
+    sha256: e35bb871b59485d612f3061bf1a12dc92fee988e9a54d9c76081b4cf4e858f0a
+    bytes: 43958
+  - path: book/EFA/054-05-012.house-orien.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/054-05-012.house-orien.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/054-05-012.house-orien.webp
+    sha256: a89efa3fc3250179fc9e700dabbda1260b9ae6ec260f0fe86c93e012e3343ede
+    bytes: 39092
+  - path: book/EFA/055-05-014.house-phiarlan.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/055-05-014.house-phiarlan.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/055-05-014.house-phiarlan.webp
+    sha256: f0b7e57755b4c3dd040b88511738de4301f1c70bf6b9982b25c7e4e267004c95
+    bytes: 44854
+  - path: book/EFA/056-05-016.house-sivis.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/056-05-016.house-sivis.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/056-05-016.house-sivis.webp
+    sha256: 0d18e69a102116c55d06a1f734ee33e9a0b4160d4b747f8a420f95e101c35dfb
+    bytes: 37828
+  - path: book/EFA/057-05-017.house-tharashk.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/057-05-017.house-tharashk.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/057-05-017.house-tharashk.webp
+    sha256: fb3cd7398b2e27b7bbf15700de08f362732d2268c33378f56dcfbcb253e56301
+    bytes: 48834
+  - path: book/EFA/058-05-015.house-thuranni.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/058-05-015.house-thuranni.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/058-05-015.house-thuranni.webp
+    sha256: e664e8db85d0a25909cb6d2103aa83ebcf5c7bd8e0c207af578ce71110de50d5
+    bytes: 49040
+  - path: book/EFA/059-05-018.house-vadalis.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/059-05-018.house-vadalis.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/059-05-018.house-vadalis.webp
+    sha256: b9fdfe5dfd8363c39ac3f9854ded41321786d0ee68ef6145b5edc8c15e437c1e
+    bytes: 42338
+  - path: book/EFA/060-06-001.an-armorer-explorer-exploring-ancient-ruins.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/060-06-001.an-armorer-explorer-exploring-ancient-ruins.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/060-06-001.an-armorer-explorer-exploring-ancient-ruins.webp
+    sha256: 336911ca7afe9929f84b2d8561bee442078e12bf37be56ab3a7f79e66ad4554d
+    bytes: 640962
+  - path: book/EFA/061-06-002.emerald-claw-knights.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/061-06-002.emerald-claw-knights.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/061-06-002.emerald-claw-knights.webp
+    sha256: 32632df081396902a271c8483acf32bac25000fb7e79ea8fc57f666e0e0be5ca
+    bytes: 76142
+  - path: book/EFA/062-06-003.morgrave-university.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/062-06-003.morgrave-university.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/062-06-003.morgrave-university.webp
+    sha256: 2640087469183d50c5aa0d79b01db52ad1e2e22cf7447f5e0ac89604cd9a5fcb
+    bytes: 507650
+  - path: book/EFA/063-06-004.faces-of-morgrave.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/063-06-004.faces-of-morgrave.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/063-06-004.faces-of-morgrave.webp
+    sha256: 83ecd2f1e74958e56e262056c65232d6d3a83a6501851dd714430117fe58137a
+    bytes: 104398
+  - path: book/EFA/064-06-005.elemental-airships.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/064-06-005.elemental-airships.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/064-06-005.elemental-airships.webp
+    sha256: 578e670ae4a35131840aec9437edc8c8058447aae37c6c7205ace5d09ef7893e
+    bytes: 80988
+  - path: book/EFA/065-06-006.drow-battle.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/065-06-006.drow-battle.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/065-06-006.drow-battle.webp
+    sha256: d040f6e11b294437a186563f797a08ea49841ac6ed054b7ab78fee9b57b905f4
+    bytes: 86904
+  - path: book/EFA/066-07-001.airship-battle.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/066-07-001.airship-battle.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/066-07-001.airship-battle.webp
+    sha256: 6059d15f4a54729ea5f76ed33828f1a4c09fe81dc25fd6ee591d58a96a3a53a7
+    bytes: 305554
+  - path: book/EFA/067-07-002.airship-getaway.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/067-07-002.airship-getaway.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/067-07-002.airship-getaway.webp
+    sha256: c021703717a4f9a3981e47354d8df0bfb6f1624145d936df45d9bc3085a14959
+    bytes: 103770
+  - path: book/EFA/071-08-001.magic-items-in-case.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/071-08-001.magic-items-in-case.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/071-08-001.magic-items-in-case.webp
+    sha256: 0164c3d176fa87a8526ec3bee0070c92157f51adc0d7740f044ad9b4f0e215eb
+    bytes: 41114
+  - path: book/EFA/072-09-001.creating-a-warforged.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/072-09-001.creating-a-warforged.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/072-09-001.creating-a-warforged.webp
+    sha256: 1dd4c5d6e8a93a1166729d5598e752bbb8d96eeb61508775da9ef41451d069ea
+    bytes: 692840
+  - path: book/EFA/073-09-002.forging.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/073-09-002.forging.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/073-09-002.forging.webp
+    sha256: b221499f1f09d76d03ae7eeac82a8449732314ca9477174ceb1edef90fc163b4
+    bytes: 844100
+  - path: book/EFA/074-09-003.newly-forged.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/074-09-003.newly-forged.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/074-09-003.newly-forged.webp
+    sha256: 3c7dd5074d3c338d7edfefb025bda735db44d965721b6bb4e538f019c86f4cd2
+    bytes: 431312
+  - path: book/EFA/075-09-004.first-meeting.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/075-09-004.first-meeting.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/075-09-004.first-meeting.webp
+    sha256: 1dc633e78230fa3508406d1243f64fc21e826b1a9505bb7ef12299833a306c3f
+    bytes: 499744
+  - path: book/EFA/076-09-005.city-of-towers.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/076-09-005.city-of-towers.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/076-09-005.city-of-towers.webp
+    sha256: 7ff2c8c1f682b7780c8db21cb424da253e653df03c426c3977c996ff4a21cf09
+    bytes: 265672
+  - path: book/EFA/077-09-006.on-the-trail.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/077-09-006.on-the-trail.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/077-09-006.on-the-trail.webp
+    sha256: fcff071cfbc5dff2504791121288c0161ce55dca0ce04882cca792843baa45fd
+    bytes: 814760
+  - path: book/EFA/078-09-007.watching.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/078-09-007.watching.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/078-09-007.watching.webp
+    sha256: 744d689a79ddefa7307fe1fbce5dd2f8c36860fff5573b90467736a0c9c824b3
+    bytes: 213634
+  - path: book/EFA/079-09-008.battle-smith.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/079-09-008.battle-smith.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/079-09-008.battle-smith.webp
+    sha256: 77263b1933738804ab5f6ddd0c0f50ef33b0e556f67c42c0d4a6a35c29eb89a6
+    bytes: 331182
+  - path: book/EFA/080-09-009.kalashtar.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/080-09-009.kalashtar.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/080-09-009.kalashtar.webp
+    sha256: 4200969ce4e5f6fe2ffdf2391bec0335264d4b55d7fd84802d7955a0eb72a22a
+    bytes: 389848
+  - path: book/EFA/081-09-010.investigate-murder.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/081-09-010.investigate-murder.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/081-09-010.investigate-murder.webp
+    sha256: 4e9aec18f10fa8a3959abca9c5d5f386b7060e3962a24addc4774609eae97894
+    bytes: 904202
+  - path: book/EFA/082-09-011.open-conflict.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/082-09-011.open-conflict.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/082-09-011.open-conflict.webp
+    sha256: 51aa7bdae7a590ca5fe2e8d3aa4e7c425af84d78b87f275fc567ff08fcd827f8
+    bytes: 227268
+  - path: book/EFA/083-09-012.alchemist.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/083-09-012.alchemist.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/083-09-012.alchemist.webp
+    sha256: 145aabc867a4cd8b14ae115a2bbca6d2037490be626316c57aa812f449d2fd5e
+    bytes: 364416
+  - path: book/EFA/084-09-013.a-meeting.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/084-09-013.a-meeting.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/084-09-013.a-meeting.webp
+    sha256: bc3aa1c019c32612f6c71a6991268fb96af19abf15b490934846e31c76955aa6
+    bytes: 391760
+  - path: book/EFA/085-09-015.airship.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/085-09-015.airship.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/085-09-015.airship.webp
+    sha256: 968a0ae072eca3e8ce41a677499ade9d7161ab4e1f2b478dee6d470f65b6f06e
+    bytes: 277064
+  - path: book/EFA/086-09-014.exploring-ruins.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/086-09-014.exploring-ruins.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/086-09-014.exploring-ruins.webp
+    sha256: 123d7afa560fda759ee9e06fbfff63d2ecf684259188462e4d1e04af55c59905
+    bytes: 882222
+  - path: book/EFA/087-09-016.armorer.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/087-09-016.armorer.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/087-09-016.armorer.webp
+    sha256: fa07bfcc869fe0989e2ac820aa7d39ccab463e8bcbc64e09f591395d575ee014
+    bytes: 305810
+  - path: book/EFA/088-09-017.houses-in-conflict.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/088-09-017.houses-in-conflict.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/088-09-017.houses-in-conflict.webp
+    sha256: 8505d4ebd4ba72fe39e0e720b2f795407623ab15a4b4913fb1e89c617b107975
+    bytes: 377268
+  - path: book/EFA/089-09-018.artillerist.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/089-09-018.artillerist.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/089-09-018.artillerist.webp
+    sha256: 2f65321307ba0e5cf142b6ab7bb9c44ded320e25e3e6c106d3411f1016205df2
+    bytes: 408752
+  - path: book/EFA/090-09-019.escape.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/090-09-019.escape.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/090-09-019.escape.webp
+    sha256: 2a5cd5af976b575792fbe8162d0082e58f5c2359a1226ce68201f5a1918a49fa
+    bytes: 366216
+  - path: book/EFA/091-09-020.mobile-bastion.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/091-09-020.mobile-bastion.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/091-09-020.mobile-bastion.webp
+    sha256: e153d8d633c9bbb43506a0b608d972cda0f6baf9ccca0bad9e15a8f6671a2a7e
+    bytes: 416494
+  - path: book/EFA/092-09-021.returning.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/092-09-021.returning.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/092-09-021.returning.webp
+    sha256: fb0bfd0c6b0164cbb4f6a380e9c9ef5510c7d12ac7115fb13110e2fbf404349c
+    bytes: 467326
+  - path: book/EFA/093-09-001.traditional-cover-preview.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/093-09-001.traditional-cover-preview.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/093-09-001.traditional-cover-preview.webp
+    sha256: 214ac402d4cc8567fe4e5d3ea64dd3261a105d1295cc3f70d42b48068ead6e53
+    bytes: 194208
+  - path: book/EFA/094-09-002.alternate-cover-preview.webp
+    file: 原始資料/外部來源鏡像/EBER2025/images/book/EFA/094-09-002.alternate-cover-preview.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/EFA/094-09-002.alternate-cover-preview.webp
+    sha256: 458bd03fe50b3066c42dfe7b211b436098f4b33b77410a06ca181f236bfc7a11
+    bytes: 147460

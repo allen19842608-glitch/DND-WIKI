@@ -3,7 +3,7 @@ publication_id: BPGG2023
 publication_title: "Bigby Presents: Glory of the Giants (2023)"
 provider: 5e.tools
 upstream_url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/book/book-bgg.json
-retrieved_at: 2026-08-27T14:49:41.054Z
+retrieved_at: 2026-08-31T07:56:34.583Z
 snapshot:
   file: 原始資料/外部來源鏡像/BPGG2023/book-bgg.json
   sha256: f2736684bc67475e47a596a355fe0bd829fcc32bfaf0ac77d90370061dfa0aa3
@@ -50,15 +50,15 @@ chapters:
     page: 119
     file: 原始資料/外部來源鏡像/BPGG2023/chapters/07-Chapter 6- Bestiary.md
     status: complete
-  - kind: chapter
+  - kind: appendix
     number: 8
     title: "Appendix A: Concept Art"
     page: 190
-    file: 原始資料/外部來源鏡像/BPGG2023/chapters/08-Appendix A- Concept Art.md
+    file: 原始資料/外部來源鏡像/BPGG2023/chapters/appendix A- Concept Art.md
     status: complete
-  - kind: chapter
+  - kind: appendix
     number: 9
     title: "Appendix B: Adventure Hooks"
     page: 192
-    file: 原始資料/外部來源鏡像/BPGG2023/chapters/09-Appendix B- Adventure Hooks.md
+    file: 原始資料/外部來源鏡像/BPGG2023/chapters/appendix B- Adventure Hooks.md
     status: complete

@@ -52,9 +52,11 @@ test("缺漏、不完整與來源衝突有固定狀態", () => {
   assert.equal(classifyEntity(entity, [conflict], { publicationId: "TEST", mirrorFile }).status, "conflict");
 });
 
-test("鏡像缺失出版品 blocked，零範圍出版品 out_of_scope", () => {
+test("英文鏡像可用出版品不會 blocked，零範圍出版品 out_of_scope", () => {
   const eber = createAuditReport({ publicationId: "EBER2025", publication: loadPublication("EBER2025"), profile: loadIngestProfile("EBER2025"), pages: [] });
-  assert.ok(eber.entities.every((item) => item.status === "blocked"));
+  assert.equal(eber.mirror.status, "available");
+  assert.ok(eber.entities.some((item) => item.status === "missing"));
+  assert.ok(eber.entities.every((item) => item.status !== "blocked"));
   const dmg = createAuditReport({ publicationId: "DMG2024", publication: loadPublication("DMG2024"), profile: loadIngestProfile("DMG2024"), pages: [] });
   assert.deepEqual(dmg.entities.map((item) => item.status), ["out_of_scope"]);
 });

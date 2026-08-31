@@ -3,7 +3,7 @@ publication_id: RTHW2026
 publication_title: "Ravenloft: The Horrors Within (2026)"
 provider: 5e.tools
 upstream_url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/book/book-rhw.json
-retrieved_at: 2026-08-27T14:49:56.738Z
+retrieved_at: 2026-08-31T07:56:36.825Z
 snapshot:
   file: 原始資料/外部來源鏡像/RTHW2026/book-rhw.json
   sha256: 3eebb6984b9d40e1d47e60917a4db832684ba3652105c16d12ff46b062082258
@@ -36,8 +36,7 @@ chapters:
     number: 5
     title: "Chapter 4: Creating Domains of Dread"
     page: 213
-    file: 原始資料/外部來源鏡像/RTHW2026/chapters/05-Chapter 4- Creating Domains of
-      Dread.md
+    file: 原始資料/外部來源鏡像/RTHW2026/chapters/05-Chapter 4- Creating Domains of Dread.md
     status: complete
   - kind: chapter
     number: 6
@@ -45,9 +44,9 @@ chapters:
     page: 233
     file: 原始資料/外部來源鏡像/RTHW2026/chapters/06-Chapter 5- Denizens of the Mists.md
     status: complete
-  - kind: chapter
+  - kind: appendix
     number: 7
     title: "Appendix: Tarokka Deck"
     page: 284
-    file: 原始資料/外部來源鏡像/RTHW2026/chapters/07-Appendix- Tarokka Deck.md
+    file: 原始資料/外部來源鏡像/RTHW2026/chapters/appendix-Tarokka Deck.md
     status: complete

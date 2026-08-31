@@ -3,7 +3,7 @@ publication_id: DMG2024
 publication_title: Dungeon Master's Guide (2024)
 provider: 5e.tools
 upstream_url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/book/book-xdmg.json
-retrieved_at: 2026-08-27T14:49:42.923Z
+retrieved_at: 2026-08-31T07:56:35.030Z
 snapshot:
   file: 原始資料/外部來源鏡像/DMG2024/book-xdmg.json
   sha256: 7e0fe64751807c6552bf8cf3bbf8fccf1f0b7e9747d69e5b326a4f477ee3655c
@@ -56,21 +56,21 @@ chapters:
     page: 334
     file: 原始資料/外部來源鏡像/DMG2024/chapters/08-Chapter 8- Bastions.md
     status: complete
-  - kind: chapter
+  - kind: appendix
     number: 9
     title: "Appendix A: Lore Glossary"
     page: 354
-    file: 原始資料/外部來源鏡像/DMG2024/chapters/09-Appendix A- Lore Glossary.md
+    file: 原始資料/外部來源鏡像/DMG2024/chapters/appendix A- Lore Glossary.md
     status: complete
-  - kind: chapter
+  - kind: appendix
     number: 10
     title: "Appendix B: Maps"
     page: 365
-    file: 原始資料/外部來源鏡像/DMG2024/chapters/10-Appendix B- Maps.md
+    file: 原始資料/外部來源鏡像/DMG2024/chapters/appendix B- Maps.md
     status: complete
-  - kind: chapter
+  - kind: appendix
     number: 11
     title: "Appendix C: Tracking Sheets"
     page: null
-    file: 原始資料/外部來源鏡像/DMG2024/chapters/11-Appendix C- Tracking Sheets.md
+    file: 原始資料/外部來源鏡像/DMG2024/chapters/appendix C- Tracking Sheets.md
     status: complete

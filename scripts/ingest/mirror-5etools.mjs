@@ -28,10 +28,30 @@ function safeName(value) {
   return String(value).replace(/[\\/:*?"<>|]/g, "-").replace(/\s+/g, " ").trim();
 }
 
+function appendixName(title) {
+  const match = String(title).trim().match(/^appendix\s*([A-Z])?\s*:\s*(.+)$/i);
+  if (!match) return `appendix-${safeName(title)}`;
+  return match[1]
+    ? `appendix ${match[1].toUpperCase()}- ${safeName(match[2])}`
+    : `appendix-${safeName(match[2])}`;
+}
+
 function headingText(entry) {
   if (typeof entry === "string") return entry;
   if (entry && typeof entry === "object" && typeof entry.name === "string") return entry.name;
   return "";
+}
+
+function sectionKind(entry) {
+  return /^appendix(?:\s|:)/i.test(headingText(entry).trim()) ? "appendix" : "chapter";
+}
+
+function imageMarkdown(entry) {
+  const imagePath = String(entry?.href?.path ?? "").replaceAll("\\", "/").replace(/^\/+/, "");
+  if (!imagePath || imagePath.split("/").some((part) => !part || part === "." || part === "..")) return "";
+  const fallback = imagePath.split("/").at(-1)?.replace(/\.[^.]+$/, "") ?? "image";
+  const alt = String(entry.title ?? fallback).replaceAll("[", "\\[").replaceAll("]", "\\]");
+  return `![${alt}](../images/${imagePath})`;
 }
 
 export function isChapterSection(entry) {
@@ -48,12 +68,28 @@ export function entriesToMarkdown(entries, level = 1) {
       continue;
     }
     if (!entry || typeof entry !== "object") continue;
+    if (entry.type === "image") {
+      const markdown = imageMarkdown(entry);
+      if (markdown) lines.push(markdown);
+      continue;
+    }
     const name = headingText(entry);
     if (name) lines.push(`${"#".repeat(Math.min(level, 6))} ${name}`);
     if (typeof entry.entries === "string") lines.push(entry.entries);
     else if (Array.isArray(entry.entries)) lines.push(entriesToMarkdown(entry.entries, name ? level + 1 : level));
     if (Array.isArray(entry.items)) {
-      for (const item of entry.items) lines.push(`- ${typeof item === "string" ? item : headingText(item)}`);
+      for (const item of entry.items) {
+        if (item?.type === "image") {
+          const markdown = imageMarkdown(item);
+          if (markdown) lines.push(markdown);
+        } else lines.push(`- ${typeof item === "string" ? item : headingText(item)}`);
+      }
+    }
+    if (Array.isArray(entry.images)) {
+      for (const image of entry.images) {
+        const markdown = imageMarkdown(image);
+        if (markdown) lines.push(markdown);
+      }
     }
   }
   return lines.filter(Boolean).join("\n\n").trim();
@@ -113,14 +149,18 @@ function outputFiles(profile, mirror, rawText, documents) {
   const manifest = `${root}/manifest.yml`;
   const chapterFiles = documents.map((chapter) => ({
     chapter,
-    file: `${root}/chapters/${chapter.kind === "appendix" ? "appendix" : String(chapter.number).padStart(2, "0")}-${safeName(chapter.title)}.md`,
+    file: chapter.kind === "appendix"
+      ? `${root}/chapters/${appendixName(chapter.title)}.md`
+      : `${root}/chapters/${String(chapter.number).padStart(2, "0")}-${safeName(chapter.title)}.md`,
   }));
   const existingManifestPath = path.join(ROOT, ...manifest.split("/"));
   let preservedDatasets = [];
+  let preservedImages = [];
   if (fs.existsSync(existingManifestPath)) {
     try {
       const existing = YAML.parse(fs.readFileSync(existingManifestPath, "utf8"));
       if (Array.isArray(existing?.datasets)) preservedDatasets = existing.datasets;
+      if (Array.isArray(existing?.images)) preservedImages = existing.images;
     } catch {
       // A malformed prior manifest will be replaced by the verified new manifest.
     }
@@ -139,6 +179,7 @@ function outputFiles(profile, mirror, rawText, documents) {
   if (configuredDatasets.length || preservedDatasets.length) {
     manifestData.datasets = configuredDatasets.length ? configuredDatasets : preservedDatasets;
   }
+  if (preservedImages.length) manifestData.images = preservedImages;
   return { snapshot, manifest, chapterFiles, manifestText: YAML.stringify(manifestData) };
 }
 
@@ -188,6 +229,7 @@ export async function mirrorPublication(args = process.argv.slice(2)) {
   const selected = requested ? [withMirror(loadIngestProfile(requested))] : args.includes("--all") ? profiles() : [];
   if (!selected.length) throw new Error("請指定 --publication <ID>，或使用 --all；--all 只處理已登錄 5e.tools 鏡像的出版品。");
   const apply = args.includes("--apply");
+  const allowRawOutput = args.includes("--allow-raw-output");
   const onlyMissing = args.includes("--only-missing");
   const chapterFilter = option(args, "--chapter");
   const reports = [];
@@ -197,15 +239,15 @@ export async function mirrorPublication(args = process.argv.slice(2)) {
       reports.push({ publication_id: profile.publication_id, status: "unmapped", reason: "未登錄唯一 5e.tools 書籍映射。" });
       continue;
     }
-    if (apply && mirror.output_root.startsWith("原始資料/")) {
-      throw new Error("原始資料/ 為唯讀輸入；鏡像寫入請由人類維護者完成後，再以本工具驗證與吸收。");
+    if (apply && mirror.output_root.startsWith("原始資料/") && !allowRawOutput) {
+      throw new Error("原始資料/ 為唯讀輸入；如已取得本次精確目錄的明示授權，才可加上 --allow-raw-output 寫入鏡像。");
     }
     const rawText = await readSource(args, mirror);
     let parsed;
     try { parsed = JSON.parse(rawText); } catch { throw new Error(`${profile.publication_id} 的來源不是有效 JSON。`); }
     const inferredChapters = (parsed.data ?? [])
       .filter(isChapterSection)
-      .map((entry, index) => ({ number: index + 1, title: entry.name, page: entry.page ?? null }));
+      .map((entry, index) => ({ kind: sectionKind(entry), number: index + 1, title: entry.name, page: entry.page ?? null }));
     const allDocuments = chapterDocuments(parsed, mirror.chapters?.length ? mirror.chapters : inferredChapters);
     let documents = allDocuments;
     if (chapterFilter) documents = documents.filter((chapter) => String(chapter.number) === chapterFilter || chapter.title.includes(chapterFilter));
