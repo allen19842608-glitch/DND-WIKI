@@ -6,6 +6,8 @@
 
 This appendix provides an overview of the multiverse, the overarching reality that encompasses D&D's countless worlds and adventures. These realms are explored in greater detail in the {@i Dungeon Master's Guide}, along with other planes like the Far Realm, Negative Plane, and Positive Plane.
 
+![231-10-001.the-multiverse](../images/book/XPHB/231-10-001.the-multiverse.webp)
+
 ## The Material Realms
 
 The philosophical and elemental forces of reality converge to create the following planes of existence:

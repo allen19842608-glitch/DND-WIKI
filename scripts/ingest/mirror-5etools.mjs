@@ -183,6 +183,36 @@ function outputFiles(profile, mirror, rawText, documents) {
   return { snapshot, manifest, chapterFiles, manifestText: YAML.stringify(manifestData) };
 }
 
+export function normalizeDatasets(datasets) {
+  if (!Array.isArray(datasets)) return [];
+  return datasets.map((dataset) => {
+    if (!dataset || typeof dataset.file !== "string") {
+      throw new Error("鏡像資料集必須包含 file。");
+    }
+    if (!dataset.file.startsWith("原始資料/") || dataset.file.split("/").some((part) => !part || part === "." || part === "..")) {
+      throw new Error(`鏡像資料集路徑不合法：${dataset.file}`);
+    }
+    return dataset;
+  });
+}
+
+async function fetchDatasets(mirror) {
+  const datasets = normalizeDatasets(mirror.datasets).filter((dataset) => typeof dataset.url === "string");
+  return Promise.all(datasets.map(async (dataset) => ({
+    ...dataset,
+    content: await fetchText(dataset.url),
+  })));
+}
+
+function withDatasets(files, datasets) {
+  if (!datasets.length) return files;
+  const manifest = YAML.parse(files.manifestText);
+  manifest.datasets = datasets.map(({ file, url, locator_prefix, content }) => ({
+    file, url, locator_prefix, sha256: sha256(content),
+  }));
+  return { ...files, manifestText: YAML.stringify(manifest), datasets };
+}
+
 function writeAll(files, rawText) {
   const staged = [
     { relative: files.snapshot, content: rawText.endsWith("\n") ? rawText : `${rawText}\n` },
@@ -191,6 +221,7 @@ function writeAll(files, rawText) {
       relative: file,
       content: `# ${chapter.title}\n\n> 英文原文鏡像；對應《${chapter.title}》p. ${chapter.page}。來源提供者：5e.tools。\n\n${chapter.markdown || "<!-- CHAPTER_NOT_FOUND -->"}\n`,
     })),
+    ...(files.datasets ?? []).map(({ file, content }) => ({ relative: file, content: content.endsWith("\n") ? content : `${content}\n` })),
   ];
   for (const item of staged) {
     const absolute = path.join(ROOT, ...item.relative.split("/"));
@@ -213,6 +244,7 @@ function previewDiff(files, rawText) {
     { relative: files.snapshot, content: rawText.endsWith("\n") ? rawText : `${rawText}\n` },
     { relative: files.manifest, content: files.manifestText },
     ...files.chapterFiles.map(({ chapter, file }) => ({ relative: file, content: chapter.markdown })),
+    ...(files.datasets ?? []).map(({ file, content }) => ({ relative: file, content: content.endsWith("\n") ? content : `${content}\n` })),
   ];
   const summary = { added: 0, changed: 0, unchanged: 0 };
   for (const item of staged) {
@@ -252,7 +284,8 @@ export async function mirrorPublication(args = process.argv.slice(2)) {
     let documents = allDocuments;
     if (chapterFilter) documents = documents.filter((chapter) => String(chapter.number) === chapterFilter || chapter.title.includes(chapterFilter));
     if (onlyMissing) documents = documents.filter((chapter) => !fs.existsSync(path.join(ROOT, ...`${mirror.output_root}/chapters/${String(chapter.number).padStart(2, "0")}-${safeName(chapter.title)}.md`.split("/"))));
-    const files = outputFiles(profile, mirror, rawText, documents);
+    const datasets = await fetchDatasets(mirror);
+    const files = withDatasets(outputFiles(profile, mirror, rawText, documents), datasets);
     const missing = documents.filter((chapter) => !chapter.found).map((chapter) => chapter.title);
     const diff = args.includes("--diff") ? previewDiff(files, rawText) : null;
     const written = apply ? writeAll(files, rawText) : [];

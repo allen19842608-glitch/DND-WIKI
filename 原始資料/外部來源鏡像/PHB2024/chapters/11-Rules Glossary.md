@@ -18,6 +18,8 @@ The glossary uses the following conventions:
 
 - Abbreviations
 
+![246-12-001.dungeon-border](../images/book/XPHB/246-12-001.dungeon-border.webp)
+
 ## Rules Definitions
 
 Here are definitions of various rules.
@@ -103,6 +105,8 @@ Here are definitions of various rules.
 ### Curses
 
 ### Cylinder [Area of Effect]
+
+![247-12-002.planescape-border](../images/book/XPHB/247-12-002.planescape-border.webp)
 
 ### D20 Test
 
@@ -204,6 +208,8 @@ Here are definitions of various rules.
 
 ### Invisible
 
+![248-12-003.urban-border](../images/book/XPHB/248-12-003.urban-border.webp)
+
 ### Jumping
 
 ### Knocking Out a Creature
@@ -261,6 +267,8 @@ Here are definitions of various rules.
 ### Ritual
 
 ### Round Down
+
+![249-12-004.sea-border](../images/book/XPHB/249-12-004.sea-border.webp)
 
 ### Save
 

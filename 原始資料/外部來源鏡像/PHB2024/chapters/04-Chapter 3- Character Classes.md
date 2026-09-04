@@ -4,7 +4,11 @@
 
 # Chapter 3: Character Classes
 
+![The heroes Mercion, Molliver, Strongheart, and Ringlerun protect a portal to another plane from diabolical invaders](../images/book/XPHB/025-03-050.opening-art.webp)
+
 Character class provides a character's most exciting capabilities. This chapter offers twelve classes, each of which contains four subclasses—all summarized below.
+
+![026-03-002.barbarian-symbol](../images/book/XPHB/026-03-002.barbarian-symbol.webp)
 
 ## {@class Barbarian|XPHB}
 
@@ -18,6 +22,8 @@ Storm with Rage, and wade into hand-to-hand combat. Then follow the Path of the.
 
 - {@class Barbarian|XPHB|Path of the Zealot|Zealot|XPHB} to rage in union with a god.
 
+![027-03-003.bard-symbol](../images/book/XPHB/027-03-003.bard-symbol.webp)
+
 ## {@class Bard|XPHB}
 
 Perform spells that inspire and heal allies or beguile foes. Then join the College of...
@@ -29,6 +35,8 @@ Perform spells that inspire and heal allies or beguile foes. Then join the Colle
 - {@class Bard|XPHB|College of Lore|Lore|XPHB} to collect knowledge and magical secrets.
 
 - {@class Bard|XPHB|College of Valor|Valor|XPHB} to wield weapons with spells.
+
+![028-03-004.cleric-symbol](../images/book/XPHB/028-03-004.cleric-symbol.webp)
 
 ## {@class Cleric|XPHB}
 
@@ -42,6 +50,8 @@ Invoke divine magic to heal, bolster, and smite. Then harness the...
 
 - {@class Cleric|XPHB|War Domain|War|XPHB} to inspire valor and chastise foes.
 
+![029-03-005.druid-symbol](../images/book/XPHB/029-03-005.druid-symbol.webp)
+
 ## {@class Druid|XPHB}
 
 Channel nature magic to heal, shape-shift, and control the elements. Then join the Circle of the...
@@ -53,6 +63,8 @@ Channel nature magic to heal, shape-shift, and control the elements. Then join t
 - {@class Druid|XPHB|Circle of the Sea|Sea|XPHB} to channel tides and storms.
 
 - {@class Druid|XPHB|Circle of the Stars|Stars|XPHB} to gain powers in a starry form.
+
+![030-03-006.fighter-symbol](../images/book/XPHB/030-03-006.fighter-symbol.webp)
 
 ## {@class Fighter|XPHB}
 
@@ -66,6 +78,8 @@ Master all weapons and armor. Then embody the...
 
 - {@class Fighter|XPHB|Psi Warrior|Psi Warrior|XPHB} to augment attacks with psionic power.
 
+![031-03-007.monk-symbol](../images/book/XPHB/031-03-007.monk-symbol.webp)
+
 ## {@class Monk|XPHB}
 
 Dart in and out of melee while striking fast and hard. Then become a Warrior of...
@@ -77,6 +91,8 @@ Dart in and out of melee while striking fast and hard. Then become a Warrior of.
 - {@class Monk|XPHB|Warrior of the Elements|Elements|XPHB} to wield elemental power.
 
 - {@class Monk|XPHB|Warrior of the Open Hand|Open Hand|XPHB} to master unarmed combat.
+
+![032-03-008.paladin-symbol](../images/book/XPHB/032-03-008.paladin-symbol.webp)
 
 ## {@class Paladin|XPHB}
 
@@ -90,6 +106,8 @@ Smite foes and shield allies with divine and martial might. Then swear the Oath 
 
 - {@class Paladin|XPHB|Oath of Vengeance|Vengeance|XPHB} to hunt down evildoers.
 
+![033-03-009.ranger-symbol](../images/book/XPHB/033-03-009.ranger-symbol.webp)
+
 ## {@class Ranger|XPHB}
 
 Weave together martial prowess, nature magic, and survival skills. Then embody the...
@@ -101,6 +119,8 @@ Weave together martial prowess, nature magic, and survival skills. Then embody t
 - {@class Ranger|XPHB|Gloom Stalker|Gloom Stalker|XPHB} to hunt foes that lurk in darkness.
 
 - {@class Ranger|XPHB|Hunter|Hunter|XPHB} to protect nature with martial versatility.
+
+![034-03-010.rogue-symbol](../images/book/XPHB/034-03-010.rogue-symbol.webp)
 
 ## {@class Rogue|XPHB}
 
@@ -114,6 +134,8 @@ Launch deadly Sneak Attacks while avoiding harm through stealth. Then embody the
 
 - {@class Rogue|XPHB|Thief|Thief|XPHB} to master infiltration and treasure hunting.
 
+![035-03-011.sorcerer-symbol](../images/book/XPHB/035-03-011.sorcerer-symbol.webp)
+
 ## {@class Sorcerer|XPHB}
 
 Wield magic innate to your being, shaping the power to your will. Then channel...
@@ -126,6 +148,8 @@ Wield magic innate to your being, shaping the power to your will. Then channel..
 
 - {@class Sorcerer|XPHB|Wild Magic Sorcery|Wild Magic|XPHB} to unleash chaos magic.
 
+![036-03-012.warlock-symbol](../images/book/XPHB/036-03-012.warlock-symbol.webp)
+
 ## {@class Warlock|XPHB}
 
 Cast spells derived from occult knowledge. Then form a pact with the...
@@ -137,6 +161,8 @@ Cast spells derived from occult knowledge. Then form a pact with the...
 - {@class Warlock|XPHB|Fiend Patron|Fiend|XPHB} to call on sinister powers.
 
 - {@class Warlock|XPHB|Great Old One Patron|Great Old One|XPHB} to delve into forbidden lore.
+
+![037-03-013.wizard-symbol](../images/book/XPHB/037-03-013.wizard-symbol.webp)
 
 ## {@class Wizard|XPHB}
 

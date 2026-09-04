@@ -32,6 +32,12 @@ test("角色選項稽核可精確匹配英文名稱與 concept_id", () => {
   assert.equal(classifyEntity(entity, [page()], { publicationId: "TEST", mirrorFile }).status, "matched");
 });
 
+test("角色選項稽核接受同出版品登錄的英文資料集", () => {
+  const datasetFile = "原始資料/外部來源鏡像/TEST/datasets/feats.json";
+  const datasetPage = page({ sources: [{ file: datasetFile }] });
+  assert.equal(classifyEntity(entity, [datasetPage], { publicationId: "TEST", mirrorFiles: new Set([mirrorFile, datasetFile]) }).status, "matched");
+});
+
 test("同名不同概念有多個候選時標為 ambiguous", () => {
   const second = page({ entity_id: "entry:TEST:feat:other", concept_id: "concept:feat:other" });
   second.target = "wiki/專長/通用專長/另一個警覺.md";

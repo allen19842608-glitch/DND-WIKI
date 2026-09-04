@@ -4,6 +4,7 @@ import process from "node:process";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { LineCounter, parseDocument } from "yaml";
+import { validateTargetArea } from "./spell-target-area.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const WIKI_ROOT = path.join(ROOT, "wiki");
@@ -586,6 +587,26 @@ export function validateMagicItemStructure(record, diagnostics) {
   }
 }
 
+export function validateSpellTargetArea(record, diagnostics) {
+  if (record.data?.category !== "法術") return;
+  const lines = record.body.split(/\r?\n/);
+  const rangeIndex = lines.findIndex((line) => /^- \*\*施法距離(?: \(Range\))?\*\*：/.test(line));
+  const targetLines = lines.map((line, index) => ({ line, index })).filter(({ line }) => /^- \*\*[^*]*目標.*範圍[^*]*\*\*：/.test(line));
+  if (targetLines.length > 1) {
+    addDiagnostic(diagnostics, "error", record.rel, record.bodyStartLine, "SPELL_TARGET_AREA_DUPLICATE", "Target／Area 欄位最多一行。");
+    return;
+  }
+  if (!targetLines.length) return;
+  const { line, index } = targetLines[0];
+  if (!line.startsWith("- **目標／範圍 (Target/Area)**：")) {
+    addDiagnostic(diagnostics, "warning", record.rel, record.bodyStartLine + index, "SPELL_TARGET_AREA_LABEL", "欄名必須遷移為完整的「目標／範圍 (Target/Area)」。");
+    return;
+  }
+  if (rangeIndex < 0 || index !== rangeIndex + 1) addDiagnostic(diagnostics, "warning", record.rel, record.bodyStartLine + index, "SPELL_TARGET_AREA_POSITION", "Target／Area 必須遷移至緊接 Range 後。" );
+  const result = validateTargetArea(line.replace(/^- \*\*目標／範圍 \(Target\/Area\)\*\*：/, ""));
+  if (!result.ok) addDiagnostic(diagnostics, "warning", record.rel, record.bodyStartLine + index, "SPELL_TARGET_AREA_VALUE", `待遷移：${result.reason}`);
+}
+
 function validateFrontmatter(record, diagnostics, catalog, publications, lore) {
   const { rel, fm, data } = record;
   for (const field of REQUIRED_FIELDS) {
@@ -821,10 +842,11 @@ function buildWikiCatalog(records) {
   return { exact, byBasename };
 }
 
-function resolveWikiTarget(target, catalog) {
+export function resolveWikiTarget(target, catalog) {
   if (!target) return { status: "empty" };
   let clean = target.replace(/\\/g, "/");
   // 此庫的 Obsidian vault 根目錄是專案根目錄；允許以 wiki/ 指向編譯資料夾。
+  if (clean.startsWith("wiki/wiki/")) return { status: "duplicate-prefix", target: clean };
   if (clean.startsWith("wiki/")) clean = clean.slice("wiki/".length);
   if (clean.endsWith(".md")) return { status: "invalid-extension", target: clean };
   if (clean.includes("/")) {
@@ -864,8 +886,8 @@ function validateLinks(record, diagnostics, catalog) {
         "LINK_AMBIGUOUS",
         `Wiki 連結 ${link.target} 有多個目標：${resolved.matches.map((item) => item.rel).join("、")}。`,
       );
-    } else if (resolved.status === "invalid-prefix") {
-      addDiagnostic(diagnostics, "error", record.rel, absoluteLine, "LINK_PREFIX", `Wiki 連結不得包含 wiki/ 前綴：${link.target}`);
+    } else if (resolved.status === "duplicate-prefix") {
+      addDiagnostic(diagnostics, "error", record.rel, absoluteLine, "LINK_DUPLICATE_PREFIX", `Wiki 連結不得重複使用 wiki/ 前綴：${link.target}`);
     } else if (resolved.status === "invalid-extension") {
       addDiagnostic(diagnostics, "error", record.rel, absoluteLine, "LINK_EXTENSION", `Wiki 連結不得包含 .md：${link.target}`);
     } else {
@@ -1171,6 +1193,7 @@ export function lintWiki({ all = false, files, overrides } = {}) {
     validateTaxonomyLocation(record, diagnostics, taxonomy);
     validateVersionCoverage(record, diagnostics, publications);
     validateMagicItemStructure(record, diagnostics);
+    validateSpellTargetArea(record, diagnostics);
     validateHeadings(record.body, record.bodyStartLine, record.rel, diagnostics);
     validateLinks(record, diagnostics, catalog);
     validatePersonStatLinks(record, diagnostics, catalog);
@@ -1189,14 +1212,45 @@ export function lintWiki({ all = false, files, overrides } = {}) {
   };
 }
 
+/**
+ * 將 CLI 的檔案／目錄引數展開為 repo 相對的 Wiki Markdown 檔案。
+ * 僅接受以 wiki/ 開頭的相對路徑，避免把原始資料或任意工作區檔案帶入 lint。
+ */
+export function collectLintTargets(targets, { root = ROOT, wikiRoot = WIKI_ROOT } = {}) {
+  const files = new Set();
+  for (const target of targets) {
+    const normalized = String(target).replace(/\\/g, "/").replace(/\/+$/, "");
+    if (!normalized || path.isAbsolute(normalized) || !normalized.startsWith("wiki/") || normalized.split("/").includes("..")) {
+      throw new Error(`lint 目標必須是 wiki/ 內的相對路徑：${target}`);
+    }
+    const absolute = path.resolve(root, normalized);
+    const relative = path.relative(wikiRoot, absolute);
+    if (relative.startsWith("..") || path.isAbsolute(relative) || !fs.existsSync(absolute)) {
+      throw new Error(`lint 目標不存在或超出 wiki/：${target}`);
+    }
+    const candidates = fs.statSync(absolute).isDirectory()
+      ? walk(absolute).filter((file) => file.endsWith(".md"))
+      : [absolute];
+    for (const candidate of candidates) {
+      if (!candidate.endsWith(".md")) throw new Error(`lint 檔案必須是 Markdown：${target}`);
+      files.add(posix(path.relative(root, candidate)));
+    }
+  }
+  return [...files].sort((left, right) => left.localeCompare(right, "zh-Hant"));
+}
+
 const isMain = process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href;
 if (isMain) {
-  const loreOnly = process.argv.includes("--lore");
+  const args = process.argv.slice(2);
+  const loreOnly = args.includes("--lore");
+  const all = args.includes("--all");
+  const targets = args.filter((arg) => !arg.startsWith("--"));
+  if ((all || loreOnly) && targets.length) throw new Error("--all 或 --lore 不可與指定 Wiki 路徑同時使用。");
   const files = loreOnly
     ? walk(path.join(WIKI_ROOT, "戰役設定"))
       .filter((file) => file.endsWith(".md"))
       .map(repoRelative)
-    : undefined;
-  const result = lintWiki({ all: process.argv.includes("--all"), files });
+    : targets.length ? collectLintTargets(targets) : undefined;
+  const result = lintWiki({ all, files });
   process.exitCode = result.errors > 0 ? 1 : 0;
 }

@@ -4,6 +4,8 @@
 
 # Chapter 7: Spells
 
+![Archmages of Greyhawk—Jallarzi, Mordenkainen, and Bigby—prepare their magic as they open a gate to another plane](../images/book/XPHB/181-08-001.jallarzi-mordenkainen-bigby.webp)
+
 This chapter gives rules for casting spells. It also includes {@book descriptions|XPHB|7} of common spells in the worlds of Dungeons & Dragons. Those spells are used by many class features, magic items, and monsters.
 
 ## Gaining Spells
@@ -98,6 +100,8 @@ If a spell has movable effects, they aren't restricted by its range unless the s
 
 ### Components
 
+![An aasimar Wizard uses a crystal material component to focus the magic of Cone of Cold](../images/book/XPHB/182-08-002.aasimar-wizard.webp)
+
 A spell's components are physical requirements the spellcaster must meet to cast the spell. Each spell's description indicates whether it requires Verbal (V), Somatic (S), or Material (M) components. If the spellcaster can't provide one or more of a spell's components, the spellcaster can't cast the spell.
 
 #### Verbal (V)
@@ -146,7 +150,9 @@ If a spell targets a creature of your choice, you can choose yourself unless the
 
 ##### Areas of Effect
 
-Some spells, such as {@spell Thunderwave|XPHB}, cover an area called an {@variantrule area of effect|XPHB}, which is defined in the {@book rules glossary|XPHB|10|Area of Effect}. The area determines what the spell targets. The description of a spell specifies whether it has an area of effect, which is typically one of these shapes: {@variantrule Cone [Area of Effect]|XPHB|Cone}, {@variantrule Cube [Area of Effect]|XPHB|Cube}, {@variantrule Cylinder [Area of Effect]|XPHB|Cylinder}, {@variantrule Emanation [Area of Effect]|XPHB|Emanation}, {@variantrule Line [Area of Effect]|XPHB|Line}, or {@variantrule Sphere [Area of Effect]|XPHB|Sphere}.
+Some spells, such as {@spell Thunderwave|XPHB}, cover an area called an {@variantrule area of effect|XPHB}, which is defined in the {@book rules glossary|XPHB|10}. The area determines what the spell targets. The description of a spell specifies whether it has an area of effect, which is typically one of these shapes: {@variantrule Cone [Area of Effect]|XPHB|Cone}, {@variantrule Cube [Area of Effect]|XPHB|Cube}, {@variantrule Cylinder [Area of Effect]|XPHB|Cylinder}, {@variantrule Emanation [Area of Effect]|XPHB|Emanation}, {@variantrule Line [Area of Effect]|XPHB|Line}, or {@variantrule Sphere [Area of Effect]|XPHB|Sphere}.
+
+![183-08-003.areas-of-effect](../images/book/XPHB/183-08-003.areas-of-effect.webp)
 
 ##### Awareness of Being Targeted
 

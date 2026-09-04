@@ -4,7 +4,7 @@
 
 # Appendix B: Creature Stat Blocks
 
-This appendix provides stat blocks for creatures mentioned elsewhere in the book, particularly in the class, equipment, and spell chapters. See the {@book rules glossary|XPHB|10|Stat Block} for how to read a {@variantrule stat block|XPHB}, and see the {@i Monster Manual} for even more creatures.
+This appendix provides stat blocks for creatures mentioned elsewhere in the book, particularly in the class, equipment, and spell chapters. See the {@book rules glossary|XPHB|10} for how to read a {@variantrule stat block|XPHB}, and see the {@i Monster Manual} for even more creatures.
 
 The following stat blocks are presented in alphabetical order. When the Dungeon Master uses a stat block, the DM may change details in it.
 

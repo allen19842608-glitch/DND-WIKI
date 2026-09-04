@@ -152,7 +152,10 @@ function candidatePages(entity, pages) {
   });
 }
 
-export function classifyEntity(entity, pages, { publicationId, mirrorFile }) {
+export function classifyEntity(entity, pages, { publicationId, mirrorFile, mirrorFiles } = {}) {
+  const acceptedMirrorFiles = mirrorFiles instanceof Set
+    ? mirrorFiles
+    : new Set(Array.isArray(mirrorFiles) ? mirrorFiles : [mirrorFile].filter(Boolean));
   const candidates = candidatePages(entity, pages);
   const base = {
     category: entity.category,
@@ -168,7 +171,7 @@ export function classifyEntity(entity, pages, { publicationId, mirrorFile }) {
   const hasConflict = page.data.audit_status === "conflict" || (/來源差異與不確定性/.test(page.text) && page.data.confidence === "pending");
   if (hasConflict) reasons.push("條目明確標記來源衝突或待確認差異。");
   const sources = Array.isArray(page.data.sources) ? page.data.sources : [];
-  if (!sources.some((source) => String(source?.file ?? "").replaceAll("\\", "/") === mirrorFile)) reasons.push("主要來源尚未包含本出版品英文鏡像。");
+  if (!sources.some((source) => acceptedMirrorFiles.has(String(source?.file ?? "").replaceAll("\\", "/")))) reasons.push("主要來源尚未包含本出版品英文鏡像。");
   const expectedPrefix = `entry:${publicationId}:${CATEGORY_META[entity.category].kind}:`;
   const actualPublication = String(page.data.entity_id ?? "").match(/^entry:([^:]+):/)?.[1];
   const expectedYear = Number(publicationId.match(/(\d{4})/)?.[1]);
@@ -206,7 +209,11 @@ export function createAuditReport({ publicationId, publication, profile, categor
   } else {
     const book = JSON.parse(fs.readFileSync(mirror.snapshotPath, "utf8"));
     const sourceEntities = extractSourceEntities(book, { publicationId, manifest: { ...mirror.manifest, character_options: selected } });
-    entities = sourceEntities.map((entity) => classifyEntity(entity, pages, { publicationId, mirrorFile: mirror.manifest.snapshot.file.replaceAll("\\", "/") }));
+    const mirrorFiles = new Set([
+      mirror.manifest.snapshot.file.replaceAll("\\", "/"),
+      ...(mirror.manifest.datasets ?? []).map((dataset) => String(dataset.file ?? "").replaceAll("\\", "/")),
+    ]);
+    entities = sourceEntities.map((entity) => classifyEntity(entity, pages, { publicationId, mirrorFiles }));
     for (const item of selected) {
       if (!sourceEntities.some((entity) => entity.category === item)) {
         entities.push({ category: item, english_name: null, source: { file: mirror.manifest.snapshot.file, locator: mirror.manifest.publication_title }, wiki_target: null, status: "out_of_scope", reasons: ["英文鏡像未列出此類別的獨立角色選項或直接相依資料卡。"] });

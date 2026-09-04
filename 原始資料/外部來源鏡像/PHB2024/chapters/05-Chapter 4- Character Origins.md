@@ -4,6 +4,8 @@
 
 # Chapter 4: Character Origins
 
+![Not even a white dragon's wrath can chill these heroes of the Forgotten Realms: Laeral Silverhand, Drizzt Do'Urden, and Vajra Safahr](../images/book/XPHB/127-05-001.laeral-drizzt-vajra.webp)
+
 This chapter describes the two components of an adventurer's origin: {@book background|XPHB|4|Background Descriptions} and {@book species|XPHB|4|Species Descriptions}. Together, these elements suggest your character's early experience and family origin before taking up the adventuring life and learning the capabilities of a class (described in {@book chapter 3|XPHB|3}).
 
 ## Origin Components
@@ -143,6 +145,8 @@ Sixteen backgrounds are presented in this section in alphabetical order:
 ## Species Descriptions
 
 Ten species are presented in this section in alphabetical order: {@race Aasimar|XPHB}, {@race Dragonborn|XPHB}, {@race Dwarf|XPHB}, {@race Elf|XPHB}, {@race Gnome|XPHB}, {@race Goliath|XPHB}, {@race Halfling|XPHB}, {@race Human|XPHB}, {@race Orc|XPHB}, and {@race Tiefling|XPHB}.
+
+![153-05-027.map-decoration](../images/book/XPHB/153-05-027.map-decoration.webp)
 
 ### Aasimar
 

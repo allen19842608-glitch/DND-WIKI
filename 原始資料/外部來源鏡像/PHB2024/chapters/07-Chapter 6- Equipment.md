@@ -4,6 +4,8 @@
 
 # Chapter 6: Equipment
 
+![In the skies of Eberron, the inventor Vi and her Fixers escape the Lord of Blades and a plummeting airship that burns with green flame!](../images/book/XPHB/168-07-001.inventor-vi.webp)
+
 The right equipment can make the difference between success and failure for adventurers. This chapter provides rules and prices for weapons, armor, and other kinds of equipment that characters might purchase or find. The DM lets you know if a shop has an item for sale and whether it's available at the listed price.
 
 ## Coins
@@ -30,6 +32,14 @@ The Weapons table in this section shows the game's main weapons. The table lists
 
 - Mastery
 
+![Simple Melee Weapons](../images/book/XPHB/169-07-058.simple-melee.webp)
+
+![Simple Ranged Weapons](../images/book/XPHB/170-07-059.simple-range.webp)
+
+![Martial Melee Weapons](../images/book/XPHB/171-07-061.martial-melee.webp)
+
+![Martial Ranged Weapons](../images/book/XPHB/172-07-060.martial-range.webp)
+
 ### Weapon Proficiency
 
 Anyone can wield a weapon, but you must have proficiency with it to add your Proficiency Bonus to an attack roll you make with it. A player character's features can provide weapon proficiencies. A monster is proficient with any weapon in its stat block.
@@ -52,7 +62,7 @@ You have {@variantrule Disadvantage|XPHB} on attack rolls with a Heavy weapon if
 
 ##### Improvised Weapons
 
-If you use an object—such as a table leg, frying pan, or bottle—as a makeshift weapon, see "{@variantrule Improvised Weapons|XPHB}" in the {@book rules glossary|XPHB|10|Improvised Weapons}. Also see those rules if you wield a weapon in an unusual way, such as using a Ranged weapon to make a melee attack.
+If you use an object—such as a table leg, frying pan, or bottle—as a makeshift weapon, see "{@variantrule Improvised Weapons|XPHB}" in the {@book rules glossary|XPHB|10}. Also see those rules if you wield a weapon in an unusual way, such as using a Ranged weapon to make a melee attack.
 
 #### Light
 
@@ -130,6 +140,12 @@ The Armor table lists the game's main armor. The table includes the cost and wei
 
 - Stealth
 
+![Light Armor and Shields](../images/book/XPHB/173-07-062.light-armor-and-shields.webp)
+
+![Medium Armor](../images/book/XPHB/174-07-063.medium-armor.webp)
+
+![Heavy Armor](../images/book/XPHB/175-07-064.heavy-armor.webp)
+
 ### Armor Training
 
 Anyone can don armor or hold a Shield, but only those with training can use them effectively, as explained below. A character's class and other features determine the character's armor training. A monster has training with any armor in its stat block.
@@ -165,6 +181,8 @@ A tool helps you make specialized ability checks, craft certain items, or both. 
 - Craft
 
 - Variants
+
+![176-07-002.tools](../images/book/XPHB/176-07-002.tools.webp)
 
 ### Tool Proficiency
 
@@ -426,6 +444,8 @@ These tools support adventure and other pursuits.
 
 ## Adventuring Gear
 
+![A Warlock channels magic through an Arcane Focus](../images/book/XPHB/177-07-003.arcane-focus.webp)
+
 The Adventuring Gear table in this section includes gear that adventurers often find useful. These items are described here in alphabetical order, with an item's price appearing after its name.
 
 ### Acid (25 GP)
@@ -614,6 +634,8 @@ A Lamp burns {@item Oil|XPHB} as fuel to cast {@variantrule Bright Light|XPHB} i
 
 A Bullseye Lantern burns {@item Oil|XPHB} as fuel to cast {@variantrule Bright Light|XPHB} in a 60-foot {@variantrule Cone [Area of Effect]|XPHB|Cone} and {@variantrule Dim Light|XPHB} for an additional 60 feet.
 
+![Lamp and Net](../images/book/XPHB/178-07-004.lamp-net.webp)
+
 ### Lantern, Hooded (5 GP)
 
 A Hooded Lantern burns {@item Oil|XPHB} as fuel to cast {@variantrule Bright Light|XPHB} in a 30-foot radius and {@variantrule Dim Light|XPHB} for an additional 30 feet. As a Bonus Action, you can lower the hood, reducing the light to Dim Light in a 5-foot radius, or raise it again.
@@ -708,7 +730,7 @@ You can use a Portable Ram to break down doors. When doing so, you gain a +4 bon
 
 ### Rations (5 SP)
 
-Rations consist of travel-ready food, including jerky, dried fruit, hardtack, and nuts. See "{@hazard Malnutrition|XPHB}" in the {@book rules glossary|XPHB|10|Malnutrition [Hazard]} for the risks of not eating.
+Rations consist of travel-ready food, including jerky, dried fruit, hardtack, and nuts. See "{@hazard Malnutrition|XPHB}" in the {@book rules glossary|XPHB|10} for the risks of not eating.
 
 ### Robe (1 GP)
 
@@ -770,6 +792,8 @@ A Torch burns for 1 hour, casting {@variantrule Bright Light|XPHB} in a 20-foot 
 
 A Vial holds up to 4 ounces.
 
+![179-07-005.adventurer-with-tools](../images/book/XPHB/179-07-005.adventurer-with-tools.webp)
+
 ### Waterskin (2 SP)
 
 A Waterskin holds up to 4 pints. If you don't drink sufficient water, you risk {@hazard dehydration|XPHB}.
@@ -815,6 +839,8 @@ If a vehicle has a {@variantrule damage threshold|XPHB}, it's noted in the table
 Repairs to a damaged ship can be made while the vessel is berthed. Repairing 1 Hit Point of damage requires 1 day and costs 20 GP for materials and labor. If the repairs are made in a location where supplies and skilled labor are abundant, such as a city shipyard, the repair time and cost are halved.
 
 ## Services
+
+![A Wizard and her familiar spend an afternoon shopping](../images/book/XPHB/180-07-006.wizard-familiar-shopping.webp)
 
 This section outlines services and other expenses that adventurers might spend money on.
 

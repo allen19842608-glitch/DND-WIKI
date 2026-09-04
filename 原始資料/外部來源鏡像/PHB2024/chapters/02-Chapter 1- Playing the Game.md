@@ -4,6 +4,8 @@
 
 # Chapter 1: Playing the Game
 
+![While adventuring in the Dragonlance setting, the siblings Caramon Majere, Raistlin Majere, and Kitiara uth Matar provoke the rage of a wyvern](../images/book/XPHB/000-01-013.opening-art.webp)
+
 Imagination is a key ingredient of Dungeons & Dragons, a cooperative game in which the characters that you roleplay embark on adventures together in fantasy worlds filled with monsters and magic.
 
 In D&D, the action takes place in the imaginations of the players, and it's narrated by everyone together. Here's a glimpse at what that looks like:
@@ -102,6 +104,8 @@ As with adventures, a DM might create a campaign from scratch, assemble a campai
 
 Dice add randomness to the game. They help determine whether characters and monsters are successful at the things they attempt.
 
+![From left to right: {@dice D4}, {@dice D6}, {@dice D8}, {@dice D10} (ones digit), {@dice D10} (tens digit), {@dice D12}, {@dice D20}](../images/book/XPHB/001-01-002.dice.webp)
+
 ### Round Down
 
 Whenever you divide or multiply a number in the game, round down if you end up with a fraction, even if the fraction is one-half or greater. Some rules make an exception and tell you to round up.
@@ -169,6 +173,8 @@ When the outcome of an action is uncertain, the game uses a {@dice d20} roll to 
 - 
 
 - Compare the Total to a Target Number
+
+![A {@variantrule D20 Test|XPHB} can result in a dramatic success, a simple accomplishment, or a catastrophe](../images/book/XPHB/002-01-003.d20-test.webp)
 
 ### Ability Checks
 
@@ -241,6 +247,8 @@ If you roll a 20 on the {@dice d20} (called a "natural 20") for an attack roll, 
 If you roll a 1 on the {@dice d20} (a "natural 1") for an attack roll, the attack misses regardless of any modifiers or the target's AC.
 
 ### Advantage/Disadvantage
+
+![If you have Advantage, use the 18 If you have Disadvantage, use the 3](../images/book/XPHB/003-01-004.advantage-disadvantage.webp)
 
 Sometimes a {@variantrule D20 Test|XPHB} is modified by Advantage or Disadvantage. Advantage reflects the positive circumstances surrounding a {@dice d20} roll, while Disadvantage reflects negative circumstances.
 
@@ -356,6 +364,8 @@ This advice comes with one important caveat: avoid character choices that ruin t
 
 ## Social Interaction
 
+![Characters lay on the charm while bartering for magic items with a green hag](../images/book/XPHB/004-01-005.adventurers-bartering.webp)
+
 During their adventures, player characters meet many different people and face some monsters that would rather talk than fight. In those situations, it's time for social interaction, which takes many forms. For example, you might try to convince a burglar to confess to wrongdoing or try to flatter a guard. The Dungeon Master assumes the roles of any nonplayer characters who are participating.
 
 An NPC's attitude toward your character is {@variantrule Friendly [Attitude]|XPHB|Friendly}, {@variantrule Indifferent [Attitude]|XPHB|Indifferent}, or {@variantrule Hostile [Attitude]|XPHB|Hostile}, as defined in the {@book rules glossary|XPHB|10}. Friendly NPCs are predisposed to help, and Hostile ones are inclined to hinder.
@@ -381,6 +391,8 @@ Ability checks can be key in determining the outcome of a social interaction. Yo
 Pay attention to your skill proficiencies when thinking of how you will interact with an NPC; use an approach that relies on your group's skill proficiencies. For example, if the group needs to trick a guard into letting them into a castle, the Rogue who is proficient in {@skill Deception|XPHB} should lead the discussion.
 
 ### Social Interaction Example
+
+![005-01-006.social-interaction-example](../images/book/XPHB/005-01-006.social-interaction-example.webp)
 
 In this scene, players engage in a social interaction encounter. You and your group determine how similar scenes play out in your adventures.
 
@@ -446,7 +458,7 @@ Don't worry about getting things exactly right. Focus on what your character wou
 
 #### (1)—Ability Checks
 
-Phillip's character, Gareth, makes a Wisdom ({@skill Insight|XPHB}) check to determine whether he reads Ismark's unspoken cues. Wisdom is the ability that measures perceptiveness and intuition. Insight reflects a character's skill at reading other people's moods and intentions. The DM set the DC at 15, which Gareth beats. With a successful Wisdom ({@skill Insight|XPHB}) check, Gareth gleans information that wasn't obvious, so it wasn't part of the DM's earlier narration. For more information, see "{@book Ability Scores|XPHB|1|The Six Abilities}" and "{@book Proficiency|XPHB|1|Proficiency}" earlier in this chapter and the {@action Search|XPHB} action in the {@book rules glossary|XPHB|10|Search [Action]}.
+Phillip's character, Gareth, makes a Wisdom ({@skill Insight|XPHB}) check to determine whether he reads Ismark's unspoken cues. Wisdom is the ability that measures perceptiveness and intuition. Insight reflects a character's skill at reading other people's moods and intentions. The DM set the DC at 15, which Gareth beats. With a successful Wisdom ({@skill Insight|XPHB}) check, Gareth gleans information that wasn't obvious, so it wasn't part of the DM's earlier narration. For more information, see "{@book Ability Scores|XPHB|1|The Six Abilities}" and "{@book Proficiency|XPHB|1|Proficiency}" earlier in this chapter and the {@action Search|XPHB} action in the {@book rules glossary|XPHB|10}.
 
 - Amy:
 
@@ -503,6 +515,8 @@ As adventurers explore, their equipment can help them in many ways. For example,
 See {@book chapter 6|XPHB|6} for rules on many items that are useful on adventures. The items in that chapter's "{@book Tools|XPHB|6|Tools}" and "{@book Adventuring Gear|XPHB|6|Adventuring Gear}" sections are especially useful. The weapons in that chapter can also be used for more than battle; you could use a {@item Quarterstaff|XPHB}, for example, to push a sinister-looking button that you're reluctant to touch.
 
 ### Vision and Light
+
+![006-01-007.obscured-exploration](../images/book/XPHB/006-01-007.obscured-exploration.webp)
 
 Some adventuring tasks—such as noticing danger, hitting an enemy, and targeting certain spells—are affected by sight, so effects that obscure vision can hinder you, as explained below.
 
@@ -564,11 +578,11 @@ If you describe your character searching nowhere near a hidden object, a Wisdom 
 
 #### Carrying Objects
 
-You can usually carry your gear and treasure without worrying about the weight of those objects. If you try to haul an unusually heavy object or a massive number of lighter objects, the DM might require you to abide by the rules for {@variantrule carrying capacity|XPHB} in the {@book rules glossary|XPHB|10|Carrying Capacity}.
+You can usually carry your gear and treasure without worrying about the weight of those objects. If you try to haul an unusually heavy object or a massive number of lighter objects, the DM might require you to abide by the rules for {@variantrule carrying capacity|XPHB} in the {@book rules glossary|XPHB|10}.
 
 #### Breaking Objects
 
-As an action, you can automatically break or otherwise destroy a fragile, nonmagical object, such as a glass container or a piece of paper. If you try to damage something more resilient, the DM might use the rules on {@variantrule breaking objects|XPHB} in the {@book rules glossary|XPHB|10|Breaking Objects}.
+As an action, you can automatically break or otherwise destroy a fragile, nonmagical object, such as a glass container or a piece of paper. If you try to damage something more resilient, the DM might use the rules on {@variantrule breaking objects|XPHB} in the {@book rules glossary|XPHB|10}.
 
 ### Hazards
 
@@ -629,6 +643,8 @@ Travelers in wagons, carriages, or other land vehicles choose a pace as normal. 
 ### Exploration Example
 
 This scene finds the player characters investigating a mysterious and potentially dangerous location. They're moving through the environment and interacting with things they find there.
+
+![007-01-008.exploration-example](../images/book/XPHB/007-01-008.exploration-example.webp)
 
 {@i The characters are exploring Castle Ravenloft, and the DM describes the room the characters have entered}.
 
@@ -734,7 +750,7 @@ You usually have a chance of success on an ability check even if you don't have 
 
 #### (4)—Finding Hidden Objects
 
-Adventure environments are full of secrets: traps, concealed doors, loose floorboards, and hidden treasures. Characters often use Wisdom checks to find things—see the {@action Search|XPHB} action in the {@book rules glossary|XPHB|10|Search [Action]}—but sometimes they stumble on them accidentally, as Auro did here.
+Adventure environments are full of secrets: traps, concealed doors, loose floorboards, and hidden treasures. Characters often use Wisdom checks to find things—see the {@action Search|XPHB} action in the {@book rules glossary|XPHB|10}—but sometimes they stumble on them accidentally, as Auro did here.
 
 #### (5)—Casting Spells
 
@@ -753,6 +769,8 @@ The DM determines what the adventurers can perceive, which means being aware of 
 A saving throw is used to see whether a creature avoids or resists something. When the chest releases toxic gas, Phillip's and Amy's characters make Constitution saving throws. Constitution is one of the six abilities that measure creatures' capabilities, and it has to do with health and stamina. When they fail their saves, the gas causes them to have the {@condition Paralyzed|XPHB} condition. See "{@book Conditions|XPHB|1|Conditions}" later in this chapter for more information.
 
 ## Combat
+
+![008-01-009.adventurers-in-combat](../images/book/XPHB/008-01-009.adventurers-in-combat.webp)
 
 Adventurers encounter many dangerous monsters and nefarious villains. In those moments, combat often breaks out.
 
@@ -816,13 +834,15 @@ Combat ends when one side or the other is defeated, which can mean the creatures
 
 ### Movement and Position
 
+![Creatures occupy spaces of varying sizes. This Displacer Beast occupies a 10-by-10-foot space, while the adventurers occupy 5-by-5-foot spaces](../images/book/XPHB/009-01-010.displacer-beast-combat.webp)
+
 On your turn, you can move a distance equal to your {@variantrule Speed|XPHB} or less. Or you can decide not to move.
 
 Your movement can include {@variantrule climbing|XPHB}, {@variantrule crawling|XPHB}, {@variantrule jumping|XPHB}, and {@variantrule swimming|XPHB} (each explained in the {@book rules glossary|XPHB|10}). These different modes of movement can be combined with your regular movement, or they can constitute your entire move.
 
 However you're moving with your Speed, you deduct the distance of each part of your move from it until it is used up or until you are done moving, whichever comes first.
 
-A character's Speed is determined during character creation. A monster's Speed is noted in the monster's stat block. See the {@book rules glossary|XPHB|10|Speed} for more about Speed as well as about special speeds, such as a {@variantrule Climb Speed|XPHB}, {@variantrule Fly Speed|XPHB}, or {@variantrule Swim Speed|XPHB}.
+A character's Speed is determined during character creation. A monster's Speed is noted in the monster's stat block. See the {@book rules glossary|XPHB|10} for more about Speed as well as about special speeds, such as a {@variantrule Climb Speed|XPHB}, {@variantrule Fly Speed|XPHB}, or {@variantrule Swim Speed|XPHB}.
 
 #### Difficult Terrain
 
@@ -936,6 +956,8 @@ You can make an Opportunity Attack when a creature that you can see leaves your 
 
 ### Mounted Combat
 
+![Astride a giant seahorse, a paladin adventures underwater](../images/book/XPHB/010-01-011.giant-seahorse-mount.webp)
+
 A willing creature that is at least one size larger than a rider and that has an appropriate anatomy can serve as a mount, using the following rules.
 
 #### Mounting and Dismounting
@@ -1010,7 +1032,7 @@ Many saving throw effects deal half damage (round down) to a target when the tar
 
 ### Damage Types
 
-Each instance of damage has a type, like Fire or Slashing. Damage types are listed in the {@book rules glossary|XPHB|10|Damage Types} and have no rules of their own, but other rules, such as {@variantrule Resistance|XPHB}, rely on damage types.
+Each instance of damage has a type, like Fire or Slashing. Damage types are listed in the {@book rules glossary|XPHB|10} and have no rules of their own, but other rules, such as {@variantrule Resistance|XPHB}, rely on damage types.
 
 ### Resistance and Vulnerability
 
@@ -1058,7 +1080,7 @@ When damage reduces a character to 0 Hit Points and damage remains, the characte
 
 #### Character Demise
 
-If your character dies, others might find a magical way to revive your character, such as with the {@spell Raise Dead|XPHB} spell. Or talk with the DM about making a new character to join the group. The {@book rules glossary|XPHB|10|Dead} has more information on being {@variantrule dead|XPHB}.
+If your character dies, others might find a magical way to revive your character, such as with the {@spell Raise Dead|XPHB} spell. Or talk with the DM about making a new character to join the group. The {@book rules glossary|XPHB|10} has more information on being {@variantrule dead|XPHB}.
 
 #### Falling Unconscious
 
@@ -1348,7 +1370,7 @@ An attack that deals Bludgeoning damage is deadly to skeletons. Shreeve knows th
 
 #### (15)—Areas of Effect
 
-Spells and many other effects in the game fill a specific area that is defined by the rules, like the 15-foot {@variantrule Cube [Area of Effect]|XPHB|Cube} of the {@spell Thunderwave|XPHB} spell. See the {@book rules glossary|XPHB|10|Area of Effect} for more on areas of effect.
+Spells and many other effects in the game fill a specific area that is defined by the rules, like the 15-foot {@variantrule Cube [Area of Effect]|XPHB|Cube} of the {@spell Thunderwave|XPHB} spell. See the {@book rules glossary|XPHB|10} for more on areas of effect.
 
 #### (16)—Saving Throws
 
@@ -1361,3 +1383,5 @@ The skeletons have 13 Hit Points each, so the spells and attacks in this example
 #### (17)—Saving Throws
 
 Gareth's Sear Undead is a class feature (see {@book chapter 3|XPHB|3}). As with Mirabella's {@spell Thunderwave|XPHB} spell, Sear Undead forces the skeletons to make a saving throw.
+
+![011-01-012.combat-example](../images/book/XPHB/011-01-012.combat-example.webp)

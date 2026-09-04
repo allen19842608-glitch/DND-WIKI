@@ -3,10 +3,10 @@ publication_id: PHB2024
 publication_title: Player’s Handbook (2024)
 provider: 5e.tools
 upstream_url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/book/book-xphb.json
-retrieved_at: 2026-08-31T07:56:36.375Z
+retrieved_at: 2026-08-31T22:23:05.825Z
 snapshot:
   file: 原始資料/外部來源鏡像/PHB2024/book-xphb.json
-  sha256: e4a613831ab8ad88b14e47fb02a23d6f4bef2f2be0ff92a49d4932accf71a3de
+  sha256: 5bea0aa8596532f0b4eba2a3888126a5a4a7ee60dadf97653739e852d99171fc
 chapters:
   - kind: chapter
     number: 1
@@ -74,3 +74,12 @@ chapters:
     page: 360
     file: 原始資料/外部來源鏡像/PHB2024/chapters/11-Rules Glossary.md
     status: complete
+datasets:
+  - file: 原始資料/外部來源鏡像/PHB2024/datasets/feats.json
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/feats.json
+    locator_prefix: "feat:"
+    sha256: a06e99bdc529e58acb7f3f3ff902c0941e83ba8003cc2caffcccd0c46a804338
+  - file: 原始資料/外部來源鏡像/PHB2024/datasets/spells-xphb.json
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/spells/spells-xphb.json
+    locator_prefix: "spell:"
+    sha256: aba6cb13cfbce46604f795ef78a950891d51480c0f99be446a244b4a2b4f2f30

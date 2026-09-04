@@ -1,19 +1,33 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
 import { nonEntityReason, parseBilingualTitle } from "../scripts/ingest/ingest-lore.mjs";
 import { sourceFragment } from "../scripts/migrate/restore-lore-source-text.mjs";
 import {
   deriveSourceType,
+  collectLintTargets,
   extractFrontmatter,
   lintWiki,
   parseWikiLink,
+  resolveWikiTarget,
   validateMagicItemStructure,
+  validateSpellTargetArea,
 } from "../scripts/core/wiki-lint.mjs";
+import { extractTargetArea, validateTargetArea } from "../scripts/core/spell-target-area.mjs";
 import { normalizeMirrorCitations } from "../scripts/audit/audit-mirror-citations.mjs";
+import { buildHealthReport } from "../scripts/audit/audit-wiki-health.mjs";
 import { rebuildLore } from "../scripts/ingest/rebuild-lore.mjs";
 import { audit as auditLorePlacement } from "../scripts/audit/audit-lore-placement.mjs";
 import { buildFrwikiCandidate, collectPagePayloads, extractClaimCandidates, extractDiscoveryIndex, extractOfficialCitations, publicationRecords, sourceAcquisitionQueue } from "../scripts/ingest/discover-frwiki-lore.mjs";
+
+test("Target／Area 抽取器區分自身、區域與未解決攻擊", () => {
+  assert.equal(extractTargetArea({ range: "自身", effect: "以自身為原點的 5 呎光環內的生物受影響" }).value, "效應區域：以自身為原點的 5 呎光環");
+  assert.equal(extractTargetArea({ range: "自身", effect: "你獲得飛行速度" }).value, "目標：自身");
+  assert.equal(extractTargetArea({ range: "60 呎", effect: "當你的攻擊命中目標時造成傷害" }).confidence, "unresolved");
+  assert.equal(validateTargetArea("目標：施法距離內一點；效應區域：以該點為中心的 20 呎半徑球狀").ok, true);
+});
 
 test("鏡像正文引用改用中文書名與頁碼，無頁碼引用保留待補", () => {
   const publication = { id: "FRAIF2025", title: "被遺忘的國度：費倫冒險", aliases: new Set(["FRAiF", "FRAIF2025", "Forgotten Realms: Adventures in Faerûn (2025)"]) };
@@ -252,6 +266,55 @@ test("parseWikiLink removes heading fragments", () => {
     target: "職業/奇械師/煉金師",
     alias: "煉金師",
   });
+});
+
+test("lint 指定檔案與目錄只展開 wiki 內 Markdown", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "wiki-lint-"));
+  const wikiRoot = path.join(root, "wiki");
+  fs.mkdirSync(path.join(wikiRoot, "規則", "子目錄"), { recursive: true });
+  fs.writeFileSync(path.join(wikiRoot, "規則", "甲.md"), "# 甲");
+  fs.writeFileSync(path.join(wikiRoot, "規則", "子目錄", "乙.md"), "# 乙");
+  fs.writeFileSync(path.join(wikiRoot, "規則", "略過.txt"), "略過");
+  try {
+    assert.deepEqual(collectLintTargets(["wiki/規則/甲.md"], { root, wikiRoot }), ["wiki/規則/甲.md"]);
+    assert.deepEqual(new Set(collectLintTargets(["wiki/規則"], { root, wikiRoot })), new Set(["wiki/規則/甲.md", "wiki/規則/子目錄/乙.md"]));
+    assert.throws(() => collectLintTargets(["原始資料/甲.md"], { root, wikiRoot }), /wiki\/ 內/);
+    assert.throws(() => collectLintTargets(["wiki/../原始資料/甲.md"], { root, wikiRoot }), /wiki\/ 內/);
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("完整 Wiki 路徑接受單一 wiki 前綴並拒絕重複與副檔名", () => {
+  const record = { rel: "wiki/規則/甲.md" };
+  const catalog = { exact: new Map([[record.rel, record]]), byBasename: new Map([["甲", [record]]]) };
+  assert.equal(resolveWikiTarget("規則/甲", catalog).status, "ok");
+  assert.equal(resolveWikiTarget("wiki/規則/甲", catalog).status, "ok");
+  assert.equal(resolveWikiTarget("wiki/wiki/規則/甲", catalog).status, "duplicate-prefix");
+  assert.equal(resolveWikiTarget("wiki/規則/甲.md", catalog).status, "invalid-extension");
+});
+
+test("健康度報告按出版品與檔案類型分組，並排除 disposition 來源", () => {
+  const report = buildHealthReport({
+    generatedAt: "2026-09-01T00:00:00.000Z",
+    publications: [["PHB2024", { source_assets: [{ path: "原始資料/玩家手冊2024" }] }]],
+    pages: [
+      { file: "wiki/法術/甲.md", title: "甲", publication: "PHB2024", body: "正文", data: { category: "法術", version: "2024-Core", confidence: "interpreted", sources: [{ authority: "官方", translation: "none", file: "原始資料/外部來源鏡像/PHB2024/datasets/spells-xphb.json", locator: "spell:甲" }, { authority: "官方", file: "原始資料/玩家手冊2024/甲.md", locator: "L1" }] } },
+      { file: "wiki/法術/乙.md", title: "乙", publication: "PHB2024", body: "來源差異", data: { category: "法術", version: "2024-Core", confidence: "interpreted", sources: [{ authority: "官方", translation: "none", file: "原始資料/外部來源鏡像/PHB2024/datasets/spells-xphb.json", locator: "spell:乙" }, { authority: "官方", file: "原始資料/玩家手冊2024/乙.md", locator: "L1" }] } },
+      { file: "wiki/法術/丙.md", title: "丙", publication: "PHB2024", body: "正文", data: { category: "法術", version: "2024-Core", confidence: "interpreted", sources: [{ authority: "官方", translation: "community", file: "原始資料/玩家手冊2024/丙.md", locator: "L1" }] } },
+      { file: "wiki/法術/丁.md", title: "丁", publication: "PHB2024", body: "正文", data: { category: "法術", version: "2024-Core", confidence: "interpreted", sources: [{ authority: "官方", translation: "none", file: "原始資料/外部來源鏡像/PHB2024/book-xphb.json", locator: "圖片：book/XPHB/cover.webp" }] } },
+      { file: "wiki/法術/戊.md", title: "戊", publication: "PHB2024", body: "正文", mirrorRuleText: false, data: { category: "法術", version: "2024-Core", confidence: "interpreted", sources: [{ authority: "官方", translation: "none", file: "原始資料/外部來源鏡像/PHB2024/book-xphb.json", locator: "Chapter > Feats > 戊" }] } },
+      { file: "wiki/法術/己.md", title: "己", publication: "PHB2024", body: "## 來源差異與不確定性\n- 本頁保存 2025 年來源所述的世界觀；跨出版品差異應保留來源與適用範圍。", data: { category: "法術", version: "2024-Core", confidence: "interpreted", sources: [{ authority: "官方", translation: "none", file: "原始資料/外部來源鏡像/PHB2024/datasets/spells-xphb.json", locator: "spell:己" }, { authority: "官方", file: "原始資料/玩家手冊2024/己.md", locator: "L1" }] } },
+    ],
+    manifest: { sources: [
+      { file: "原始資料/玩家手冊2024/缺口.md", absorbed_by: [], disposition: null },
+      { file: "原始資料/玩家手冊2024/封面.webp", absorbed_by: [], disposition: null },
+      { file: "原始資料/玩家手冊2024/重複.md", absorbed_by: [], disposition: { status: "duplicate" } },
+    ] },
+  });
+  assert.equal(report.unreferenced_sources.total, 2);
+  assert.deepEqual(report.unreferenced_sources.by_file_type, { "圖片": 1, "文字": 1 });
+  assert.deepEqual(report.candidates.by_status, { "可核定候選": 2, "待補條件": 3, "衝突候選": 1 });
 });
 
 test("lint 可在指定範圍驗證記憶體候選內容", () => {

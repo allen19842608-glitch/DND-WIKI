@@ -9,6 +9,18 @@ character_options:
   - "feats"
   - "spells"
   - "dependencies"
+canonical_mirror:
+  provider: "5e.tools"
+  book_id: "xphb"
+  url: "https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/book/book-xphb.json"
+  output_root: "原始資料/外部來源鏡像/PHB2024"
+  datasets:
+    - file: "原始資料/外部來源鏡像/PHB2024/datasets/feats.json"
+      url: "https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/feats.json"
+      locator_prefix: "feat:"
+    - file: "原始資料/外部來源鏡像/PHB2024/datasets/spells-xphb.json"
+      url: "https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/spells/spells-xphb.json"
+      locator_prefix: "spell:"
 outputs:
   species: "wiki/種族"
   classes: "wiki/職業"

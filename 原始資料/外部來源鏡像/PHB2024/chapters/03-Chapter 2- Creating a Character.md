@@ -4,6 +4,8 @@
 
 # Chapter 2: Creating a Character
 
+![World-traveling explorers Hank, Bobby, Sheila, Diana, and Presto stand on the threshold of their next adventure](../images/book/XPHB/012-02-001.world-traveling-explorers.webp)
+
 You can make a character for Dungeons & Dragons using the building blocks in this book. Your character is a combination of game statistics, roleplaying hooks, and your imagination. You choose a class (such as {@book Fighter|XPHB|3|Fighter} or {@book Wizard|XPHB|3|Wizard}), a background (such as {@book Sailor|XPHB|4|Sailor} or {@book Acolyte|XPHB|4|Acolyte}), and a species (such as {@book Human|XPHB|4|Human} or {@book Elf|XPHB|4|Elf}). You also invent the personality and appearance of your character. Once completed, your character serves as your avatar in the D&D multiverse.
 
 ## Get Ready
@@ -106,6 +108,8 @@ Your background and class both provide starting equipment. Any coins that you ga
 
 Record your chosen equipment on your character sheet. Equipment is described in {@book chapter 6|XPHB|6}, but for now you can just write it all down and look up the specifics in that chapter later. There's also space on the sample character sheet to note any coins you have left after purchasing your equipment, as well as treasure you acquire on your adventures.
 
+![Consider how your choices combine to set your character on the path to adventure](../images/book/XPHB/013-02-002.character-choices.webp)
+
 #### Choose a Species
 
 Choose a species for your character. The following species options are detailed in {@book chapter 4|XPHB|4}: {@race Aasimar|XPHB}, {@race Dragonborn|XPHB}, {@race Dwarf|XPHB}, {@race Elf|XPHB}, {@race Gnome|XPHB}, {@race Goliath|XPHB}, {@race Halfling|XPHB}, {@race Human|XPHB}, {@race Orc|XPHB}, and {@race Tiefling|XPHB}. Once you've chosen a species, write it on your character sheet. Then record your species' traits.
@@ -186,6 +190,18 @@ Ability scores are an essential part of the rules, but they can be more than tha
 
 Note your character's appearance and personality on your character sheet.
 
+![014-02-003.strength-icon](../images/book/XPHB/014-02-003.strength-icon.webp)
+
+![015-02-004.dexterity-icon](../images/book/XPHB/015-02-004.dexterity-icon.webp)
+
+![016-02-005.constitution-icon](../images/book/XPHB/016-02-005.constitution-icon.webp)
+
+![017-02-006.intelligence-icon](../images/book/XPHB/017-02-006.intelligence-icon.webp)
+
+![018-02-007.wisdom-icon](../images/book/XPHB/018-02-007.wisdom-icon.webp)
+
+![019-02-008.charisma-icon](../images/book/XPHB/019-02-008.charisma-icon.webp)
+
 ### Step 4: Choose an Alignment
 
 Choose your character's alignment from the options below, and note it on your character sheet.
@@ -197,6 +213,8 @@ D&D assumes that player characters aren't of an evil alignment. Check with your 
 A creature's alignment broadly describes its ethical attitudes and ideals. Alignment is a combination of two factors: one identifies morality (good, evil, or neutral), and the other describes attitudes toward order (lawful, chaotic, or neutral).
 
 The summaries of the alignments below describe the typical behavior of a creature with that alignment; individuals can vary from that behavior.
+
+![Alignments might be visualized as a grid like this—along with creatures that embody those alignments](../images/book/XPHB/020-02-009.alignments.webp)
 
 ##### Lawful Good (LG)
 
@@ -332,6 +350,8 @@ As you finish creating your character, consider whether you'd like to make up an
 
 ## Level Advancement
 
+![Adventuring equipment improves as a character progresses through the tiers of play](../images/book/XPHB/021-02-010.adventuring-equipment.webp)
+
 While going on adventures, your character gains experience, represented by {@variantrule Experience Points|XPHB} (XP). A character who reaches a specified Experience Point total advances in capability. This advancement is called gaining a level.
 
 The Character Advancement table lists the XP you need to advance to a level and the Proficiency Bonus for a character of that level. When your XP total equals or exceeds a number in the Experience Points column, you reach the corresponding level.
@@ -463,6 +483,8 @@ For example, if you are a level 4 Ranger / level 3 Sorcerer, you count as a leve
 ##### Pact Magic
 
 If you have the Pact Magic feature from the Warlock class and the Spellcasting feature, you can use the spell slots you gain from Pact Magic to cast spells you have prepared from classes with the Spellcasting feature, and you can use the spell slots you gain from the Spellcasting feature to cast Warlock spells you have prepared.
+
+![A character with Paladin and Warlock levels might call on both a mighty oath and an otherworldly patron](../images/book/XPHB/022-02-011.paladin-warlock-multiclass.webp)
 
 ## Trinkets
 

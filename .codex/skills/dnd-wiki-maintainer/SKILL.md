@@ -20,18 +20,21 @@ description: 維護此 D&D 5.5e Markdown 知識庫的規則、來源、版本、
 ## 規則條目與來源
 
 - 新增、重建或實質改寫前，完整讀取對應 `模板/`。
-- 新增或實質改寫條目的 Frontmatter 必須符合模板與 lint，並包含：`entity_id`、`concept_id`、`ruleset`、`content_scope`、`status`、`category`、`version`、`sources`、`source_type`、`confidence`、`rules_sources`、`errata`、`updated`；職業子職另依規範加入 `entry_type` 與 `parent_class`。
-- 每項規則主張必須有可定位的 `sources.file`／`locator`。官方中文社群翻譯使用 `authority: "官方"`、`translation: "community"`、`source_type: "official"`。
-- 同名不等於同規則。2014 與 2024 預設保留獨立頁面；逐條證實機制相同才在雙方頁面註明並互相連結，不得合併條文或宣稱未比對的相同。
+- 新增或實質改寫條目的 Frontmatter 必須符合模板與 lint，並包含共通必要欄位：`entity_id`、`concept_id`、`ruleset`、`content_scope`、`status`、`category`、`version`、`sources`、`source_type`、`confidence`、`rules_sources`、`errata`、`updated`；其他條件欄位依類別與版本加入，例如子職的 `entry_type`／`parent_class`、2014 Legacy 角色選項的 `compatibility_2024`，以及戰役設定的連續性與分類欄位。
+- 每項規則主張必須有可定位的 `sources.file`／`locator`。可唯一對照正式出版品的英文原文鏡像是內容與事實的首要來源，鏡像提供者不得標示成官方網站；中文 `原始資料/` 優先用於核定譯名與譯文對照。英文與同版中文譯文若衝突，列出雙方內容與定位交由人類判定，不得靜默覆寫。
+- 官方規則的中文社群翻譯使用 `authority: "官方"`、`translation: "community"`，其 `source_type` 仍由來源權威性推導為 `official`；社群翻譯不得稱為官方中文譯本。
+- 同名不等於同規則。非戰役設定的 2014 與 2024 條目預設分頁保存；逐條證實機制相同才可註明並互相連結，不得合併未比對的條文。非組織遊戲戰役設定則使用 `setting_continuity: "continuous"`，來源年代只供追溯，不建立 2014／2024 世界觀分頁。
+- 移動或重建既有頁面時保留 `entity_id` 與 `concept_id`；原路徑已不存在時，先以 `git show HEAD:<path>` 讀取既有 metadata。來源路徑遷移必須核對實際檔案、manifest 與所有 `sources.file`，不得依舊引用猜測檔名。
 - 未核定新詞使用 `譯名待確認 (English Name)`，不得臆造中文譯名。
 
 ## 來源吸收流程
 
-1. **盤點**：確認出版品、規則版本、來源定位與可編譯正文；先以 `npm.cmd run sources:status` 與 `npm.cmd run sources:unabsorbed` 檢查涵蓋狀態。
+1. **盤點**：確認出版品、規則版本、來源定位與可編譯正文；先以 `npm.cmd run sources:status` 與 `npm.cmd run sources:unabsorbed` 檢查涵蓋狀態。`sources:unabsorbed` 只表示原始檔尚未被 `sources.file` 引用，不等於缺少 Wiki 頁面；實際缺漏須按出版品、類別、英文實體、識別碼、版本與定位逐項比對。
 2. **比對**：以 `entity_id`、`concept_id`、版本與現有條目比對；先判斷是新增、增量更新、版本對照、素材或重複來源。
-3. **預覽**：使用 `npm.cmd run ingest -- --category "類別"` 或對應匯入器的預覽模式；除非使用者明確要求，禁止使用 `--apply`。
-4. **確認**：來源衝突、譯名、無法唯一映射的連結與規則差異交由使用者決定；不以排除清單隱藏真正缺漏。
-5. **套用與驗證**：套用後同步必要索引、反向連結與版本說明，再依下方決策表驗證。
+3. **選擇流程**：先依 `AGENTS.md` 讀取指定規範，再從 `package.json` 選用現有的 ingest、audit、mirror、lore、索引或同步工具；不要為已有專用流程的工作另寫一次性腳本。
+4. **預覽**：使用 `npm.cmd run ingest -- --category "類別"` 或對應工具的預覽模式；除非使用者明確要求套用，禁止使用 `--apply`。JSON Patch 另須完整讀取 `.agents/JSON增量編譯器.md`，只更新唯一指定的既有頁面，不建立新頁、分類或索引。
+5. **確認**：來源衝突、譯名、無法唯一映射的連結與規則差異交由使用者決定；不以排除清單隱藏真正缺漏。
+6. **套用與驗證**：套用後同步必要索引、反向連結與版本說明，再依下方決策表驗證。
 
 ## 類別完成檢查
 
@@ -40,6 +43,7 @@ description: 維護此 D&D 5.5e Markdown 知識庫的規則、來源、版本、
 - **職業與子職**：職業特性表與逐項詳解一致，取得等級、資源／法術表、子職索引與雙向連結完整。
 - **種族與專長**：取得條件、選項與種族／職業法術表完整；不重複列出正文或表格中已連結的相同法術。
 - **魔法物品**：物品資料、效果名稱、觸發、限制／恢復完整；外觀移至物品描述，詛咒依專用結構呈現，不拆分單一效果的條文。
+- **戰役設定**：除 `戰役創作/` DM 工具與全庫索引外，依 `config/lore.yml` 驗證 `setting`、`lore_type`、目錄與 `concept_id`；同一命名實體跨出版品累加來源，不因規則年代另建頁面。人物資料卡只連結已存在的怪物頁，缺頁時記錄 `missing-stat-link`，不得建立空白頁。
 
 ## 索引、連結與表格
 
@@ -52,12 +56,13 @@ description: 維護此 D&D 5.5e Markdown 知識庫的規則、來源、版本、
 
 | 情境 | 指令 |
 | :--- | :--- |
-| 一般內容或腳本異動 | `npm.cmd run check` |
-| 使用者要求全庫檢查、合併前驗證 | `npm.cmd run check:all` |
+| 一般 Wiki 內容異動 | `npm.cmd run lint` |
+| 維護腳本異動 | `npm.cmd run test`，再執行 `npm.cmd run lint` |
+| 使用者要求全庫檢查、合併前驗證 | `npm.cmd run lint:all`；若含腳本異動，另執行 `npm.cmd run test` |
 | 來源涵蓋或新書吸收 | `npm.cmd run sources:status`、`npm.cmd run sources:unabsorbed` |
 | 索引或雙向連結異動 | `npm.cmd run indexes:check` |
 | 可機械補入索引 | `npm.cmd run indexes:sync` |
-| 準備提交 | `npm.cmd run prepare:commit` |
+| 使用者已明確要求準備提交 | `npm.cmd run prepare:commit` |
 
 回報時固定區分**錯誤**、**警告**與**資訊**；清楚列出未修正且需要人類判定的項目。
 
