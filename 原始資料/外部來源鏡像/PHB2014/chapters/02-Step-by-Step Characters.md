@@ -8,6 +8,8 @@ Your first step in playing an adventurer in the Dungeons & Dragons game is to im
 
 Before you dive into step 1 below, think about the kind of adventurer you want to play. You might be a courageous fighter, a skulking rogue, a fervent cleric, or a flamboyant wizard. Or you might be more interested in an unconventional character, such as a brave rogue who likes hand-to-hand combat, or a sharpshooter who picks off enemies from afar. Do you like fantasy fiction featuring dwarves or elves? Try building a character of one of those races. Do you want your character to be the toughest adventurer at the table? Consider a class like barbarian or paladin. If you don't know where else to begin, take a look at the illustrations in this book to see what catches your interest.
 
+![ch1](../images/book/PHB/ch1.webp)
+
 Once you have a character in mind, roll on these steps in order, making decisions that reflect the character you want. Your conception of your character might evolve with each choice you make. What's important is that you come to the table with a character you're excited to play.
 
 Throughout this chapter, we use the term {@b character sheet} to mean whatever you use to track your character, whether it's a formal character sheet (like the one at the end of this book), some form of digital record, or a piece of notebook paper. An official D&D character sheet is a fine place to start until you know what information you need and how you use it during the game.
@@ -37,6 +39,8 @@ Every adventurer is a member of a class. Class broadly describes a character's v
 Your character receives a number of benefits from your choice of class. Many of these benefits are {@b class features}-capabilities (including spellcasting) that set your character apart from members of other classes. You also gain a number of {@b proficiencies:} armor, weapons, skills, saving throws, and sometimes tools. Your proficiencies define many of the things your character can do particularly well, from using certain weapons to telling a convincing lie.
 
 On your character sheet, record all the features that your class gives you at 1st level.
+
+![Bruenor](../images/book/PHB/01-001-bruenor.webp)
 
 ### Level
 
@@ -193,6 +197,8 @@ The battleaxe deals 1d8 slashing damage, and Bruenor adds his Strength modifier 
 ## 6. Come Together
 
 Most D&D characters don't work alone. Each character plays a role within a {@b party,} a group of adventurers working together for a common purpose. Teamwork and cooperation greatly improve your party's chances to survive the many perils in the worlds of Dungeons & Dragons. Talk to your fellow players and your DM to decide whether your characters know one another, how they met, and what sorts of quests the group might undertake.
+
+![c0-03](../images/book/PHB/c0-03.webp)
 
 ## Beyond 1st Level
 

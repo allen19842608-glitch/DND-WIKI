@@ -11,3 +11,5 @@ Each table contains names that are associated with  a nonhuman character race in
 Even though names are associated with races in this  appendix, a character might not have a name from their  own race. For instance, a half-orc might have grown up  among dwarves and have a dwarven name. Or, as DM,  you might decide that dragonborn in your campaign  have a culture reminiscent of ancient Rome and therefore use Roman names, rather than the dragonborn names suggested here.
 
 See the {@5etools names|names.html} page for the full collection of name tables.
+
+![ab001](../images/book/XGE/ab001.webp)

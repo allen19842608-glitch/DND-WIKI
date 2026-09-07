@@ -3,10 +3,10 @@ publication_id: MPMM2022
 publication_title: "Mordenkainen Presents: Monsters of the Multiverse (2022)"
 provider: 5e.tools
 upstream_url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/book/book-mpmm.json
-retrieved_at: 2026-08-27T14:49:51.158Z
+retrieved_at: 2026-09-04T18:46:51.848Z
 snapshot:
   file: 原始資料/外部來源鏡像/MPMM2022/book-mpmm.json
-  sha256: 13050da4c6c7d70bc728526c5c73374b8b786d859bb0a9f5d047d2869335ebda
+  sha256: 1706734ef68392b7ff007f316ca15e35952184c2ce9ccdb1b0f0cc271624a42b
 chapters:
   - kind: chapter
     number: 1

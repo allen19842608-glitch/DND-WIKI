@@ -16,6 +16,8 @@ This chapter is intended for the Dungeon Master. The ideas and tables herein can
 
 {@book "Dragon Campaigns"|FTD|3|Dragon Campaigns} talks about building worlds and campaign story arcs that put dragons at the forefront of history and at the center of the characters' lives and adventuring ambitions.
 
+![In his guise as Fizban the Fabulous, Bahamut helps two unlikely heroes escape the wrath of the red dragon Pyros](../images/book/FTD/013-03-001.chapter-splash.webp)
+
 ## Roleplaying Dragons
 
 To portray a convincing human, one must embody greed, selfishness, and vigilance. To portray a convincing dragon, one must relax.
@@ -28,11 +30,17 @@ The {@book Dungeon Master's Guide|DMG} includes a series of {@book tables and gu
 
 In {@book chapter 5|FTD|5} of this book, you'll find additional tables of personality traits and ideals that are customized to various kinds of dragons.
 
+![Dragons of the same kind can vary widely in shape, size, color, and ornamentation](../images/book/FTD/014-03-002.dragons-of-the-same.webp)
+
+![015-03-003](../images/book/FTD/015-03-003.webp)
+
 #### How to Name Your Dragon
 
 Many Common phrases have origins in Draconic names. "Great googly-moogly," "goody goody gumdrops," and "gadzooks" all have their origins in the name of my capricious friend Galgalothmogalthas, whose dragon breath also produced a boppy, trumpet-y tune.
 
 Some dragons' names resonate with power and inspire terror: Ashardalon, Dragotha, Klauth, Khellendros, Malystryx, Vaskar. Others are intricate and obscure, reflecting the grandeur of dragons' ancient language: Ingeloakastimizilian, Imvaernarhro, K'rshinthintl, Claugiyliamatar.
+
+![Commonly known as "Old Gnawbone," Claugiyliamatar is often seen with a mangled corpse hanging from her mouth](../images/book/FTD/016-03-004.commonly-known-as.webp)
 
 Many dragons are better known by nicknames and epithets. Klauth is commonly called Old Snarl, and Khellendros is remembered as Skie and the Storm over Krynn. Ingeloakastimizilian is Icingdeath, Imvaernarhro is Inferno, and K'rshinthintl and Claugiyliamatar are called Cyan Bloodbane and Old Gnawbones, respectively.
 
@@ -82,6 +90,8 @@ Some dragons can live for over a thousand years, outlasting the rise and fall of
 
 The tables in this section suggest possible goals that reflect the priorities of dragons at different ages. Of course, a dragon's goals are shaped by many additional factors, including alignment, ideals, bonds, and flaws. So use these tables as a starting point, but flesh out each dragon's goals as you develop a complete picture of the dragon's personality.
 
+![Blue Wyrmling](../images/book/FTD/017-03-005.blue-wyrmling.webp)
+
 #### Wyrmlings
 
 Much like adventurers in the first tier of play (levels 1 to 4), dragons in their first five years of life are still figuring out their capabilities and their place in the world. Thus, wyrmlings often rely on adult dragons or other companion creatures for safety.
@@ -91,6 +101,8 @@ Wyrmlings most often think on a local scale—an area no larger than might be co
 #### Young Dragons
 
 Young dragons in their first century of life are similar in many ways to adventurers in the second tier of play (levels 5 to 10), as they're beginning to come into their own among the most powerful creatures of the Material Plane.
+
+![Young blue dragon](../images/book/FTD/018-03-006.young-blue-dragon.webp)
 
 This stage is when most dragons first establish their own territory and lair. A young dragon's territory covers an area about 50 miles across. This is also when dragons start to form the magical ties that bind them to both their hoards and the regions around their lairs.
 
@@ -102,6 +114,8 @@ After their first century of life, adult dragons are mighty beings, akin to char
 
 Most adult dragons establish additional lairs to expand their territory. These lairs are usually set 50 to 75 miles apart, so the dragon can fly from one to the next in a single day's travel. An adult dragon typically hunts the area around one lair for a month or more, then moves on to another lair. The dragon's magical connection to a lair can transform the surrounding region, as represented by regional effects.
 
+![Adult blue dragon](../images/book/FTD/019-03-007.adult-blue-dragon.webp)
+
 ##### Dragons and Territory
 
 As dragons age, their sense of territory expands, and many establish multiple lairs across the region they call home. The larger a dragon's territory is, the more likely it is to edge up against or overlap the territory of another dragon. The territory of an adult or ancient dragon often encompasses the territories of younger dragons, as long as the older dragon doesn't feel threatened by the younger ones.
@@ -111,6 +125,8 @@ Considering the regions of a campaign world, an area about 50 miles across, such
 An area about 300 miles across—a kingdom or a large geographical region—can contain the territories of two to three dozen dragons, as long as most of them are young. Only three or four adult or ancient dragons are likely to occupy such a region. A single adult dragon might range over a region that includes the territories of up to six or eight young dragons (which might include the adult's offspring), but adults typically share territory with other adults only as mates or as members of a special alliance or organization.
 
 A whole continent, about 3,000 miles across, might include the territories of hundreds of young dragons and dozens of adults, but rarely more than a handful of ancient dragons.
+
+![Ancient blue dragon](../images/book/FTD/020-03-008.ancient-blue-dragon.webp)
 
 #### Ancient Dragons
 
@@ -129,6 +145,8 @@ Dragons are like lizards. They existed before humanoids and will exist long afte
 Dragon reproduction varies from world to world in the Material Plane and can vary further depending on the family, kind, or individual nature of the dragons involved. Humanoids observing dragons have long assumed that their reproductive cycle resembles that of mundane reptiles—that two dragons of different sexes mate and produce a clutch of eggs. Sometimes, on some worlds, this is true, but dragon reproduction covers a wide range of other possibilities. You can use the Origin of Dragon Eggs table to choose a method of reproduction that holds true for all dragons on your world, to determine the origin of a specific clutch of eggs, or for anything in between.
 
 Once an egg comes into being, it must mature before it is ready to hatch into a wyrmling. Typically, an egg thrives only in an environment appropriate for a dragon of its kind—nestled in a pool of lava for a red or gold dragon, in ice for a white or silver dragon, in rotting vegetation for a black or green dragon, in sun-heated sand for a brass or blue dragon, or in a storm-wracked sea cave or inhospitable moorland for a bronze or copper dragon. Gem dragon eggs generally incubate encased in rock or in small caves. The incubation period for any egg might range from 6 months to several decades or longer.
+
+![Miners discover an amethyst dragon egg](../images/book/FTD/021-03-009.miners-discover.webp)
 
 #### Half-Dragons
 
@@ -194,6 +212,8 @@ Whatever form an Undead dragon takes, the creature's transformation ripples thro
 
 The Undead Dragon Adventure Hooks table translates some of these ideas into inspiration for adventures revolving around Undead dragons.
 
+![The black dracolich Ebondeath is venerated by a sect of the Cult of the Dragon](../images/book/FTD/022-03-010.the-black-dracolich.webp)
+
 ### Echoes across the Worlds
 
 It takes no additional work to be infinite. As a spider sees through all its eyes, dragons simply are, once and many times.
@@ -211,6 +231,8 @@ Bahamut and Tiamat, the primordial dragons and the purported creators of the Fir
 On many worlds, Humanoids worship Bahamut and Tiamat as gods. On Krynn, they are the greatest among the gods, though they are known there as Paladine and Takhisis and are not always pictured as dragons. In the {@table A Sample Pantheon; Dawn War Deities|DMG|Dawn War pantheon} described in the {@book Dungeon Master's Guide|DMG}, Bahamut is revered as a god of justice and nobility, favored by paladins, while Tiamat is known as a god of greed, wealth, and vengeance.
 
 Dragons view the primordial dragons differently. To metallic dragons, Bahamut is more like a king than a god. Individual dragons might owe Bahamut allegiance, respect him, pay tribute to him, and strive to emulate him. Similarly, chromatic dragons might fear, respect, envy, and appease Tiamat as a sovereign. But none of those attitudes and behaviors bear any resemblance in a dragon's mind to the worship that mortals offer to their gods.
+
+![Bahamut is often accompanied by seven ancient gold dragons in his journeys on the Material Plane](../images/book/FTD/023-03-011.bahamut.webp)
 
 A few other dragons also command reverence from their kin. These are often greatwyrms who have undergone a sort of apotheosis, joining multiple echoes of themselves into a single powerful form. A few are ancient dragons who have cultivated their dragonsight to such a degree that they can coordinate the actions of their echoes across the Material Plane, influencing events on multiple worlds at once. Humanoids might consider these dragons gods, but as with Bahamut and Tiamat, dragons respect these figures for their wisdom, their might, their magic, and their wealth; they don't worship them. Such enlightened dragons include Aasterinian (a brass dragon who serves as a messenger for Bahamut and is sometimes identified as a god of invention), Chronepsis (a black dragon who now resides in the Outlands, sometimes imagined as a god of fate), and Tamara (a silver dragon of transcendent beneficence, described as a god of life). A number of such dragons of legend are discussed in more detail in sidebars in {@book chapters 5|FTD|5} and {@book 6|FTD|6}.
 
@@ -260,6 +282,8 @@ Since the failure of Severin's effort to bring Tiamat into the world, the Cult o
 
 The Tyranny of Dragons adventure details the cult's efforts to bring Tiamat's avatar into the world. Beyond that plot, the Cult of the Dragon Adventure Hooks table offers suggestions for how adventurers might encounter this sinister cult.
 
+![An adventurer closes a portal, preventing an agent of Tiamat from emerging to aid the Cult of the Dragon](../images/book/FTD/024-03-012.an-adventurer-closes.webp)
+
 #### The Chamber
 
 A cabal of dragons called the Chamber keeps tabs on events unfolding across the world of Eberron, monitoring and manipulating the fulfillment of the ancient Draconic Prophecy. Most other creatures are merely pawns in the dragons' centuries-long schemes, their needs and lives relevant only insofar as they intersect with the Prophecy.
@@ -295,6 +319,8 @@ The hidecarved dragons of a lauth share a goal but often have little else in com
 ##### Engraved Wards
 
 The arcane markings carved into hidecarved dragons' scales are magical protections, intended to make the dragons more resilient against the threats they might face in carrying out the lauth's purpose. The longer dragons stay with a lauth, the more wards they receive. Most hidecarved dragons have one of these wards plus an additional ward for each age category above wyrmling. You can roll for these effects on the Hidecarved Wards table or choose effects as you wish.
+
+![Hidecarved dragons adorn their scales with mystic words](../images/book/FTD/025-03-013.hidecarved-dragons.webp)
 
 ##### Mystic Markings
 
@@ -362,9 +388,11 @@ An emperor might rule openly in dragon form, which discourages aggressive neighb
 
 The size of a dragon's territory is irrelevant to the "emperor" role. A dragon who acts as a mayor for a small frontier town has the same kind of relationship with the populace as one who rules a continent-spanning nation.
 
+![To Kugluk, the fiery breath of his "Great Uncle" is a toasty blessing](../images/book/FTD/026-03-014.to-kugluk.webp)
+
 #### God
 
-Some dragons demand not just service but worship from their minions. Among Humanoid creatures, kobolds are most likely to treat their dragon patrons as deities, since they typically see dragons as idealized versions of themselves. They bring sacrifices of food and treasure to their dragon gods, indulge in various forms of worship (including groveling when evil dragons are involved), and create tales and hymns to stoke their deities' egos. But other Humanoids might also feel (or at least feign) religious devotion to a dragon, sometimes even manifesting magical power as a result of their piety. (The {@creature dragon blessed|FTD} follower, described in {@book chapter 6|FTD|6|Dragon Blessed}, is an example of a Humanoid manifesting such power.)
+Some dragons demand not just service but worship from their minions. Among Humanoid creatures, kobolds are most likely to treat their dragon patrons as deities, since they typically see dragons as idealized versions of themselves. They bring sacrifices of food and treasure to their dragon gods, indulge in various forms of worship (including groveling when evil dragons are involved), and create tales and hymns to stoke their deities' egos. But other Humanoids might also feel (or at least feign) religious devotion to a dragon, sometimes even manifesting magical power as a result of their piety. (The {@creature dragon blessed|FTD} follower is an example of a Humanoid manifesting such power.)
 
 Dragons can be benevolent patrons who genuinely care for those who worship them, scheming manipulators who view devotion as a means of domination and control, or something in between. All dragon gods, however, have devoted minions who are difficult to sway from their service. One key to this devotion is the fact that a dragon's power is more concrete than the power of most gods; the supernatural fear inspired by a dragon's presence readily translates into reverence among the followers.
 
@@ -390,7 +418,7 @@ If you want to have a dragon act as a patron for a group of adventurers, look to
 
 The oldest dragons are deep wellsprings of knowledge, drawing on vast experience that might extend beyond a single world of the Material Plane to encompass multiple realities. Though some dragons hoard their knowledge like treasure, others enjoy passing their knowledge on to other creatures. Such dragons might establish schools or monasteries, take on individual students or groups of disciples, or pose as Humanoid scholars to teach in universities. These dragons might believe that educating lesser creatures is the responsibility of the great. Others want a higher class of minion and believe education is the best way to achieve that. Still others simply enjoy teaching or believe the world is improved by having an educated populace.
 
-Monks who follow the Way of the Ascendant Dragon (see {@book chapter 1|FTD|1|Monk: Way of the Ascendant Dragon}) might follow a dragon teacher or could train in monasteries established by dragons in past generations.
+Monks who follow the {@class monk|phb|Way of the Ascendant Dragon|Ascendant Dragon|FTD} might follow a dragon teacher or could train in monasteries established by dragons in past generations.
 
 #### Warlord
 
@@ -438,6 +466,8 @@ Whether you're crafting a whole adventure around a dragon or just want to throw 
 
 With these four questions in mind, you can look to the Dragon Encounter Complications table for suggestions of quirks, special effects, and unusual situations that can make any dragon encounter more interesting and exciting.
 
+![An encounter with a dragon can be devastating to people and property alike](../images/book/FTD/027-03-015.an-encounter-with-a-dragon.webp)
+
 ## Dragon Adventures
 
 Dragons are not in your world. You are in theirs.
@@ -455,6 +485,8 @@ Three basic goals can provide the framework for a monstrous dragon adventure:
 - Reclaim the Dragon's Lair
 
 - Acquire the Dragon's Treasure
+
+![Sometimes the only solution is to slay the dragon](../images/book/FTD/028-03-016.sometimes-the-only-solution.webp)
 
 An adventure featuring a dragon in a monster's role lends itself to a location-based structure. That location is likely the dragon's lair, since it's difficult to pin a dragon down for an all-out fight in most other sites. You can use one of the lair maps in {@book chapter 5|FTD|5} of this book as the key location for such an adventure, fleshing the site out with features and inhabitants using the {@book guidelines|DMG|5|Dungeons} in the {@book Dungeon Master's Guide|DMG}.
 
@@ -474,9 +506,13 @@ The "{@book Dragon Campaigns|FTD|3|Dragon Campaigns}" section that follows discu
 
 Adventures at this scale might involve dragons as villains or as patrons, and they might well involve multiple dragons in conflict with each other. The characters might loyally serve one dragon in opposition to another, or they might attempt to play multiple dragons against one another—perhaps earning the ire of them all.
 
+![In the heart of the jungle, the black greatwyrm Rhashaak keeps watch over a ruined city](../images/book/FTD/029-03-017.in-the-heart.webp)
+
 ## Dragon Campaigns
 
 Dragons occupy a prominent place in most D&D worlds, but in some realms, they are central to a world's story. Consider these three examples.
+
+![Laurana and Kitiara—generals and dragonriders in opposing armies—battle in the temple of the Dragon Queen](../images/book/FTD/030-03-018.laurana-and-kitiara.webp)
 
 - Krynn
 
@@ -489,6 +525,8 @@ If you want to build a campaign that puts dragons in a similarly prominent role,
 ### Campaign Events
 
 The {@book Dungeon Master's Guide|DMG} includes a discussion of {@book world-shaking events|DMG|1|World-Shaking Events} that might define turning points at the start, middle, or end of a campaign. One way to give dragons a prominent role in your campaign is to apply a draconic twist to any of these events.
+
+![A half-dragon conqueror acquiring an Orb of Dragonkind can throw a world into chaos](../images/book/FTD/031-03-019.a-half-dragon-conqueror.webp)
 
 - Rise or Fall of a Leader or an Era
 
@@ -543,6 +581,8 @@ Moving from the realm of temporal power to the spiritual domain, dragons can als
 If the gods are distant from their mortal worshipers in your campaign, making those gods dragons is largely an aesthetic choice that reinforces the importance of dragons. Perhaps the high priests of the gods are also dragons, or they could be draconians (described in {@book chapter 6|FTD|6|Draconians}), dragonborn, or half-dragons. Anyone with draconic ancestry or magic might be viewed as carrying a divine blessing in such a setting, and actual dragons would be regarded with reverential awe.
 
 On the other hand, the dragon gods of your campaign might be ever present in the world and fully involved in the lives of their worshipers. You could reimagine the gods of Theros (detailed in {@book Mythic Odysseys of Theros|MOT}) as dragons, so shining Heliod becomes a gold dragon, Erebos becomes a black dracolich, Thassa is a dragon turtle, and so on. These dragon gods might grant supernatural gifts to their followers in exchange for devotion, potentially even transforming their favored ones into dragonborn. You could draw on the supernatural gifts described in {@book chapter 2|FTD|2|Draconic Gifts} as well as the {@book piety benefits|MOT|2|Benefits of Piety} detailed in {@book Mythic Odysseys of Theros|MOT} for inspiration.
+
+![Tiamat's emergence from Avernus could define the course of a campaign](../images/book/FTD/032-03-020.tiamats-emergence.webp)
 
 #### Dragons of Myth
 

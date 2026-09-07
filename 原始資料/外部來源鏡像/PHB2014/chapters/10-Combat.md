@@ -12,6 +12,8 @@ This chapter provides the rules you need for your characters and monsters to eng
 
 The Dungeon Master controls all the monsters and nonplayer characters involved in combat, and each other player controls an adventurer. "You" can also mean the character or monster that you control.
 
+![ch9](../images/book/PHB/ch9.webp)
+
 ## Combat Step by Step
 
 - 1. Determine surprise
@@ -180,6 +182,8 @@ If you leave a hostile creature's reach during your move, you provoke an opportu
 
 Flying creatures enjoy many benefits of mobility, but they must also deal with the danger of falling. If a flying creature is knocked {@condition prone}, has its speed reduced to 0, or is otherwise deprived of the ability to move, the creature falls, unless it has the ability to hover or it is being held aloft by magic, such as by the {@spell fly} spell.
 
+![c91](../images/book/PHB/c91.webp)
+
 ### Creature Size
 
 Each creature takes up a different amount of space.
@@ -290,6 +294,8 @@ Whether you're striking with a melee weapon, firing a weapon at range, or making
 
 If there's ever any question whether something you're doing counts as an attack, the rule is simple: if you're making an attack roll, you're making an attack.
 
+![c92](../images/book/PHB/c92.webp)
+
 ### Attack Rolls
 
 When you make an attack, your attack roll determines whether the attack hits or misses. To make an attack roll, roll a d20 and add the appropriate modifiers. If the total of the roll plus modifiers equals or exceeds the target's Armor Class (AC), the attack hits. The AC of a character is determined at character creation, whereas the AC of a monster is in its stat block.
@@ -325,6 +331,8 @@ When you attack a target that you can't see, you have disadvantage on the attack
 When a creature can't see you, you have advantage on attack rolls against it.
 
 If you are hidden—both unseen and unheard—when you make an attack, you give away your location when the attack hits or misses.
+
+![c93](../images/book/PHB/c93.webp)
 
 ### Ranged Attacks
 
@@ -539,6 +547,8 @@ The best way to save a creature with 0 hit points is to heal it. If healing is u
 You can use your action to administer first aid to an {@condition unconscious} creature and attempt to stabilize it, which requires a successful {@dc 10} Wisdom ({@skill Medicine}) check.
 
 A stable creature doesn't make death saving throws, even though it has 0 hit points, but it does remain {@condition unconscious}. The creature stops being stable, and must start making death saving throws again, if it takes any damage. A stable creature that isn't healed regains 1 hit point after {@dice 1d4} hours.
+
+![c94](../images/book/PHB/c94.webp)
 
 #### Monsters and Death
 

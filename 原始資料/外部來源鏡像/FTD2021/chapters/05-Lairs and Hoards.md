@@ -12,6 +12,8 @@ Dragons are deeply connected to the worlds in which they dwell. The magic of the
 
 {@book "What's in a Hoard?"|FTD|4|What's in a Hoard?} provides tables to determine the contents of a dragon's hoard, expanding on the treasure tables in the {@book Dungeon Master's Guide|DMG}.
 
+![Fizban argues with a smug statue in the lair of an amused brass dragon](../images/book/FTD/033-04-001.chapter-splash.webp)
+
 ## Dragon Lairs
 
 Home is where the hoard is.
@@ -132,6 +134,8 @@ Wyrmling dragons begin acquiring hoards as soon as they can fly, but their small
 
 As dragons transition from wyrmling to young age, at around five years, they also begin to look for their first permanent lairs and amass more substantial hoards, which grow in value to many thousands of gold pieces. Young dragons keep their hoards safe in the same central location where they sleep. Such dragons typically do not yet impose regional effects, but these effects might begin to manifest as the dragons' connections to their lairs develop. You can add regional effects and even lair actions to young dragons, particularly for dragons who have acquired an unusually large hoard. These dragons might not be old enough to fully step into the power of an adult, but gathering such a hoard makes them more powerful than other dragons of a similar age.
 
+![An ancient dragon's hoard can hold enough wealth to cause the rise and the ruin of dynasties](../images/book/FTD/034-04-002.an-ancient-dragons-hoard.webp)
+
 #### Adult Dragons
 
 A dragon's transition to adulthood is measured by two milestones: a century of life and a hoard worth around 15,000 gp or more. A hoard of that size binds dragon, lair, and territory together in a tangle of magical energy that makes the dragon truly legendary, empowering the dragon's legendary actions and lair actions and spreading draconic influence throughout the area as regional effects.
@@ -204,6 +208,8 @@ One other way to bypass a dragon's curse on a hoard is to have the treasure beco
 
 Shadowy cults, reclusive scholars, rival adventurers, and mysterious organizations might seek out a dragon's hoard, either trying to claim it from a dragon or trying to acquire it from characters who have slain a dragon. Aside from greed, such groups can have any number of motivations for seeking a dragon's treasure. Often, such groups seek to draw on the magic of a dragon's hoard to perform some great ritual. The Hoard Magic table suggests some possibilities.
 
+![While a dragon slumbers, a skilled burglar might be able to make off with a treasure or two, but looting the entire hoard is another matter](../images/book/FTD/035-04-003.skilled-burglar.webp)
+
 ## What's in a Hoard?
 
 Great piles of coins are all well and good, but the best treasures are the ones with memories attached. Let me tell you about my collection of pie plates!
@@ -234,6 +240,8 @@ You can determine the specific magic items found in a dragon's hoard in one of t
 
 As described in {@book Xanathar's Guide to Everything|XGE|2|Awarding Magic Items}, the items found on {@table Magic Item Table A} through {@table Magic Item Table E} in the {@book Dungeon Master's Guide|DMG} are minor items, a category that includes common items, potions and scrolls (which can be used only once), and other items whose impact on the game is minor or utilitarian. The items on {@table Magic Item Table F} through {@table Magic Item Table I} are major items: permanent items that can have significant long-term impact on the game.
 
+![Green dragons are poison—from their blood and fangs to the wispy gases of their breath and the sinister insinuations they whisper to the weak-willed](../images/book/FTD/036-04-004.green-dragons-are-poison.webp)
+
 ### Creating a Hoard
 
 A dragon's hoard contains each of the items listed for the dragon's age category here. For each mundane item, gem, art object, and magic item indicated in the list, roll on the appropriate table.
@@ -245,3 +253,7 @@ A dragon's hoard contains each of the items listed for the dragon's age category
 - Young Dragon Hoards
 
 - Ancient Dragon Hoards
+
+![037-04-005.gold-coins](../images/book/FTD/037-04-005.gold-coins.webp)
+
+![Trying to loot a dragon's hoard without waking its owner is a reckless endeavor](../images/book/FTD/038-04-006.trying-to-loot.webp)

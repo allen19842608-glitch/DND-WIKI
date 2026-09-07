@@ -3,10 +3,10 @@ publication_id: PHB2014
 publication_title: Player’s Handbook (2014)
 provider: 5e.tools
 upstream_url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/book/book-phb.json
-retrieved_at: 2026-08-27T14:49:54.028Z
+retrieved_at: 2026-09-04T18:38:58.333Z
 snapshot:
   file: 原始資料/外部來源鏡像/PHB2014/book-phb.json
-  sha256: c16c0a65dfea9bc028ac6b2ca74a3e61028e5ecf359810d4c2b5055204410390
+  sha256: 6a857aa2cc62afa575197ab6edd9434286d21cfbdeef8fa50a1f0fe1bb39f70a
 chapters:
   - kind: chapter
     number: 1
@@ -98,3 +98,239 @@ chapters:
     page: 300
     file: 原始資料/外部來源鏡像/PHB2014/chapters/15-The Planes of Existence.md
     status: complete
+images:
+  - path: book/DMG/Planes-1.webp
+    file: 原始資料/外部來源鏡像/PHB2014/images/book/DMG/Planes-1.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/DMG/Planes-1.webp
+    sha256: ed69bf27008a86caa888ceb552d01b5cc7592ce8c53443d42850a15f0b29e082
+    bytes: 37368
+  - path: book/DMG/Planes-2.webp
+    file: 原始資料/外部來源鏡像/PHB2014/images/book/DMG/Planes-2.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/DMG/Planes-2.webp
+    sha256: 77ad9515eae345c6a559755f3dd7bbb23f1d5b5f88aa2f3e37177a4a1c1f9651
+    bytes: 145158
+  - path: book/DMG/Point-of-Origin.webp
+    file: 原始資料/外部來源鏡像/PHB2014/images/book/DMG/Point-of-Origin.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/DMG/Point-of-Origin.webp
+    sha256: c0dfa20f25510f868aa73ad6590f4e332b6f8818b3cc35df78724190b9282aa2
+    bytes: 76112
+  - path: book/PHB/01-001-bruenor.webp
+    file: 原始資料/外部來源鏡像/PHB2014/images/book/PHB/01-001-bruenor.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/PHB/01-001-bruenor.webp
+    sha256: 00152804cddc75ae9b1a917b1a36e486b754210c63e0155bb73afda78f274633
+    bytes: 123766
+  - path: book/PHB/appdeitysymbols.webp
+    file: 原始資料/外部來源鏡像/PHB2014/images/book/PHB/appdeitysymbols.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/PHB/appdeitysymbols.webp
+    sha256: dfd0250895aac78c01456aacd9b1114075660e8acd8f51272ca9b6699fa2c903
+    bytes: 35306
+  - path: book/PHB/c0-03.webp
+    file: 原始資料/外部來源鏡像/PHB2014/images/book/PHB/c0-03.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/PHB/c0-03.webp
+    sha256: 0d834d0c932ce26c85492b6c8ade297116daf195f3c1b0c66b8931eb69b7b12e
+    bytes: 363142
+  - path: book/PHB/c101.webp
+    file: 原始資料/外部來源鏡像/PHB2014/images/book/PHB/c101.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/PHB/c101.webp
+    sha256: e511cd024940be9461faf8050eb55bb0b8348c93fe7592230bda16f37989d817
+    bytes: 181566
+  - path: book/PHB/c103.webp
+    file: 原始資料/外部來源鏡像/PHB2014/images/book/PHB/c103.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/PHB/c103.webp
+    sha256: 65a316ca9edd883aef44750b159ed14305e7b9a81daa502af9d3498a6bcc7fdf
+    bytes: 324150
+  - path: book/PHB/c4-1.webp
+    file: 原始資料/外部來源鏡像/PHB2014/images/book/PHB/c4-1.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/PHB/c4-1.webp
+    sha256: 02f089ab044173801b7a6579525a4e833ed3f77f0c0e4bdf66c7ee840b05adca
+    bytes: 144074
+  - path: book/PHB/c4draconicalphabet.webp
+    file: 原始資料/外部來源鏡像/PHB2014/images/book/PHB/c4draconicalphabet.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/PHB/c4draconicalphabet.webp
+    sha256: b13481c7b95de7b681947404ed2ed880147e78a10b421b15679f89dda5143f88
+    bytes: 44994
+  - path: book/PHB/c4dwarvishalphabet.webp
+    file: 原始資料/外部來源鏡像/PHB2014/images/book/PHB/c4dwarvishalphabet.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/PHB/c4dwarvishalphabet.webp
+    sha256: 5da07dd9c5a535f6a0509a2cf7350c624fc0dcfd2d23743e8b4aaa500385b69c
+    bytes: 41662
+  - path: book/PHB/c4elvishalphabet.webp
+    file: 原始資料/外部來源鏡像/PHB2014/images/book/PHB/c4elvishalphabet.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/PHB/c4elvishalphabet.webp
+    sha256: 85a658ab6400ee21d3b2867a015c8aa45d4954de567a0548aad32cce47f5eb92
+    bytes: 45282
+  - path: book/PHB/c51.webp
+    file: 原始資料/外部來源鏡像/PHB2014/images/book/PHB/c51.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/PHB/c51.webp
+    sha256: 483d47c838fc79656829d8db20fd7ba8ec49d9ea3c43c1d2263ee51534457f1b
+    bytes: 48410
+  - path: book/PHB/c510.webp
+    file: 原始資料/外部來源鏡像/PHB2014/images/book/PHB/c510.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/PHB/c510.webp
+    sha256: 57fa503deb873c4233de2bcab61f741ed97ef48f27ab5d8a94a9912480a02f23
+    bytes: 205252
+  - path: book/PHB/c511.webp
+    file: 原始資料/外部來源鏡像/PHB2014/images/book/PHB/c511.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/PHB/c511.webp
+    sha256: 27124c8ccd15b29b51b21c0ebc99d4fd16fd8cc67e4e5c7b8fbde55818348d4d
+    bytes: 90024
+  - path: book/PHB/c512.webp
+    file: 原始資料/外部來源鏡像/PHB2014/images/book/PHB/c512.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/PHB/c512.webp
+    sha256: b4d654dccc36e9cad5d8552ade13b9e180d2348eb00c0edcb923decd345587a0
+    bytes: 185534
+  - path: book/PHB/c513.webp
+    file: 原始資料/外部來源鏡像/PHB2014/images/book/PHB/c513.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/PHB/c513.webp
+    sha256: 73c0b9668665eab0d97d638667a911abbc51c805942c845454038f2e87f5e460
+    bytes: 163142
+  - path: book/PHB/c514.webp
+    file: 原始資料/外部來源鏡像/PHB2014/images/book/PHB/c514.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/PHB/c514.webp
+    sha256: 97ba8d434a190648106579b9084116f91dacea27ed0acf90f0d278053ab4d55d
+    bytes: 124628
+  - path: book/PHB/c52.webp
+    file: 原始資料/外部來源鏡像/PHB2014/images/book/PHB/c52.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/PHB/c52.webp
+    sha256: 0e60de6a1c13f60ff93c9f63d6e0fee0007ecffbdfa699f7b5cbbd0f62d2c501
+    bytes: 117772
+  - path: book/PHB/c53.webp
+    file: 原始資料/外部來源鏡像/PHB2014/images/book/PHB/c53.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/PHB/c53.webp
+    sha256: ed7a55a7ba6fd2497510e78ae0ef3088bb1115dad8e56d22ec91c51c35d7172e
+    bytes: 58696
+  - path: book/PHB/c54.webp
+    file: 原始資料/外部來源鏡像/PHB2014/images/book/PHB/c54.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/PHB/c54.webp
+    sha256: 664a13a251c159676e0039a77768e4ee8cc07f3ae670cec28c315b67f0c8a530
+    bytes: 44810
+  - path: book/PHB/c55.webp
+    file: 原始資料/外部來源鏡像/PHB2014/images/book/PHB/c55.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/PHB/c55.webp
+    sha256: c472b15a85cd2974785acbe84f38284042cf91e60265c8301f9b0d598c3d27f0
+    bytes: 314386
+  - path: book/PHB/c56.webp
+    file: 原始資料/外部來源鏡像/PHB2014/images/book/PHB/c56.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/PHB/c56.webp
+    sha256: d10fad80696f8c4b08ad0eb0e32b399310bbb947c52b5f719af28b8f70bfc817
+    bytes: 199302
+  - path: book/PHB/c57.webp
+    file: 原始資料/外部來源鏡像/PHB2014/images/book/PHB/c57.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/PHB/c57.webp
+    sha256: 15eb80695a8cc89fda808857452a016ba15091e618e748884afa6c59eb7dcbb6
+    bytes: 129362
+  - path: book/PHB/c58.webp
+    file: 原始資料/外部來源鏡像/PHB2014/images/book/PHB/c58.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/PHB/c58.webp
+    sha256: a81783ada90d743dd1b7a7c24c9c83ca453ac345244230c3a50ff1c91d5bc1ef
+    bytes: 121904
+  - path: book/PHB/c59.webp
+    file: 原始資料/外部來源鏡像/PHB2014/images/book/PHB/c59.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/PHB/c59.webp
+    sha256: 4e824e03080b93ac021b042182b88758b00d40cd24ce949bf0a2b755686b366f
+    bytes: 139010
+  - path: book/PHB/c71.webp
+    file: 原始資料/外部來源鏡像/PHB2014/images/book/PHB/c71.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/PHB/c71.webp
+    sha256: bf419ece69cd413b74b986cd6bac718b3390c6d9ccfbee44f12d06daea256f8d
+    bytes: 232968
+  - path: book/PHB/c72.webp
+    file: 原始資料/外部來源鏡像/PHB2014/images/book/PHB/c72.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/PHB/c72.webp
+    sha256: 40a6686d926e9babcdc2fe1f7bc064fc31b54cfab0af6e7e434619b4d5a310c1
+    bytes: 120308
+  - path: book/PHB/c81.webp
+    file: 原始資料/外部來源鏡像/PHB2014/images/book/PHB/c81.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/PHB/c81.webp
+    sha256: b75627a68d61f82d5b47a3f07c19bfda31e51c57e3709fe71ab1e992f0488d4f
+    bytes: 130550
+  - path: book/PHB/c91.webp
+    file: 原始資料/外部來源鏡像/PHB2014/images/book/PHB/c91.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/PHB/c91.webp
+    sha256: 279a5b131a163f31fb3130273eb6508d72ebf76e3b235341fc3e5de25fe4eeb9
+    bytes: 167432
+  - path: book/PHB/c92.webp
+    file: 原始資料/外部來源鏡像/PHB2014/images/book/PHB/c92.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/PHB/c92.webp
+    sha256: cc4a38bbfe6cd58ddd983bf523ab74757a76b07b4c3d0e7312c096d09190de9c
+    bytes: 132884
+  - path: book/PHB/c93.webp
+    file: 原始資料/外部來源鏡像/PHB2014/images/book/PHB/c93.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/PHB/c93.webp
+    sha256: dbacee4d095b4eb8b8bd473aeb960e0204a4098cc6fa8262818b41bff4058f57
+    bytes: 103356
+  - path: book/PHB/c94.webp
+    file: 原始資料/外部來源鏡像/PHB2014/images/book/PHB/c94.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/PHB/c94.webp
+    sha256: bfa2567f323d16d09f1488ba8c9b1aa89722e866678c7927fc82cf4e6a35f6e7
+    bytes: 174640
+  - path: book/PHB/ch1.webp
+    file: 原始資料/外部來源鏡像/PHB2014/images/book/PHB/ch1.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/PHB/ch1.webp
+    sha256: 625fe5f1385a1df23a1c52d0f66229850556589c6ea1aacd9aad0175d8af5de9
+    bytes: 223394
+  - path: book/PHB/ch10.webp
+    file: 原始資料/外部來源鏡像/PHB2014/images/book/PHB/ch10.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/PHB/ch10.webp
+    sha256: 49343fd43e5ce3e43e0a650d5af49608391c7e428c6b81ca5c6b3717f03d2a1c
+    bytes: 398448
+  - path: book/PHB/ch11.webp
+    file: 原始資料/外部來源鏡像/PHB2014/images/book/PHB/ch11.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/PHB/ch11.webp
+    sha256: c3dd8506ee12470172092a742328a8d43074e1c3acfeb69c073597aeb8cf7037
+    bytes: 231252
+  - path: book/PHB/ch2.webp
+    file: 原始資料/外部來源鏡像/PHB2014/images/book/PHB/ch2.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/PHB/ch2.webp
+    sha256: 99bb8563f3cd1cd09621ea041b21def88b99c353bffe250183e16cb1818946fa
+    bytes: 214670
+  - path: book/PHB/ch3.webp
+    file: 原始資料/外部來源鏡像/PHB2014/images/book/PHB/ch3.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/PHB/ch3.webp
+    sha256: 210430453aeed8c26f19c4fde36347fff78339a7ec52cfb163b65ea459597915
+    bytes: 252626
+  - path: book/PHB/ch4.webp
+    file: 原始資料/外部來源鏡像/PHB2014/images/book/PHB/ch4.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/PHB/ch4.webp
+    sha256: 39c563ddfb75e4e7324311592e5bc11d703ac4e03104a82ec348478b00599d26
+    bytes: 413192
+  - path: book/PHB/ch5.webp
+    file: 原始資料/外部來源鏡像/PHB2014/images/book/PHB/ch5.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/PHB/ch5.webp
+    sha256: 21f8798bd28879e26c5bac766f00d3efbbafcbf413cd1e834f6d18721f4745c7
+    bytes: 231448
+  - path: book/PHB/ch6.webp
+    file: 原始資料/外部來源鏡像/PHB2014/images/book/PHB/ch6.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/PHB/ch6.webp
+    sha256: 4adba94da03029e5fa8d5e8b323d00db9f74b9db690a5801d5ee682e93dbe457
+    bytes: 182374
+  - path: book/PHB/ch7.webp
+    file: 原始資料/外部來源鏡像/PHB2014/images/book/PHB/ch7.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/PHB/ch7.webp
+    sha256: d735092966082a626e66d42c281f829d7f91e3066c1223c9fdd3b3439549cdb1
+    bytes: 234302
+  - path: book/PHB/ch8.webp
+    file: 原始資料/外部來源鏡像/PHB2014/images/book/PHB/ch8.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/PHB/ch8.webp
+    sha256: 4d945cf59b4475ec01f584c9f12486b2fad011da33b9ffeb0b0a0d48a9d9dde7
+    bytes: 219114
+  - path: book/PHB/ch9.webp
+    file: 原始資料/外部來源鏡像/PHB2014/images/book/PHB/ch9.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/PHB/ch9.webp
+    sha256: e759a6a5bd046abd684467c8880ff13f9402b78acba4f53b64d05e6984056e1b
+    bytes: 294564
+  - path: book/PHB/dice_1.webp
+    file: 原始資料/外部來源鏡像/PHB2014/images/book/PHB/dice_1.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/PHB/dice_1.webp
+    sha256: 28faf42579ca2deb790c56fd593cc9537cebdd47d1c5c9f1d7ea8f89dfc4f682
+    bytes: 16652
+  - path: book/PHB/dice_2.webp
+    file: 原始資料/外部來源鏡像/PHB2014/images/book/PHB/dice_2.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/PHB/dice_2.webp
+    sha256: db61d0afcb40cd5a8796118ee01bdf564fd084647ec79ae5cdf06404163b6e93
+    bytes: 15198
+  - path: book/PHB/phbcover.webp
+    file: 原始資料/外部來源鏡像/PHB2014/images/book/PHB/phbcover.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/PHB/phbcover.webp
+    sha256: af1b271b812406c17dcfacdb9fced0313f8b27e5f0ac6611e83acc29cc79d2a2
+    bytes: 86682

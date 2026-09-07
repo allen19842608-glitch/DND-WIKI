@@ -8,6 +8,8 @@ Across the worlds of the Material Plane and beyond, draconic creatures appear in
 
 These monsters are arranged in alphabetical order. For guidance on how to use a creature's stat block, consult the {@book introduction|MM|0} of the {@book Monster Manual|MM}.
 
+![A rampaging blue greatwyrm threatens a world's existence, and Bahamut stands alongside the world's greatest heroes](../images/book/FTD/057-06-001.chapter-splash.webp)
+
 - {@creature Ancient Amethyst Dragon|FTD}
 
 - {@creature Adult Amethyst Dragon|FTD}

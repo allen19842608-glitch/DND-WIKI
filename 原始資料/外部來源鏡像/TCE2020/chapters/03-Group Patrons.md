@@ -8,6 +8,8 @@ Each adventuring group is bound together by the quests it embarks on and by the 
 
 During character creation, every player has the opportunity to weave connections between their character and the other members of their party. Rather than (or in addition to) creating a web of established relationships, players can work with the DM to choose a group patron. And if you're interested in being your own patron, see the "{@area Being Your Own Patron|236|x}" section at the end of the chapter.
 
+![A group of wizards pledges themselves to their patron, Tasha, the Witch Queen](../images/book/TCE/059-02-001.webp)
+
 ## How Patrons Work
 
 The following sections present several group patron options. The description of each patron provides an overview of the types of organizations the group patron represents, perks of membership, and quests the patron encourages adventurers to undertake.
@@ -61,6 +63,8 @@ In your work, you brush shoulders with the wisest in the land, travel to places 
 Any assemblage of scholars and truth-seekers can function as an academy. Generally, an academy unites a network of learned individuals, allowing them to share their knowledge, further their research, and support common goals. Passing on wisdom to the next generation is part of an academy's mandate, but members find opportunities to undertake far-flung research expeditions—only so much can be learned in libraries, after all. An academy's focus can be broad or singular, artistic or scientific, mundane or magical. For every topic with unexplored possibilities, an academy seeks to plumb its depths or elevate its study.
 
 Roll or pick from the Academy Type table to determine the institution with which you're aligned.
+
+![Wizardly boyfriends relax while their classmates practice magic at an arcane enclave](../images/book/TCE/060-02-002.webp)
 
 #### Academy Perks
 
@@ -120,6 +124,8 @@ Roll or pick from the Ancient Being table to determine the being your group serv
 
 With the ancient being as your group's patron, you gain the following perks.
 
+![Azalin, the lich, spies on Castle Ravenloft](../images/book/TCE/061-02-003.webp)
+
 ##### Equipment
 
 Your patron's network has access to certain magic items. You can purchase common magic items from your patron contact. The DM determines the available stock or can call for a group Intelligence ({@skill Investigation}) check to ascertain if the ancient being's network can successfully locate a desired item. The DC for this check is 10 in a city, 15 in a town, and 20 in a village. If the check fails, {@dice 1d8} days must pass before the same item can be searched for again in that community.
@@ -169,6 +175,8 @@ Roll or pick from the Aristocrat Types table to determine what kind of noble you
 #### Aristocrat Perks
 
 With an aristocrat as your group's patron, you gain the following perks.
+
+![A Wood Elf Aristocrat](../images/book/TCE/062-02-004.webp)
 
 ##### Expenses
 
@@ -248,6 +256,8 @@ Each member of the syndicate has a place in the organization. You report to a co
 
 Roll or pick from the Syndicate Contact table to determine your contact within a criminal organization.
 
+![Ott Steeltoes holds aloft Sylgar, the infamous fish of the crime lord Xanathar](../images/book/TCE/063-02-005.webp)
+
 #### Criminal Syndicate Members
 
 Whether you're a lifelong scoundrel or an ambitious upstart, you seek to gain wealth, fame, and influence within a criminal syndicate. A syndicate is motivated by profit, employing agents with all manner of talents. Nimbleness and novelty prove vital not just to exploiting untapped prospects but to avoiding the law. You embody rare experience and skill, positioned at the forefront of daring new criminal ventures.
@@ -271,6 +281,8 @@ Your group has ties to a powerful consortium of professionals who work together 
 The guild structure covers a swath of business ventures, differentiated by their specialty. A conglomerate of blacksmiths, jewelers, carpenters, tailors, alchemists, scribes, and sages all could organize as a guild. Whatever their trade, these experts share contacts, exchange resources such as materials or tools, and leverage their collective influence to affect politics for their benefit. Alternatively, merchants and other business owners might also organize into guilds. Merchant barons who effectively rule a city or nation through iron-clad control of the economy or a network of innkeepers who share news and supply routes could both represent guild patrons. A guild could even embody a more sinister group, such as one that deals in terrifying wares like deadly monsters, dangerous knowledge, or souls.
 
 Roll or pick from the Guild Types table to determine the general sort of organization you operate within.
+
+![A hero fights the bullywug who guards the villainous master of the bakers' guild](../images/book/TCE/064-02-006.webp)
 
 #### Guild Perks
 
@@ -326,6 +338,8 @@ Roll or pick from the Military Force Types table to determine the general type o
 
 With a military force as your group's patron, you gain the following perks.
 
+![A Dragonborn Messenger of the Purple Dragon Knights](../images/book/TCE/065-02-007.webp)
+
 ##### Armory
 
 You can purchase nonmagical weapons and armor at a 20 percent discount at a facility associated with your military force. You can buy magic items at the DM's discretion, but you receive no discount.
@@ -375,6 +389,8 @@ Your group acts in the service of a religious institution. The patronage of a re
 Not every religious order represents an alliance of worshipers devoted to godly ideals. Perhaps your group is a team of devotees pursuing a cause for your faith, or maybe you're a bunch of cynics taking advantage of a wealthy congregation. Your collective faith could compel you to hunt evil monsters or stave off otherworldly invasions, to protect the powerless from oppression, or to spread the teachings of your religion in a hostile land. Or perhaps you serve a corrupt hierarchy by making its enemies quietly disappear—though even cynical mercenaries can become true believers when confronted with the miraculous.
 
 Roll or pick from the Religious Order Types table to determine the type of religious patron you serve.
+
+![Acolytes prepare for a couatl festival](../images/book/TCE/066-02-008.webp)
 
 #### Religious Order Perks
 
@@ -426,6 +442,8 @@ Roll or pick from the Sovereign Types table to determine what sort of liege you 
 
 #### Sovereign Perks
 
+![A Merfolk Sovereign](../images/book/TCE/067-02-009.webp)
+
 With the sovereign as your group's patron, you gain the following perks.
 
 ##### Elite Access
@@ -463,6 +481,8 @@ The services you provide a sovereign largely depend on the nature of your group 
 The Sovereign Quests table presents a few of the sorts of missions you undertake for your liege.
 
 ## Being Your Own Patron
+
+![In the city of Sigil, Guildmaster Rhys realizes that finding capable recruits is one of the main challenges of being a patron](../images/book/TCE/068-02-010.webp)
 
 For some players, the idea of running a crime syndicate, mercenary company, arcane scholars' collective, or other organization is far more exciting than working for someone else. Founding your own organization offers a greater degree of autonomy, though potentially at the cost of support and reliable work.
 

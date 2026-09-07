@@ -8,6 +8,8 @@ The Dungeon Master employs many tools when preparing and running a D&D campaign.
 
 The tools herein build on the material in the {@book Dungeon Master's Guide|DMG} and the {@book Monster Manual|MM}. You may use some, all, or none of these tools, and feel free to customize how they work. Your group's enjoyment is paramount, so make these rules your own, aiming to match your group's tastes.
 
+![Tasha prepares to win another game of wizardly chess against her rival Mordenkainen.](../images/book/TCE/090-04-001.webp)
+
 ## Session Zero
 
 Establish boundaries. And if anyone crosses them, speak up. If they don't listen, there's always cloudkill...
@@ -43,6 +45,8 @@ You might need to help the player run the sidekick for the first few sessions an
 - Sidekicks are stalwart companions who can perform tasks both in and out of combat, including things such as setting up camp and carrying gear.
 
 - Ideally, a sidekick's abilities should complement those of the main character. For example, a spellcaster makes a good sidekick for a fighter or rogue.
+
+![During a festival below one of the walking statues of Waterdeep, young friends dream of embarking on adventures together.](../images/book/TCE/091-04-002.webp)
 
 ### Social Contract
 
@@ -160,6 +164,12 @@ If it's unclear whether a melee attack in the stat block uses Strength or Dexter
 
 - {@class Warrior Sidekick|TCE}
 
+![Experts, Left to Right: a Tortle, a Winged Kobold, and a Kenku](../images/book/TCE/092-04-003.webp)
+
+![Spellcasters, Left to Right: a Bullywug, a Goblin, and a Tabaxi](../images/book/TCE/093-04-004.webp)
+
+![Warriors, Left to Right: an Aasimar, a Firbolg, and a Wolf](../images/book/TCE/094-04-005.webp)
+
 ### Expert Sidekick
 
 ### Spellcaster Sidekick
@@ -171,6 +181,8 @@ If it's unclear whether a melee attack in the stat block uses Strength or Dexter
 Why fight if a lively chat is possible? If things get out of hand, just show yourself out with a dimension door.
 
 Meeting a monster doesn't have to spark a fight. An offering, like food, can calm some hostile monsters, and sapient creatures often prefer to talk than to draw weapons. If the adventurers try to parley with a monster, you may improvise the encounter or use the {@book social interaction rules|DMG|8|Social Interaction} in the {@book Dungeon Master's Guide|DMG}. Consider granting the characters advantage on any ability check they make to communicate with a creature if they offer something it wants. The "{@area Monsters' Desires|377|x}" section below suggest things that a creature might like, depending on its type.
+
+![Adventurers offer meat to an owlbear.](../images/book/TCE/095-04-006.webp)
 
 ### Monster Research
 
@@ -220,6 +232,8 @@ The grace of the Upper Planes touches this region. Consider rolling on the Bless
 
 - A creature experiences an epiphany or inspiring triumph in the service of righteousness or in defiance of wickedness
 
+![A Blessed Ki-rin Shrine](../images/book/TCE/096-04-007.webp)
+
 #### Far Realm
 
 As souls travel away from the Material Plane after death, they either dwell in the Astral Plane as spirits or are pulled toward one of the Outer Planes to continue their journey. But some entities find ways to travel beyond the Outer Planes to dwell in the Far Realm. There they transform over eons into abominations or elder evils, seething in a reality with its own laws. All who stay in the Far Realm are eventually twisted into alien shapes by the realm's eldritch forces.
@@ -233,6 +247,8 @@ Consider rolling on the Far Realm Effects table when the following circumstances
 - The characters take a short or long rest in the region.
 
 - A creature spends more than an hour reading an eldritch tome written by those who have seen or otherwise interacted with the Far Realm.
+
+![A Far Realm Incursion with Mind Flayer Nautiloids](../images/book/TCE/097-04-008.webp)
 
 #### Haunted
 
@@ -250,6 +266,8 @@ Consider rolling on the Haunted Effects table when the following circumstances o
 
 - A ghost or other creature tied to the region's grim history menaces the party.
 
+![A Haunted Manor](../images/book/TCE/098-04-009.webp)
+
 #### Infested
 
 On many worlds, the biomass of insects radically outweighs that of higher organisms. Mass migrations and deadly insect species can imperil larger creatures, but most insects remain nothing more than an annoyance. However, through wild population booms, magical manipulation, supernatural growth, interbreeding with otherworldly species, or stranger circumstances, insects can overrun an entire region. Swarms of insects become the dominant species in an area, consuming plants and animals, creating elaborate hives or tunnels, and infesting structures and the earth.
@@ -263,6 +281,8 @@ Consider rolling on the Infested Effects table when the following circumstances 
 - A creature attacks an insect swarm or a Small or larger insect, such as a {@creature giant centipede} or {@creature giant spider}, in the region.
 
 - A creature begins a short or long rest.
+
+![An Infested City](../images/book/TCE/099-04-010.webp)
 
 #### Mirror Zone
 
@@ -278,6 +298,8 @@ Consider rolling on the Mirror Zone Effects table when the following circumstanc
 
 - A creature impersonates another creature.
 
+![A Tailor Shop in a Mirror Zone](../images/book/TCE/100-04-011.webp)
+
 #### Psychic Resonance
 
 In an area of psychic resonance, magic imposes strange effects on creatures and objects. These manifestations stem from strong emotions combined with magic use or from the presence of psionic creatures.
@@ -291,6 +313,8 @@ Consider rolling on the Psychic Resonance Effects table when the following circu
 - A creature becomes {@condition charmed} or {@condition frightened}.
 
 - A creature experiences telepathic communication.
+
+![Animals converse after gaining sapience from ambient psychic energy.](../images/book/TCE/101-04-012.webp)
 
 ##### Awaken Anything
 
@@ -308,9 +332,13 @@ Consider rolling on the Unraveling Magic Effects table when the following circum
 
 - A dragon, a fey, or an elemental of challenge rating 5 or higher dies.
 
+![A wood elf child reaches for unraveling magic.](../images/book/TCE/102-04-013.webp)
+
 ### Magical Phenomena
 
 Magic has the ability to make even the most serene natural settings unpredictable. Whether the result of magical calamities, otherworldly influences, or nexuses of inexplicable forces, the subsequent effects range from whimsical to deadly.
+
+![Eldritch Storm](../images/book/TCE/103-04-014.webp)
 
 #### Eldritch Storms
 
@@ -380,6 +408,10 @@ Regardless of whether a spring is pure or tainted, creatures might need to drink
 
 Bottling an enchanted spring's water removes its magical properties, unless the bottle is a specially prepared vial blessed by whatever being enchanted the spring in the first place.
 
+![Enchanted Spring](../images/book/TCE/104-04-015.webp)
+
+![Magic Mushrooms](../images/book/TCE/105-04-016.webp)
+
 #### Magic Mushrooms
 
 Mushrooms can be deadly, delicious, or both. Some have magical properties, especially those that grow in areas suffused by mystical energy, such as the Underdark and the Feywild.
@@ -412,6 +444,8 @@ If the colony's survival is threatened and it thinks it has a chance of survivin
 
 When determining the difficulty of an encounter with a hostile mimic colony, consider the colony to be one additional creature of challenge rating 2.
 
+![Mimic Colony](../images/book/TCE/106-04-017.webp)
+
 #### Primal Fruit
 
 In wild places brimming with nature's power, gardens meticulously tended by eccentric wizards, and blessed groves touched by divine providence, plants can sometimes produce fruit bursting with primal magic. Not every fruit-bearing plant holds this stored magic, but those that do bear obvious signs: their colors are more vibrant or shift randomly, their skin sparkles in the light or glows in the dark, soft hums emanate from them, or they feel peculiar to the touch.
@@ -419,6 +453,8 @@ In wild places brimming with nature's power, gardens meticulously tended by ecce
 A fruit-bearing plant that is suffused with magic might produce {@dice 1d6} pieces of primal fruit every week. Primal fruit remains potent for 1 week, after which it loses its magical properties but remains edible.
 
 As an action, a creature can eat a piece of primal fruit to gain its effects. This fruit can be squeezed into juice or cooked into a dish and retains its magic. Choose an effect or roll on the Primal Fruit Effects table to determine what happens when a piece of the fruit is consumed. An {@spell identify} spell or similar magic reveals the beneficial effect of a piece of fruit before it is eaten, but it doesn't reveal a curse or side effect.
+
+![Tressym fly around a primal tree](../images/book/TCE/107-04-018.webp)
 
 #### Unearthly Roads
 
@@ -435,6 +471,8 @@ Even without the threats of supernatural environments, the world is a dangerous 
 - {@hazard Falling into Water|TCE}
 
 - {@hazard Falling onto a Creature|TCE}
+
+![Falling into Water](../images/book/TCE/108-04-019.webp)
 
 #### Avalanche
 
@@ -502,6 +540,8 @@ After presenting a puzzle, encourage the party to solve it together, to pool hin
 
 ### Creature Paintings
 
+![109-04-020](../images/book/TCE/109-04-020.webp)
+
 {@i Difficulty: Easy}
 
 This short puzzle works anywhere that makes sense for characters to peruse several paintings, such as in a museum or manor. These paintings could even appear in a sketchbook found in a dusty old drawer. This counting puzzle leads to a name of a creature.
@@ -556,6 +596,8 @@ You enter a cobweb-filled room lit by torches on opposite walls. Dust on the flo
 
 The tiles covering the floor of this room each bear a single letter written in the Common alphabet, making the room a giant word search. Traps beneath many of the tiles threaten those who move through the room heedless of the hidden words.
 
+![110-04-021](../images/book/TCE/110-04-021.webp)
+
 #### Puzzle Features
 
 The floor of this 60-foot-by-70-foot room is made of 5-foot-square stone tiles laid out in a grid. Each tile has a letter chiseled into it, as shown in {@area puzzle handout 1|439|x} at the end of this chapter. Place a copy of the handout for this puzzle on the table, and allow players to use miniatures to show how their characters navigate the room.
@@ -573,6 +615,8 @@ Characters can attempt to jump over trapped tiles, using the {@book jump rules|P
 #### Solution
 
 The only safe tiles for characters to step on are the ones with the faded black letters in {@book diagram 4.1|TCE|4|Diagram 4.1: Reckless Steps Puzzle Solution}. Red letters spell out either "magic" or one of the schools of magic: abjuration, conjuration, divination, enchantment, evocation, illusion, necromancy, and transmutation. Stepping on one of these tiles triggers a poison trap, as described earlier.
+
+![Diagram 4.1: Reckless Steps Puzzle Solution](../images/book/TCE/111-04-022.webp)
 
 #### Hint Checks
 
@@ -636,6 +680,8 @@ All four locks must be opened before the box's contents (whatever they might be)
 
 #### Puzzle Features
 
+![112-04-023](../images/book/TCE/112-04-023.webp)
+
 Show the players {@area puzzle handout 2|43a|x} (see the end of this chapter) when their characters examine the keys. Each key has a different number of teeth: six, five, four, and three, respectively.
 
 Each lock has a creature molded in iron above it: a bat, snake, spider, or wolf, respectively. These locks can't be picked. If anything other than the correct key is placed inside a lock, creatures corresponding to the image above the lock ({@dice 1d4} {@creature Giant Bat||giant bats}, {@dice 1d4} {@creature Giant Poisonous Snake||giant poisonous snakes}, {@dice 1d4} {@creature Giant Wolf Spider||giant wolf spiders}, or {@dice 1d4} {@creature Wolf||wolves}) are summoned into the room. Each summoned creature is hostile and disappears after 10 minutes or when reduced to 0 hit points. These beasts can't be {@condition charmed} or {@condition frightened}.
@@ -676,11 +722,13 @@ Dozens of gems lie strewn upon the floor. Amid the treasure stands a marble stat
 
 #### Puzzle Features
 
+![A spirit escapes a gemstone](../images/book/TCE/113-04-024.webp)
+
 The statue, which is impervious to damage, depicts Ioun or some other god of knowledge or order. Any character who succeeds on a {@dc 10} Intelligence ({@skill Religion}) check can identify the figure being depicted.
 
 ##### Diamond
 
-Between the palms of the statue's clasped hands is a diamond, which can only be found and retrieved once the puzzle is solved. Once the characters solve the puzzle, the statue's hands open, allowing the diamond to be taken. Upon breaching the threshold of the room with the diamond, a trapped soul in the form of a friendly, thankful spirit is released. The spirit leaves to pursue its own goals, and the diamond is left behind as a reward. The diamond is worth 5,000 gp.
+Between the palms of the statue's clasped hands is a diamond, which can only be found and retrieved once the puzzle is solved. Once the characters solve the puzzle, the statue's hands open, allowing the diamond to be taken. Upon breaching the threshold of the room with the diamond, a trapped soul in the form of a friendly, thankful spirit is released. The spirit leaves to pursue its own goals, and the diamond is left behind as a reward. The {@item diamond} is worth 5,000 gp.
 
 ##### Gemstones
 
@@ -766,6 +814,8 @@ The {@creature goblin} is friendly, and its offer is genuine. It's name is Igor 
 
 The magical maze the characters find themselves in is comprised of an endless series of identical chambers. Each chamber has four passages, one at each cardinal direction. The goblin guide poses riddles that can lead the party along the path that ultimately exits the maze. Each time the party moves through the correct passage and enters a new room, the goblin provides them with a new riddle that hints which direction to travel in next. If they make an error, the characters encounter a monster of your choice and then must backtrack from their last correct turn. After three wrong turns, the party encounters the {@creature beholder}.
 
+![114-04-025](../images/book/TCE/114-04-025.webp)
+
 ##### Hallways
 
 The halls of this maze are 60 feet long and 10 feet wide. If the characters move away from the guide during combat or for any other reason, the goblin encourages them to follow him back to the last correct turn.
@@ -818,6 +868,8 @@ The characters can easily persuade the goblin to join their party. What other se
 
 ### Four by Four
 
+![115-04-026](../images/book/TCE/115-04-026.webp)
+
 {@i Difficulty: Medium}
 
 This puzzle is easily situated in a dungeon, a dusty mausoleum, or an abandoned shrine.
@@ -837,6 +889,8 @@ Solving this puzzle causes a secret compartment in the altar to open, revealing 
 #### Puzzle Features
 
 Nine dwarf skulls rest near a grid of 1-foot-square tiles, as shown in {@area puzzle handout 3|43b|x} (see the end of this chapter). Columns and rows in the grid are labeled with the markings I, II, or III.
+
+![Diagram 4.2: Four by Four Puzzle Solution](../images/book/TCE/116-04-027.webp)
 
 #### Solution
 
@@ -888,6 +942,8 @@ The directions are written on a single sheet of parchment and recount the route 
 
 Characters who follow the directions and trace their paths on the map reveal three numbers: 3, 4, and 8 (see diagram 4.3). Turning the dials to these numbers in the same order opens the locked object.
 
+![Diagram 4.3: Illusive Island Puzzle Solution](../images/book/TCE/117-04-028.webp)
+
 #### Hint Checks
 
 Any character has the option of making these ability checks to receive a hint:
@@ -930,6 +986,8 @@ Give the players a copy of {@area puzzle handout 5|43d|x} (see the end of this c
 
 The wizard's study is filled with spell components, books, potions, and various odds and ends. While the various supplies might help characters solve the puzzle, the only item the characters need is the parchment. If the puzzle is giving them grief, they can take the parchment with them and find others who can help them solve it.
 
+![118-04-030](../images/book/TCE/118-04-030.webp)
+
 ##### Bookcases
 
 All around the wizard's study are shelves and cases filled with books, scrolls, and other supplies. A character who makes a successful {@dc 12} Intelligence ({@skill Arcana}) check notices a spell component with no gp value from the list (such as a chip of mica or a bit of bat fur).
@@ -943,6 +1001,8 @@ Wizards and other spellcasters can identify the correct spell components for any
 #### Solution
 
 Drawing a line from a spell to its material component crosses out letters that fall between the columns, as shown in diagram 4.4. Once all spells are connected to components, the untouched letters spell out "presto," which, when said aloud with the paper in hand, causes one or more {@item Spell Scroll||spell scrolls} (or some other treasure of your choice) to magically appear.
+
+![Diagram 4.4: Material Components Puzzle Solution](../images/book/TCE/119-04-029.webp)
 
 #### Hint Checks
 
@@ -1064,6 +1124,8 @@ Diagram 4.5 shows how to divide the forty-five coins so that every square has a 
 
 The verse explains that the door requires the amount of coins shown in the center square. Upon inserting exactly five coins, the locked door opens.
 
+![Diagram 4.5: Exact Change Puzzle Solution](../images/book/TCE/120-04-031.webp)
+
 #### Hint Checks
 
 Any character has the option of making these ability checks to receive a hint:
@@ -1097,6 +1159,8 @@ The door slams behind you as you enter this hexagonal room. Four of the walls ar
 {@i Or best one of each to open the door.}
 
 Once the characters enter this room, the door behind them slams shut. It can be opened only by completing this puzzle, and there are no other exits.
+
+![121-04-032](../images/book/TCE/121-04-032.webp)
 
 #### Puzzle Features
 
@@ -1138,6 +1202,8 @@ If a tile is placed in the wrong place in the row, the corresponding elemental i
 
 The correct, complete pattern is shown here:
 
+![122-04-033](../images/book/TCE/122-04-033.webp)
+
 The odd-numbered tiles form a recurring pattern of open triangles that alternate between pointing up and down. Tiles 1, 5, 9, and 13 are upward-pointing triangles, while tiles 3, 7, and 11 are downward-pointing triangles.
 
 The even-numbered tiles display a different pattern. Tiles 2 and 4 point downward, but the first of them has a line through the triangle. Tiles 6 and 8 follow the same pattern, but the triangles point up. The pattern then repeats, with tiles 10 and 12 being the same as tiles 2 and 4 and tile 14 being the same as tile 6.
@@ -1177,6 +1243,8 @@ Many unquiet spirits linger in the world because they can't bare to leave someth
 Six alcoves line this hall, each one numbered from one to six. On the floor of each alcove, a lit candle gently flickers.
 
 From the hall's far end drifts a low moan. There, barely visible, sobs the apparition of a small girl hovering over a discarded rag doll. "Names, names," she cries. "I can remember them all except the one I need."
+
+![123-04-034](../images/book/TCE/123-04-034.webp)
 
 The spirit, Dolora, is a harmless apparition who won't engage the party in combat. If threatened, she vanishes and reappears at the opposite end of the hall, sobbing anew.
 
@@ -1239,6 +1307,8 @@ The character frightens Dolora into divulging information. She tells the charact
 The character interprets Dolora's cryptic clue about the doll as follows: "all six" refers to the six letters of the doll's name, which can be determined by gathering information from the verses in the six alcoves.
 
 ### What's on the Menu
+
+![124-04-035](../images/book/TCE/124-04-035.webp)
 
 {@i Difficulty: Hard}
 
@@ -1306,12 +1376,24 @@ A too-helpful barmaid might take pity on the struggling characters and walk them
 
 #### Puzzle Handout 1: Reckless Steps
 
+![125-04-036](../images/book/TCE/125-04-036.webp)
+
 #### Puzzle Handout 2: Skeleton Keys
+
+![126-04-037](../images/book/TCE/126-04-037.webp)
 
 #### Puzzle Handout 3: Four by Four
 
+![127-04-038](../images/book/TCE/127-04-038.webp)
+
 #### Puzzle Handout 4: Illusive Island
+
+![128-04-039](../images/book/TCE/128-04-039.webp)
 
 #### Puzzle Handout 5: Material Components
 
+![129-04-040](../images/book/TCE/129-04-040.webp)
+
 #### Puzzle Handout 6: Four Elements
+
+![130-04-041](../images/book/TCE/130-04-041.webp)

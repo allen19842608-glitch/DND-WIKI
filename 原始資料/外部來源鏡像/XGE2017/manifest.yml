@@ -3,7 +3,7 @@ publication_id: XGE2017
 publication_title: Xanathar’s Guide to Everything (2017)
 provider: 5e.tools
 upstream_url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/book/book-xge.json
-retrieved_at: 2026-08-27T14:50:01.574Z
+retrieved_at: 2026-09-04T18:18:13.065Z
 snapshot:
   file: 原始資料/外部來源鏡像/XGE2017/book-xge.json
   sha256: a2b2f7205779fba24239ed0009dd4fcca19c684afb32ac342a2b679e735d1bf7
@@ -44,3 +44,129 @@ chapters:
     page: 173
     file: 原始資料/外部來源鏡像/XGE2017/chapters/06-Character Names.md
     status: complete
+datasets:
+  - file: 原始資料/外部來源鏡像/XGE2017/datasets/spells-xge.json
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/spells/spells-xge.json
+    locator_prefix: "spell:"
+    sha256: 8887a68c21c192f777cece7bc34f27bcf24bf45bbce82f3ae0b120a7c4ff396c
+images:
+  - path: book/XGE/001.webp
+    file: 原始資料/外部來源鏡像/XGE2017/images/book/XGE/001.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/XGE/001.webp
+    sha256: 5153112933c854761253820fc700b95257b4d4ed7c4133cbc53f9fc4f43e2fdb
+    bytes: 52762
+  - path: book/XGE/002.webp
+    file: 原始資料/外部來源鏡像/XGE2017/images/book/XGE/002.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/XGE/002.webp
+    sha256: ef02d40408b1e5ea5e664b929da7f4d197bdea567f9658dadb12591ccc418cfd
+    bytes: 66812
+  - path: book/XGE/003.webp
+    file: 原始資料/外部來源鏡像/XGE2017/images/book/XGE/003.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/XGE/003.webp
+    sha256: 777ad6d3aac895583a08b82b54dfa8ede2afcf8fa4d26a58955ab022a87c9ad3
+    bytes: 215196
+  - path: book/XGE/ab001.webp
+    file: 原始資料/外部來源鏡像/XGE2017/images/book/XGE/ab001.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/XGE/ab001.webp
+    sha256: 3c29257efd2aa51e7169fef8be1c7ef29662a0213ddc2ea5046d01067d7932ba
+    bytes: 109772
+  - path: book/XGE/c1039.webp
+    file: 原始資料/外部來源鏡像/XGE2017/images/book/XGE/c1039.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/XGE/c1039.webp
+    sha256: 868d6269e1de456b47fbe6b58def1d686c1e507e31117fdaee8130bf9ee84d45
+    bytes: 235004
+  - path: book/XGE/c1040.webp
+    file: 原始資料/外部來源鏡像/XGE2017/images/book/XGE/c1040.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/XGE/c1040.webp
+    sha256: 046be00a597140c8e5d3a8034929b967ace550cad930b58a626f1406381e1ffe
+    bytes: 159322
+  - path: book/XGE/c1041.webp
+    file: 原始資料/外部來源鏡像/XGE2017/images/book/XGE/c1041.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/XGE/c1041.webp
+    sha256: 75ea9f92cb91ff940ab3f994fa4ac3a16124e03593da4582aae03d71c54190ea
+    bytes: 232172
+  - path: book/XGE/c1042.webp
+    file: 原始資料/外部來源鏡像/XGE2017/images/book/XGE/c1042.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/XGE/c1042.webp
+    sha256: 8ce4f071cf0e23891628184f91887c1b00064c109771f33576f1ecf60591c709
+    bytes: 283348
+  - path: book/XGE/c1043.webp
+    file: 原始資料/外部來源鏡像/XGE2017/images/book/XGE/c1043.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/XGE/c1043.webp
+    sha256: a98278c61c48fce9f618a3beba84abd14c5d670d38f0e6001471c8e6df7d39eb
+    bytes: 221592
+  - path: book/XGE/c1044.webp
+    file: 原始資料/外部來源鏡像/XGE2017/images/book/XGE/c1044.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/XGE/c1044.webp
+    sha256: 66182b78af73a9116acda54f6f85c2ea343df133b3fb33848c543aee88f6d88e
+    bytes: 216736
+  - path: book/XGE/c1045.webp
+    file: 原始資料/外部來源鏡像/XGE2017/images/book/XGE/c1045.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/XGE/c1045.webp
+    sha256: cb96c7c958a0511afdaa35e70924a8374cdc9953f0a6d626b76a22d12b69a575
+    bytes: 200838
+  - path: book/XGE/c2001.webp
+    file: 原始資料/外部來源鏡像/XGE2017/images/book/XGE/c2001.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/XGE/c2001.webp
+    sha256: 65286cab9fb62802e2e5d9b0a29c154588dad03631b007f8405718c5f00c0ea3
+    bytes: 180796
+  - path: book/XGE/c2005.webp
+    file: 原始資料/外部來源鏡像/XGE2017/images/book/XGE/c2005.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/XGE/c2005.webp
+    sha256: a793abcc78d7a0bb15695e4c69900bc135ce735f645ea9b0842da562d70141ad
+    bytes: 131394
+  - path: book/XGE/c2021.webp
+    file: 原始資料/外部來源鏡像/XGE2017/images/book/XGE/c2021.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/XGE/c2021.webp
+    sha256: bee1f689fc5b2842bc4d0fe609c29118a99b552217d4a2752518eaab0e643f21
+    bytes: 83214
+  - path: book/XGE/c2022.webp
+    file: 原始資料/外部來源鏡像/XGE2017/images/book/XGE/c2022.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/XGE/c2022.webp
+    sha256: 99ada9a6b45bee6f4b7ee555d18a90cb4f1d946582db49a1639f6d0fd41bd1b0
+    bytes: 170432
+  - path: book/XGE/c2024.webp
+    file: 原始資料/外部來源鏡像/XGE2017/images/book/XGE/c2024.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/XGE/c2024.webp
+    sha256: 4ce8fc646c96a349452d875ff8a78a3cb4217098593111b3a303c5aa692d846e
+    bytes: 172038
+  - path: book/XGE/c2025.webp
+    file: 原始資料/外部來源鏡像/XGE2017/images/book/XGE/c2025.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/XGE/c2025.webp
+    sha256: c2932afd3aba15000d05c732fa0f7c44e541af0d99a6b5b0da6fb315c16a81fe
+    bytes: 122718
+  - path: book/XGE/c2026.webp
+    file: 原始資料/外部來源鏡像/XGE2017/images/book/XGE/c2026.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/XGE/c2026.webp
+    sha256: a629d979f2be28a71fdfe8f84a6b0b5a655e2e7cca20d0df774d3b17c9e47ff5
+    bytes: 147872
+  - path: book/XGE/c2027.webp
+    file: 原始資料/外部來源鏡像/XGE2017/images/book/XGE/c2027.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/XGE/c2027.webp
+    sha256: e8464d969418786e824cf29d325d505df9cbadfd487289c2e4bb4a75f8336190
+    bytes: 223578
+  - path: book/XGE/c2028.webp
+    file: 原始資料/外部來源鏡像/XGE2017/images/book/XGE/c2028.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/XGE/c2028.webp
+    sha256: 3ef9d09b644a62688275a6084392e891bbcb350639721ae692b74fbd209eb001
+    bytes: 179878
+  - path: book/XGE/c3001.webp
+    file: 原始資料/外部來源鏡像/XGE2017/images/book/XGE/c3001.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/XGE/c3001.webp
+    sha256: 5855ceb21cfd51e33871a75b720af7a9b66a08ad876d1fc0709c1a524c1c082b
+    bytes: 120940
+  - path: book/XGE/intro01.webp
+    file: 原始資料/外部來源鏡像/XGE2017/images/book/XGE/intro01.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/XGE/intro01.webp
+    sha256: 40429bdcfa4efa7ae710b121050dded73a1c0294f2c94a675836ba798f5f6cef
+    bytes: 42062
+  - path: book/XGE/intro02.webp
+    file: 原始資料/外部來源鏡像/XGE2017/images/book/XGE/intro02.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/XGE/intro02.webp
+    sha256: b27acfa7fcb8f2a3528226a90748c73d24878cf91d7741401076c871f6015c7a
+    bytes: 109882
+  - path: book/XGE/intro03.webp
+    file: 原始資料/外部來源鏡像/XGE2017/images/book/XGE/intro03.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/XGE/intro03.webp
+    sha256: 7b65fd115e05fe3638d4b55c676c2dafacdd46e75b509f26d8328c1a4e1191a8
+    bytes: 181092

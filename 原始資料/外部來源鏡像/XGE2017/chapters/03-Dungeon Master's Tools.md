@@ -94,6 +94,8 @@ In addition, consider giving characters who have both a relevant skill and a rel
 
 The following sections go into detail about the tools presented in the player's handbook, offering advice on how to use them in a campaign.
 
+![c2001](../images/book/XGE/c2001.webp)
+
 #### Components
 
 The first paragraph in each description gives details on what a set of supplies or tools is made up of. A character who is proficient with a tool knows how to use all of its component parts.
@@ -166,6 +168,8 @@ When you place a template, follow all the rules in the Player's Handbook for pla
 
 Diagrams 2.1 and 2.2 show the template method in action.
 
+![001](../images/book/XGE/001.webp)
+
 #### Token Method
 
 The token method is meant to make areas of effect tactile and fun. To use this method, grab some dice or other tokens, which you're going to use to represent your areas of effect.
@@ -177,6 +181,10 @@ Rather than faithfully representing the shapes of the different areas of effect,
 Every 5-foot square of an area of effect becomes a die or other token that you place on the grid. Each token goes inside a square, not at an intersection of lines. If an area's token is in a square, that square is included in the area of effect. It's that simple.
 
 Diagrams 2.3 through 2.6 show this method in action, using dice as the tokens.
+
+![002](../images/book/XGE/002.webp)
+
+![003](../images/book/XGE/003.webp)
 
 ##### Circles
 
@@ -243,6 +251,8 @@ In the same way, compare the monsters' hit points to the damage output of the pa
 Likewise, look at whether a monster's deadliest abilities call for saving throws that most of the party members are weak with, and compare the characters' offensive abilities to the monsters' saving throws.
 
 If the only creatures you can choose from at the desired challenge rating aren't a good match for the characters' statistics, don't be afraid to go back to step 3. By altering your challenge rating targets and adjusting the number of creatures in the encounter, you can come up with different options for building the encounter.
+
+![c2005](../images/book/XGE/c2005.webp)
 
 ### Step 5: Add Flavor
 
@@ -332,6 +342,8 @@ A trap's effect occurs after it activates. The trap might fire a dart, unleash a
 
 Traps can be detected or defeated in a variety of ways by using ability checks or magic. This entry in a trap's description gives the means for counteracting the trap. It also specifies what happens, if anything, on a failed attempt to disable it.
 
+![c2021](../images/book/XGE/c2021.webp)
+
 #### Running a Simple Trap
 
 To prepare for using a simple trap in play, start by making note of the characters' passive Wisdom ({@skill Perception}) scores. Most traps allow Wisdom ({@skill Perception}) checks to detect their triggers or other elements that can tip off their presence. If you stop to ask players for this information, they might suspect a hidden danger.
@@ -393,6 +405,8 @@ And you get hurt! That's the best part.
 #### Scything Blade Trap
 
 #### Sleep of Ages Trap
+
+![c2022](../images/book/XGE/c2022.webp)
 
 ### Designing Simple Traps
 
@@ -537,6 +551,8 @@ A complex trap poses a threat even when it is not taking its turn. The constant 
 A trap can be defeated in a variety of ways. A trap's description details the checks or spells that can detect or disable it. It also specifies what happens, if anything, on a failed attempt to disable it.
 
 Disabling a complex trap is like disarming a simple trap, except that a complex trap requires more checks. It typically takes three successful checks to disable one of a complex trap's elements. Many of these traps have multiple elements, requiring a lot of work to shut down every part of the trap. Usually, a successful check reduces a trap element's effectiveness even if it doesn't disable the trap.
+
+![c2024](../images/book/XGE/c2024.webp)
 
 #### Running a Complex Trap
 
@@ -766,6 +782,8 @@ If the characters seek a specific magic item, first decide if it's an item you w
 
 The magic item trade is fraught with peril. The large sums of money involved and the power offered by magic items attract thieves, con artists, and other villains. If you want to make things more interesting for the characters, roll on the Magic Item Purchase Complications table or invent your own complication.
 
+![c2025](../images/book/XGE/c2025.webp)
+
 #### Carousing
 
 Carousing is a default downtime activity for many characters. Between adventures, who doesn't want to relax with a few drinks and a group of friends at a tavern?
@@ -817,6 +835,8 @@ Multiple characters can combine their efforts. Divide the time needed to create 
 A character needs to be proficient with the tools needed to craft an item and have access to the appropriate equipment. Everyone who collaborates needs to have the appropriate tool proficiency. You need to make any judgment calls regarding whether a character has the correct equipment. The following table provides some examples.
 
 If all the above requirements are met, the result of the process is an item of the desired sort. A character can sell an item crafted in this way at its listed price.
+
+![c2026](../images/book/XGE/c2026.webp)
 
 ##### Crafting Magic Items
 
@@ -958,6 +978,8 @@ Typically, a character needs access to a library or a sage to conduct research. 
 
 The character declares the focus of the research—a specific person, place, or thing. After one workweek, the character makes an Intelligence check with a +1 bonus per 50 gp spent beyond the initial 50 gp, to a maximum of +6. In addition, a character who has access to a particularly well-stocked library or knowledgeable sages gains advantage on this check. Determine how much lore a character learns using the Research Outcomes table.
 
+![c2027](../images/book/XGE/c2027.webp)
+
 Each piece of lore is the equivalent of one true statement about a person, place, or thing. Examples include knowledge of a creature's resistances, the password needed to enter a sealed dungeon level, the spells commonly prepared by an order of wizards, and so on.
 
 As DM, you are the final arbiter concerning exactly what a character learns. For a monster or an NPC, you can reveal elements of statistics or personality. For a location, you can reveal secrets about it, such as a hidden entrance, the answer to a riddle, or the nature of a creature that guards the place.
@@ -997,6 +1019,8 @@ A character who wants to sell an item must make a Charisma ({@skill Persuasion})
 ##### Complications
 
 The main risk in selling a magic item lies in attracting thieves and anyone else who wants the item but doesn't want to pay for it. Other folk might try to undermine a deal in order to bolster their own business or seek to discredit the character as a legitimate seller. Every workweek spent trying to sell an item brings a {@chance 10} chance of a complication, examples of which are on the Magic Item Sale Complications table.
+
+![c2028](../images/book/XGE/c2028.webp)
 
 #### Training
 

@@ -3,10 +3,10 @@ publication_id: FTD2021
 publication_title: Fizban’s Treasury of Dragons (2021)
 provider: 5e.tools
 upstream_url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/book/book-ftd.json
-retrieved_at: 2026-08-27T14:49:49.800Z
+retrieved_at: 2026-09-04T18:26:54.919Z
 snapshot:
   file: 原始資料/外部來源鏡像/FTD2021/book-ftd.json
-  sha256: 69af92d388a3d73be1a6d74d7bf3a3eb60e328f6bafb881e2a317d06af5d6cf2
+  sha256: 07ed08d4e01c262d6ed25f26745b765fabb3c320fcefee42bcbad4932935727d
 chapters:
   - kind: chapter
     number: 1
@@ -56,3 +56,394 @@ chapters:
     page: 224
     file: 原始資料/外部來源鏡像/FTD2021/chapters/08-Creature Lists.md
     status: complete
+datasets:
+  - file: 原始資料/外部來源鏡像/FTD2021/datasets/spells-ftd.json
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/spells/spells-ftd.json
+    locator_prefix: "spell:"
+    sha256: 1989e9eaaacc7f792c98fd63cdb364e3e1c4cb6a5b4b82f75694d85c6a9829fe
+images:
+  - path: book/FTD/000-00-001.dragon-splash.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/000-00-001.dragon-splash.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/000-00-001.dragon-splash.webp
+    sha256: b3e678527cb24be09596aada41cb284f0c7728b829e457165170b0401d5f5c40
+    bytes: 135526
+  - path: book/FTD/001-00-002.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/001-00-002.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/001-00-002.webp
+    sha256: a135795a88a5700345c71f06e1f49fc30ffc9f168007cad81b24adc4515eb22b
+    bytes: 125294
+  - path: book/FTD/002-01-001.chapter-splash.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/002-01-001.chapter-splash.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/002-01-001.chapter-splash.webp
+    sha256: 09912f756a9575fbde8b14bd9b0e5e86bb020b05323e6c433d3cc4746b8ee46e
+    bytes: 280596
+  - path: book/FTD/008-02-001.chapter-splash.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/008-02-001.chapter-splash.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/008-02-001.chapter-splash.webp
+    sha256: 244d9cb155c14361da94a97428506f4b4cae4f3acb70b23529d156b5953fb37b
+    bytes: 468870
+  - path: book/FTD/011-02-004.a-magic-weapon.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/011-02-004.a-magic-weapon.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/011-02-004.a-magic-weapon.webp
+    sha256: b11f432aedf2b62df6654256447661a98a6281d581815b62219d2b49fbb8894a
+    bytes: 180504
+  - path: book/FTD/012-02-005.a-dragons-blood.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/012-02-005.a-dragons-blood.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/012-02-005.a-dragons-blood.webp
+    sha256: 22e0a3e46c64c0a3b2a818d53c497f6d30862f60321ea813dd72f2f42022ff2d
+    bytes: 315724
+  - path: book/FTD/013-03-001.chapter-splash.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/013-03-001.chapter-splash.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/013-03-001.chapter-splash.webp
+    sha256: 9131abb0c2abef8cedabfc602ffdabec5764f03f2d4c768b669be2f2c049b563
+    bytes: 186424
+  - path: book/FTD/014-03-002.dragons-of-the-same.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/014-03-002.dragons-of-the-same.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/014-03-002.dragons-of-the-same.webp
+    sha256: ce2251bcf095b525c33effb24d19fca0ba6466089cb05fa10e1c2d5f775f504c
+    bytes: 364810
+  - path: book/FTD/015-03-003.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/015-03-003.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/015-03-003.webp
+    sha256: 49d9a65371fe5e15f17535ac655402a36a58014a865275bb7bcb282d068e256d
+    bytes: 149038
+  - path: book/FTD/016-03-004.commonly-known-as.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/016-03-004.commonly-known-as.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/016-03-004.commonly-known-as.webp
+    sha256: b0308508753d784f903a3a1db272d001f2cacbf112c0ad91e735d047c0ddabd3
+    bytes: 127600
+  - path: book/FTD/017-03-005.blue-wyrmling.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/017-03-005.blue-wyrmling.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/017-03-005.blue-wyrmling.webp
+    sha256: 68d287fe7e1bf7d672a99f03ba9def0365a32e6436f2c2988ff062ff859a725c
+    bytes: 144456
+  - path: book/FTD/018-03-006.young-blue-dragon.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/018-03-006.young-blue-dragon.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/018-03-006.young-blue-dragon.webp
+    sha256: 81894c1ba54c2ed0dafd20e048511c04400ff5e056096d81b209218032d46518
+    bytes: 109504
+  - path: book/FTD/019-03-007.adult-blue-dragon.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/019-03-007.adult-blue-dragon.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/019-03-007.adult-blue-dragon.webp
+    sha256: bf73fdd5c4c944278a3a59c6455c43172eda1e1dc2683c70279207c291817ad6
+    bytes: 226828
+  - path: book/FTD/020-03-008.ancient-blue-dragon.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/020-03-008.ancient-blue-dragon.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/020-03-008.ancient-blue-dragon.webp
+    sha256: 34b50f20a30aa28140038516c426ab399e5d82a57756b72bb235d7e6be110bf8
+    bytes: 112210
+  - path: book/FTD/021-03-009.miners-discover.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/021-03-009.miners-discover.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/021-03-009.miners-discover.webp
+    sha256: 899e5b58f9a3d76e78bfe900d4184a39643cc2746d4da2dfb59be80ad509095d
+    bytes: 186082
+  - path: book/FTD/022-03-010.the-black-dracolich.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/022-03-010.the-black-dracolich.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/022-03-010.the-black-dracolich.webp
+    sha256: 1cf085d32359c7685039c8c69f6d289ee60dd881e3c8076c2aaeecab6a473670
+    bytes: 379760
+  - path: book/FTD/023-03-011.bahamut.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/023-03-011.bahamut.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/023-03-011.bahamut.webp
+    sha256: 2dd2f8e1ce7af6a4363ede8382591dd9c68df0b3c69b0ebeffaee3fe8350cf80
+    bytes: 250586
+  - path: book/FTD/024-03-012.an-adventurer-closes.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/024-03-012.an-adventurer-closes.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/024-03-012.an-adventurer-closes.webp
+    sha256: 8f13a767b091525bc4572a41933cb507ff467ab4f32b90859221308e005dd217
+    bytes: 334540
+  - path: book/FTD/025-03-013.hidecarved-dragons.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/025-03-013.hidecarved-dragons.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/025-03-013.hidecarved-dragons.webp
+    sha256: 119d1341e989c381f0f4a103a50084f146d8219f962073316b25eeff05488cc2
+    bytes: 118832
+  - path: book/FTD/026-03-014.to-kugluk.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/026-03-014.to-kugluk.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/026-03-014.to-kugluk.webp
+    sha256: 1a2586c06149298a512e635d5e5aaf364834b24a82fa56dc260d53d051081805
+    bytes: 268748
+  - path: book/FTD/027-03-015.an-encounter-with-a-dragon.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/027-03-015.an-encounter-with-a-dragon.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/027-03-015.an-encounter-with-a-dragon.webp
+    sha256: 776ceddbcd52dca392e65fda104c6cb5ef752b74ad1c56f5d33c46562e23a080
+    bytes: 265794
+  - path: book/FTD/028-03-016.sometimes-the-only-solution.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/028-03-016.sometimes-the-only-solution.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/028-03-016.sometimes-the-only-solution.webp
+    sha256: a7e3a8f14d2d08bc9f2a266fed98324794417efef7c5239c9f0fb734a0f3014a
+    bytes: 390334
+  - path: book/FTD/029-03-017.in-the-heart.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/029-03-017.in-the-heart.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/029-03-017.in-the-heart.webp
+    sha256: 4e72de483fd212f72fc1c1bb490b242e4a36a4f5052bec04148d81b200ea4a77
+    bytes: 161962
+  - path: book/FTD/030-03-018.laurana-and-kitiara.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/030-03-018.laurana-and-kitiara.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/030-03-018.laurana-and-kitiara.webp
+    sha256: 701674c00de890d30e9d141d7c25ee2e43814ad695b5393b938a3f8009b4b553
+    bytes: 278176
+  - path: book/FTD/031-03-019.a-half-dragon-conqueror.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/031-03-019.a-half-dragon-conqueror.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/031-03-019.a-half-dragon-conqueror.webp
+    sha256: 25254244bdc2c26d8e6e864cc50e37dad2c6634b83a6bc4218dd25e93c000b91
+    bytes: 191160
+  - path: book/FTD/032-03-020.tiamats-emergence.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/032-03-020.tiamats-emergence.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/032-03-020.tiamats-emergence.webp
+    sha256: 019148a13ab056d7175c14b31aa9225c0839af437620a8331130cd94f9331ee2
+    bytes: 158206
+  - path: book/FTD/033-04-001.chapter-splash.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/033-04-001.chapter-splash.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/033-04-001.chapter-splash.webp
+    sha256: d7486ecee64321bd0bf93678603725330fe81a321022351d0547ac96a208ad5f
+    bytes: 158708
+  - path: book/FTD/034-04-002.an-ancient-dragons-hoard.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/034-04-002.an-ancient-dragons-hoard.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/034-04-002.an-ancient-dragons-hoard.webp
+    sha256: af08767c66aa19f4574568cfa3a405bcacb8c387b8e83210f62fcc02a686ac0f
+    bytes: 318718
+  - path: book/FTD/035-04-003.skilled-burglar.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/035-04-003.skilled-burglar.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/035-04-003.skilled-burglar.webp
+    sha256: f441e0b617040edc213bff21ad3778e97b872e1930b4496f18ae9ba1b5bca6e8
+    bytes: 247434
+  - path: book/FTD/036-04-004.green-dragons-are-poison.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/036-04-004.green-dragons-are-poison.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/036-04-004.green-dragons-are-poison.webp
+    sha256: 3db7b223272390296d1e085e3dfab0f267e200e0c1e96758226bd75570bf8b46
+    bytes: 290544
+  - path: book/FTD/037-04-005.gold-coins.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/037-04-005.gold-coins.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/037-04-005.gold-coins.webp
+    sha256: b13df0a725ddd24b18322e2ed250d2b5bc048270940190603334bdb715b563bb
+    bytes: 41728
+  - path: book/FTD/038-04-006.trying-to-loot.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/038-04-006.trying-to-loot.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/038-04-006.trying-to-loot.webp
+    sha256: b5eb4bcccff6ccd598d9a45375b750a1c6859c5431756642bb8522a562cf76db
+    bytes: 350230
+  - path: book/FTD/039-05-001.chapter-splash.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/039-05-001.chapter-splash.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/039-05-001.chapter-splash.webp
+    sha256: 9bec95a34a3a97358636edc50f23479e8ce9e34ba122856d7e0c178aac60ed2b
+    bytes: 319222
+  - path: book/FTD/040-map-5.1-amethyst-dragon-lair.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/040-map-5.1-amethyst-dragon-lair.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/040-map-5.1-amethyst-dragon-lair.webp
+    sha256: 64785d63d7599c5e9c85a57a4ad2868f2a5e2c034f59ab7dcc49a56d813a6606
+    bytes: 1592238
+  - path: book/FTD/041-map-5.1-amethyst-dragon-lair-player.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/041-map-5.1-amethyst-dragon-lair-player.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/041-map-5.1-amethyst-dragon-lair-player.webp
+    sha256: c2911427fbad83ce75884c34f3ebc012c3243b9281806269dee4c6452a65652f
+    bytes: 1536006
+  - path: book/FTD/042-map-5.2-black-dragon-lair.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/042-map-5.2-black-dragon-lair.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/042-map-5.2-black-dragon-lair.webp
+    sha256: 0565c6e762b780f9bab64fc1f4117855b2bd77be95eef3a51d531f50812e486a
+    bytes: 1674720
+  - path: book/FTD/043-map-5.2-black-dragon-lair-player.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/043-map-5.2-black-dragon-lair-player.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/043-map-5.2-black-dragon-lair-player.webp
+    sha256: 7edf47ae23642c527bc29047f91e54cc391a9958fa58b4a2ce78d5c947debd8e
+    bytes: 1645446
+  - path: book/FTD/044-05-002.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/044-05-002.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/044-05-002.webp
+    sha256: 60193c5a31a71b77b35f6284fcf3d1b2464ef20795b166d183e32e83b5d93f8a
+    bytes: 432838
+  - path: book/FTD/045-05-003.iymrith.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/045-05-003.iymrith.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/045-05-003.iymrith.webp
+    sha256: bd73d495b817086dee8970e98bf23f400903f2f3c672af0cf8d47d029a04b9d1
+    bytes: 242306
+  - path: book/FTD/046-map-5.3-blue-dragon-lair.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/046-map-5.3-blue-dragon-lair.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/046-map-5.3-blue-dragon-lair.webp
+    sha256: a793df997c5dac2d5ff85a00fe845f6470e7607b8041dc0b17c64864c9b598bf
+    bytes: 2356582
+  - path: book/FTD/047-map-5.3-blue-dragon-lair-player.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/047-map-5.3-blue-dragon-lair-player.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/047-map-5.3-blue-dragon-lair-player.webp
+    sha256: 9d557d0056970dca6baa3a8e78c30218492bfbd5d23c9624f28311dc4d9c4e76
+    bytes: 2315090
+  - path: book/FTD/048-map-5.4-brass-dragon-lair.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/048-map-5.4-brass-dragon-lair.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/048-map-5.4-brass-dragon-lair.webp
+    sha256: f44fe07ae5a06f33ca62beef689650f9bb4d1310f4552280d19038da9d948b68
+    bytes: 1762260
+  - path: book/FTD/049-map-5.4-brass-dragon-lair-player.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/049-map-5.4-brass-dragon-lair-player.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/049-map-5.4-brass-dragon-lair-player.webp
+    sha256: 9449d240016ff4e57a359e4b9c9e083684df42acb9fb49020b84ad17a9aa7c7b
+    bytes: 1678066
+  - path: book/FTD/050-map-5.5-bronze-dragon-lair.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/050-map-5.5-bronze-dragon-lair.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/050-map-5.5-bronze-dragon-lair.webp
+    sha256: 45d1fdedc35ea133cc2811ea8f66e8263b155caff71a6f1f5e5ac730fb447af3
+    bytes: 1759174
+  - path: book/FTD/051-map-5.5-bronze-dragon-lair-player.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/051-map-5.5-bronze-dragon-lair-player.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/051-map-5.5-bronze-dragon-lair-player.webp
+    sha256: 9a24c25511fb359874536de014d959de6ea277dcf93486010fa5627581874977
+    bytes: 1713848
+  - path: book/FTD/052-map-5.6-copper-dragon-lair.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/052-map-5.6-copper-dragon-lair.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/052-map-5.6-copper-dragon-lair.webp
+    sha256: 830c2bda5800e6b89caa090640a6039862b12538dfc7bf5d2bfa0cf9683a7708
+    bytes: 2194222
+  - path: book/FTD/053-map-5.6-copper-dragon-lair-player.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/053-map-5.6-copper-dragon-lair-player.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/053-map-5.6-copper-dragon-lair-player.webp
+    sha256: d659513b749cc4d0cf97b5ce799e67a4803c692686c244cd2666237a9f265bd0
+    bytes: 2153188
+  - path: book/FTD/054-map-5.7-crystal-dragon-lair.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/054-map-5.7-crystal-dragon-lair.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/054-map-5.7-crystal-dragon-lair.webp
+    sha256: 55e8f7e8965d005598a16ea917be3d65ef194ab02c118aac52876ba923f507de
+    bytes: 1563022
+  - path: book/FTD/055-map-5.7-crystal-dragon-lair-player.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/055-map-5.7-crystal-dragon-lair-player.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/055-map-5.7-crystal-dragon-lair-player.webp
+    sha256: 5360ab28a207a7f20ed81fc4304d24ca989c04ac856e7ce5c14b8f4f387dc44e
+    bytes: 1503954
+  - path: book/FTD/056-05-004.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/056-05-004.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/056-05-004.webp
+    sha256: 25e4ca27d77a0847954d3bf5c5af9bcd20405147a3c5929fffa94aa7b77d65ee
+    bytes: 343398
+  - path: book/FTD/057-06-001.chapter-splash.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/057-06-001.chapter-splash.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/057-06-001.chapter-splash.webp
+    sha256: d68bb59554dd89eb71a8d12c0f9bb4ac79917f25361d17d8066b93768b64dd00
+    bytes: 245780
+  - path: book/FTD/065-map-5.8-emerald-dragon-lair.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/065-map-5.8-emerald-dragon-lair.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/065-map-5.8-emerald-dragon-lair.webp
+    sha256: 3228f059bf3506415b45c3479b26897772cfa3c9a7d9aa5eac96ecfd54aa5501
+    bytes: 2054676
+  - path: book/FTD/066-map-5.8-emerald-dragon-lair-player.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/066-map-5.8-emerald-dragon-lair-player.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/066-map-5.8-emerald-dragon-lair-player.webp
+    sha256: 36e1f292da257bc79a765dfd325aa22114d1b5be611ab17a6190f2c55298ae93
+    bytes: 2016118
+  - path: book/FTD/067-05-005.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/067-05-005.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/067-05-005.webp
+    sha256: 4efe6545dc31ca5ca53de9edf0bd13d4b0d7177229d6742c934a6e27901e9b97
+    bytes: 338430
+  - path: book/FTD/068-05-006.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/068-05-006.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/068-05-006.webp
+    sha256: 628a7e03c916e777e51e155d5ccb823319b81f8e39c6f9dae621250ab5d48fb7
+    bytes: 225484
+  - path: book/FTD/069-map-5.9-gold-dragon-lair.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/069-map-5.9-gold-dragon-lair.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/069-map-5.9-gold-dragon-lair.webp
+    sha256: 82cb42fca567d1240d377ea3655c249027aabea42a50d42769519c2265064300
+    bytes: 1864314
+  - path: book/FTD/070-map-5.9-gold-dragon-lair-player.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/070-map-5.9-gold-dragon-lair-player.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/070-map-5.9-gold-dragon-lair-player.webp
+    sha256: c5483d072b7e1f73bc2874832befd8154c30e4070a74878ade0bed2b1585c78b
+    bytes: 1815062
+  - path: book/FTD/071-map-5.10-green-dragon-lair.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/071-map-5.10-green-dragon-lair.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/071-map-5.10-green-dragon-lair.webp
+    sha256: bf8ac2d286d8838a7aeec0fc63560e599d7be52dfa53a13f95f5e852c1bc505b
+    bytes: 1655682
+  - path: book/FTD/072-map-5.10-green-dragon-lair-player.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/072-map-5.10-green-dragon-lair-player.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/072-map-5.10-green-dragon-lair-player.webp
+    sha256: 71c4facb542f73aef0ecd58746bbbe022ef4fb658dd9b72e6bf917374a7ad81f
+    bytes: 1632370
+  - path: book/FTD/073-05-007.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/073-05-007.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/073-05-007.webp
+    sha256: ba818b3c62e2e3ce62d06fe8e44da9fc593471cee1df03839c0c501e3583de9c
+    bytes: 195584
+  - path: book/FTD/074-05-008.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/074-05-008.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/074-05-008.webp
+    sha256: 002efe7f929fef32d791716812f5cd83c9b1cb2150757ed5ccb6f81768cbc4c3
+    bytes: 240166
+  - path: book/FTD/075-map-5.11-red-dragon-lair.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/075-map-5.11-red-dragon-lair.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/075-map-5.11-red-dragon-lair.webp
+    sha256: 499fe0ae5effe9909f73879c5d0b3f790fba40a5de479713d04576b1efae7fbe
+    bytes: 2377678
+  - path: book/FTD/076-map-5.11-red-dragon-lair-player.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/076-map-5.11-red-dragon-lair-player.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/076-map-5.11-red-dragon-lair-player.webp
+    sha256: 8bcaae20536acde11d510dac737467244b13b1d97061b885031af5fd432884e5
+    bytes: 2361248
+  - path: book/FTD/077-map-5.12-sapphire-dragon-lair.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/077-map-5.12-sapphire-dragon-lair.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/077-map-5.12-sapphire-dragon-lair.webp
+    sha256: 3a47565a752c4fe3bce35bf052427a86776fadb2cb08271061468d8ab88c39f5
+    bytes: 3263196
+  - path: book/FTD/078-map-5.12-sapphire-dragon-lair-player.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/078-map-5.12-sapphire-dragon-lair-player.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/078-map-5.12-sapphire-dragon-lair-player.webp
+    sha256: ef0a03a4b19f46cef768b079c08f4f813fd6c989cf71de95e4b07e856e23bb1d
+    bytes: 3225264
+  - path: book/FTD/079-map-5.13-silver-dragon-lair.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/079-map-5.13-silver-dragon-lair.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/079-map-5.13-silver-dragon-lair.webp
+    sha256: 7170a2adb04f4cba35d4dcea2d7f65b657ad3d33404b6087a8e8ded69e899b50
+    bytes: 1499586
+  - path: book/FTD/080-map-5.13-silver-dragon-lair-player.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/080-map-5.13-silver-dragon-lair-player.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/080-map-5.13-silver-dragon-lair-player.webp
+    sha256: 8c7d64ef6aa17223beba0c6d3c5681ab4ef274ca16ebdb3fe1028f01fa3da92f
+    bytes: 1442564
+  - path: book/FTD/081-map-5.14-topaz-dragon-lair.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/081-map-5.14-topaz-dragon-lair.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/081-map-5.14-topaz-dragon-lair.webp
+    sha256: 9960566e2c4014fe15883098ead460322119f3162ed6ce5717e6767a727dd4c0
+    bytes: 1521988
+  - path: book/FTD/082-map-5.14-topaz-dragon-lair-player.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/082-map-5.14-topaz-dragon-lair-player.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/082-map-5.14-topaz-dragon-lair-player.webp
+    sha256: 7fd41425dc26ce61e028c8820d7c7451782ff8477a628971d2e3688efa43626c
+    bytes: 1481320
+  - path: book/FTD/083-map-5.15-white-dragon-lair.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/083-map-5.15-white-dragon-lair.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/083-map-5.15-white-dragon-lair.webp
+    sha256: 61f0eb70c8b4292cee398e49c8a812c171a00653549845b2bd47c7c128ddfc82
+    bytes: 1515410
+  - path: book/FTD/084-map-5.15-white-dragon-lair-player.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/084-map-5.15-white-dragon-lair-player.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/084-map-5.15-white-dragon-lair-player.webp
+    sha256: b330e22b67ca23465d04a12ca74520ba8e4253a950ed87f12ca8dfa44c3ed6f7
+    bytes: 1468280
+  - path: book/FTD/085-05-009.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/085-05-009.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/085-05-009.webp
+    sha256: 1541ca1281a301e167eb7dd2d3431d8bae7db97b9f333941d45bed33cdc5df2d
+    bytes: 253166
+  - path: book/FTD/credits.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/credits.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/credits.webp
+    sha256: 63528d14608fa0462ed12011175fcba40b6a17757aff4db01d0925252f782d07
+    bytes: 143878
+  - path: book/FTD/credits2.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/credits2.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/credits2.webp
+    sha256: 43dbdd771917e195ec812c5d96daedf5d5584490eb3f843ddb10aab2a3d48385
+    bytes: 157674
+  - path: book/FTD/credits3.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/credits3.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/credits3.webp
+    sha256: 1547f26852f80d5712db042c93739ae269321a28051a52409b668f9b65a903fd
+    bytes: 199780
+  - path: book/FTD/dragon monk.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/dragon monk.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/dragon%20monk.webp
+    sha256: 15e508d509c0ce2dce6ea89ed2a10aa1bad5c54559431241269af9024023149e
+    bytes: 275968
+  - path: book/FTD/drakewarden ranger.webp
+    file: 原始資料/外部來源鏡像/FTD2021/images/book/FTD/drakewarden ranger.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/FTD/drakewarden%20ranger.webp
+    sha256: b4e18a04adb51230500c8c51dcde105880e6cbf3a10cdcfc6f6e35a850d98038
+    bytes: 151422

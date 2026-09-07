@@ -18,6 +18,8 @@ The following sections present a variety of options for creating characters with
 
 {@book "Draconic Feats"|FTD|1|Draconic Feats} provides feats to forge connections to the chromatic, gem, and metallic dragon families.
 
+![In his guise as a young monk, Bahamut helps a pair of adventurers put an end to a young red dragon's depredations](../images/book/FTD/002-01-001.chapter-splash.webp)
+
 ## Draconic Races
 
 It's all too easy to prefer a certain color of dragonborn, but what's inside is what really matters—which is to say, the sort of damage their breath can do to you.
@@ -63,6 +65,10 @@ At 3rd level, a monk gains the Monastic Tradition class feature and a ranger gai
 - {@class monk|phb|Monk: Way of the Ascendant Dragon|Ascendant Dragon|FTD}
 
 - {@class ranger|phb|Ranger: Drakewarden|Drakewarden|FTD}
+
+![A human monk practices a form inspired by dragon flight](../images/book/FTD/dragon monk.webp)
+
+![A dragonborn Drakewarden shares affection with her drake companion](../images/book/FTD/drakewarden ranger.webp)
 
 ### Way of the Ascendant Dragon
 

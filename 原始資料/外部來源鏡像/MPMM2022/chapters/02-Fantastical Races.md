@@ -4,6 +4,8 @@
 
 # Fantastical Races
 
+![01-001.ch1-splash](../images/book/MPMM/01-001.ch1-splash.webp)
+
 Gathering together fantastical races from throughout the D&D multiverse, this chapter offers the following races for player characters, supplementing the race options in the {@book Player's Handbook|PHB}:
 
 - {@race Aarakocra|MPMM}

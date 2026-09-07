@@ -16,6 +16,8 @@ Adventurers sometimes advance in more than one class. A rogue might switch direc
 
 Twelve classes—listed in the Classes table—are found in almost every D&D world and define most typical adventurers.
 
+![ch3](../images/book/PHB/ch3.webp)
+
 ## Barbarian
 
 ## Bard

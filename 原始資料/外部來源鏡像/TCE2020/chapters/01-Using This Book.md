@@ -30,6 +30,8 @@ Much of the material in this book originally appeared in Unearthed Arcana, a ser
 
 ## Ten Rules to Remember
 
+![000-00-003](../images/book/TCE/000-00-003.webp)
+
 ### 1. The DM Adjudicates the Rules
 
 The rules of D&D cover many of the twists and turns that come up in play, but the possibilities are so vast that the rules can't cover everything. When you encounter something that the rules don't cover or if you're unsure how to interpret a rule, the DM decides how to proceed, aiming for a course that brings the most enjoyment to your whole group.

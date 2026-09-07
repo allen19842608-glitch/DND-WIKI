@@ -30,6 +30,8 @@ Even though these pages are full of tables and die rolls, they don't make up a r
 
 For instance, you might not want these tables to help you decide who your parents and siblings are, because that's among the information you've already come up with. But you can still use other parts, such as the section on life events, to provide added depth and detail.
 
+![c1039](../images/book/XGE/c1039.webp)
+
 #### How and When to Use the Tables
 
 If you're comfortable with letting the dice decide a certain fact about your character, go ahead and roll. If not, you can take charge and make the decision, choosing from among the possibilities on a table. Of course, you also have the option of disregarding the result of a die roll if it conflicts with another result. Likewise, if the text instructs you to roll on a table, that's not meant to be taken literally. You can always make your own choice.
@@ -104,6 +106,8 @@ Use the Family table to determine who raised you. If you know who your parents a
 
 Next, refer to the Family Lifestyle table to determine the general circumstances of your upbringing. (Chapter 5 of the player's handbook has more information about lifestyles.) The result on that table includes a number that is applied to your roll on the Childhood Home table, which tells you where you spent your early years. Wrap up this section by using the Childhood Memories table, which tells you how you were treated by other youngsters as you were growing up.
 
+![c1040](../images/book/XGE/c1040.webp)
+
 ##### Supplemental Tables
 
 You can roll on the Relationship table to determine how your family members or other important figures in your life feel about you. You can also use the Race, Occupation, and Alignment tables to learn more about the family members or guardians who raised you. {@b Developer's Note:} Below you will find a link to a {@b Story Template} which uses the tables in this and the sections below to randomly determine your back story. Instructions on how to use the template are given in the template itself.
@@ -111,6 +115,8 @@ You can roll on the Relationship table to determine how your family members or o
 ### Personal Decisions
 
 Your character's life takes a particular course depending on the choices you make for the character's background and class.
+
+![c1041](../images/book/XGE/c1041.webp)
 
 #### Background
 
@@ -124,6 +130,8 @@ If you haven't chosen your class yet, do so now, keeping in mind your background
 
 The class sections earlier in this chapter have further story suggestions, which you can use in concert with the material here.
 
+![c1042](../images/book/XGE/c1042.webp)
+
 ##### I became...
 
 ### Life Events
@@ -131,6 +139,8 @@ The class sections earlier in this chapter have further story suggestions, which
 No matter how long you've been alive, you have experienced at least one signature event that has markedly influenced your character. Life events include wondrous happenings and tragedies, conflicts and successes, and encounters with the unusual. They can help to explain why your character became an adventurer, and some might still affect your life even after they are long over.
 
 The older a character is, the greater the chance for multiple life events, as shown on the Life Events by Age table. If you have already chosen your character's starting age, see the entry in the Life Events column that corresponds to how old you are. Otherwise, you can roll dice to determine your current age and number of life events randomly.
+
+![c1043](../images/book/XGE/c1043.webp)
 
 After you know the number of life events your character has experienced, roll once on the Life Events table for each of them. Many of the results on that table direct you to one of the secondary tables that follow. Once you have determined all of your character's life events, you can arrange them in any chronological order you see fit.
 
@@ -141,6 +151,8 @@ These tables add detail to many of the results on the Life Events table. The tab
 ### Supplemental Tables
 
 The supplemental tables below give you a way to randomly determine characteristics and other facts about individuals who are part of your character's life. Use these tables when directed to do so by another table, or when you simply want to come up with a piece of information quickly. The tables are in alphabetical order.
+
+![c1044](../images/book/XGE/c1044.webp)
 
 ### What's Next?
 
@@ -159,3 +171,5 @@ Leveling up in a class is the main way a character evolves during a campaign. So
 This section introduces a collection of special feats that allow you to explore your character's race further. These feats are each associated with a race from the Player's Handbook, as summarized in the Racial Feats table. A racial feat represents either a deepening connection to your race's culture or a physical transformation that brings you closer to an aspect of your race's lineage.
 
 The cause of a particular transformation is up to you and your DM. A transformational feat can symbolize a latent quality that has emerged as you age, or a transformation might be the result of an event in the campaign, such as exposure to powerful magic or visiting a place of ancient significance to your race. Transformations are a fundamental motif of fantasy literature and folklore. Figuring out why your character has changed can be a rich addition to your campaign's story.
+
+![c1045](../images/book/XGE/c1045.webp)

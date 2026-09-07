@@ -3,10 +3,10 @@ publication_id: TCE2020
 publication_title: Tasha’s Cauldron of Everything (2020)
 provider: 5e.tools
 upstream_url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/book/book-tce.json
-retrieved_at: 2026-08-27T14:50:00.707Z
+retrieved_at: 2026-09-04T18:26:53.942Z
 snapshot:
   file: 原始資料/外部來源鏡像/TCE2020/book-tce.json
-  sha256: 6cf85cd456c4daf5bc9dc5a0d765074ea890f0bf115eb9855d5c864fa261a250
+  sha256: 4850fead3acd26d7de03fc2e40b16503f83d3ff571af5c9be012c1b553ab5ba1
 chapters:
   - kind: chapter
     number: 1
@@ -38,3 +38,524 @@ chapters:
     page: 139
     file: 原始資料/外部來源鏡像/TCE2020/chapters/05-Dungeon Master's Tools.md
     status: complete
+datasets:
+  - file: 原始資料/外部來源鏡像/TCE2020/datasets/spells-tce.json
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/spells/spells-tce.json
+    locator_prefix: "spell:"
+    sha256: 2366f928759cf4b20807a91f716c1dde3c40727edbc5573eafb61c471a9633bc
+images:
+  - path: book/TCE/000-00-003.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/000-00-003.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/000-00-003.webp
+    sha256: b6a5fdde78a31634b6cf616439d6ab7a1460eb2c83f16f38aee497fb908806c8
+    bytes: 153200
+  - path: book/TCE/001-01-001.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/001-01-001.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/001-01-001.webp
+    sha256: abb74d79558a46afad907fbe23586c7f8b6e6b89709f44fff27bb8511212eb9e
+    bytes: 164932
+  - path: book/TCE/003-01-004.artificer-vi.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/003-01-004.artificer-vi.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/003-01-004.artificer-vi.webp
+    sha256: 3366bd5c7f3c922eedc03f02949bb7fa26318567cb1401e2d7cb68c62f32d771
+    bytes: 176290
+  - path: book/TCE/004-01-005.artificer.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/004-01-005.artificer.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/004-01-005.artificer.webp
+    sha256: edbb6ca0a9a0ecae5b7f12e6961a083ab1be659e544789a3519b639746173ed2
+    bytes: 220634
+  - path: book/TCE/005-01-006.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/005-01-006.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/005-01-006.webp
+    sha256: e2bbb90f0dbcbaffb72e5ffa8ddc3a531c175acc8b949374a7a26e8af543e5ed
+    bytes: 152734
+  - path: book/TCE/006-01-007.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/006-01-007.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/006-01-007.webp
+    sha256: 0c15da5de0d409a537440fe4c0e3f8df5a6e3830b533865ea20e33cd26a1dd65
+    bytes: 236020
+  - path: book/TCE/007-01-008.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/007-01-008.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/007-01-008.webp
+    sha256: 5d7923630b177fc9c9e0180cc45f26194f87327008fdc60429a24126b3cae8cf
+    bytes: 72300
+  - path: book/TCE/008-01-009.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/008-01-009.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/008-01-009.webp
+    sha256: 7f720973983994c4306e095cdbf79b2c2e760849bc4db344b03519c79a6c0432
+    bytes: 284858
+  - path: book/TCE/010-01-012.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/010-01-012.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/010-01-012.webp
+    sha256: be4c6bf72e5fdf2efa74b5193840dd514c11c020023a35b43eae3634b408db05
+    bytes: 211588
+  - path: book/TCE/011-01-013.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/011-01-013.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/011-01-013.webp
+    sha256: c6134dcc1995866f0bdd49bb78b8c141097eb31977388763bd026c7aab59b1f5
+    bytes: 249940
+  - path: book/TCE/013-01-016.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/013-01-016.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/013-01-016.webp
+    sha256: 260f338d3f441f02473161f80663e5f3ad4d7d03f3a3eb0985da56b96d3acf55
+    bytes: 241924
+  - path: book/TCE/014-01-017.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/014-01-017.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/014-01-017.webp
+    sha256: f6d349408089df3ea963332006828008977f65212803df76196e9724aa6d9434
+    bytes: 91786
+  - path: book/TCE/016-01-020.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/016-01-020.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/016-01-020.webp
+    sha256: 07065c95236e8fd2a4d83e255cce7605ad600211712193456a0521edc5cb8989
+    bytes: 265328
+  - path: book/TCE/017-01-021.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/017-01-021.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/017-01-021.webp
+    sha256: f14161f504f67af8ea94cdc581d0a8bf66e6b8747d64c319dc2250e5c9b89bbf
+    bytes: 166324
+  - path: book/TCE/018-01-022.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/018-01-022.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/018-01-022.webp
+    sha256: 843baa8e8a61c09ad0a7729b0054d86be4580c90e5a9daca931e57f7b7c7e5a8
+    bytes: 85504
+  - path: book/TCE/019-01-023.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/019-01-023.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/019-01-023.webp
+    sha256: f255e22b8168d615b85f9253434043ef21b438409022c676c1b70d19af566a92
+    bytes: 241776
+  - path: book/TCE/021-01-026.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/021-01-026.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/021-01-026.webp
+    sha256: 209da0bbf5401718bcb86f92e6a0ed54dc956e2c53c34a4a6ed2e62e89075620
+    bytes: 109792
+  - path: book/TCE/022-01-027.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/022-01-027.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/022-01-027.webp
+    sha256: e1a1899819b5e8fc4506131ee82c49e62b838e907787af01ed4c045e824754c2
+    bytes: 130448
+  - path: book/TCE/023-01-028.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/023-01-028.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/023-01-028.webp
+    sha256: 597b22b8a6f17a60d6e17849803589ce7968733baa72c7182748eaf40b1da03b
+    bytes: 78914
+  - path: book/TCE/024-01-029.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/024-01-029.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/024-01-029.webp
+    sha256: 13a5580bc03354f02d1273dc82741a52bf8b2f3583b699126541b4719be08566
+    bytes: 212958
+  - path: book/TCE/026-01-032.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/026-01-032.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/026-01-032.webp
+    sha256: e0c654686f58a9b719e5fd372a6091791f06b645feceeb4835fa31b0c0f5f18c
+    bytes: 128798
+  - path: book/TCE/027-01-033.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/027-01-033.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/027-01-033.webp
+    sha256: 24c7f2c6c287b0abd29cbaa82ce307975cbeb0420e9fe7c5af81fd6aa6bb703e
+    bytes: 196976
+  - path: book/TCE/028-01-034.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/028-01-034.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/028-01-034.webp
+    sha256: 4e84622389eb7c01026c08ecd831b7043e50e40985a8b9887b378588e35a08e9
+    bytes: 124350
+  - path: book/TCE/029-01-035.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/029-01-035.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/029-01-035.webp
+    sha256: 36e30a066488c42982c7fabe8bf37f58a2f0c39141fd7cb3bbaff21860b5f8f8
+    bytes: 128910
+  - path: book/TCE/031-01-038.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/031-01-038.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/031-01-038.webp
+    sha256: 86b6264d3df90e737a4871490a369e15c088a8ed2344a92bc07a27fde1bd0487
+    bytes: 187086
+  - path: book/TCE/032-01-039.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/032-01-039.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/032-01-039.webp
+    sha256: ea4ec8d96292d65744ab321c7bc5f778d14dfef32ec09b5467938e08e08a6bc2
+    bytes: 90406
+  - path: book/TCE/033-01-040.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/033-01-040.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/033-01-040.webp
+    sha256: 11ae4e45fcf1268c008185a6e1e3c1b0e529a70f3ee710120d75dabba5ec5a23
+    bytes: 286832
+  - path: book/TCE/035-01-043.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/035-01-043.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/035-01-043.webp
+    sha256: 2e4e0e3b1cf34354d602234c0d403a51649ebc7e6a7d3737b97ed28e1a29ef96
+    bytes: 78814
+  - path: book/TCE/036-01-044.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/036-01-044.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/036-01-044.webp
+    sha256: 93d5828290334b9eab35e5f705c87f1d6bfa30769eab5e912cc1c12fe430d697
+    bytes: 181104
+  - path: book/TCE/037-01-045.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/037-01-045.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/037-01-045.webp
+    sha256: 1b931f57953b8c07a41f44c2a95a4cdf13cbf2b6fbfa1d9f2bc3387fce5eb0eb
+    bytes: 179800
+  - path: book/TCE/039-01-048.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/039-01-048.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/039-01-048.webp
+    sha256: 63ad9537bebf17d56e1a2e2e811d5e82dd5e90ca45c59a73ef385c01ca5e7aba
+    bytes: 145680
+  - path: book/TCE/040-01-049.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/040-01-049.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/040-01-049.webp
+    sha256: d9855ca71010bb92938664b57a5815adbde94508a1497af18b37a130a0d8972a
+    bytes: 194942
+  - path: book/TCE/041-01-050.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/041-01-050.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/041-01-050.webp
+    sha256: 786e2fff623a7ada8595b27152c04260707f9eb405509b40d04c803a31dfb989
+    bytes: 147330
+  - path: book/TCE/043-01-053.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/043-01-053.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/043-01-053.webp
+    sha256: d4b4a02c8665953de86abde18b7fedeaae4709766c79bd828ff6aff6424768c5
+    bytes: 110446
+  - path: book/TCE/044-01-054.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/044-01-054.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/044-01-054.webp
+    sha256: e849b6c50d9af09f09e21b919825c021fdccbcbf5b7e54107d6bc3c656923ccb
+    bytes: 124664
+  - path: book/TCE/045-01-055.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/045-01-055.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/045-01-055.webp
+    sha256: 26ae9d94e6dddf3f7521a11485452877b37b650f02bd4d734ae826732b0072cb
+    bytes: 65648
+  - path: book/TCE/047-01-058.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/047-01-058.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/047-01-058.webp
+    sha256: af5a3f833fc3f45ec72cf7459091c91a59c7533395994211c879f077e1007055
+    bytes: 113838
+  - path: book/TCE/048-01-059.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/048-01-059.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/048-01-059.webp
+    sha256: 490462be223955df3361b19831d32d1aa2ecfa248171307478029d2e85686f56
+    bytes: 99192
+  - path: book/TCE/049-01-060.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/049-01-060.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/049-01-060.webp
+    sha256: 2a8f332e62b3dd4e60c7a5206916cbec691d224b30a2d5982c40503e0b0fffb5
+    bytes: 136790
+  - path: book/TCE/051-01-063.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/051-01-063.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/051-01-063.webp
+    sha256: 962338975d00c92f2d3d736d837ca082c1248afaf55877a2a8a16a1fe49dfa1c
+    bytes: 89040
+  - path: book/TCE/052-01-064.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/052-01-064.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/052-01-064.webp
+    sha256: 6dd141719d8a31d9c3d9250f7d4adcf05d94156ca3b2dd031b0b164d5b63777b
+    bytes: 73290
+  - path: book/TCE/053-01-065.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/053-01-065.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/053-01-065.webp
+    sha256: 1851dc636ace3ea53ecd5ba4c910c26ddff67f79e93663d4b664af62b415e72a
+    bytes: 128390
+  - path: book/TCE/055-01-068.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/055-01-068.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/055-01-068.webp
+    sha256: bc101730f2a871a7ce3846099f510e6e7e778b0401b0b8d2fb1f7dd8377ad3bf
+    bytes: 193228
+  - path: book/TCE/056-01-069.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/056-01-069.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/056-01-069.webp
+    sha256: 1614a3f36f0154e892fd81d1bc925ed4a8ea7f99092039cd9f29d6826c64ee74
+    bytes: 172898
+  - path: book/TCE/057-01-070.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/057-01-070.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/057-01-070.webp
+    sha256: c85238d5254075fdbf383ceeab7bed9215b9d2ccbe570cdcfd18282d41ea99e2
+    bytes: 123858
+  - path: book/TCE/058-01-071.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/058-01-071.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/058-01-071.webp
+    sha256: 8e38f1f3d0677f5bdb16fba3a19aacb3c474672dcfa474c02ce5c8dc577ba3f0
+    bytes: 201622
+  - path: book/TCE/059-02-001.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/059-02-001.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/059-02-001.webp
+    sha256: a2b0025b6447e54540d85e80307d709a0c5a98e34c6df618fa1c582791056d92
+    bytes: 122836
+  - path: book/TCE/060-02-002.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/060-02-002.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/060-02-002.webp
+    sha256: 8d2a577d1356ecbaa1990c9a86e039db4c1071e1f0b06b103e4e8491d5e819d6
+    bytes: 123122
+  - path: book/TCE/061-02-003.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/061-02-003.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/061-02-003.webp
+    sha256: 2458a6e83352cfc8cc50f1f9830e5142b8396e357ccae7fc4e902d1b910059fa
+    bytes: 107302
+  - path: book/TCE/062-02-004.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/062-02-004.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/062-02-004.webp
+    sha256: 184e2cef42734d74f54d7955898139699641d451934b6ae53bece61f06f8b27b
+    bytes: 104312
+  - path: book/TCE/063-02-005.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/063-02-005.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/063-02-005.webp
+    sha256: a83c972b79e5f6778877645634cc7963ba1da4fb76b43adb7f5de8adae3a55b7
+    bytes: 130404
+  - path: book/TCE/064-02-006.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/064-02-006.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/064-02-006.webp
+    sha256: 23b6d2c477d6aa06a05e8b91e116be09be32ed49c57ac53667fc3c93064acd28
+    bytes: 100954
+  - path: book/TCE/065-02-007.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/065-02-007.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/065-02-007.webp
+    sha256: 660a6969b6f1ca038f2a48242544271870883800840bc3e56148804b73dc6734
+    bytes: 168022
+  - path: book/TCE/066-02-008.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/066-02-008.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/066-02-008.webp
+    sha256: ce1a9fd74a786a3815cc91e0bb1425db4bb63d381889a4fcaa3652aeab1cbb9f
+    bytes: 176168
+  - path: book/TCE/067-02-009.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/067-02-009.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/067-02-009.webp
+    sha256: 4452a9e3de9d502f12e683c4be83507aaa3f626ccd2b4a924da69a72f8291691
+    bytes: 181212
+  - path: book/TCE/068-02-010.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/068-02-010.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/068-02-010.webp
+    sha256: 0a79cd09aa688069caaef27d3a81057adc84e05e74fcdaa3398b553bed41889b
+    bytes: 190500
+  - path: book/TCE/069-03-001.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/069-03-001.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/069-03-001.webp
+    sha256: d4fb4b762720583bf1bb7f2586209649dd9175a0f5ff2e64bd47c059f5186ccc
+    bytes: 195196
+  - path: book/TCE/075-03-007.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/075-03-007.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/075-03-007.webp
+    sha256: 5a0350bcd1e8de9e77bff6118a4f5542fa34f21ac7e03a79acb719748c1f0160
+    bytes: 164800
+  - path: book/TCE/076-03-008.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/076-03-008.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/076-03-008.webp
+    sha256: 305817b30db9b5e58fe5e13d3546a6c04099ce73af759175020c9ce5f77ef9fd
+    bytes: 109702
+  - path: book/TCE/090-04-001.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/090-04-001.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/090-04-001.webp
+    sha256: c65057b3212ff70581cc767a95c538d660e6afbac40332448c77c8ddca1e0ef4
+    bytes: 218806
+  - path: book/TCE/091-04-002.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/091-04-002.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/091-04-002.webp
+    sha256: 3f48bffffa4213aac91ebe5a065b7ca6ae616a2af0060817306023584db7a57c
+    bytes: 177450
+  - path: book/TCE/092-04-003.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/092-04-003.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/092-04-003.webp
+    sha256: 7c84f7e963feb59ea57dacf1ef047645b40629346822141f1409ee9eff0b36a0
+    bytes: 173780
+  - path: book/TCE/093-04-004.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/093-04-004.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/093-04-004.webp
+    sha256: f2a5b41b22c876f053eb45fead40092e472f0364051b5afcffaf5fa0edf912b4
+    bytes: 111418
+  - path: book/TCE/094-04-005.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/094-04-005.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/094-04-005.webp
+    sha256: 92b3115c6473da527c896f3206d7e4e4256334000272ae5704ad1d17fe2de51a
+    bytes: 172958
+  - path: book/TCE/095-04-006.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/095-04-006.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/095-04-006.webp
+    sha256: ffc40110862b1016c2fff9b84de367af9f9fd2b24a537b61af4bc0f2205ed0bb
+    bytes: 155048
+  - path: book/TCE/096-04-007.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/096-04-007.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/096-04-007.webp
+    sha256: d03ec20523c2fed66ef7a6ffa29cab8409c95dd6d6dd85efa73e813f5870900e
+    bytes: 112050
+  - path: book/TCE/097-04-008.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/097-04-008.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/097-04-008.webp
+    sha256: 576b5682fbee2dccdb610a6b73ab167b46112d7f2c4c0ebf9c70ce81f14cfcfd
+    bytes: 78098
+  - path: book/TCE/098-04-009.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/098-04-009.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/098-04-009.webp
+    sha256: 3d0206cef45be127103f33e8ff08bed9b8986c2f0670dfbf85e5b478986dd4d4
+    bytes: 142098
+  - path: book/TCE/099-04-010.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/099-04-010.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/099-04-010.webp
+    sha256: f9bd8e85c9679c37085be34fa1d3eec338df61be16cda0cb827336456a001e30
+    bytes: 125624
+  - path: book/TCE/100-04-011.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/100-04-011.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/100-04-011.webp
+    sha256: 7d6d79da479b0f49ab04f5477aed169c45e08a4c2c71756ce46dfe158335612c
+    bytes: 204992
+  - path: book/TCE/101-04-012.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/101-04-012.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/101-04-012.webp
+    sha256: 149ab34c95e00a58c4b34766907e73b9d6f84010a4ac2646309622fbea78cd0e
+    bytes: 124674
+  - path: book/TCE/102-04-013.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/102-04-013.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/102-04-013.webp
+    sha256: 74d2529eb02cced7ad7ad55dbec395f365540fe36f682c314e123a18e6b94bd8
+    bytes: 106846
+  - path: book/TCE/103-04-014.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/103-04-014.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/103-04-014.webp
+    sha256: c69e678a5e2b37570fee9e77888e7c12ff6f582ba804741a5fd44cc024d4be52
+    bytes: 149434
+  - path: book/TCE/104-04-015.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/104-04-015.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/104-04-015.webp
+    sha256: 9d2815a522ab318e3555ecdb0d7ac90d76fc429f4b45c8fa5ffa99e971a6f46f
+    bytes: 124092
+  - path: book/TCE/105-04-016.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/105-04-016.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/105-04-016.webp
+    sha256: 8f528d70058c5b7ddefb551cb86cb9b58907de1719a43b85fdf3ab68686a63e5
+    bytes: 106544
+  - path: book/TCE/106-04-017.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/106-04-017.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/106-04-017.webp
+    sha256: 1c4f47efa69a79b8be133efed6a429c94e7eedf1bee8928f38500d5844277a82
+    bytes: 154906
+  - path: book/TCE/107-04-018.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/107-04-018.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/107-04-018.webp
+    sha256: 73f2821a5608409102f97de1bb5f9dd1f99c689a02c2a8bdbe46fc4a4afce951
+    bytes: 176196
+  - path: book/TCE/108-04-019.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/108-04-019.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/108-04-019.webp
+    sha256: 607ddd37aa9c4ef71c995d6511fc34beb5d2911b6dcdfff479a981f005a8b189
+    bytes: 204640
+  - path: book/TCE/109-04-020.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/109-04-020.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/109-04-020.webp
+    sha256: 0514cba8308420d69103321a284f2afc6cd4e43af718f94026bfa997fc4856ae
+    bytes: 159104
+  - path: book/TCE/110-04-021.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/110-04-021.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/110-04-021.webp
+    sha256: 063756881348df1f54ab3655896187b8d4c972509da74bcca856e27cc9c6f8e3
+    bytes: 184804
+  - path: book/TCE/111-04-022.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/111-04-022.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/111-04-022.webp
+    sha256: b2a13f6a1d24eeb4022cb3baa7e8334bee3eee842bf8ae6f80bee03d892a205c
+    bytes: 131348
+  - path: book/TCE/112-04-023.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/112-04-023.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/112-04-023.webp
+    sha256: a5409ab6ff2e6142ebecfee5d5c46a958d9894f897ea59859340645e6fdaceb7
+    bytes: 161570
+  - path: book/TCE/113-04-024.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/113-04-024.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/113-04-024.webp
+    sha256: 315929c99a3177ce260ee3b2a2775ad5e09a5ef5a0348e80cba54dd385b8a530
+    bytes: 204476
+  - path: book/TCE/114-04-025.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/114-04-025.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/114-04-025.webp
+    sha256: c2c7e129f7b8a40b8cc73136b3f45c24073af88ecc54b9041e28d2663bcabb98
+    bytes: 109572
+  - path: book/TCE/115-04-026.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/115-04-026.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/115-04-026.webp
+    sha256: f7b10fafb1585a0b3bb4187c883539daa7674a2eda9ddc33cde700703c892a03
+    bytes: 121706
+  - path: book/TCE/116-04-027.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/116-04-027.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/116-04-027.webp
+    sha256: ce2a1ccf7cf73c0dd9450bd694ce1d7859bd7224929c85ae9a01f704107b8b1c
+    bytes: 75012
+  - path: book/TCE/117-04-028.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/117-04-028.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/117-04-028.webp
+    sha256: 673957b35a9c349d2f56a2a7f3ba341b7e40952eeb395ba99c18f93e42f885f6
+    bytes: 79244
+  - path: book/TCE/118-04-030.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/118-04-030.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/118-04-030.webp
+    sha256: dd14c9be21b845205e3d9ab6b3cbf2dd11d1fadb195082ad9d3c3fd86d85115e
+    bytes: 110550
+  - path: book/TCE/119-04-029.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/119-04-029.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/119-04-029.webp
+    sha256: bff65d00ea109afe5132792e582cbf9c482c70996cf34cd7f59872986a6144f9
+    bytes: 117862
+  - path: book/TCE/120-04-031.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/120-04-031.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/120-04-031.webp
+    sha256: e7a1c8700bfa3cd7ae2372945aec31f26bf892fac213f9d8b8a151992562a048
+    bytes: 86910
+  - path: book/TCE/121-04-032.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/121-04-032.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/121-04-032.webp
+    sha256: e9598131596347be0ecc6e2338608063111947dd3fdb358a66dc8103b61f2913
+    bytes: 354608
+  - path: book/TCE/122-04-033.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/122-04-033.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/122-04-033.webp
+    sha256: 11267fb4499192d43cc81fbb7a5bffa98947697cc55b66e844e2f37232a2a8c3
+    bytes: 29848
+  - path: book/TCE/123-04-034.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/123-04-034.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/123-04-034.webp
+    sha256: d2077cac0d43aad1148017a188dd85858535704e8475d2de0c548d58330fa568
+    bytes: 194688
+  - path: book/TCE/124-04-035.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/124-04-035.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/124-04-035.webp
+    sha256: 4b0de05ee6fa96beb7c3132f22052fd9d95a65fe67ba502d08a868610f30ac55
+    bytes: 152214
+  - path: book/TCE/125-04-036.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/125-04-036.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/125-04-036.webp
+    sha256: f2c150df8d8d1b90f07e3f6c6630e4cfba6830c1797495581f730f0060d18249
+    bytes: 189226
+  - path: book/TCE/126-04-037.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/126-04-037.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/126-04-037.webp
+    sha256: edb6515a0ca6d59942193311e4c18678b0302b4af50482da51e6944a8577ca0c
+    bytes: 98370
+  - path: book/TCE/127-04-038.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/127-04-038.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/127-04-038.webp
+    sha256: 9bd57d7fe28d6ee923c6135041bd109f12376da6312b8fa491d9ee8e0098d41e
+    bytes: 114908
+  - path: book/TCE/128-04-039.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/128-04-039.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/128-04-039.webp
+    sha256: 5cee4e23113881afec5f1e4d0e8b6b23dd947a2a7e0b171371071a58b8ae4910
+    bytes: 609930
+  - path: book/TCE/129-04-040.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/129-04-040.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/129-04-040.webp
+    sha256: fb5c11cacc5434a87b26ebe305f61138bf7fc5f5e32dbbcb4bdd498a330e55a0
+    bytes: 203176
+  - path: book/TCE/130-04-041.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/130-04-041.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/130-04-041.webp
+    sha256: 44809ad8bc23d8c0dd4c596ea4738d21a7d6ac04333c03e224135911c1916754
+    bytes: 112244
+  - path: book/TCE/credits.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/credits.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/credits.webp
+    sha256: b3bec8c4df5101ab6e23b12793a413fb0088b88d0daee5f0227b496cfc063117
+    bytes: 42090
+  - path: book/TCE/credits2.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/credits2.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/credits2.webp
+    sha256: 15d37514c7d6df3d5b283736a7656d2526132722221502766671eecc69bc71ef
+    bytes: 114070
+  - path: book/TCE/credits3.webp
+    file: 原始資料/外部來源鏡像/TCE2020/images/book/TCE/credits3.webp
+    url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/book/TCE/credits3.webp
+    sha256: 88cc57f2b00874666e6238bb948100f7fd505cbf325ca5ec065829a788e30de6
+    bytes: 167060

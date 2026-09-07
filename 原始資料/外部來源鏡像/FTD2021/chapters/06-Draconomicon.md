@@ -48,6 +48,8 @@ How do the mindsets of red dragons and gold dragons differ? Where do they prefer
 
 *This dragon is introduced in {@book chapter 6|FTD|6}.
 
+![Fizban addresses a council of metallic dragons on a matter of crucial importance, probably unrelated to baked goods](../images/book/FTD/039-05-001.chapter-splash.webp)
+
 ## Using the Entries
 
 For each dragon's entry in this chapter, you'll find information about crafting personalities, inspiration for building adventures, details about lairs, and ideas about the kinds of treasures that dragon favors. Scattered throughout are maps of dragon lairs you can plunder for your adventures.
@@ -106,6 +108,10 @@ Amethyst dragons prefer lairs near water, ideally mountain lakes, where they tak
 
 Amethyst dragon lairs frequently exhibit or develop large and beautiful clusters of amethyst crystals, including massive cathedral geodes split open to show their contents and clusters of crystal points more than a foot in diameter that extend six to ten feet from the interior stone surfaces of the lair. These crystals resonate with the dragon's presence, and glow with a soft inner light. The older the dragon, the deeper the purple color of the crystals.
 
+![Map 5.1: amethyst dragon lair](../images/book/FTD/040-map-5.1-amethyst-dragon-lair.webp)
+
+![Player Version](../images/book/FTD/041-map-5.1-amethyst-dragon-lair-player.webp)
+
 #### Amethyst Dragon Lair Features
 
 The amethyst dragon lair shown in map 5.1 is set beneath a mountain ridge between two deep tarns, with streams flowing down toward the lowlands. The lair has the following features:
@@ -149,6 +155,10 @@ Black dragons prefer the company of creatures that are easy to control and prese
 Black dragons prefer to lair in swamps and jungles—the more dismal and fetid, the better. Within those environs, they favor ruins for their defensibility and dreary aesthetic.
 
 When choosing their lairs, black dragons are fond of locations that are naturally constraining and confounding. Whether adventurers seeking the dragon must wind their way through the roots of an ancient mangrove swamp or brave a trap-filled boggy ruin, the experience promises to be a deadly affair.
+
+![Map 5.2: black dragon lair](../images/book/FTD/042-map-5.2-black-dragon-lair.webp)
+
+![Player Version](../images/book/FTD/043-map-5.2-black-dragon-lair-player.webp)
 
 #### Black Dragon Lair Features
 
@@ -198,6 +208,8 @@ Because their lairs are inevitably slimy and dank, if not outright flooded, blac
 
 Most black dragons keep their treasure well hidden and have a private viewing room for particularly prized possessions. Knowing that interloping inferiors were able to so much as see their hoard can drive a black dragon to a state of rage.
 
+![044-05-002](../images/book/FTD/044-05-002.webp)
+
 ## Blue Dragons
 
 If I weren't so platinum, I'd be blue. Not as in sad or down. Quite the opposite. I'd be delighted to be a blue dragon... if I weren't a platinum one.
@@ -216,11 +228,17 @@ The Blue Dragon Adventure Hooks table offers suggestions for stories and adventu
 
 In contrast to most chromatic dragons, blue dragons see value in relationships with other creatures, even if the power balance in those relationships is always weighted in the dragon's favor. Though territorial, they are willing to allow creatures they consider their servants to live peacefully within their domains. Blue dragons are also more family oriented than many other dragons, and it's not unusual to find a multigenerational extended family of blue dragons sharing a territory. Other creatures need to tread carefully in such a place, for any injury or insult to one of the dragons is considered a strike against the whole family.
 
+![Iymrith, "Doom of the Desert," flies above her lair](../images/book/FTD/045-05-003.iymrith.webp)
+
 ### Blue Dragon Lairs
 
 Blue dragons make their lairs in deserts and other arid landscapes. They prefer warm climates, but if an otherwise ideal potential lair presents itself in a cold environment, they find ways to adapt. Instead of seeking out lofty domiciles, blue dragons build their lairs underground, burrowing beneath sand or using magic to hew rock into an intricate warren of rooms and tunnels that can be expanded to accommodate a growing family. Still, they appreciate the tactical advantages of height and usually create their lairs near a spire or cliff from which they can keep watch over their territory.
 
 Though most blue dragons would be loath to the use the term themselves, their lairs are often surprisingly homey. They favor lairs that balance beauty and comfort and adorn them in soothing shades of blue, purple, and green.
+
+![Map 5.3: blue dragon lair](../images/book/FTD/046-map-5.3-blue-dragon-lair.webp)
+
+![Player Version](../images/book/FTD/047-map-5.3-blue-dragon-lair-player.webp)
 
 #### Blue Dragon Lair Features
 
@@ -295,6 +313,10 @@ Brass dragons seek out the company of other creatures that can carry on an intel
 Brass dragons prefer to make their lairs in hot, dry, rocky areas—desert canyons, caves beneath arid mesas, or ancient stone ruins. Brass dragons often compete with blue dragons for lair sites, but are more likely to make a lair among rocks than to burrow under the sands.
 
 Brass dragons like their lairs to be spacious and well lit; many lairs feature windows or skylights to let sunlight in. They respect skillfully wrought stonework and often take over canyon fortresses and similar structures when they're abandoned by their original non-dragon builders. Brass dragons are also capable of fine stonework themselves, and many meticulously carve out grand halls and galleries in which to store and display their hoards.
+
+![Map 5.4: brass dragon lair](../images/book/FTD/048-map-5.4-brass-dragon-lair.webp)
+
+![Player Version](../images/book/FTD/049-map-5.4-brass-dragon-lair-player.webp)
 
 #### Brass Dragon Lair Features
 
@@ -378,6 +400,10 @@ The bronze dragon lair shown on map 5.5 is a set of sea caves that once served a
 
 - Watery Caves
 
+![Map 5.5: bronze dragon lair](../images/book/FTD/050-map-5.5-bronze-dragon-lair.webp)
+
+![Player Version](../images/book/FTD/051-map-5.5-bronze-dragon-lair-player.webp)
+
 #### Additional Lair Actions
 
 At your discretion, a legendary ({@creature Adult Bronze Dragon||adult} or {@creature Ancient Bronze Dragon||ancient}) bronze dragon can use one or more of the following additional lair actions while in its lair:
@@ -439,6 +465,10 @@ The kindly copper dragon has grown fond of the companionship of Humanoids, altho
 Copper dragons prefer dry uplands, hilltops, or mountainous foothills, where they build their lairs in caves, crags, or tunnels. Although sometimes natural, the passages and caverns of a copper dragon's lair might be carved out or expanded by the dragon's powerful acid breath.
 
 Copper dragon burrows are often sinuous and winding, featuring twists, turns, and dead ends. Blank walls in the lair can conceal cunning hidden passages or might be stone or clay thin enough for the dragon to burst through them. The narrowest tunnels in a copper dragon's lair are just barely wide enough to accommodate the dragon's body, and they typically loop around and reconnect with themselves so the dragon can double back without having to reverse direction.
+
+![Map 5.6: copper dragon lair](../images/book/FTD/052-map-5.6-copper-dragon-lair.webp)
+
+![Player Version](../images/book/FTD/053-map-5.6-copper-dragon-lair-player.webp)
 
 #### Copper Dragon Lair Features
 
@@ -503,6 +533,10 @@ Crystal dragons are among the most social and hospitable of dragons. They are eq
 Crystal dragons seek out frigid, picturesque locations with clear views of the sky above to build their lairs. Then, like gem cutters seeking the perfect diamond, they spend much of their lives refining, polishing, and enhancing the beauty of their lairs.
 
 Crystal dragons' lairs are often found in polar expanses, dizzying mountain peaks, and glacial floes. Some resemble icy palaces, with numerous balconies offering plentiful opportunities for sky gazing. Though ice and snow are the most common materials they use in the construction of a lair, crystal and other precious minerals feature prominently in certain areas. In this way, crystal dragons' hoards literally become the fabric of their homes.
+
+![Map 5.7: crystal dragon lair](../images/book/FTD/054-map-5.7-crystal-dragon-lair.webp)
+
+![Player Version](../images/book/FTD/055-map-5.7-crystal-dragon-lair-player.webp)
 
 #### Crystal Dragon Lair Features
 
@@ -590,6 +624,8 @@ The Dragon Turtle Adventure Hooks table offers suggestions for stories and adven
 
 Dragon turtles are stolid and slow to anger. This temperament, combined with their disinterest in moral quandaries, allows them to get along with—or at least abide—most creatures they encounter. They frequently enter symbiotic relationships with other sea creatures that can bring them food or treasure, and they sometimes agree to work for creatures who ply them with generous sums of wealth.
 
+![056-05-004](../images/book/FTD/056-05-004.webp)
+
 ### Dragon Turtle Lairs
 
 Dragon turtles make their lairs in underwater caves and coral reefs. Most such lairs are situated deep beneath the waves near the ocean's floor, though some dragon turtles prefer coastal lairs with easier access to settlements they can trade with—or prey upon. Particularly reclusive dragon turtles seek lairs in even more remote locales, including deep-sea trenches or underwater volcanoes.
@@ -674,6 +710,10 @@ Emerald dragons make their lairs in caves and subterranean ruins, favoring locat
 
 An emerald dragon's lair is a maze of twisting tunnels, interconnected caverns, or crumbling ruins designed to disorient intruders. Circuitous routes within the lair provide the dragon with numerous ways to evade pursuit, while strategically designed choke points allow them to harry enemies with repeated ambushes. Emerald dragons frequently lay traps and alarms at the entrance points to their lairs, with older (and more paranoid) dragons employing several layers of such defenses.
 
+![Map 5.8: emerald dragon lair](../images/book/FTD/065-map-5.8-emerald-dragon-lair.webp)
+
+![Player Version](../images/book/FTD/066-map-5.8-emerald-dragon-lair-player.webp)
+
 #### Emerald Dragon Lair Features
 
 The emerald dragon lair shown in map 5.8 is a series of ancient vaults situated beneath a city built in the caldera of a dormant volcano. The vaults fell into disuse over a century ago when an upwelling from the lake at the caldera's center collapsed a portion of the vaults and flooded their halls with boiling water and noxious fumes. The stairwell leading up to the city was sealed to prevent the fumes from spilling into the streets above. Decades later, once the volcano's activity had subsided, the dragon moved in.
@@ -750,6 +790,8 @@ As they are presented in the {@book Monster Manual|MM}, faerie dragons don't hav
 
 The region containing a faerie dragon's lair can be transformed by its presence, creating one or more of the following effects:
 
+![067-05-005](../images/book/FTD/067-05-005.webp)
+
 - Compulsory Offering
 
 - Malleable Time
@@ -784,9 +826,15 @@ The Gold Dragon Adventure Hooks table offers suggestions for stories and adventu
 
 Gold dragons tend to hold themselves apart from the worlds they watch over, favoring isolation and trusting only a few close allies and guardians. When they do walk among other creatures, they prefer to do so in disguise, relishing the opportunity to see the world through different eyes.
 
+![068-05-006](../images/book/FTD/068-05-006.webp)
+
 ### Gold Dragon Lairs
 
 Despite their affection for people and their diverse cultures, gold dragons typically make their lairs in hidden places far from civilization, where only the most desperate and dedicated can find them. Many live in the ruins of vanished cultures, appreciating the beautiful inevitability of entropy and the reminder of how easily progress can be lost without careful tending. Crumbling shrines, towers reclaimed by the wilderness, and fallen fortresses all appeal to a gold dragon's sense of history—though they can be equally enraptured by picturesque natural settings. A gold dragon lair almost always involves water, be it a river, a lake, or an ocean shore.
+
+![Map 5.9: gold dragon lair](../images/book/FTD/069-map-5.9-gold-dragon-lair.webp)
+
+![Player Version](../images/book/FTD/070-map-5.9-gold-dragon-lair-player.webp)
 
 #### Gold Dragon Lair Features
 
@@ -864,6 +912,10 @@ Green dragons prefer making their lairs in verdant places—jungles, bayous, pin
 
 Green dragons take great interest in woodland settlements when seeking lair sites. Though they are fully capable of modifying forests to their own liking, they find it easier and vastly more entertaining to take something belonging to smaller and weaker beings.
 
+![Map 5.10: green dragon lair](../images/book/FTD/071-map-5.10-green-dragon-lair.webp)
+
+![Player Version](../images/book/FTD/072-map-5.10-green-dragon-lair-player.webp)
+
 #### Green Dragon Lair Features
 
 The green dragon lair shown in map 5.10 was an enormous banyan tree once sacred to the wood elves who lived around it. The original host tree around which the banyan tree grew is now dead and has rotted away, leaving a large columnar shaft within the trunk of the banyan that the dragon has expanded into a subterranean lair. The banyan continues to grow and to swallow up other nearby trees.
@@ -891,6 +943,8 @@ Either or both of these effects might appear in the area around a green dragon's
 - Inviting Whispers
 
 - Twisted Messengers
+
+![073-05-007](../images/book/FTD/073-05-007.webp)
 
 ### Green Dragon Treasures
 
@@ -948,6 +1002,8 @@ Use the tables, map, and other information in this section to craft unique encou
 
 Use the Red Dragon Personality Traits and Red Dragon Ideals tables to inspire your portrayal of distinctive red dragon characters, and use the Red Dragon Spellcasting table to help select spells for a spellcasting dragon.
 
+![074-05-008](../images/book/FTD/074-05-008.webp)
+
 ### Red Dragon Adventures
 
 The Red Dragon Adventure Hooks table offers suggestions for stories and adventures involving red dragons.
@@ -961,6 +1017,10 @@ Red dragons treat other creatures as potential servants or pawns, valuable only 
 Red dragons lair in mountain badlands and high, isolated peaks and hills, preferring warm caverns in the rocky depths beneath those landscapes. Lairs with natural geothermal or lava vents are highly sought after, as these features create an environment ideally suited to the dragons' taste.
 
 Minions often attend red dragons in their lairs. These servants keep the place swept clean of refuse and watch out for intruders, while providing the imperious dragon with subjects to bully and command. Some minions worship the dragon and serve willingly, but others would escape if they could.
+
+![Map 5.11: red dragon lair](../images/book/FTD/075-map-5.11-red-dragon-lair.webp)
+
+![Player Version](../images/book/FTD/076-map-5.11-red-dragon-lair-player.webp)
 
 #### Red Dragon Lair Features
 
@@ -1025,6 +1085,10 @@ Sapphire dragons are generally solitary creatures. On the rare occasion that one
 Sapphire dragons make their lairs in enormous caverns and complex tunnel systems. As they grow older, they continually renovate their lairs, using their tunneling abilities and command over stone.
 
 Sapphire dragons eventually create dizzying honeycombs of hidden passages, deceptively thin walls, and secret chambers that allow them to traverse the entire lair without ever being seen by intruders. The best-defended sapphire dragon lairs have no easily accessible entrances or exits at all, and trespassers who do find their way inside must then contend with a maze of corridors, dead ends, and steep inclines.
+
+![Map 5.12: sapphire dragon lair](../images/book/FTD/077-map-5.12-sapphire-dragon-lair.webp)
+
+![Player Version](../images/book/FTD/078-map-5.12-sapphire-dragon-lair-player.webp)
 
 #### Sapphire Dragon Lair Features
 
@@ -1130,6 +1194,10 @@ This inclination toward using high-altitude locales as sites for lairs isn't wit
 
 The lair of a silver dragon is always an impressive sight. Young dragons make their homes in icy cliffs, excavating space for themselves within the mountainside. Older silver dragons sometimes decorate their cliff-side habitats with ruins carefully collected from other places in the world. Depending on the dragon, a lair can be a multi-tiered affair, with its highest levels extending fully into the sky.
 
+![Map 5.13: silver dragon lair](../images/book/FTD/079-map-5.13-silver-dragon-lair.webp)
+
+![Player Version](../images/book/FTD/080-map-5.13-silver-dragon-lair-player.webp)
+
 #### Silver Dragon Lair Features
 
 The silver dragon lair shown in map 5.13 is composed of three connected sections—an antechamber, an open court, and a majestic temple. The lair has the following features:
@@ -1188,6 +1256,10 @@ Topaz dragons are happiest by the sea. They spend most of their time basking in 
 
 Their preference for lair sites frequently brings topaz dragons into conflict with other creatures, since they resent having to share their chosen scenic locations with anything that isn't food. They often abandon lairs to seek new vistas, so the interiors of their lairs often feel less finished than those of other dragons. Topaz dragons decorate their lairs with mirrors to make them look bigger and brighter, as well as fabric and objects in golden shades that complement their scales. They obsessively organize their hoards but almost never show them to anyone else.
 
+![Map 5.14: topaz dragon lair](../images/book/FTD/081-map-5.14-topaz-dragon-lair.webp)
+
+![Player Version](../images/book/FTD/082-map-5.14-topaz-dragon-lair-player.webp)
+
 #### Topaz Dragon Lair Features
 
 The topaz dragon lair shown in map 5.14 is situated among the rocky cliffs and beaches of a rugged coastline. The lair is set in a cavern complex near the top of the cliffs, 50 feet above the sandy beaches, outcroppings, and islands below. It has the following features:
@@ -1238,6 +1310,10 @@ A white dragon's lair is a place of freezing temperatures and profound solitude.
 
 White dragons enjoy the mournful sound of the wind and frequently choose lairs with long, winding tunnels down which icy gusts can travel. They seldom work to improve their lairs, but when they do, it is often to channel wind currents to create effects the dragon finds pleasing. The labyrinthine tunnels and the mirror-like icy surfaces in a white dragon's lair confound would-be thieves and might foil their escape.
 
+![Map 5.15: white dragon lair](../images/book/FTD/083-map-5.15-white-dragon-lair.webp)
+
+![Player Version](../images/book/FTD/084-map-5.15-white-dragon-lair-player.webp)
+
 #### White Dragon Lair Features
 
 The white dragon lair shown in map 5.15 is a natural stone grotto set in a cliff side capped by a glacial ice sheet. It has the following features:
@@ -1247,6 +1323,8 @@ The white dragon lair shown in map 5.15 is a natural stone grotto set in a cliff
 - Frozen Stream
 
 - Dining Hall
+
+![085-05-009](../images/book/FTD/085-05-009.webp)
 
 - Rocky Grotto
 

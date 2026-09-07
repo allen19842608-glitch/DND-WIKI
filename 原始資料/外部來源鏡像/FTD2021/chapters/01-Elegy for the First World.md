@@ -4,6 +4,8 @@
 
 # Elegy for the First World
 
+![000-00-001.dragon-splash](../images/book/FTD/000-00-001.dragon-splash.webp)
+
 - 
 
 -
@@ -17,6 +19,8 @@ In the real world, dragons are a staple of folklore and fantasy literature, reso
 {@i Fizban's Treasury of Dragons} is a comprehensive guide to the dragons of the worlds of D&D. It introduces the gem dragons—a family of five dragon kinds—as well as a variety of other Dragons and dragon-related monsters, character options, and inspirations.
 
 This introduction sets the scene for what's to come in the rest of the book. It introduces the myth of the First World, created by Bahamut and Tiamat, then discusses the role that dragons play in the myths of many Material Plane worlds, as a reflection of that primordial story. It begins to explore the connections linking dragons on different worlds, which is elaborated throughout the rest of this book.
+
+![001-00-002](../images/book/FTD/001-00-002.webp)
 
 {@book Chapter 1|FTD|1} introduces draconic-themed options for adventurers, including three variant dragonborn races, two dragon-oriented subclasses (the Drakewarden ranger and the Way of the Ascendant Dragon monk), feats, and roleplaying suggestions that can connect characters of any class to a draconic theme.
 

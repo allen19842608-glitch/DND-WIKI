@@ -8,6 +8,8 @@ The combination of ability scores, race, class, and background defines your char
 
 Chapter 6 of the Player's Handbook defines two optional sets of rules for customizing your character: multiclassing and feats. Multiclassing lets you combine classes together, and feats are special options you can choose instead of increasing your ability scores as you gain levels. Your DM decides whether these options are available in a campaign.
 
+![ch6](../images/book/PHB/ch6.webp)
+
 ## Multiclassing
 
 Multiclassing allows you to gain levels in multiple classes. Doing so lets you mix the abilities of those classes to realize a character concept that might not be reflected in one of the standard class options.

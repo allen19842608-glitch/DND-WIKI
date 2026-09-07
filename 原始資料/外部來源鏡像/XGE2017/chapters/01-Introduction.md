@@ -8,6 +8,8 @@ Beneath the bustling City of Waterdeep, a beholder crime lord keeps tabs on ever
 
 The first major rules expansion to the fifth edition of D&D, {@i Xanathar's Guide to Everything} provides a wealth of new options for the game. Xanathar might not be able to realize its dream to know everything, but this book does delve into every major part of the game: adventurers, their adventures, and the magic they wield.
 
+![intro01](../images/book/XGE/intro01.webp)
+
 ## Using this Book
 
 Written for both players and Dungeon Masters, this book offers options to enhance campaigns in any world, whether you're adventuring in the Forgotten Realms, another official D&D setting, or a world of your own creation. The options here build on the official rules contained within the player's handbook, the monster manual, and the dungeon master's guide. Think of this book as the companion to those volumes. It builds on their foundation, exploring pathways first laid in those publications. Nothing herein is required for a D&D campaign—this is not a fourth core rulebook—but we hope it will provide you new ways to enjoy the game.
@@ -17,6 +19,8 @@ Chapter 1 offers character options that expand on those offered in the player's 
 Appendix A provides guidance on running a shared campaign, similar to the activities staged by the D&D Adventurers League, and appendix B contains a host of tables that allow you to quickly generate names for the characters in your D&D stories.
 
 As you peruse the many options herein, you'll come across observations from Xanathar itself. Like the beholder's roving mind, your reading will take you to places in the game familiar and new. May you enjoy the journey!
+
+![intro02](../images/book/XGE/intro02.webp)
 
 ### Unearthed Arcana
 
@@ -85,3 +89,5 @@ As soon as you start casting a spell or using a special ability that requires co
 #### Temporary Hit Points
 
 Temporary hit points aren't cumulative. If you have temporary hit points and receive more of them, you don't add them together, unless a game feature says you can. Instead, you decide which temporary hit points to keep.
+
+![intro03](../images/book/XGE/intro03.webp)

@@ -14,6 +14,8 @@ The magic woven through the fabric of the Material Plane is concentrated in drag
 
 {@book "Draconic Gifts"|FTD|2|Draconic Gifts} introduces magical gifts that characters might gain in connection with a dragon's death or other unusual circumstances.
 
+![In any form, Bahamut delights in the "Aha!" moments of teaching young students](../images/book/FTD/008-02-001.chapter-splash.webp)
+
 ## Spells
 
 I am less guarded with my spells than I am with my recipes. Magic shared is soon improved. But when it comes to my pudding, well, you can't fix perfect.
@@ -106,6 +108,8 @@ Hoard items often manifest strange qualities beyond their intended function, reg
 
 ### Hoard Item Descriptions
 
+![A magic weapon recovered from a dragon's hoard carries some of the dragon's magic](../images/book/FTD/011-02-004.a-magic-weapon.webp)
+
 Hoard items are presented here in alphabetical order. A hoard item's rarity changes depending on its current state, as shown in each item description.
 
 - {@item Dragon's Wrath Weapon|FTD}
@@ -155,6 +159,8 @@ You can use a more common draconic gift for an older dragon, but exercise cautio
 - {@reward Scaled Toughness|FTD}
 
 - {@reward Tongue of the Dragon|FTD}
+
+![A dragon's blood can be as powerful as it is toxic](../images/book/FTD/012-02-005.a-dragons-blood.webp)
 
 #### Feats as Draconic Gifts
 

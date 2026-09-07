@@ -18,6 +18,8 @@ Here are the options featured in this chapter:
 
 - {@book Feats|TCE|1|Feats} for anyone who uses that optional rule
 
+![The wizard Tasha studies magic outside the hut of her adoptive mother, Baba Yaga](../images/book/TCE/001-01-001.webp)
+
 ## Customizing Your Origin
 
 See the {@variantrule Customizing Your Origin|TCE} entry.
@@ -76,6 +78,18 @@ Artificers invent cutting-edge problems, then try to solve them—loudly and oft
 
 ### Artificer
 
+![The gnome artificer Vi and her cockatrice-like Eldritch Cannon battle foes atop a lightning train.](../images/book/TCE/003-01-004.artificer-vi.webp)
+
+![Dwarf Alchemist with Homunculus Servant](../images/book/TCE/004-01-005.artificer.webp)
+
+![Armorers, a Drow Infiltrator and a Tiefling Guardian](../images/book/TCE/005-01-006.webp)
+
+![Human Artillerist with Eldritch Cannon](../images/book/TCE/006-01-007.webp)
+
+![Gnome Battle Smith with Steel Defender](../images/book/TCE/007-01-008.webp)
+
+![Homunculus Servants](../images/book/TCE/008-01-009.webp)
+
 ### Alchemist
 
 ### Armorer
@@ -105,6 +119,10 @@ At 3rd level, a barbarian gains the Primal Path feature, which offers you the ch
 - {@class Barbarian|phb|Path of the Beast|Beast|TCE}
 
 - {@class Barbarian|phb|Path of Wild Magic|Wild Magic|TCE}
+
+![Human Barbarian of the Beast](../images/book/TCE/010-01-012.webp)
+
+![Wood Elf Barbarian of Wild Magic](../images/book/TCE/011-01-013.webp)
 
 ### Path of the Beast
 
@@ -154,6 +172,10 @@ At 3rd level, a bard gains the Bard College feature, which offers you the choice
 
 - {@class Bard|phb|College of Eloquence|Eloquence|TCE}
 
+![A dragonborn bard of the College of Creation animates a statue to dance.](../images/book/TCE/013-01-016.webp)
+
+![Drow Bard of Eloquence](../images/book/TCE/014-01-017.webp)
+
 ### College of Creation
 
 ### College of Eloquence
@@ -201,6 +223,14 @@ At 1st level, a cleric gains the Divine Domain feature, which offers you the cho
 - {@class Cleric|phb|Peace Domain|Peace|TCE}
 
 - {@class Cleric|phb|Twilight Domain|Twilight|TCE}
+
+![A cleric harnesses divine power](../images/book/TCE/016-01-020.webp)
+
+![Dragonborn Cleric of Order](../images/book/TCE/017-01-021.webp)
+
+![Human Cleric of Peace](../images/book/TCE/018-01-022.webp)
+
+![Human Cleric of Twilight](../images/book/TCE/019-01-023.webp)
 
 ### Order Domain
 
@@ -251,6 +281,14 @@ At 2nd level, a druid gains the Druid Circle feature, which offers you the choic
 - {@class Druid|phb|Circle of Stars|Stars|TCE}
 
 - {@class Druid|phb|Circle of Wildfire|Wildfire|TCE}
+
+![Druid with Wild Companion](../images/book/TCE/021-01-026.webp)
+
+![A gnome druid of spores picks mushrooms with his bullywug zombie companion.](../images/book/TCE/022-01-027.webp)
+
+![Tiefling Druid of Stars](../images/book/TCE/023-01-028.webp)
+
+![Dwarf Druid of Wildfire](../images/book/TCE/024-01-029.webp)
 
 ### Circle of Spores
 
@@ -333,6 +371,12 @@ At 3rd level, a fighter gains the Martial Archetype feature, which offers you th
 - {@class Fighter|phb|Psi Warrior|Psi Warrior|TCE}
 
 - {@class Fighter|phb|Rune Knight|Rune Knight|TCE}
+
+![A young fighter spars with an instructor.](../images/book/TCE/026-01-032.webp)
+
+![High Elf Psi Warrior](../images/book/TCE/027-01-033.webp)
+
+![Orc Rune Knight](../images/book/TCE/028-01-034.webp)
 
 ### Psi Warrior
 
@@ -446,6 +490,8 @@ Where others rely on steel, you've got your fists. Whether through training or e
 
 Subtlety is not your style. You're trained to get straight into the fighting, busting through enemy lines and applying tremendous pressure quickly. Those who ignore you in combat do so at their peril.
 
+![Shock Trooper](../images/book/TCE/029-01-035.webp)
+
 ### Skirmisher
 
 - Fighting Style:
@@ -489,6 +535,12 @@ At 3rd level, a monk gains the Monastic Tradition feature, which offers you the 
 - {@class Monk|phb|Way of Mercy|Mercy|TCE}
 
 - {@class Monk|phb|Way of the Astral Self|Astral Self|TCE}
+
+![An orc monk of the Four Elements unleashes a ki-fueled attack.](../images/book/TCE/031-01-038.webp)
+
+![Wood Elf Monk of Mercy](../images/book/TCE/032-01-039.webp)
+
+![Dragonborn Monk of the Astral Self](../images/book/TCE/033-01-040.webp)
 
 ### Way of Mercy
 
@@ -543,6 +595,12 @@ At 3rd level, a paladin gains the Sacred Oath feature, which offers you the choi
 - {@class Paladin|phb|Oath of Glory|Glory|TCE}
 
 - {@class Paladin|phb|Oath of the Watchers|Watchers|TCE}
+
+![A young paladin seeks divine guidance.](../images/book/TCE/035-01-043.webp)
+
+![Tiefling Paladin of Glory](../images/book/TCE/036-01-044.webp)
+
+![Dwarf Paladin of the Watchers](../images/book/TCE/037-01-045.webp)
 
 ### Oath of Glory
 
@@ -612,6 +670,12 @@ At 3rd level, a ranger gains the Ranger Archetype feature, which offers you the 
 
 - {@class Ranger|phb|Swarmkeeper|Swarmkeeper|TCE}
 
+![A Halfling Ranger explores the wilds](../images/book/TCE/039-01-048.webp)
+
+![Human Fey Wanderer](../images/book/TCE/040-01-049.webp)
+
+![Gnome Swarmkeeper](../images/book/TCE/041-01-050.webp)
+
 ### Fey Wanderer
 
 ### Swarmkeeper
@@ -639,6 +703,12 @@ At 3rd level, a rogue gains the Roguish Archetype feature, which offers you the 
 - {@class Rogue|phb|Phantom|Phantom|TCE}
 
 - {@class Rogue|phb|Soulknife|Soulknife|TCE}
+
+![A Drow Rogue takes aim.](../images/book/TCE/043-01-053.webp)
+
+![Tiefling Phantom](../images/book/TCE/044-01-054.webp)
+
+![Halfling Soulknife](../images/book/TCE/045-01-055.webp)
 
 ### Phantom
 
@@ -691,6 +761,12 @@ At 1st level, a sorcerer gains the Sorcerous Origin feature, which offers you th
 - {@class Sorcerer|phb|Aberrant Mind|Aberrant Mind|TCE}
 
 - {@class Sorcerer|phb|Clockwork Soul|Clockwork Soul|TCE}
+
+![A Sorcerer uses transmuted spell](../images/book/TCE/047-01-058.webp)
+
+![Tiefling Aberrant Mind](../images/book/TCE/048-01-059.webp)
+
+![Human Clockwork Soul](../images/book/TCE/049-01-060.webp)
 
 ### Aberrant Mind
 
@@ -778,6 +854,12 @@ At 1st level, a warlock gains the Otherworldly Patron feature, which offers you 
 
 - {@class Warlock|phb|The Genie|Genie|TCE}
 
+![A tiefling warlock calls on the power of his talisman.](../images/book/TCE/051-01-063.webp)
+
+![Human Warlock of the Fathomless](../images/book/TCE/052-01-064.webp)
+
+![A warlock uses a genie's vessel to battle a cyclops.](../images/book/TCE/053-01-065.webp)
+
 ### The Fathomless
 
 ### The Genie
@@ -822,6 +904,10 @@ At 2nd level, a wizard gains the Arcane Tradition feature, which offers you the 
 
 - {@class Wizard|phb|Order of Scribes|Scribes|TCE}
 
+![A Drow and a High Elf Bladesinger](../images/book/TCE/055-01-068.webp)
+
+![Human Wizard, Order of Scribes](../images/book/TCE/056-01-069.webp)
+
 ### Bladesinging
 
 ### Order of Scribes
@@ -859,6 +945,10 @@ New feats are presented here in alphabetical order for groups that use them.
 - {@feat Telekinetic|TCE}
 
 - {@feat Telepathic|TCE}
+
+![Eldritch Adept](../images/book/TCE/057-01-070.webp)
+
+![Astride a unicorn, a telepathic bard inspires her wizard companion.](../images/book/TCE/058-01-071.webp)
 
 ### Artificer Initiate
 

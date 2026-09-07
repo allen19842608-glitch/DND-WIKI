@@ -8,6 +8,8 @@ Magic permeates the worlds of D&D and most often appears in the form of a spell.
 
 This chapter provides the rules for casting spells. Different character classes have distinctive ways of learning and preparing their spells, and monsters use spells in unique ways. Regardless of its source, a spell follows the rules here.
 
+![ch10](../images/book/PHB/ch10.webp)
+
 ## What is a Spell?
 
 A spell is a discrete magical effect, a single shaping of the magical energies that suffuse the multiverse into a specific, limited expression. In casting a spell, a character carefully plucks at the invisible strands of raw magic suffusing the world, pins them in place in a particular pattern, sets them vibrating in a specific way, and then releases them to unleash the desired effect—in most cases, all in the span of seconds.
@@ -81,6 +83,8 @@ Some spells can be cast as reactions. These spells take a fraction of a second t
 #### Longer Casting Times
 
 Certain spells (including spells cast as rituals) require more time to cast: minutes or even hours. When you cast a spell with a casting time longer than a single action or reaction, you must spend your action each turn casting the spell, and you must maintain your concentration while you do so (see "Concentration" below). If your concentration is broken, the spell fails, but you don't expend a spell slot. If you want to try casting the spell again, you must start over.
+
+![c101](../images/book/PHB/c101.webp)
 
 ### Range
 
@@ -176,6 +180,8 @@ Spells such as {@spell burning hands} and {@spell cone of cold} cover an area, a
 
 A spell's effect expands in straight lines from the point of origin. If no unblocked straight line extends from the point of origin to a location within the area of effect, that location isn't included in the spell's area. To block one of these imaginary lines, an obstruction must provide {@quickref Cover||3||total cover}, as explained in chapter 9.
 
+![Point-of-Origin](../images/book/DMG/Point-of-Origin.webp)
+
 #### Cone
 
 A cone extends in a direction you choose from its point of origin. A cone's width at a given point along its length is equal to that point's distance from the point of origin. A cone's area of effect specifies its maximum length.
@@ -237,3 +243,5 @@ All magic depends on the Weave, though different kinds of magic access it in a v
 Whenever a magic effect is created, the threads of the Weave intertwine, twist, and fold to make the effect possible.
 
 When characters use divination spells such as {@i detect magic} or {@i identify}, they glimpse the Weave. A spell such as {@i dispel magic} smooths the Weave. Spells such as {@i antimagic field} rearrange the Weave so that magic flows around, rather than through the area affected by the spell. And in places where the Weave is damaged or torn, magic works in unpredictable ways—or not at all.
+
+![c103](../images/book/PHB/c103.webp)

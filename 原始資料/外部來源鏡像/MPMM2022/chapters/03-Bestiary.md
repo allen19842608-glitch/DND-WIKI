@@ -4,6 +4,8 @@
 
 # Bestiary
 
+![02-001.ch2-splash](../images/book/MPMM/02-001.ch2-splash.webp)
+
 This bestiary provides game statistics and lore for more than 250 monsters, which are suitable for any D&D campaign. The chapter includes old favorites from past editions of the game as well as creatures created for the current edition.
 
 This chapter is a companion to the {@book Monster Manual|MM} and adopts a similar presentation. If you are unfamiliar with the monster stat block format, read the introduction of the {@book Monster Manual|MM} before proceeding further. It explains stat block terminology and gives rules for various monster traits—information that isn't repeated here.

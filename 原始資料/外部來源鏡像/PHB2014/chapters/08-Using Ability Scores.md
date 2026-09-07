@@ -24,6 +24,8 @@ The three main rolls of the game—the ability check, the saving throw, and the 
 
 This chapter focuses on how to use ability checks and saving throws, covering the fundamental activities that creatures attempt in the game. Rules for attack rolls appear in chapter 9.
 
+![ch7](../images/book/PHB/ch7.webp)
+
 ## Ability Scores and Modifiers
 
 Each of a creature's abilities has a score, a number that defines the magnitude of that ability. An ability score is not just a measure of innate capabilities, but also encompasses a creature's training and competence in activities related to that ability.
@@ -121,6 +123,8 @@ When a number of individuals are trying to accomplish something as a group, the 
 To make a group ability check, everyone in the group makes the ability check. If at least half the group succeeds, the whole group succeeds. Otherwise, the group fails.
 
 Group checks don't come up very often, and they're most useful when all the characters succeed or fail as a group. For example, when adventurers are navigating a swamp, the DM might call for a group Wisdom ({@skill Survival}) check to see if the characters can avoid the quicksand, sinkholes, and other natural hazards of the environment. If at least half the group succeeds, the successful characters are able to guide their companions out of danger. Otherwise, the group stumbles into one of these hazards.
+
+![c71](../images/book/PHB/c71.webp)
 
 ## Using Each Ability
 
@@ -405,6 +409,8 @@ Your Charisma ({@skill Performance}) check determines how well you can delight a
 ##### Persuasion
 
 When you attempt to influence someone or a group of people with tact, social graces, or good nature, the DM might ask you to make a Charisma ({@skill Persuasion}) check. Typically, you use persuasion when acting in good faith, to foster friendships, make cordial requests, or exhibit proper etiquette. Examples of persuading others include convincing a chamberlain to let your party see the king, negotiating peace between warring tribes, or inspiring a crowd of townsfolk.
+
+![c72](../images/book/PHB/c72.webp)
 
 ##### Other Charisma Checks
 

@@ -18,6 +18,8 @@ The best-known worlds in the multiverse are the ones that have been published as
 
 Each of these worlds boasts its own cast of heroic adventurers and scheming villains, its own ancient ruins and forgotten artifacts, its own dungeons and its own dragons. But if your campaign takes place on one of these worlds, it belongs to your DM—you might imagine it as one of thousands of parallel versions of the world, which might diverge wildly from the published version.
 
+![Planes-1](../images/book/DMG/Planes-1.webp)
+
 ### Material Echoes
 
 The Material Plane is a richly magical place, and its magical nature is reflected in the two planes that share its central place in the multiverse. The Feywild and the Shadowfell are parallel dimensions occupying the same cosmological space, so they are often called echo planes or mirror planes to the Material Plane. The worlds and landscapes of these planes mirror the natural world of the Material Plane but reflect those features into different forms—more marvelous and magical in the Feywild, distorted and colorless in the Shadowfell. Where a volcano stands in the Material Plane, a mountain topped with skyscraper-sized crystals that glow with internal fire towers in the Feywild, and a jagged rock outcropping resembling a skull marks the spot on the Shadowfell.
@@ -109,3 +111,5 @@ The Far Realm is beyond the known multiverse. In fact, it might be an entirely s
 The entities that abide in the Far Realm are too alien for a normal mind to accept without damage. Titanic creatures swim through nothingness, preoccupied with madness. Unspeakable things whisper awful truths to those who dare listen. For mortals, knowledge of the Far Realm is a triumph of mind over the rude boundaries of matter, space, and eventually sanity.
 
 There are no known portals to the Far Realm, or at least none that are still viable. Ancient elves once pierced the boundary of eons with a vast portal to the Far Realm within a mountain called Firestorm Peak, but their civilization imploded in bloody terror and the portal's location—even its home world—is long forgotten. Other portals might still exist, marked by the alien forces leaking through to corrupt the Material Plane around them.
+
+![Planes-2](../images/book/DMG/Planes-2.webp)

@@ -20,6 +20,8 @@ Typically, the DM uses a map as an outline of the adventure, tracking the charac
 
 The DM's notes, including a key to the map, describe what the adventurers find as they enter each new area. Sometimes, the passage of time and the adventurers' actions determine what happens, so the DM might use a time line or a flowchart to track their progress instead of a map.
 
+![ch8](../images/book/PHB/ch8.webp)
+
 ## Time
 
 In situations where keeping track of the passage of time is important, the DM determines the time a task requires. The DM might use a different time scale depending on the context of the situation at hand. In a dungeon environment, the adventurers' movement happens on a scale of minutes. It takes them about a minute to creep down a long hallway, another minute to check for traps on the door at the end of the hall, and a good ten minutes to search the chamber beyond for anything interesting or valuable.
@@ -199,6 +201,8 @@ Many creatures in fantasy gaming worlds, especially those that dwell underground
 ##### Truesight
 
 A creature with truesight can, out to a specific range, see in normal and magical darkness, see {@condition invisible} creatures and objects, automatically detect visual illusions and succeed on saving throws against them, and perceives the original form of a shapechanger or a creature that is transformed by magic. Furthermore, the creature can see into the Ethereal Plane.
+
+![c81](../images/book/PHB/c81.webp)
 
 #### Food and Water
 

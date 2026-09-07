@@ -8,6 +8,8 @@ The marketplace of a large city teems with buyers and sellers of many sorts: dwa
 
 For an adventurer, the availability of armor, weapons, backpacks, rope, and similar goods is of paramount importance, since proper equipment can mean the difference between life and death in a dungeon or the untamed wilds. This chapter details the mundane and exotic merchandise that adventurers commonly find useful in the face of the threats that the worlds of D&D present.
 
+![ch5](../images/book/PHB/ch5.webp)
+
 ## Starting Equipment
 
 When you create your character, you receive equipment based on a combination of your class and background. Alternatively, you can start with a number of gold pieces based on your class and spend them on items from the lists in this chapter. See the Starting Wealth by Class table to determine how much gold you have to spend.
@@ -31,6 +33,8 @@ One silver piece is worth ten copper pieces, which are common among laborers and
 In addition, unusual coins made of other precious metals sometimes appear in treasure hoards. The electrum piece (ep) and the platinum piece (pp) originate from fallen empires and lost kingdoms, and they sometimes arouse suspicion and skepticism when used in transactions. An electrum piece is worth five silver pieces, and a platinum piece is worth ten gold pieces.
 
 A standard coin weighs about a third of an ounce, so fifty coins weigh a pound.
+
+![c51](../images/book/PHB/c51.webp)
 
 ### Selling Treasure
 
@@ -63,6 +67,8 @@ The Armor table shows the cost, weight, and other properties of the common types
 Anyone can put on a suit of armor or strap a shield to an arm. Only those proficient in the armor's use know how to wear it effectively, however.
 
 Your class gives you proficiency with certain types of armor. If you wear armor that you lack proficiency with, you have disadvantage on any ability check, saving throw, or attack roll that involves Strength or Dexterity, and you can't cast spells.
+
+![c52](../images/book/PHB/c52.webp)
 
 ### Armor Class (AC)
 
@@ -172,6 +178,8 @@ Your race, class, and feats can grant you proficiency with certain weapons or ca
 
 Proficiency with a weapon allows you to add your proficiency bonus to the attack roll for any attack you make with that weapon. If you make an attack roll using a weapon with which you lack proficiency, you do not add your proficiency bonus to the attack roll.
 
+![c56](../images/book/PHB/c56.webp)
+
 ### Weapon Properties
 
 Many weapons have special properties related to their use, as shown in the Weapons table.
@@ -222,6 +230,10 @@ This weapon requires two hands to use. This property is relevant only when you a
 
 This weapon can be used with one or two hands. A damage value in parentheses appears with the property-the damage when the weapon is used with two hands to make a melee attack.
 
+![c53](../images/book/PHB/c53.webp)
+
+![c54](../images/book/PHB/c54.webp)
+
 #### Improvised Weapons
 
 Sometimes characters don't have their weapons and have to attack with whatever is close at hand. An improvised weapon includes any object you can wield in one or two hands, such as broken glass, a table leg, a frying pan, a wagon wheel, or a dead goblin.
@@ -245,6 +257,8 @@ You have disadvantage when you use a lance to attack a target within 5 feet of y
 ##### Net
 
 A Large or smaller creature hit by a net is {@condition restrained} until it is freed. A net has no effect on creatures that are formless, or creatures that are Huge or larger. A creature can use its action to make a {@dc 10} Strength check, freeing itself or another creature within its reach on a success. Dealing 5 slashing damage to the net (AC 10) also frees the creature without harming it, ending the effect and destroying the net. When you use an action, bonus action, or reaction to attack with a net, you can make only one attack regardless of the number of attacks you can normally make.
+
+![c55](../images/book/PHB/c55.webp)
 
 ## Adventuring Gear
 
@@ -321,6 +335,8 @@ This kit includes a wooden rod, silken line, corkwood bobbers, steel hooks, lead
 ### Healer's Kit
 
 This kit is a leather pouch containing bandages, salves, and splints. The kit has ten uses. As an action, you can expend one use of the kit to stabilize a creature that has 0 hit points, without needing to make a Wisdom ({@skill Medicine}) check.
+
+![c57](../images/book/PHB/c57.webp)
 
 ### Holy Symbol
 
@@ -424,6 +440,8 @@ This small container holds flint, fire steel, and tinder (usually dry cloth soak
 
 A torch burns for 1 hour, providing {@quickref Vision and Light||2||bright light} in a 20-foot radius and {@quickref Vision and Light||2||dim light} for an additional 20 feet. If you make a melee attack with a burning torch and hit, it deals 1 fire damage.
 
+![c58](../images/book/PHB/c58.webp)
+
 ### Equipment Packs
 
 The starting equipment you get from your class includes a collection of useful adventuring gear, put together in a pack. The contents of these packs are listed here. If you are buying your starting equipment, you can purchase a pack for the price shown, which might be cheaper than buying the items individually.
@@ -498,6 +516,8 @@ A {@item poisoner's kit|phb} includes the vials, chemicals, and other equipment 
 
 This set of tools includes a small file, a set of lock picks, a small mirror mounted on a metal handle, a set of narrow-bladed scissors, and a pair of pliers. Proficiency with these tools lets you add your proficiency bonus to any ability checks you make to disarm traps or open locks.
 
+![c59](../images/book/PHB/c59.webp)
+
 ## Mounts and Vehicles
 
 A good mount can help you move more quickly through the wilderness, but its primary purpose is to carry the gear that would otherwise slow you down. The Mounts and Other Animals table shows each animal's speed and base carrying capacity.
@@ -522,6 +542,10 @@ If you have proficiency with a certain kind of vehicle (land or water), you can 
 
 Keelboats and rowboats are used on lakes and rivers. If going downstream, add the speed of the current (typically 3 miles per hour) to the speed of the vehicle. These vehicles can't be rowed against any significant current, but they can be pulled upstream by draft animals on the shores. A rowboat weighs 100 pounds, in case adventurers carry it over land.
 
+![c510](../images/book/PHB/c510.webp)
+
+![c511](../images/book/PHB/c511.webp)
+
 ## Trade Goods
 
 Most wealth is not in coins. It is measured in livestock, grain, land, rights to collect taxes, or rights to resources (such as a mine or a forest).
@@ -539,6 +563,8 @@ Lifestyle expenses provide you with a simple way to account for the cost of livi
 At the start of each week or month (your choice), choose a lifestyle from the Expenses table and pay the price to sustain that lifestyle. The prices listed are per day, so if you wish to calculate the cost of your chosen lifestyle over a thirty-day period, multiply the listed price by 30. Your lifestyle might change from one period to the next, based on the funds you have at your disposal, or you might maintain the same lifestyle throughout your character's career.
 
 Your lifestyle choice can have consequences. Maintaining a wealthy lifestyle might help you make contacts with the rich and powerful, though you run the risk of attracting thieves. Likewise, living frugally might help you avoid criminals, but you are unlikely to make powerful connections.
+
+![c512](../images/book/PHB/c512.webp)
 
 #### Wretched
 
@@ -590,6 +616,8 @@ Other hirelings provide more expert or dangerous services. Mercenary soldiers pa
 
 Skilled hirelings include anyone hired to perform a service that involves a proficiency (including weapon, tool, or skill): a mercenary, artisan, scribe, and so on. The pay shown is a minimum; some expert hirelings require more pay. Untrained hirelings are hired for menial work that requires no particular skill and can include laborers, porters, maids, and similar workers.
 
+![c513](../images/book/PHB/c513.webp)
+
 ### Spellcasting Services
 
 People who are able to cast spells don't fall into the category of ordinary hirelings. It might be possible to find someone willing to cast a spell in exchange for coin or favors, but it is rarely easy and no established pay rates exist. As a rule, the higher the level of the desired spell, the harder it is to find someone who can cast it and the more it costs.
@@ -599,3 +627,5 @@ Hiring someone to cast a relatively common spell of {@filter 1st|spells|level=1}
 ## Trinkets
 
 When you make your character, you can roll once on the {@item Trinket|phb|Trinkets} table to gain a trinket, a simple item lightly touched by mystery. The DM might also use this table. It can help stock a room in a dungeon or fill a creature's pockets.
+
+![c514](../images/book/PHB/c514.webp)

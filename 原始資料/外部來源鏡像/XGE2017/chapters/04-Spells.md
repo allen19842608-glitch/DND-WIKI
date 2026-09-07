@@ -13,3 +13,5 @@ See the full list of spells from {@i Xanathar's Guide to Everything} on the {@fi
 So why can't people who use magic do it all the time?
 
 I can disintegrate things whenever I want. Like now. And now. And now. And now... Hey, where'd everybody go?
+
+![c3001](../images/book/XGE/c3001.webp)

@@ -10,6 +10,8 @@ The chapter first presents new spells for player characters and monsters to use.
 
 The DM decides how the options in this chapter appear in a campaign and may choose to use some, all, or none of them, so make sure to let your DM know which options you'd most like to use in play.
 
+![In her lab, Tasha confers with the demon lord Graz'zt through a magic mirror](../images/book/TCE/069-03-001.webp)
+
 ## Spells
 
 Well, darn. Whatever could have happened to the spells Mordenkainen's Bountiful Back-Patting, Heward's Hot Air, and all the rest? I'm sure I submitted the spells they insisted I include herein. Seems they got lost in the shuffle. Shame.
@@ -34,6 +36,8 @@ Further still, a druid could choose a cherry blossom theme for their magic, caus
 
 The Magic Themes table offers just a few suggestions that might inspire you while personalizing your character's spells.
 
+![A farmer sorcerer hurls magic missiles that look like chickens](../images/book/TCE/075-03-007.webp)
+
 ## Magic Items
 
 This section presents magic items that can be introduced into any campaign. Here you'll find items of all rarities, including artifacts. Magic spellcasting focuses for every spellcasting class are also available here. And some of the items in this section represent a new type of wondrous item: magic tattoos.
@@ -49,6 +53,8 @@ Blending magic and artistry with ink and needles, magic tattoos imbue their bear
 Once inscribed on a creature's body, damage or injury doesn't impair the tattoo's function, even if the tattoo is defaced. When applying a magic tattoo, a creature can customize the tattoo's appearance. A magic tattoo can look like a brand, scarification, a birthmark, patterns of scale, or any other cosmetic alteration.
 
 The rarer a magic tattoo is, the more space it typically occupies on a creature's skin. The Magic Tattoo Coverage table offers guidelines for how large a given tattoo is.
+
+![An orc artist creates a tattoo on his elf friend](../images/book/TCE/076-03-008.webp)
 
 ### Magic Item Descriptions
 
