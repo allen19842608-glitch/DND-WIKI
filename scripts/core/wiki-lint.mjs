@@ -4,7 +4,7 @@ import process from "node:process";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { LineCounter, parseDocument } from "yaml";
-import { validateTargetArea } from "./spell-target-area.mjs";
+import { readSpellFields, validateSpellField } from "./spell-target-area.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const WIKI_ROOT = path.join(ROOT, "wiki");
@@ -589,22 +589,104 @@ export function validateMagicItemStructure(record, diagnostics) {
 
 export function validateSpellTargetArea(record, diagnostics) {
   if (record.data?.category !== "法術") return;
+  const fields = readSpellFields(record.body);
+  const range = fields.filter((field) => field.kind === "range");
+  const components = fields.filter((field) => field.kind === "components");
+  const targetArea = fields.filter((field) => ["target", "area", "combined"].includes(field.kind));
+  const target = fields.filter((field) => field.kind === "target");
+  const area = fields.filter((field) => field.kind === "area");
+  if (target.length > 1 || area.length > 1 || targetArea.filter((field) => field.kind === "combined").length > 1) {
+    addDiagnostic(diagnostics, "error", record.rel, record.bodyStartLine, "SPELL_TARGET_AREA_DUPLICATE", "Target、Area 與舊 Target／Area 欄位各最多一行。");
+  }
+  if (targetArea.some((field) => field.kind === "combined") && targetArea.some((field) => field.kind !== "combined")) {
+    addDiagnostic(diagnostics, "error", record.rel, record.bodyStartLine, "SPELL_TARGET_AREA_MIXED", "不得同時使用舊 Target／Area 與分開欄位。");
+  }
+  for (const field of targetArea) {
+    const line = record.bodyStartLine + field.line;
+    if (field.kind === "combined") {
+      addDiagnostic(diagnostics, "warning", record.rel, line, "SPELL_TARGET_AREA_LEGACY", "舊 Target／Area 欄位保留待安全拆分。");
+      continue;
+    }
+    const result = validateSpellField(field.kind, field.value);
+    if (!result.ok) addDiagnostic(diagnostics, "warning", record.rel, line, "SPELL_TARGET_AREA_VALUE", `欄位值不合規：${result.reason}`);
+  }
+  if (!targetArea.some((field) => field.kind === "combined")) {
+    const ordered = [...target, ...area].sort((left, right) => left.line - right.line);
+    for (let index = 0; index < ordered.length; index += 1) {
+      const previous = index === 0 ? range[0] : ordered[index - 1];
+      if (!previous || ordered[index].line !== previous.line + 1) addDiagnostic(diagnostics, "warning", record.rel, record.bodyStartLine + ordered[index].line, "SPELL_TARGET_AREA_POSITION", "Target／Area 必須連續位於 Range 後、Components 前。");
+    }
+    if (target[0] && area[0] && target[0].line > area[0].line) addDiagnostic(diagnostics, "warning", record.rel, record.bodyStartLine + target[0].line, "SPELL_TARGET_AREA_ORDER", "Target 必須位於 Area 前。");
+    const last = ordered.at(-1);
+    if (last && components[0] && components[0].line < last.line) addDiagnostic(diagnostics, "warning", record.rel, record.bodyStartLine + last.line, "SPELL_TARGET_AREA_POSITION", "Target／Area 必須位於 Components 前。");
+  }
+}
+
+function splitMarkdownTableRow(line) {
+  return line
+    .trim()
+    .split(/(?<!\\)\|/)
+    .map((cell) => cell.trim())
+    .filter((cell, index, cells) => !(cell === "" && (index === 0 || index === cells.length - 1)));
+}
+
+export function validateSubclassSpellTables(record, diagnostics) {
+  if (record.data?.category !== "職業" || record.data?.entry_type !== "子職") return;
   const lines = record.body.split(/\r?\n/);
-  const rangeIndex = lines.findIndex((line) => /^- \*\*施法距離(?: \(Range\))?\*\*：/.test(line));
-  const targetLines = lines.map((line, index) => ({ line, index })).filter(({ line }) => /^- \*\*[^*]*目標.*範圍[^*]*\*\*：/.test(line));
-  if (targetLines.length > 1) {
-    addDiagnostic(diagnostics, "error", record.rel, record.bodyStartLine, "SPELL_TARGET_AREA_DUPLICATE", "Target／Area 欄位最多一行。");
-    return;
+  for (let index = 0; index < lines.length; index += 1) {
+    if (!/^\s*\|/.test(lines[index])) continue;
+    const header = splitMarkdownTableRow(lines[index]);
+    const spellColumn = header.findIndex((cell) => /^\*\*法術\*\*$|^法術$/u.test(cell));
+    if (spellColumn < 0 || !header.some((cell) => /等級/.test(cell)) || !/^\s*\|\s*:?-{2,}/.test(lines[index + 1] ?? "")) continue;
+    for (let row = index + 2; row < lines.length && /^\s*\|/.test(lines[row]); row += 1) {
+      const cells = splitMarkdownTableRow(lines[row]);
+      const spellCell = cells[spellColumn] ?? "";
+      const linkCount = (spellCell.match(/\[\[/g) ?? []).length;
+      const hasDelimitedSpells = linkCount > 1 || (linkCount === 0 && /[、，,]/.test(spellCell));
+      if (hasDelimitedSpells) {
+        addDiagnostic(
+          diagnostics,
+          "error",
+          record.rel,
+          record.bodyStartLine + row,
+          "SUBCLASS_SPELL_TABLE_CELL",
+          "子職授法表的每個法術必須各占一列，不得在同一儲存格併列多個法術。",
+        );
+      }
+    }
+    index += 1;
   }
-  if (!targetLines.length) return;
-  const { line, index } = targetLines[0];
-  if (!line.startsWith("- **目標／範圍 (Target/Area)**：")) {
-    addDiagnostic(diagnostics, "warning", record.rel, record.bodyStartLine + index, "SPELL_TARGET_AREA_LABEL", "欄名必須遷移為完整的「目標／範圍 (Target/Area)」。");
-    return;
+}
+
+export function validateDragonmarkSpellTables(record, diagnostics) {
+  if (record.data?.category !== "專長") return;
+  const lines = record.body.split(/\r?\n/);
+  for (let index = 0; index < lines.length; index += 1) {
+    if (!/^\s*\|/.test(lines[index])) continue;
+    const isDragonmarkTable = lines
+      .slice(Math.max(0, index - 3), index)
+      .some((line) => /龍紋法術.*Spells of the Mark/u.test(line));
+    if (!isDragonmarkTable) continue;
+    const header = splitMarkdownTableRow(lines[index]);
+    const spellColumn = header.findIndex((cell) => /^\*\*法術\*\*$|^法術$/u.test(cell));
+    if (spellColumn < 0 || !/^\s*\|\s*:?-{2,}/.test(lines[index + 1] ?? "")) continue;
+    for (let row = index + 2; row < lines.length && /^\s*\|/.test(lines[row]); row += 1) {
+      const cells = splitMarkdownTableRow(lines[row]);
+      const spellCell = cells[spellColumn] ?? "";
+      const linkCount = (spellCell.match(/\[\[/g) ?? []).length;
+      if (linkCount > 1 || /[、，,]/.test(spellCell)) {
+        addDiagnostic(
+          diagnostics,
+          "error",
+          record.rel,
+          record.bodyStartLine + row,
+          "DRAGONMARK_SPELL_TABLE_CELL",
+          "龍紋法術表的每個法術必須各占一列，不得在同一儲存格併列多個法術。",
+        );
+      }
+    }
+    index += 1;
   }
-  if (rangeIndex < 0 || index !== rangeIndex + 1) addDiagnostic(diagnostics, "warning", record.rel, record.bodyStartLine + index, "SPELL_TARGET_AREA_POSITION", "Target／Area 必須遷移至緊接 Range 後。" );
-  const result = validateTargetArea(line.replace(/^- \*\*目標／範圍 \(Target\/Area\)\*\*：/, ""));
-  if (!result.ok) addDiagnostic(diagnostics, "warning", record.rel, record.bodyStartLine + index, "SPELL_TARGET_AREA_VALUE", `待遷移：${result.reason}`);
 }
 
 function validateFrontmatter(record, diagnostics, catalog, publications, lore) {
@@ -1194,6 +1276,8 @@ export function lintWiki({ all = false, files, overrides } = {}) {
     validateVersionCoverage(record, diagnostics, publications);
     validateMagicItemStructure(record, diagnostics);
     validateSpellTargetArea(record, diagnostics);
+    validateSubclassSpellTables(record, diagnostics);
+    validateDragonmarkSpellTables(record, diagnostics);
     validateHeadings(record.body, record.bodyStartLine, record.rel, diagnostics);
     validateLinks(record, diagnostics, catalog);
     validatePersonStatLinks(record, diagnostics, catalog);
