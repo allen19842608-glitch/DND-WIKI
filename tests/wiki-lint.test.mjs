@@ -12,21 +12,134 @@ import {
   lintWiki,
   parseWikiLink,
   resolveWikiTarget,
+  validateSubclassSpellTables,
+  validateDragonmarkSpellTables,
   validateMagicItemStructure,
   validateSpellTargetArea,
 } from "../scripts/core/wiki-lint.mjs";
-import { extractTargetArea, validateTargetArea } from "../scripts/core/spell-target-area.mjs";
+import { parseTargetAreaExceptions, planSpellTargetArea, preserveSpellFieldsForImport, splitCombinedTargetArea, validateSpellField } from "../scripts/core/spell-target-area.mjs";
 import { normalizeMirrorCitations } from "../scripts/audit/audit-mirror-citations.mjs";
-import { buildHealthReport } from "../scripts/audit/audit-wiki-health.mjs";
+import { buildHealthReport, isSourcePlaceholder, publicationFor, sourcePriority } from "../scripts/audit/audit-wiki-health.mjs";
+import { collectFeatHeadings } from "../scripts/ingest/feat-heading-utils.mjs";
 import { rebuildLore } from "../scripts/ingest/rebuild-lore.mjs";
 import { audit as auditLorePlacement } from "../scripts/audit/audit-lore-placement.mjs";
 import { buildFrwikiCandidate, collectPagePayloads, extractClaimCandidates, extractDiscoveryIndex, extractOfficialCitations, publicationRecords, sourceAcquisitionQueue } from "../scripts/ingest/discover-frwiki-lore.mjs";
 
-test("Target／Area 抽取器區分自身、區域與未解決攻擊", () => {
-  assert.equal(extractTargetArea({ range: "自身", effect: "以自身為原點的 5 呎光環內的生物受影響" }).value, "效應區域：以自身為原點的 5 呎光環");
-  assert.equal(extractTargetArea({ range: "自身", effect: "你獲得飛行速度" }).value, "目標：自身");
-  assert.equal(extractTargetArea({ range: "60 呎", effect: "當你的攻擊命中目標時造成傷害" }).confidence, "unresolved");
-  assert.equal(validateTargetArea("目標：施法距離內一點；效應區域：以該點為中心的 20 呎半徑球狀").ok, true);
+test("Target／Area 只拆既有資料、略去自身目標並保留自身起源區域", () => {
+  const both = splitCombinedTargetArea("目標：施法距離內一點；效應區域：以該點為中心的 20 呎半徑球狀區域");
+  assert.deepEqual({ target: both.target, area: both.area, layout: both.layout }, { target: "施法距離內一點", area: "以該點為中心的 20 呎半徑球狀區域", layout: "both" });
+  assert.equal(splitCombinedTargetArea("目標：自身").layout, "omitted");
+  assert.equal(splitCombinedTargetArea("效應區域：以自身為原點的 5 呎光環").layout, "area-only");
+  assert.equal(validateSpellField("target", "自身").ok, false);
+  const source = "- **施法距離 (Range)**：60 呎\r\n- **目標／範圍 (Target/Area)**：施法距離內 1 名生物\r\n- **法術成分 (Components)**：V\r\n正文不變\r\n";
+  const plan = planSpellTargetArea(source);
+  assert.equal(plan.status, "change");
+  assert.match(plan.text, /- \*\*目標 \(Target\)\*\*：施法距離內 1 名生物\r\n/);
+  assert.match(plan.text, /正文不變\r\n$/);
+});
+
+test("子職授法表要求每個法術各占一列", () => {
+  const record = {
+    rel: "wiki/職業/測試子職.md",
+    bodyStartLine: 20,
+    data: { category: "職業", entry_type: "子職" },
+    body: [
+      "| 職業等級 | 法術 |",
+      "| :--: | :--- |",
+      "| 3 | [[法術甲\\|法術甲 (Spell A)]]、[[法術乙\\|法術乙 (Spell B)]] |",
+    ].join("\n"),
+  };
+  const diagnostics = [];
+  validateSubclassSpellTables(record, diagnostics);
+  assert.equal(diagnostics.length, 1);
+  assert.equal(diagnostics[0].code, "SUBCLASS_SPELL_TABLE_CELL");
+
+  record.body = [
+    "| 職業等級 | 法術 |",
+    "| :--: | :--- |",
+    "| 3 | [[法術甲\\|法術甲 (Spell A，2014 Legacy)]] |",
+    "| 3 | [[法術乙\\|法術乙 (Spell B)]] |",
+  ].join("\n");
+  const validDiagnostics = [];
+  validateSubclassSpellTables(record, validDiagnostics);
+  assert.equal(validDiagnostics.length, 0);
+});
+
+test("龍紋法術表要求每個法術各占一列", () => {
+  const record = {
+    rel: "wiki/專長/龍紋專長/測試龍紋.md",
+    bodyStartLine: 20,
+    data: { category: "專長" },
+    body: [
+      "**測試龍紋法術 Test Mark Spells of the Mark**",
+      "",
+      "| 法術環階 | 法術 |",
+      "| :--: | :--- |",
+      "| 一環 | [[法術甲\\|法術甲 (Spell A)]]、[[法術乙\\|法術乙 (Spell B)]] |",
+    ].join("\n"),
+  };
+  const diagnostics = [];
+  validateDragonmarkSpellTables(record, diagnostics);
+  assert.equal(diagnostics.length, 1);
+  assert.equal(diagnostics[0].code, "DRAGONMARK_SPELL_TABLE_CELL");
+
+  record.body = [
+    "**測試龍紋法術 Test Mark Spells of the Mark**",
+    "",
+    "| 法術環階 | 法術 |",
+    "| :--: | :--- |",
+    "| 一環 | [[法術甲\\|法術甲 (Spell A)]] |",
+    "| 一環 | [[法術乙\\|法術乙 (Spell B)]] |",
+  ].join("\n");
+  const validDiagnostics = [];
+  validateDragonmarkSpellTables(record, validDiagnostics);
+  assert.equal(validDiagnostics.length, 0);
+});
+
+test("Target／Area 例外表可依 entity_id 套用核定值", () => {
+  const source = "entity_id: \"entry:PHB2014:spell:374fd53303\"\n- **施法距離 (Range)**：60 呎\n- **目標／範圍 (Target/Area)**：你以施法距離內一點為中心創造一片半徑 20 尺的球狀濃霧。\n- **法術成分 (Components)**：V, S\n";
+  const plan = planSpellTargetArea(source);
+  assert.equal(plan.status, "change");
+  assert.equal(plan.layout, "both");
+  assert.match(plan.text, /目標 \(Target\)\*\*：施法距離內一點/);
+  assert.match(plan.text, /效應區域 \(Area\)\*\*：以該點為中心的 20 呎半徑球狀區域/);
+});
+
+test("Target／Area 例外表拒絕重複 entity_id", () => {
+  const duplicate = [
+    "{",
+    '  "entry:XGE2017:spell:create-bonfire": { "target": "第一值" },',
+    '  "entry:XGE2017:spell:create-bonfire": { "target": "覆蓋值" }',
+    "}",
+  ].join("\n");
+  assert.throws(() => parseTargetAreaExceptions(duplicate), /重複 entity_id/u);
+});
+
+test("Target／Area 移出 Range 區域尺寸時保留混合換行且可冪等重跑", () => {
+  const source = [
+    "---\nentity_id: \"entry:TCE2020:spell:712083631e\"\n---",
+    "- **施法距離 (Range)**：自身（半徑5 呎）",
+    "- **目標／範圍 (Target/Area)**：你製造出一圈臨時的半透明利刃迅速橫掃你的周圍。",
+    "- **法術成分 (Components)**：V",
+  ].join("\r\n").replace("---\r\n- **施法距離", "---\n- **施法距離");
+  const plan = planSpellTargetArea(source);
+  assert.equal(plan.status, "change");
+  assert.match(plan.text, /Range\)\*\*：自身\r\n/);
+  assert.match(plan.text, /效應區域 \(Area\)\*\*：以自身為原點的 5 呎光環\r\n/);
+  assert.match(plan.text, /^---\nentity_id:[\s\S]*?---\n- \*\*施法距離/u);
+  assert.equal(planSpellTargetArea(plan.text).status, "unchanged");
+});
+
+test("法術重建保留既有欄位與刻意省略", () => {
+  const existing = "- **施法距離 (Range)**：60 呎\n- **目標 (Target)**：一名生物\n- **法術成分 (Components)**：V\n";
+  const generated = "- **施法距離 (Range)**：60 呎\n- **目標／範圍 (Target/Area)**：不應保留\n- **法術成分 (Components)**：V\n";
+  const preserved = preserveSpellFieldsForImport(existing, generated);
+  assert.equal(preserved.status, "preserved");
+  assert.match(preserved.text, /目標 \(Target\)\*\*：一名生物/);
+  assert.doesNotMatch(preserved.text, /目標／範圍/);
+  const absent = preserveSpellFieldsForImport("- **施法距離 (Range)**：60 呎\n", generated);
+  assert.equal(absent.status, "omitted");
+  assert.doesNotMatch(absent.text, /目標／範圍/);
 });
 
 test("鏡像正文引用改用中文書名與頁碼，無頁碼引用保留待補", () => {
@@ -299,12 +412,16 @@ test("健康度報告按出版品與檔案類型分組，並排除 disposition �
     generatedAt: "2026-09-01T00:00:00.000Z",
     publications: [["PHB2024", { source_assets: [{ path: "原始資料/玩家手冊2024" }] }]],
     pages: [
-      { file: "wiki/法術/甲.md", title: "甲", publication: "PHB2024", body: "正文", data: { category: "法術", version: "2024-Core", confidence: "interpreted", sources: [{ authority: "官方", translation: "none", file: "原始資料/外部來源鏡像/PHB2024/datasets/spells-xphb.json", locator: "spell:甲" }, { authority: "官方", file: "原始資料/玩家手冊2024/甲.md", locator: "L1" }] } },
-      { file: "wiki/法術/乙.md", title: "乙", publication: "PHB2024", body: "來源差異", data: { category: "法術", version: "2024-Core", confidence: "interpreted", sources: [{ authority: "官方", translation: "none", file: "原始資料/外部來源鏡像/PHB2024/datasets/spells-xphb.json", locator: "spell:乙" }, { authority: "官方", file: "原始資料/玩家手冊2024/乙.md", locator: "L1" }] } },
+      { file: "wiki/法術/甲.md", title: "甲", publication: "PHB2024", body: "正文", mirrorRuleText: true, data: { category: "法術", version: "2024-Core", confidence: "interpreted", sources: [{ authority: "官方", translation: "none", file: "原始資料/外部來源鏡像/PHB2024/datasets/spells-xphb.json", locator: "spell:甲" }, { authority: "官方", file: "原始資料/玩家手冊2024/甲.md", locator: "L1" }] } },
+      { file: "wiki/法術/乙.md", title: "乙", publication: "PHB2024", body: "來源差異", mirrorRuleText: true, data: { category: "法術", version: "2024-Core", confidence: "interpreted", sources: [{ authority: "官方", translation: "none", file: "原始資料/外部來源鏡像/PHB2024/datasets/spells-xphb.json", locator: "spell:乙" }, { authority: "官方", file: "原始資料/玩家手冊2024/乙.md", locator: "L1" }] } },
       { file: "wiki/法術/丙.md", title: "丙", publication: "PHB2024", body: "正文", data: { category: "法術", version: "2024-Core", confidence: "interpreted", sources: [{ authority: "官方", translation: "community", file: "原始資料/玩家手冊2024/丙.md", locator: "L1" }] } },
       { file: "wiki/法術/丁.md", title: "丁", publication: "PHB2024", body: "正文", data: { category: "法術", version: "2024-Core", confidence: "interpreted", sources: [{ authority: "官方", translation: "none", file: "原始資料/外部來源鏡像/PHB2024/book-xphb.json", locator: "圖片：book/XPHB/cover.webp" }] } },
       { file: "wiki/法術/戊.md", title: "戊", publication: "PHB2024", body: "正文", mirrorRuleText: false, data: { category: "法術", version: "2024-Core", confidence: "interpreted", sources: [{ authority: "官方", translation: "none", file: "原始資料/外部來源鏡像/PHB2024/book-xphb.json", locator: "Chapter > Feats > 戊" }] } },
+      { file: "wiki/法術/庚.md", title: "庚", publication: "PHB2024", body: "正文", data: { category: "法術", version: "2024-Core", confidence: "interpreted", sources: [{ authority: "官方", translation: "none", file: "原始資料/外部來源鏡像/PHB2024/book-xphb.json", locator: "Chapter > Feats > 庚" }] } },
       { file: "wiki/法術/己.md", title: "己", publication: "PHB2024", body: "## 來源差異與不確定性\n- 本頁保存 2025 年來源所述的世界觀；跨出版品差異應保留來源與適用範圍。", data: { category: "法術", version: "2024-Core", confidence: "interpreted", sources: [{ authority: "官方", translation: "none", file: "原始資料/外部來源鏡像/PHB2024/datasets/spells-xphb.json", locator: "spell:己" }, { authority: "官方", file: "原始資料/玩家手冊2024/己.md", locator: "L1" }] } },
+      { file: "wiki/背景/2014/甲.md", title: "甲", publication: "PHB2014", body: "正文", mirrorRuleText: true, data: { category: "背景", ruleset: "2014", status: "legacy", compatibility_2024: "compatible", sources: [{ authority: "官方", translation: "none", file: "原始資料/外部來源鏡像/PHB2014/chapters/02-Chapter 4- Personality and Background.md", locator: "p.1" }] } },
+      { file: "wiki/背景/2014/已核定.md", title: "已核定", publication: "PHB2014", body: "正文", mirrorRuleText: true, data: { category: "背景", ruleset: "2014", status: "legacy", compatibility_2024: "compatible", confidence: "confirmed", sources: [{ authority: "官方", translation: "none", file: "原始資料/外部來源鏡像/PHB2014/chapters/02-Chapter 4- Personality and Background.md", locator: "p.2" }] } },
+      { file: "wiki/怪物/2014/乙.md", title: "乙", publication: "PHB2014", body: "正文", data: { category: "怪物", ruleset: "2014", status: "legacy", compatibility_2024: "compatible", sources: [] } },
     ],
     manifest: { sources: [
       { file: "原始資料/玩家手冊2024/缺口.md", absorbed_by: [], disposition: null },
@@ -314,7 +431,57 @@ test("健康度報告按出版品與檔案類型分組，並排除 disposition �
   });
   assert.equal(report.unreferenced_sources.total, 2);
   assert.deepEqual(report.unreferenced_sources.by_file_type, { "圖片": 1, "文字": 1 });
-  assert.deepEqual(report.candidates.by_status, { "可核定候選": 2, "待補條件": 3, "衝突候選": 1 });
+  assert.deepEqual(report.candidates.by_status, { "可核定候選": 1, "待補條件": 5, "衝突候選": 1 });
+  assert.equal(report.candidates.by_reason["英文鏡像未含同名規則正文（可能僅有指標）"], 1);
+  assert.equal(report.candidates.by_reason["未引用可定位的官方英文鏡像"], 1);
+  const missingRuleBody = report.candidates.entries.find((entry) => entry.file === "wiki/法術/戊.md");
+  assert.equal(missingRuleBody.reason, "英文鏡像未含同名規則正文（可能僅有指標）");
+  const missingMirror = report.candidates.entries.find((entry) => entry.file === "wiki/法術/丙.md");
+  assert.equal(missingMirror.reason, "未引用可定位的官方英文鏡像");
+  assert.equal(report.legacy_backlog.total, 1);
+  assert.deepEqual(report.legacy_backlog.by_category, { "背景": 1 });
+  assert.equal(report.legacy_backlog.entries[0].priority, "medium");
+  assert.equal(report.legacy_backlog.entries[0].replacement_status, "not_replaced");
+  assert.deepEqual(report.legacy_backlog.by_mirror_status, { "已有可核對英文鏡像": 1 });
+  assert.equal(report.legacy_backlog.entries[0].english_mirror, true);
+});
+
+test("來源優先級將現行出版品置高、魔物置低", () => {
+  assert.equal(sourcePriority({ publication: "PHB2024", file: "原始資料/玩家手冊2024/甲.md" }), "high");
+  assert.equal(sourcePriority({ publication: "PHB2014", file: "原始資料/玩家手冊2014/甲.md" }), "medium");
+  assert.equal(sourcePriority({ publication: "MM2025", file: "原始資料/怪物圖鑑2025/甲.md" }), "low");
+});
+
+test("健康度報告將已登錄外部鏡像歸入對應出版品", () => {
+  const publications = [["EBER2025", { source_assets: [{ path: "原始資料/艾伯倫：奇械鍛爐" }] }]];
+  assert.equal(publicationFor("原始資料/外部來源鏡像/EBER2025/chapters/02-Chapter 01.md", publications), "EBER2025");
+  assert.equal(publicationFor("原始資料/外部來源鏡像/UNKNOWN2025/chapters/01.md", publications), "未登錄出版品");
+});
+
+test("健康度報告不將書籍 JSON 的同名敘述視為規則資料集", () => {
+  const source = "原始資料/外部來源鏡像/PHB2014/book-phb.json";
+  assert.equal(/\/datasets\/[^/]+\.json$/u.test(source), false);
+  assert.equal(/\/datasets\/[^/]+\.json$/u.test("原始資料/外部來源鏡像/XGE2017/datasets/spells-xge.json"), true);
+});
+
+test("健康度報告排除待匯入出版品的 gitkeep 支架檔", () => {
+  assert.equal(isSourcePlaceholder("原始資料/待匯入出版品/XGE/.gitkeep"), true);
+  assert.equal(isSourcePlaceholder("原始資料/待匯入出版品/XGE/法術.md"), false);
+  const report = buildHealthReport({ pages: [], publications: [], manifest: { sources: [
+    { file: "原始資料/待匯入出版品/XGE/.gitkeep", absorbed_by: [], disposition: null },
+    { file: "原始資料/來源/內容.md", absorbed_by: [], disposition: null },
+  ] } });
+  assert.equal(report.unreferenced_sources.total, 1);
+});
+
+test("單檔專長來源可要求頂層先決條件，避免將子特性誤判為專長", () => {
+  const headings = collectFeatHeadings([
+    "**巨人打擊 Strike of the Giants**",
+    "_先決: 軍用武器熟練或巨人養子背景_",
+    "**雲霧打擊 Cloud Strike。**",
+    "目標受到額外傷害。",
+  ], { directFeatFile: true, requirePrerequisiteHeading: true });
+  assert.deepEqual(headings, [{ index: 0, chinese: "巨人打擊", english: "Strike of the Giants" }]);
 });
 
 test("lint 可在指定範圍驗證記憶體候選內容", () => {
