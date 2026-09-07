@@ -164,14 +164,15 @@ test("缺漏、不完整與來源衝突有固定狀態", () => {
   assert.equal(classifyEntity(entity, [conflict], { publicationId: "TEST", mirrorFile }).status, "conflict");
 });
 
-test("缺少法術正文資料集時，書籍中的法術名稱指標會明確標為 blocked", () => {
+test("具備法術正文資料集時，艾伯倫法術可列入正常稽核", () => {
   const eber = createAuditReport({ publicationId: "EBER2025", publication: loadPublication("EBER2025"), profile: loadIngestProfile("EBER2025"), pages: [] });
   assert.equal(eber.mirror.status, "available");
   assert.equal(eber.mirror.datasets.length, 1);
   assert.equal(eber.mirror.datasets[0].file, "原始資料/外部來源鏡像/EBER2025/datasets/spells-efa.json");
   assert.equal(eber.mirror.datasets[0].url, "https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/spells/spells-efa.json");
   assert.ok(eber.entities.some((item) => item.status === "missing"));
-  assert.ok(eber.entities.some((item) => item.category === "spells" && item.status === "blocked"));
+  assert.ok(eber.entities.some((item) => item.category === "spells" && item.status === "missing"));
+  assert.ok(!eber.entities.some((item) => item.category === "spells" && item.status === "blocked"));
   const dmg = createAuditReport({ publicationId: "DMG2024", publication: loadPublication("DMG2024"), profile: loadIngestProfile("DMG2024"), pages: [] });
   assert.deepEqual(dmg.entities.map((item) => item.status), ["out_of_scope"]);
 });
