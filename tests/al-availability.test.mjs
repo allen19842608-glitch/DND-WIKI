@@ -31,7 +31,7 @@ test("715 個 Legacy 玩家選項都有獨立的 AL 狀態與現行官方來源"
   for (const [category, expected] of CATEGORIES) assert.equal(rows.filter(({ data }) => data.category === category).length, expected);
   for (const { data } of rows) {
     assert.ok(["available", "conditional", "unavailable", "review"].includes(data.al_availability));
-    assert.ok(typeof data.al_note === "string" && data.al_note.length > 0);
+    assert.equal(data.al_note, undefined);
     assert.ok(data.sources.some((source) => source.file === AL_SOURCE && source.authority === "官方" && source.locator));
     if (["available", "conditional"].includes(data.al_availability)) assert.ok(Array.isArray(data.al_campaigns) && data.al_campaigns.length > 0);
     else assert.equal(data.al_campaigns, undefined);
@@ -46,4 +46,37 @@ test("半獸人與定製血統維持分離的 2024／AL 判定", () => {
   assert.equal(customLineage.compatibility_2024, "conditional");
   assert.equal(customLineage.al_availability, "conditional");
   assert.deepEqual(customLineage.al_campaigns, ["FR", "DL", "EB", "RV", "CR"]);
+});
+
+test("現行擴充玩家選項依附錄 A 的戰役欄位與註記處理", () => {
+  const expected = new Map([
+    ["阿斯代倫的飢渴之書2025", ["FR", "RV"]],
+    ["艾伯倫奇械鍛爐2025", ["FR", "DL", "EB", "RV"]],
+    ["被遺忘的國度費倫英雄2025", ["FR", "DL", "EB", "RV"]],
+    ["鴉閣魔域魔障深藏2026", ["FR", "DL", "EB", "RV"]],
+  ]);
+  const rows = pages(WIKI).map((file) => ({ file, data: frontmatter(file) })).filter(({ data }) => data
+    && data.ruleset === "2024"
+    && data.content_scope === "expansion"
+    && data.status === "current"
+    && ["職業", "種族", "背景", "專長", "法術"].includes(data.category)
+    && expected.has(data.tags?.[0])
+    && !String(data.title).includes("索引")
+    && !(data.tags ?? []).some((tag) => String(tag).endsWith("_索引")));
+  assert.equal(rows.length, 181);
+  for (const { data } of rows) {
+    assert.ok(["available", "conditional"].includes(data.al_availability));
+    assert.ok(data.sources.some((source) => source.file === AL_SOURCE && source.authority === "官方" && source.locator));
+    assert.equal(data.al_note, undefined);
+  }
+  const artificer = frontmatter(path.join(WIKI, "專長", "龍紋專長", "創造龍紋.md"));
+  assert.deepEqual(artificer.al_campaigns, ["EB"]);
+  const changeling = frontmatter(path.join(WIKI, "種族", "幻身靈.md"));
+  assert.deepEqual(changeling.al_campaigns, ["FR", "DL", "EB", "RV"]);
+  const mistWanderer = frontmatter(path.join(WIKI, "背景", "迷霧漫遊者.md"));
+  const spiritMedium = frontmatter(path.join(WIKI, "背景", "降靈師.md"));
+  assert.equal(mistWanderer.al_availability, "available");
+  assert.deepEqual(mistWanderer.al_campaigns, ["RV"]);
+  assert.equal(spiritMedium.al_availability, "available");
+  assert.deepEqual(spiritMedium.al_campaigns, ["RV"]);
 });

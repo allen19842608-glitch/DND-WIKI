@@ -790,36 +790,38 @@ function validateFrontmatter(record, diagnostics, catalog, publications, lore) {
     && data.status === "legacy"
     && ["職業", "種族", "背景", "專長", "法術"].includes(data.category)
     && !String(data.title ?? "").includes("索引");
+  const currentExpansionOption = data.ruleset === "2024"
+    && data.content_scope === "expansion"
+    && data.status === "current"
+    && ["職業", "種族", "背景", "專長", "法術"].includes(data.category)
+    && new Set(["阿斯代倫的飢渴之書2025", "艾伯倫奇械鍛爐2025", "被遺忘的國度費倫英雄2025", "鴉閣魔域魔障深藏2026"]).has(data.tags?.[0])
+    && !String(data.title ?? "").includes("索引")
+    && !(data.tags ?? []).some((tag) => String(tag).endsWith("_索引"));
+  const alOption = legacyOption || currentExpansionOption;
   if (legacyOption && !COMPATIBILITY_2024.has(data.compatibility_2024)) {
     addDiagnostic(diagnostics, "error", rel, 1, "LEGACY_2024_COMPATIBILITY", "2014 Legacy 角色選項必須標示 compatibility_2024: compatible、conditional、replaced 或 review。" );
   }
   if (legacyOption && data.compatibility_2024 !== undefined && !COMPATIBILITY_2024.has(data.compatibility_2024)) {
     addDiagnostic(diagnostics, "error", rel, 1, "LEGACY_2024_COMPATIBILITY", "compatibility_2024 值不合法。" );
   }
-  if (legacyOption && !AL_AVAILABILITY.has(data.al_availability)) {
-    addDiagnostic(diagnostics, "error", rel, 1, "LEGACY_AL_AVAILABILITY", "2014 Legacy 玩家選項必須標示 al_availability: available、conditional、unavailable 或 review。" );
+  if (alOption && !AL_AVAILABILITY.has(data.al_availability)) {
+    addDiagnostic(diagnostics, "error", rel, 1, currentExpansionOption ? "CURRENT_AL_AVAILABILITY" : "LEGACY_AL_AVAILABILITY", `${currentExpansionOption ? "現行擴充" : "2014 Legacy"}玩家選項必須標示 al_availability: available、conditional、unavailable 或 review。` );
   }
-  if (legacyOption && data.al_availability !== undefined && !AL_AVAILABILITY.has(data.al_availability)) {
+  if (alOption && data.al_availability !== undefined && !AL_AVAILABILITY.has(data.al_availability)) {
     addDiagnostic(diagnostics, "error", rel, 1, "LEGACY_AL_AVAILABILITY", "al_availability 值不合法。" );
   }
   const hasCampaigns = Array.isArray(data.al_campaigns) && data.al_campaigns.length > 0;
-  if (legacyOption && ["available", "conditional"].includes(data.al_availability) && !hasCampaigns) {
+  if (alOption && ["available", "conditional"].includes(data.al_availability) && !hasCampaigns) {
     addDiagnostic(diagnostics, "error", rel, 1, "AL_CAMPAIGNS_REQUIRED", "AL 可用或條件式可用的條目必須列出 al_campaigns。" );
   }
-  if (legacyOption && ["unavailable", "review"].includes(data.al_availability) && data.al_campaigns !== undefined) {
+  if (alOption && ["unavailable", "review"].includes(data.al_availability) && data.al_campaigns !== undefined) {
     addDiagnostic(diagnostics, "error", rel, 1, "AL_CAMPAIGNS_FORBIDDEN", "AL 禁用或待覆核的條目不得填寫 al_campaigns。" );
   }
-  if (legacyOption && data.al_campaigns !== undefined && (!Array.isArray(data.al_campaigns) || data.al_campaigns.some((campaign) => !AL_CAMPAIGNS.has(campaign)))) {
+  if (alOption && data.al_campaigns !== undefined && (!Array.isArray(data.al_campaigns) || data.al_campaigns.some((campaign) => !AL_CAMPAIGNS.has(campaign)))) {
     addDiagnostic(diagnostics, "error", rel, 1, "AL_CAMPAIGNS_VALUE", "al_campaigns 必須是 FR、DL、EB、RV、CR 的區塊清單。" );
   }
-  if (legacyOption && typeof data.al_note !== "string") {
-    addDiagnostic(diagnostics, "error", rel, 1, "AL_NOTE_REQUIRED", "2014 Legacy 玩家選項必須以 al_note 說明 AL 限制或待覆核原因。" );
-  }
-  if (legacyOption && data.al_availability === "conditional" && !String(data.al_note ?? "").trim()) {
-    addDiagnostic(diagnostics, "error", rel, 1, "AL_NOTE_REQUIRED", "AL 條件式可用的條目必須提供非空白 al_note。" );
-  }
-  if (legacyOption && !(data.sources ?? []).some((source) => source?.file === AL_PLAYERS_GUIDE && source?.authority === "官方" && String(source?.locator ?? "").trim())) {
-    addDiagnostic(diagnostics, "error", rel, 1, "AL_SOURCE_REQUIRED", "2014 Legacy 玩家選項的 AL 判定必須引用現行官方 AL 玩家指南及定位。" );
+  if (alOption && !(data.sources ?? []).some((source) => source?.file === AL_PLAYERS_GUIDE && source?.authority === "官方" && String(source?.locator ?? "").trim())) {
+    addDiagnostic(diagnostics, "error", rel, 1, "AL_SOURCE_REQUIRED", "玩家選項的 AL 判定必須引用現行官方 AL 玩家指南及定位。" );
   }
   for (const field of ["rules_sources", "errata"]) {
     if (!Array.isArray(data[field]) || data[field].some((item) => typeof item !== "string")) {

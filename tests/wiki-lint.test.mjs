@@ -433,7 +433,7 @@ test("健康度報告按出版品與檔案類型分組，並排除 disposition �
   assert.deepEqual(report.unreferenced_sources.by_file_type, { "圖片": 1, "文字": 1 });
   assert.deepEqual(report.candidates.by_status, { "可核定候選": 1, "待補條件": 5, "衝突候選": 1 });
   assert.equal(report.candidates.by_reason["英文鏡像未含同名規則正文（可能僅有指標）"], 1);
-  assert.equal(report.candidates.by_reason["未引用可定位的官方英文鏡像"], 1);
+  assert.equal(report.candidates.by_reason["未引用可定位的官方英文鏡像"], 2);
   const missingRuleBody = report.candidates.entries.find((entry) => entry.file === "wiki/法術/戊.md");
   assert.equal(missingRuleBody.reason, "英文鏡像未含同名規則正文（可能僅有指標）");
   const missingMirror = report.candidates.entries.find((entry) => entry.file === "wiki/法術/丙.md");
@@ -544,7 +544,6 @@ test("2014 Legacy 玩家選項必須分開標示 AL 可用性與戰役", () => {
   try {
     const result = lintWiki({ files: [file], overrides: new Map([[file, invalid]]) });
     assert.ok(result.diagnostics.some((item) => item.file === file && item.code === "AL_CAMPAIGNS_REQUIRED"));
-    assert.ok(result.diagnostics.some((item) => item.file === file && item.code === "AL_NOTE_REQUIRED"));
   } finally {
     console.log = originalLog;
   }
@@ -563,6 +562,20 @@ test("AL 禁用或待覆核的 Legacy 條目不得保留戰役清單", () => {
   try {
     const result = lintWiki({ files: [file], overrides: new Map([[file, invalid]]) });
     assert.ok(result.diagnostics.some((item) => item.file === file && item.code === "AL_CAMPAIGNS_FORBIDDEN"));
+  } finally {
+    console.log = originalLog;
+  }
+});
+
+test("附錄 A 已列的現行擴充玩家選項必須有 AL 戰役與官方來源", () => {
+  const file = "wiki/專長/龍紋專長/創造龍紋.md";
+  const original = fs.readFileSync(file, "utf8");
+  const invalid = original.replace(/^al_campaigns:\r?\n(?:  - .*\r?\n)*/m, "");
+  const originalLog = console.log;
+  console.log = () => {};
+  try {
+    const result = lintWiki({ files: [file], overrides: new Map([[file, invalid]]) });
+    assert.ok(result.diagnostics.some((item) => item.code === "AL_CAMPAIGNS_REQUIRED"));
   } finally {
     console.log = originalLog;
   }
