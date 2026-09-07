@@ -43,6 +43,7 @@
     "migrate:staff-charge-structure": "node scripts/migrate/migrate-staff-charge-structure.mjs",
     "migrate:restore-lore-source-text": "node scripts/migrate/restore-lore-source-text.mjs",
     "migrate:classify-2014-compatibility": "node scripts/migrate/classify-2014-compatibility.mjs",
+    "migrate:sync-al-availability": "node scripts/migrate/sync-al-availability.mjs",
     "migrate:spell-target-area": "node scripts/migrate/sync-spell-target-area.mjs",
     "link:staff-spells": "node scripts/sync/link-staff-spells.mjs",
     "ingest:classes": "node scripts/ingest/ingest-classes.mjs --dry-run",

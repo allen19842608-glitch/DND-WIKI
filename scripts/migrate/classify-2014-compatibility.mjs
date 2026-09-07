@@ -8,6 +8,12 @@ const CATEGORIES = ["職業", "種族", "背景", "專長"];
 const REPLACED_SPECIES = new Set(["人類", "半身人", "侏儒", "寶石龍裔", "提夫林", "矮人", "精靈", "色彩龍裔", "金屬龍裔", "龍裔"]);
 const COMPATIBLE_SPECIES = new Set(["半精靈", "半獸人"]);
 const CONDITIONAL_BACKGROUNDS = new Set(["巨人養子", "符文雕刻者"]);
+const SUBCLASS_COMPATIBILITY_OVERRIDES = new Map([
+  ["野蠻人|巨人道途", "compatible"],
+]);
+const FEAT_COMPATIBILITY_OVERRIDES = new Map([
+  ["Fey Touched", "replaced"],
+]);
 const APPLICABLE_BOOK_TITLES = new Map([
   ["玩家手冊2014", "《玩家手冊 2014》"],
   ["珊娜薩的萬事指南2017", "《珊娜薩的萬事指南》"],
@@ -35,7 +41,8 @@ function parse(file) {
 }
 
 function english(title) {
-  return String(title ?? "").match(/\((.*?)(?:，2014 Legacy)?\)$/)?.[1] ?? "";
+  const matched = String(title ?? "").match(/\((.*?)\)$/)?.[1] ?? "";
+  return matched.replace(/，2014 Legacy$/, "");
 }
 
 function setCompatibility(text, value) {
@@ -123,6 +130,8 @@ const currentFeats = walk(path.join(ROOT, "wiki", "專長"))
   .filter(({ data }) => data.ruleset === "2024" && data.status === "current" && data.category === "專長");
 
 function subclassStatus(data) {
+  const override = SUBCLASS_COMPATIBILITY_OVERRIDES.get(`${data.parent_class}|${String(data.title).replace(/ \(.*$/, "")}`);
+  if (override) return override;
   const hasCurrentReplacement = currentSubclasses.some((candidate) => candidate.data.parent_class === data.parent_class && english(candidate.data.title) === english(data.title));
   if (hasCurrentReplacement) return "replaced";
   if (data.compatibility_2024 === "compatible" || data.compatibility_2024 === "replaced") return data.compatibility_2024;
@@ -132,6 +141,9 @@ function subclassStatus(data) {
 }
 
 function featStatus(data) {
+  if (data.tags?.[0] === "畢格比鉅獻巨人之榮耀2023") return "compatible";
+  const override = FEAT_COMPATIBILITY_OVERRIDES.get(english(data.title));
+  if (override) return override;
   const hasCurrentReplacement = currentFeats.some((candidate) => english(candidate.data.title) === english(data.title));
   if (hasCurrentReplacement) return "replaced";
   if (data.compatibility_2024 === "compatible" || data.compatibility_2024 === "replaced") return data.compatibility_2024;
@@ -177,10 +189,6 @@ for (const update of updates) {
   if (apply) fs.writeFileSync(update.file, update.next, "utf8");
 }
 if (apply) {
-  for (const [category, rows] of legacyRows) {
-    const destination = path.join(ROOT, COMPATIBILITY_INDEXES[category].file);
-    fs.writeFileSync(destination, compatibilityIndex(category, rows), "utf8");
-    process.stdout.write(`已建立：${COMPATIBILITY_INDEXES[category].file}\n`);
-  }
+  process.stdout.write("2024／AL 雙狀態索引請以 migrate:sync-al-availability -- --apply 重建。\n");
 }
 process.stdout.write(`${apply ? "已更新" : "預覽"}：${updates.length} 個 Legacy 條目。\n`);

@@ -531,6 +531,43 @@ test("2014 Legacy 角色選項必須使用統一的 2024 相容性標示", () =>
   }
 });
 
+test("2014 Legacy 玩家選項必須分開標示 AL 可用性與戰役", () => {
+  const file = "wiki/種族/2014/半精靈.md";
+  const original = fs.readFileSync(file, "utf8");
+  const invalid = original
+    .replace(/^al_availability:.*\r?\n/m, "")
+    .replace(/^al_campaigns:\r?\n(?:  - .*\r?\n)*/m, "")
+    .replace(/^al_note:.*\r?\n/m, "")
+    .replace(/^(compatibility_2024:.*\r?\n)/m, '$1al_availability: "available"\n');
+  const originalLog = console.log;
+  console.log = () => {};
+  try {
+    const result = lintWiki({ files: [file], overrides: new Map([[file, invalid]]) });
+    assert.ok(result.diagnostics.some((item) => item.file === file && item.code === "AL_CAMPAIGNS_REQUIRED"));
+    assert.ok(result.diagnostics.some((item) => item.file === file && item.code === "AL_NOTE_REQUIRED"));
+  } finally {
+    console.log = originalLog;
+  }
+});
+
+test("AL 禁用或待覆核的 Legacy 條目不得保留戰役清單", () => {
+  const file = "wiki/種族/2014/半獸人.md";
+  const original = fs.readFileSync(file, "utf8");
+  const invalid = original
+    .replace(/^al_availability:.*\r?\n/m, "")
+    .replace(/^al_campaigns:\r?\n(?:  - .*\r?\n)*/m, "")
+    .replace(/^al_note:.*\r?\n/m, "")
+    .replace(/^(compatibility_2024:.*\r?\n)/m, '$1al_availability: "review"\nal_campaigns:\n  - "FR"\nal_note: "測試"\n');
+  const originalLog = console.log;
+  console.log = () => {};
+  try {
+    const result = lintWiki({ files: [file], overrides: new Map([[file, invalid]]) });
+    assert.ok(result.diagnostics.some((item) => item.file === file && item.code === "AL_CAMPAIGNS_FORBIDDEN"));
+  } finally {
+    console.log = originalLog;
+  }
+});
+
 test("非組織遊戲的戰役設定必須標示連續性", () => {
   const file = "wiki/戰役設定/被遺忘的國度/地理/北地.md";
   const original = fs.readFileSync(file, "utf8");
