@@ -794,7 +794,7 @@ publications:
         status: "available"
 
 # 冒險者聯盟玩家指南 v2026.4，附錄 A「Additional Rules Sources」（p. 9）。
-# 這些書目尚未置入本機原始檔時，先以 planned_source_root 保留預定匯入位置。
+# 下列書目可供冒險者聯盟使用；未列入 `publication_id` 者尚未置入本機原始檔。
 # title_zh 只有在詞彙表或可定位中文來源核定後才填入，避免預先臆造譯名。
 al_reference_books:
   - id: "ASTARIONS_BOOK_OF_HUNGERS"
@@ -802,43 +802,36 @@ al_reference_books:
     title_en: "Astarion’s Book of Hungers"
     availability: "available"
     campaigns: ["FR", "RV"]
-    planned_source_root: "原始資料/待匯入出版品/ASTARIONS_BOOK_OF_HUNGERS"
   - id: "BGDIA"
     title_zh: null
     title_en: "Baldur’s Gate: Descent into Avernus"
     availability: "available"
     campaigns: ["FR", "DL", "RV", "CR"]
-    planned_source_root: "原始資料/待匯入出版品/BGDIA"
   - id: "BPGOG"
     title_zh: null
     title_en: "Bigby Presents: Glory of the Giants"
     availability: "available"
     campaigns: ["FR", "DL", "EB", "RV", "CR"]
-    planned_source_root: "原始資料/待匯入出版品/BPGOG"
   - id: "BOMT"
     title_zh: null
     title_en: "Book of Many Things"
     availability: "available"
     campaigns: ["FR", "DL", "EB", "RV", "CR"]
-    planned_source_root: "原始資料/待匯入出版品/BOMT"
   - id: "BORDER_KINGDOMS"
     title_zh: null
     title_en: "The Border Kingdoms"
     availability: "available"
     campaigns: ["FR", "DL", "RV", "CR"]
-    planned_source_root: "原始資料/待匯入出版品/BORDER_KINGDOMS"
   - id: "COS"
     title_zh: null
     title_en: "Curse of Strahd"
     availability: "available"
     campaigns: ["FR", "RV"]
-    planned_source_root: "原始資料/待匯入出版品/COS"
   - id: "DSOTDQ"
     title_zh: null
     title_en: "Dragonlance: Shadow of the Dragon Queen"
     availability: "available"
     campaigns: ["DL"]
-    planned_source_root: "原始資料/待匯入出版品/DSOTDQ"
   - publication_id: "DMG2024"
     availability: "available"
     campaigns: ["FR", "DL", "EB", "RV", "CR"]
@@ -847,7 +840,6 @@ al_reference_books:
     title_en: "Durnan’s Guide to Tavernkeeping"
     availability: "available"
     campaigns: ["FR", "DL", "RV", "CR"]
-    planned_source_root: "原始資料/待匯入出版品/DURNANS_GUIDE_TO_TAVERNKEEPING"
   - publication_id: "EBER2025"
     availability: "available"
     campaigns: ["FR", "DL", "EB", "RV"]
@@ -856,19 +848,16 @@ al_reference_books:
     title_en: "Eberron: Rising from the Last War"
     availability: "available"
     campaigns: ["EB"]
-    planned_source_root: "原始資料/待匯入出版品/ERLW"
   - id: "EGW"
     title_zh: null
     title_en: "Explorer’s Guide to Wildemount"
     availability: "available"
     campaigns: ["CR"]
-    planned_source_root: "原始資料/待匯入出版品/EGW"
   - id: "FTD"
     title_zh: null
     title_en: "Fizban’s Treasury of Dragons"
     availability: "available"
     campaigns: ["FR", "DL", "RV"]
-    planned_source_root: "原始資料/待匯入出版品/FTD"
   - id: "FR_HEROES_OF_FAERUN"
     title_zh: "被遺忘的國度：費倫英雄"
     title_en: "Forgotten Realms: Heroes of Faerûn"
@@ -880,43 +869,36 @@ al_reference_books:
     title_en: "Ghosts of Saltmarsh"
     availability: "available"
     campaigns: ["FR", "DL", "RV", "CR"]
-    planned_source_root: "原始資料/待匯入出版品/GOS"
   - id: "HOTDQ"
     title_zh: null
     title_en: "Hoard of the Dragon Queen"
     availability: "available"
     campaigns: ["FR", "DL", "RV", "CR"]
-    planned_source_root: "原始資料/待匯入出版品/HOTDQ"
   - id: "IDROTF"
     title_zh: null
     title_en: "Icewind Dale: Rime of the Frostmaiden"
     availability: "available"
     campaigns: ["FR", "DL", "RV"]
-    planned_source_root: "原始資料/待匯入出版品/IDROTF"
   - id: "KNUCKLEHEADS"
     title_zh: null
     title_en: "Knuckleheads and Other Curiosities"
     availability: "available"
     campaigns: ["FR", "DL", "RV", "CR"]
-    planned_source_root: "原始資料/待匯入出版品/KNUCKLEHEADS"
   - id: "LLK"
     title_zh: null
     title_en: "Lost Laboratory of Kwalish"
     availability: "available"
     campaigns: ["FR"]
-    planned_source_root: "原始資料/待匯入出版品/LLK"
   - id: "LOCATHAH_RISING"
     title_zh: null
     title_en: "Locathah Rising"
     availability: "available"
     campaigns: ["FR", "DL", "RV", "CR"]
-    planned_source_root: "原始資料/待匯入出版品/LOCATHAH_RISING"
   - id: "MOONSHAE_ISLES_REGIONAL_GUIDE"
     title_zh: null
     title_en: "Moonshae Isles Regional Guide"
     availability: "available"
     campaigns: ["FR", "DL", "RV", "CR"]
-    planned_source_root: "原始資料/待匯入出版品/MOONSHAE_ISLES_REGIONAL_GUIDE"
   - publication_id: "MPMM2022"
     availability: "available"
     campaigns: ["FR", "DL", "EB", "RV", "CR"]
@@ -925,79 +907,66 @@ al_reference_books:
     title_en: "Out of the Abyss"
     availability: "available"
     campaigns: ["FR", "DL", "RV", "CR"]
-    planned_source_root: "原始資料/待匯入出版品/OOTA"
   - id: "PAITM"
     title_zh: null
     title_en: "Planescape: Adventures in the Multiverse"
     availability: "available"
     campaigns: ["FR"]
-    planned_source_root: "原始資料/待匯入出版品/PAITM"
   - id: "RATS_OF_WATERDEEP"
     title_zh: null
     title_en: "Rats of Waterdeep"
     availability: "available"
     campaigns: ["FR", "DL", "RV", "CR"]
-    planned_source_root: "原始資料/待匯入出版品/RATS_OF_WATERDEEP"
   - id: "ROT"
     title_zh: null
     title_en: "Rise of Tiamat"
     availability: "available"
     campaigns: ["FR", "DL", "RV", "CR"]
-    planned_source_root: "原始資料/待匯入出版品/ROT"
   - id: "RUINS_OF_MEZRO"
     title_zh: null
     title_en: "Ruins of Mezro"
     availability: "available"
     campaigns: ["FR", "DL", "RV", "CR"]
-    planned_source_root: "原始資料/待匯入出版品/RUINS_OF_MEZRO"
   - id: "SAS"
     title_zh: null
     title_en: "Spelljammer: Adventures in Space"
     availability: "available"
     campaigns: ["FR"]
-    planned_source_root: "原始資料/待匯入出版品/SAS"
   - id: "SCAG"
     title_zh: null
     title_en: "Sword Coast Adventurer’s Guide"
     availability: "available"
     campaigns: ["FR"]
-    planned_source_root: "原始資料/待匯入出版品/SCAG"
   - id: "TALDOREI_REBORN"
     title_zh: null
     title_en: "Tal’Dorei Reborn"
     availability: "available"
     campaigns: ["CR"]
-    planned_source_root: "原始資料/待匯入出版品/TALDOREI_REBORN"
   - id: "TCE"
     title_zh: null
     title_en: "Tasha’s Cauldron of Everything"
     availability: "available"
     campaigns: ["FR", "DL", "EB", "RV", "CR"]
-    planned_source_root: "原始資料/待匯入出版品/TCE"
   - id: "TOA"
     title_zh: null
     title_en: "Tomb of Annihilation"
     availability: "available"
     campaigns: ["FR", "DL", "RV", "CR"]
-    planned_source_root: "原始資料/待匯入出版品/TOA"
   - id: "RTHW"
     title_zh: null
     title_en: "Ravenloft: The Horrors Within"
     availability: "available"
     campaigns: ["FR", "DL", "EB", "RV"]
-    planned_source_root: "原始資料/待匯入出版品/RTHW"
   - id: "VRGTR"
     title_zh: null
     title_en: "Van Richten’s Guide to Ravenloft"
     availability: "available"
     campaigns: ["RV"]
-    planned_source_root: "原始資料/待匯入出版品/VRGTR"
   - id: "WBW"
     title_zh: null
     title_en: "The Wild Beyond the Witchlight"
     availability: "available"
     campaigns: ["FR", "DL", "RV", "CR"]
-    planned_source_root: "原始資料/待匯入出版品/WBW"
   - publication_id: "XGE2017"
     availability: "available"
     campaigns: ["FR", "DL", "EB", "RV", "CR"]
@@ -1006,10 +975,8 @@ al_reference_books:
     title_en: "One Grung Above"
     availability: "unavailable"
     campaigns: []
-    planned_source_root: "原始資料/待匯入出版品/ONE_GRUNG_ABOVE"
   - id: "WGTE"
     title_zh: null
     title_en: "Wayfinder’s Guide to Eberron"
     availability: "unavailable"
     campaigns: []
-    planned_source_root: "原始資料/待匯入出版品/WGTE"

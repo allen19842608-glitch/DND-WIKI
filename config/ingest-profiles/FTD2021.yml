@@ -2,6 +2,15 @@ publication_id: "FTD2021"
 source_root: "原始資料/費資本的巨龍寶庫"
 setting: "多元宇宙"
 ruleset: "2014"
+canonical_mirror:
+  provider: "5e.tools"
+  book_id: "ftd"
+  url: "https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/book/book-ftd.json"
+  output_root: "原始資料/外部來源鏡像/FTD2021"
+  datasets:
+    - file: "原始資料/外部來源鏡像/FTD2021/datasets/spells-ftd.json"
+      url: "https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/spells/spells-ftd.json"
+      locator_prefix: "spell:"
 outputs:
   classes: "wiki/職業/2014"
   spells: "wiki/法術/2014"

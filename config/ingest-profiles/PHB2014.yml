@@ -1,6 +1,19 @@
 publication_id: "PHB2014"
 source_root: "原始資料/玩家手冊2014"
 ruleset: "2014"
+canonical_mirror:
+  provider: "5e.tools"
+  book_id: "phb"
+  url: "https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/book/book-phb.json"
+  output_root: "原始資料/外部來源鏡像/PHB2014"
+character_options:
+  - "classes"
+  - "subclasses"
+  - "species"
+  - "backgrounds"
+  - "feats"
+  - "spells"
+  - "dependencies"
 outputs:
   species: "wiki/種族/2014"
   classes: "wiki/職業/2014"

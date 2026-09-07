@@ -3,7 +3,7 @@ import path from "node:path";
 import { spawnSync } from "node:child_process";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
-import { autoIndexTargets, extractWikiSourceFiles, splitMarkdownRow, wikiLinkTargets } from "../scripts/core/wiki-maintenance.mjs";
+import { autoIndexTargets, belongsToPublication, extractWikiSourceFiles, publicationSourceRoots, splitMarkdownRow, wikiLinkTargets } from "../scripts/core/wiki-maintenance.mjs";
 import { campaignDesignDestination } from "../scripts/core/campaign-design-layout.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -35,6 +35,13 @@ test("自動索引條目可與手動索引條目分開保留", () => {
 test("來源清單可解析含 BOM 的 Wiki Frontmatter", () => {
   const text = "\uFEFF---\nsources:\n  - file: \"原始資料/玩家手冊2024/角色職業/戰士/戰士.md\"\n---\n# 戰士";
   assert.deepEqual(extractWikiSourceFiles(text), ["原始資料/玩家手冊2024/角色職業/戰士/戰士.md"]);
+});
+
+test("出版品來源篩選同時涵蓋原始資料與外部鏡像", () => {
+  const roots = publicationSourceRoots("SCAG2015");
+  assert.equal(belongsToPublication("原始資料/劍灣冒險者指南/前言.md", "SCAG2015", roots), true);
+  assert.equal(belongsToPublication("原始資料/外部來源鏡像/SCAG2015/chapters/01.md", "SCAG2015", roots), true);
+  assert.equal(belongsToPublication("原始資料/玩家手冊2024/前言.md", "SCAG2015", roots), false);
 });
 
 test("規範查詢只輸出指定章節", () => {

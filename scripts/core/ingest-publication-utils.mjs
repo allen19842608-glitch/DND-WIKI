@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import YAML from "yaml";
+import { preserveSpellFieldsForImport } from "./spell-target-area.mjs";
 
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 export const CHARACTER_OPTION_CATEGORIES = Object.freeze([
@@ -118,10 +119,16 @@ export function writableCandidate({ destination, content, options, matchValues =
     recordResult(options, { target: rel, status: "filtered" });
     return "filtered";
   }
-  if (fs.existsSync(destination) && !options.replace) {
+  const exists = fs.existsSync(destination);
+  if (exists && !options.replace) {
     console.log(`保留既有頁面（使用 --replace 才覆寫）：${rel}`);
     recordResult(options, { target: rel, status: "skipped", reason: "existing_page_preserved" });
     return "skipped";
+  }
+  if (exists && /category: "法術"/u.test(content)) {
+    const preserved = preserveSpellFieldsForImport(fs.readFileSync(destination, "utf8"), content);
+    content = preserved.text;
+    recordResult(options, { target: rel, status: "field-preservation", reason: preserved.status });
   }
   if (!options.apply) {
     console.log(`預覽：${rel}`);

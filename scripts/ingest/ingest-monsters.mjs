@@ -26,6 +26,11 @@ const diff = has("--diff");
 const updated = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Taipei" }).format(new Date());
 const publicationId = publicationOption(process.argv.slice(2), "--publication") ?? "MM2025";
 const publication = loadPublication(publicationId);
+const sourceLanguage = publication.source_assets?.find((asset) => asset.format === "directory" && asset.status === "available")?.language;
+const python = process.platform === "win32" ? "py" : "python3";
+const openccRoot = process.env.DND_WIKI_OPENCC_PATH ?? "C:\\Users\\Owner\\.codex\\tools\\dnd-wiki-opencc";
+const openccProgram = "import sys;sys.path.insert(0,sys.argv[1]);from opencc import OpenCC;sys.stdout.write(OpenCC('s2twp').convert(sys.stdin.read()))";
+let convertedSourceTexts;
 
 function fail(message) {
   process.stderr.write(`${message}\n`);
@@ -96,7 +101,8 @@ function existingByChinese(chinese) {
 
 function inlineValue(lines, names) {
   for (const line of lines) {
-    const match = line.match(new RegExp(`^\\*\\*(?:${names.join("|")})\\*\\*\\s*[:：]?\\s*(.+)$`));
+    const normalized = line.trim().replace(/^_+|_+$/g, "");
+    const match = normalized.match(new RegExp(`^(?:\\*\\*)?(?:${names.join("|")})(?:\\*\\*)?\\s*[:：]?\\s*(.+)$`));
     if (match) return match[1].trim();
   }
   return undefined;
@@ -121,6 +127,14 @@ function abilityValues(lines) {
       values.set(cells[i], { score, modifier: cells[i + 2] ?? "—", save: cells[i + 3] ?? "—" });
     }
   }
+  if (values.size < 6) {
+    for (const line of lines) {
+      for (const label of ["力量", "敏捷", "體質", "智力", "感知", "魅力"]) {
+        const match = new RegExp(`${label}\\s*(\\d+)\\s*[（(]([+−-]?\\d+)[）)]`, "u").exec(line);
+        if (match) values.set(label, { score: match[1], modifier: match[2].replace("−", "-"), save: "—" });
+      }
+    }
+  }
   return values.size === 6 ? values : undefined;
 }
 
@@ -140,29 +154,59 @@ function expandEmbeddedStatBlocks(lines) {
   return expanded;
 }
 
+const sectionNames = ["特性", "Traits", "動作", "Actions", "附贈動作", "Bonus Actions", "反應", "Reactions", "傳奇動作", "Legendary Actions", "巢穴動作", "Lair Actions"];
+
+function sectionHeader(line, names = sectionNames) {
+  const trimmed = line.trim();
+  const title = trimmed.replace(/^#{2,4}\s+/, "").replace(/^\*+|\*+$/g, "").trim();
+  return (/^#{2,4}\s+/.test(trimmed) || /^\*{2,4}[^*]+\*{2,4}$/.test(trimmed))
+    && names.some((name) => title.includes(name));
+}
+
 function sectionContent(lines, names) {
-  const index = lines.findIndex((line) => /^#{2,4}\s+/.test(line) && names.some((name) => line.includes(name)));
+  const index = lines.findIndex((line) => sectionHeader(line, names));
   if (index < 0) return [];
-  const depth = lines[index].match(/^(#+)/)[1].length;
+  const depth = lines[index].match(/^(#+)/)?.[1].length;
   const content = [];
   for (let i = index + 1; i < lines.length; i += 1) {
     const next = lines[i].match(/^(#+)\s+/);
-    if (next && next[1].length <= depth) break;
+    if ((next && depth && next[1].length <= depth) || sectionHeader(lines[i])) break;
     content.push(lines[i]);
   }
   return content;
 }
 
+function compactTraitContent(lines) {
+  const firstSection = lines.findIndex((line) => sectionHeader(line));
+  const firstEntry = lines.findIndex((line) => /^\*\*[^*]+?\*\*/.test(line.trim()) && !sectionHeader(line));
+  return firstEntry < 0 ? [] : lines.slice(firstEntry, firstSection < 0 ? lines.length : firstSection);
+}
+
 function renderEntries(lines) {
-  const compact = lines.map((line) => line.trim()).filter(Boolean).join(" ");
-  if (!compact) return "";
-  const matches = [...compact.matchAll(/\*\*([^*]+?)\*\*\s*[:：]?\s*/g)];
-  if (!matches.length) return `- ${compact}`;
-  return matches.map((match, index) => {
-    const start = match.index + match[0].length;
-    const end = matches[index + 1]?.index ?? compact.length;
-    return `- **${formatEntryName(match[1])}**：${compact.slice(start, end).trim()}`;
-  }).join("\n");
+  const entries = [];
+  const lead = [];
+  let current;
+  for (const sourceLine of lines) {
+    const line = sourceLine.trim();
+    if (!line) continue;
+    // 只有原始行首的粗體名稱才是特性／動作項目。效果文字內的
+    // **恐慌（Frightened）** 等狀態名稱必須保留在同一項目中。
+    const match = line.match(/^\*\*([^*]+?)\*\*\s*[:：]?\s*(.*)$/);
+    if (match) {
+      if (current) entries.push(current);
+      current = { name: formatEntryName(match[1]), body: match[2].trim().replace(/^。\s*/u, "") };
+    } else if (current) {
+      current.body = `${current.body} ${line}`.trim();
+    } else {
+      lead.push(line);
+    }
+  }
+  if (current) entries.push(current);
+  if (entries.length) {
+    const rendered = entries.map((entry) => `- **${entry.name}**：${entry.body}`);
+    return lead.length ? `- ${lead.join(" ")}\n${rendered.join("\n")}` : rendered.join("\n");
+  }
+  return lead.length ? `- ${lead.join(" ")}` : "";
 }
 
 function formatEntryName(value) {
@@ -181,6 +225,31 @@ function normalizeRulesText(value) {
   return value.replaceAll("_", "").replace(/(\d+)\s*尺/g, "$1 呎").replace(/(\d+)\s*天/g, "$1 天");
 }
 
+function sourceText(file) {
+  if (convertedSourceTexts?.has(file)) return convertedSourceTexts.get(file);
+  const text = fs.readFileSync(file, "utf8");
+  if (sourceLanguage !== "zh-Hans") return text;
+  if (!fs.existsSync(openccRoot)) fail(`找不到 OpenCC：${openccRoot}`);
+  return execFileSync(python, ["-c", openccProgram, openccRoot], {
+    input: text,
+    encoding: "utf8",
+    maxBuffer: 32 * 1024 * 1024,
+  });
+}
+
+function convertSourceTexts(files) {
+  const texts = files.map((file) => fs.readFileSync(file, "utf8"));
+  if (sourceLanguage !== "zh-Hans") return new Map(files.map((file, index) => [file, texts[index]]));
+  if (!fs.existsSync(openccRoot)) fail(`找不到 OpenCC：${openccRoot}`);
+  const program = "import json,sys;sys.path.insert(0,sys.argv[1]);from opencc import OpenCC;conv=OpenCC('s2twp');sys.stdout.write(json.dumps([conv.convert(v) for v in json.load(sys.stdin)],ensure_ascii=False))";
+  const converted = JSON.parse(execFileSync(python, ["-c", program, openccRoot], {
+    input: JSON.stringify(texts),
+    encoding: "utf8",
+    maxBuffer: 64 * 1024 * 1024,
+  }));
+  return new Map(files.map((file, index) => [file, converted[index]]));
+}
+
 function titleParts(lines, fallback) {
   const rawTitle = lines.find((line) => /^#\s+/.test(line))?.replace(/^#\s+/, "").trim() ?? fallback;
   const match = rawTitle.match(/^(.+?)\s+(.+)$/);
@@ -188,17 +257,38 @@ function titleParts(lines, fallback) {
   return { chinese: (english ? match[1] : fallback).trim(), english };
 }
 
+function titleBeforeCard(lines, index) {
+  return lines.slice(0, index).map((line, lineIndex) => ({ line, lineIndex })).reverse().find(({ line }) => {
+    const heading = /^#{1,3}\s+(.+)$/u.exec(line)?.[1]?.trim();
+    const bold = /^\*\*(.+?)\*\*$/u.exec(line)?.[1]?.trim();
+    const title = heading ?? bold;
+    return Boolean(title) && !/(?:譯者注|譯註|翻譯註)/u.test(title);
+  });
+}
+
+function normalizedCreatureType(line) {
+  return line.trim().replace(/^[*_]+|[*_]+$/g, "").trim();
+}
+
+function isCreatureTypeLine(line) {
+  const normalized = normalizedCreatureType(line);
+  return normalized !== line.trim()
+    && /(微型|小型|中型|大型|超大型|巨型)/.test(normalized);
+}
+
 function candidatesFromFile(file, names) {
-  const lines = expandEmbeddedStatBlocks(fs.readFileSync(file, "utf8").split(/\r?\n/));
+  const lines = expandEmbeddedStatBlocks(sourceText(file).split(/\r?\n/));
   const candidates = [];
   for (let index = 0; index < lines.length; index += 1) {
     const typeLine = lines[index];
-    if (!/^\*[^*]+\*$/.test(typeLine.trim()) || !/(微型|小型|中型|大型|超大型|巨型)/.test(typeLine)) continue;
-    const nextCard = lines.findIndex((line, lineIndex) => lineIndex > index && /^\*[^*]+\*$/.test(line.trim()) && /(微型|小型|中型|大型|超大型|巨型)/.test(line));
+    if (!isCreatureTypeLine(typeLine)) continue;
+    const nextCard = lines.findIndex((line, lineIndex) => lineIndex > index && isCreatureTypeLine(line));
     const block = lines.slice(index, nextCard < 0 ? lines.length : nextCard);
-    const titleLine = lines.map((line, lineIndex) => ({ line, lineIndex })).find(({ line }) => /^#\s+/.test(line));
+    // 同一來源檔可先有章節／族群介紹；資料卡應採其前最近的標題，
+    // 不能一律使用檔案的第一個 H1 或轉檔占位檔名。
+    const titleLine = titleBeforeCard(lines, index);
     const sourceName = path.basename(file, ".md");
-    const rawTitle = titleLine?.line.replace(/^#\s+/, "").trim() ?? sourceName;
+    const rawTitle = titleLine?.line.replace(/^#{1,3}\s+/, "").replace(/^\*\*|\*\*$/g, "").trim() ?? sourceName;
     const titleMatch = rawTitle.match(/^(.+?)\s+(.+)$/);
     const titleEnglish = titleMatch && /[A-Za-z]/.test(titleMatch[2]) ? titleMatch[2].trim() : undefined;
     const chinese = (titleEnglish ? titleMatch[1] : sourceName).trim();
@@ -217,15 +307,15 @@ function candidatesFromFile(file, names) {
     const lairLines = sectionContent(block, ["巢穴動作", "Lair Actions"]);
     candidates.push({
       chinese: chinese.trim(), english: english?.trim(), block, stats,
-      type: typeLine.trim().slice(1, -1), ac, hp, speed,
-      folder: creatureTypeFolder(typeLine.trim().slice(1, -1)),
+      type: normalizedCreatureType(typeLine), ac, hp, speed,
+      folder: creatureTypeFolder(normalizedCreatureType(typeLine)),
       saves: inlineValue(block, ["豁免檢定"]), skills: inlineValue(block, ["技能"]),
       senses: inlineValue(block, ["感官"]), languages: inlineValue(block, ["語言"]),
       resistance: [inlineValue(block, ["傷害抗性", "抗性"]), inlineValue(block, ["傷害免疫", "免疫"])]
         .filter(Boolean).join("；"),
       conditionImmunity: inlineValue(block, ["狀態免疫"]), cr: inlineValue(block, ["CR", "挑戰等級"]),
       equipment: inlineValue(block, ["裝備"]),
-      traits: renderEntries(sectionContent(block, ["特性", "Traits"])),
+      traits: renderEntries(sectionContent(block, ["特性", "Traits"]).length ? sectionContent(block, ["特性", "Traits"]) : compactTraitContent(block)),
       actions: renderEntries(sectionContent(block, ["動作", "Actions"])),
       bonusActions: renderEntries(sectionContent(block, ["附贈動作", "Bonus Actions"])),
       reactions: renderEntries(sectionContent(block, ["反應", "Reactions"])),
@@ -290,6 +380,7 @@ function renderOverview(overview, related) {
 
 const names = nameMap();
 const sourceFiles = markdownFiles(sourcePath);
+convertedSourceTexts = convertSourceTexts(sourceFiles);
 // 「雪怪總」等檔案是生物族群介紹，不是可獨立吸收的怪物資料卡。
 const overviewFiles = sourceFiles.filter((file) => path.basename(file, ".md").endsWith("總"));
 const cardFiles = sourceFiles.filter((file) => !path.basename(file, ".md").endsWith("總"));
@@ -325,9 +416,12 @@ if (reportPath) {
 }
 
 if (!apply) process.exit(0);
-fs.mkdirSync(wikiRoot, { recursive: true });
+const outputRoot = versionForPublication(publication) === "2014-Legacy"
+  ? path.join(wikiRoot, "2014")
+  : wikiRoot;
+fs.mkdirSync(outputRoot, { recursive: true });
 for (const item of report.create) {
-  const target = path.join(wikiRoot, item.candidate.folder, `${item.canonical}.md`);
+  const target = path.join(outputRoot, item.candidate.folder, `${item.canonical}.md`);
   const content = withRegistryFrontmatter(
     render(item.candidate, item.canonical, overviewByDirectory.get(path.dirname(path.resolve(root, item.candidate.source)))),
     { publicationId, publication, kind: "monster", concept: item.candidate.english ?? item.canonical, title: item.candidate.english ? `${item.canonical} (${item.candidate.english})` : item.canonical, source: item.candidate.source },

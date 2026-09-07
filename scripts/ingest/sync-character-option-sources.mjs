@@ -60,7 +60,10 @@ export function syncCharacterOptionSources(args = process.argv.slice(2)) {
     if (only && !filterValues.some((value) => value.includes(only.normalize("NFKC").toLowerCase()))) continue;
     const file = path.join(ROOT, entity.wiki_target);
     const current = fs.readFileSync(file, "utf8");
-    const next = updateCharacterOptionSource(current, entity, { publicationId, publication, mirror: audit.mirror });
+    const sourceMirror = entity.source?.file
+      ? { ...audit.mirror, file: entity.source.file, url: entity.source.url ?? audit.mirror.url }
+      : audit.mirror;
+    const next = updateCharacterOptionSource(current, entity, { publicationId, publication, mirror: sourceMirror });
     if (next === current) {
       results.push({ english_name: entity.english_name, category: entity.category, target: entity.wiki_target, status: "unchanged" });
     } else if (!apply) {

@@ -213,14 +213,27 @@ function withDatasets(files, datasets) {
   return { ...files, manifestText: YAML.stringify(manifest), datasets };
 }
 
+function renderedChapter(chapter) {
+  return `# ${chapter.title}\n\n> 英文原文鏡像；對應《${chapter.title}》p. ${chapter.page}。來源提供者：5e.tools。\n\n${chapter.markdown || "<!-- CHAPTER_NOT_FOUND -->"}\n`;
+}
+
+export function manifestEquivalent(existing, candidate) {
+  try {
+    const left = YAML.parse(existing);
+    const right = YAML.parse(candidate);
+    delete left.retrieved_at;
+    delete right.retrieved_at;
+    return JSON.stringify(left) === JSON.stringify(right);
+  } catch {
+    return existing === candidate;
+  }
+}
+
 function writeAll(files, rawText) {
   const staged = [
     { relative: files.snapshot, content: rawText.endsWith("\n") ? rawText : `${rawText}\n` },
     { relative: files.manifest, content: files.manifestText },
-    ...files.chapterFiles.map(({ chapter, file }) => ({
-      relative: file,
-      content: `# ${chapter.title}\n\n> 英文原文鏡像；對應《${chapter.title}》p. ${chapter.page}。來源提供者：5e.tools。\n\n${chapter.markdown || "<!-- CHAPTER_NOT_FOUND -->"}\n`,
-    })),
+    ...files.chapterFiles.map(({ chapter, file }) => ({ relative: file, content: renderedChapter(chapter) })),
     ...(files.datasets ?? []).map(({ file, content }) => ({ relative: file, content: content.endsWith("\n") ? content : `${content}\n` })),
   ];
   for (const item of staged) {
@@ -243,13 +256,17 @@ function previewDiff(files, rawText) {
   const staged = [
     { relative: files.snapshot, content: rawText.endsWith("\n") ? rawText : `${rawText}\n` },
     { relative: files.manifest, content: files.manifestText },
-    ...files.chapterFiles.map(({ chapter, file }) => ({ relative: file, content: chapter.markdown })),
+    ...files.chapterFiles.map(({ chapter, file }) => ({ relative: file, content: renderedChapter(chapter) })),
     ...(files.datasets ?? []).map(({ file, content }) => ({ relative: file, content: content.endsWith("\n") ? content : `${content}\n` })),
   ];
   const summary = { added: 0, changed: 0, unchanged: 0 };
   for (const item of staged) {
     const absolute = path.join(ROOT, ...item.relative.split("/"));
-    const state = !fs.existsSync(absolute) ? "added" : fs.readFileSync(absolute, "utf8") === item.content ? "unchanged" : "changed";
+    const state = !fs.existsSync(absolute)
+      ? "added"
+      : item.relative === files.manifest
+        ? manifestEquivalent(fs.readFileSync(absolute, "utf8"), item.content) ? "unchanged" : "changed"
+        : fs.readFileSync(absolute, "utf8") === item.content ? "unchanged" : "changed";
     summary[state] += 1;
   }
   process.stdout.write(`差異預覽：新增 ${summary.added}；變更 ${summary.changed}；未變 ${summary.unchanged}。\n`);

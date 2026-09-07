@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
 import { ROOT, defaultSource, frontmatter, loadIngestProfile, loadPublication, parseOptions, writableCandidate, writeIngestReport } from "../core/ingest-publication-utils.mjs";
+import { collectFeatHeadings } from "./feat-heading-utils.mjs";
 
 const options = parseOptions();
 const publication = loadPublication(options.publicationId);
@@ -25,6 +26,7 @@ const featTypes = {
 const inputs = directFeatFile
   ? [{ input: path.basename(directFeatFile), sourcePath: directFeatFile, type: { directory: "通用專長", tag: "專長_通用" } }]
   : Object.keys(featTypes).filter((name) => fs.existsSync(path.join(inputDir, name))).map((input) => ({ input, sourcePath: path.join(inputDir, input), type: featTypes[input] }));
+const requirePrerequisiteHeading = profile.inputs.feats_require_prerequisite === true;
 
 function traditional(text) {
   const language = publication.source_assets?.find((asset) => asset.format === "directory" && asset.status === "available")?.language;
@@ -59,13 +61,7 @@ function addCurrentBacklink(current, legacyTarget, legacyTitle) {
 
 for (const { input, sourcePath, type } of inputs) {
   const lines = normalize(fs.readFileSync(sourcePath, "utf8")).split(/\r?\n/);
-  const headings = lines.flatMap((line, index) => {
-    const match = line.match(/^\*\*([^*]+?)\s+([A-Za-z][A-Za-z '\-]+)/);
-    const annotation = lines[index + 1]?.trim() ?? "";
-    return match && match[1].trim() !== "專長" && (directFeatFile || /專長/.test(annotation))
-      ? [{ index, chinese: match[1].trim(), english: match[2].trim() }]
-      : [];
-  });
+  const headings = collectFeatHeadings(lines, { directFeatFile: Boolean(directFeatFile), requirePrerequisiteHeading });
   for (const [position, feat] of headings.entries()) {
     const end = headings[position + 1]?.index ?? lines.length;
     const body = lines.slice(feat.index + 1, end).filter((line) => line.trim());

@@ -495,7 +495,8 @@ export function runLoreIngest(args = process.argv.slice(2)) {
     filters: { type: typeOverride ?? null, only: only ?? null, source_mode: sourceMode },
     summary: {
       candidates: candidates.length,
-      actionable: actionable.length,
+      actionable_candidates: actionable.length,
+      writable: changes.size,
       changed_files: changes.size,
       index_changes: indexResult.changes.length,
       excluded: excluded.length + candidates.filter((item) => item.status === "排除").length,
@@ -519,7 +520,7 @@ export function runLoreIngest(args = process.argv.slice(2)) {
     writeReport(path.resolve(ROOT, reportRel), report);
     process.stdout.write(`報告：${rel(path.resolve(ROOT, reportRel))}\n`);
   }
-  process.stdout.write(`${apply ? "套用" : "預覽"} ${publicationId}：候選 ${candidates.length}；可寫入 ${actionable.length}；檔案異動 ${changes.size}；排除 ${excluded.length}。\n`);
+  process.stdout.write(`${apply ? "套用" : "預覽"} ${publicationId}：候選 ${candidates.length}；需評估合併 ${actionable.length}；可寫入 ${changes.size}；排除 ${excluded.length}。\n`);
   for (const status of STATUS) {
     const count = [...candidates, ...excluded].filter((item) => item.status === status).length;
     if (count) process.stdout.write(`- ${status}：${count}\n`);

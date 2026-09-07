@@ -5,7 +5,7 @@ import YAML from "yaml";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const CATEGORIES = ["職業", "種族", "背景", "專長"];
-const REPLACED_SPECIES = new Set(["人類", "半身人", "地侏", "寶石龍裔", "提夫林", "矮人", "精靈", "色彩龍裔", "金屬龍裔", "龍裔"]);
+const REPLACED_SPECIES = new Set(["人類", "半身人", "侏儒", "寶石龍裔", "提夫林", "矮人", "精靈", "色彩龍裔", "金屬龍裔", "龍裔"]);
 const COMPATIBLE_SPECIES = new Set(["半精靈", "半獸人"]);
 const CONDITIONAL_BACKGROUNDS = new Set(["巨人養子", "符文雕刻者"]);
 const APPLICABLE_BOOK_TITLES = new Map([

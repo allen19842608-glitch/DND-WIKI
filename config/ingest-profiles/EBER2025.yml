@@ -2,6 +2,15 @@ publication_id: "EBER2025"
 source_root: "原始資料/艾伯倫：奇械鍛爐"
 setting: "艾伯倫"
 ruleset: "2024"
+canonical_mirror:
+  provider: "5e.tools"
+  book_id: "efa"
+  url: "https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/book/book-efa.json"
+  output_root: "原始資料/外部來源鏡像/EBER2025"
+  datasets:
+    - file: "原始資料/外部來源鏡像/EBER2025/datasets/spells-efa.json"
+      url: "https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/spells/spells-efa.json"
+      locator_prefix: "spell:"
 character_options:
   - "classes"
   - "subclasses"

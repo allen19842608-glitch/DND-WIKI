@@ -10,6 +10,7 @@ export const AUDIT_STATUSES = Object.freeze([
 const SOURCE_CODES = Object.freeze({
   PHB2024: "XPHB", DMG2024: "XDMG", MM2025: "XMM", FRHOF2025: "FRHoF",
   FRAIF2025: "FRAiF", ABH2025: "ABH", NF2025: "NF", RTHW2026: "RHW",
+  EBER2025: "EFA", SCAG2015: "SCAG",
 });
 
 const TAG_TO_CATEGORY = Object.freeze({ class: "classes", background: "backgrounds", race: "species", feat: "feats", spell: "spells" });
@@ -37,7 +38,7 @@ function sourceLocator(manifest, entity) {
 function uniqueEntities(entities) {
   const seen = new Set();
   return [...entities].sort((left, right) => {
-    const score = (entity) => entity.source_shape === "statblock" ? 2 : entity.source_shape === "tag" ? 1 : 0;
+    const score = (entity) => entity.source_shape === "dataset" ? 3 : entity.source_shape === "statblock" ? 2 : entity.source_shape === "tag" ? 1 : 0;
     return score(right) - score(left);
   }).filter((entity) => {
     const key = `${entity.category}:${normalizeEnglish(entity.english_name)}:${normalizeEnglish(entity.parent_class)}`;
@@ -47,23 +48,30 @@ function uniqueEntities(entities) {
   });
 }
 
-export function extractSourceEntities(book, { publicationId, manifest }) {
+export function extractSourceEntities(book, { publicationId, manifest, datasets = [] }) {
   const sourceCode = SOURCE_CODES[publicationId];
   const configured = new Set(manifest.character_options ?? []);
   const entities = [];
   function add(category, englishName, context, extra = {}) {
     if (!configured.has(category) || !englishName) return;
+    const {
+      sourceShape, sourceFile, sourceUrl, locator, ...metadata
+    } = extra;
     entities.push({
       category,
       english_name: englishName.trim(),
-      source_file: manifest.snapshot.file.replaceAll("\\", "/"),
+      source_file: sourceFile?.replaceAll("\\", "/") ?? manifest.snapshot.file.replaceAll("\\", "/"),
+      ...(sourceUrl ? { source_url: sourceUrl } : {}),
       page: context.page ?? null,
       ancestors: context.ancestors,
-      source_shape: extra.sourceShape ?? "reference",
-      ...extra,
+      source_shape: sourceShape ?? "reference",
+      ...metadata,
+      ...(locator ? { locator } : {}),
     });
   }
   function scanTags(text, context) {
+    if (context.ancestors.some((name) => /Height and Weight/i.test(name))) return;
+    if (context.ancestors.some((name) => /Dungeon Master's Tools/i.test(name))) return;
     const pattern = /\{@(class|background|race|feat|spell)\s+([^}]+)}/g;
     for (const match of text.matchAll(pattern)) {
       const parts = match[2].split("|").map((part) => part.trim());
@@ -97,7 +105,20 @@ export function extractSourceEntities(book, { publicationId, manifest }) {
     }
   }
   visit(book);
-  return uniqueEntities(entities).map((entity) => ({ ...entity, locator: sourceLocator(manifest, entity) }));
+  for (const dataset of datasets) {
+    if (!dataset || typeof dataset.file !== "string" || !Array.isArray(dataset.spells)) continue;
+    for (const spell of dataset.spells) {
+      if (!spell || typeof spell.name !== "string" || spell.source && spell.source !== sourceCode) continue;
+      const page = Number.isInteger(spell.page) ? spell.page : null;
+      add("spells", spell.name, { page, ancestors: ["Spells"] }, {
+        sourceShape: "dataset",
+        sourceFile: dataset.file,
+        sourceUrl: dataset.url ?? null,
+        locator: `${dataset.locator_prefix ?? "spell:"}${spell.name}`,
+      });
+    }
+  }
+  return uniqueEntities(entities).map((entity) => ({ ...entity, locator: entity.locator ?? sourceLocator(manifest, entity) }));
 }
 
 function extractFrontmatter(text) {
@@ -125,7 +146,10 @@ export function loadWikiEntries(wikiRoot = path.join(ROOT, "wiki")) {
   });
 }
 
-function structuralReasons(entity, page) {
+function structuralReasons(entity, page, ruleset) {
+  if (ruleset === "2014" && entity.category === "backgrounds") {
+    return [/技能熟練/, /裝備/, /背景特性/].filter((pattern) => !pattern.test(page.text)).map((pattern) => `缺少必要結構：${pattern.source}`);
+  }
   const patterns = {
     classes: [/職業特性|Class Features/i, /主要屬性|Primary Ability/i, /生命骰|Hit Point/i],
     subclasses: [/子職特性|Subclass Features/i, /\d+\s*級|Level/i],
@@ -138,12 +162,12 @@ function structuralReasons(entity, page) {
   return patterns.filter((pattern) => !pattern.test(page.text)).map((pattern) => `缺少必要結構：${pattern.source}`);
 }
 
-function candidatePages(entity, pages) {
+function candidatePages(entity, pages, { includeLegacy = false } = {}) {
   const meta = CATEGORY_META[entity.category];
   const expected = normalizeEnglish(entity.english_name);
   const expectedSlug = slug(entity.english_name, entity.english_name);
   return pages.filter((page) => {
-    if (page.target.includes("/2014/")) return false;
+    if (!includeLegacy && page.target.includes("/2014/")) return false;
     if (page.data.category !== meta.category) return false;
     if (meta.entryType && page.data.entry_type !== meta.entryType) return false;
     const concept = String(page.data.concept_id ?? "");
@@ -152,32 +176,52 @@ function candidatePages(entity, pages) {
   });
 }
 
-export function classifyEntity(entity, pages, { publicationId, mirrorFile, mirrorFiles } = {}) {
+export function classifyEntity(entity, pages, { publicationId, ruleset, mirrorFile, mirrorFiles } = {}) {
   const acceptedMirrorFiles = mirrorFiles instanceof Set
     ? mirrorFiles
     : new Set(Array.isArray(mirrorFiles) ? mirrorFiles : [mirrorFile].filter(Boolean));
-  const candidates = candidatePages(entity, pages);
+  const candidates = candidatePages(entity, pages, { includeLegacy: ruleset === "2014" });
+  const legacyCandidates = ruleset === "2014"
+    ? candidates.filter((page) => page.data.version === "2014-Legacy")
+    : [];
+  const versionCandidates = legacyCandidates.length ? legacyCandidates : candidates;
   const base = {
     category: entity.category,
     english_name: entity.english_name,
     parent_class: entity.parent_class ?? null,
-    source: { file: entity.source_file, locator: entity.locator, page: entity.page },
+    source: { file: entity.source_file, locator: entity.locator, page: entity.page, ...(entity.source_url ? { url: entity.source_url } : {}) },
   };
-  if (!candidates.length) return { ...base, wiki_target: null, status: "missing", reasons: ["找不到同英文名稱或同 concept_id 的現行 Wiki 條目。"] };
-  const structurallyComplete = candidates.filter((page) => structuralReasons(entity, page).length === 0);
-  if (candidates.length > 1 && structurallyComplete.length !== 1) return { ...base, wiki_target: candidates.map((page) => page.target), status: "ambiguous", reasons: ["存在多個同名或同概念候選條目，無法唯一判定。"] };
-  const page = structurallyComplete.length === 1 ? structurallyComplete[0] : candidates[0];
-  const reasons = structuralReasons(entity, page);
+  if (!versionCandidates.length) return { ...base, wiki_target: null, status: "missing", reasons: ["找不到同英文名稱或同 concept_id 的現行 Wiki 條目。"] };
+  const structurallyComplete = versionCandidates.filter((page) => structuralReasons(entity, page, ruleset).length === 0);
+  if (versionCandidates.length > 1 && structurallyComplete.length !== 1) return { ...base, wiki_target: versionCandidates.map((page) => page.target), status: "ambiguous", reasons: ["存在多個同名或同概念候選條目，無法唯一判定。"] };
+  const page = structurallyComplete.length === 1 ? structurallyComplete[0] : versionCandidates[0];
+  if (page.data.compatibility_2024 === "replaced") {
+    return {
+      ...base,
+      wiki_target: page.target,
+      status: "out_of_scope",
+      reasons: ["條目已標記為被 2024 規則取代，不列入舊版未取代內容佇列。"],
+    };
+  }
+  const reasons = structuralReasons(entity, page, ruleset);
   const hasConflict = page.data.audit_status === "conflict" || (/來源差異與不確定性/.test(page.text) && page.data.confidence === "pending");
   if (hasConflict) reasons.push("條目明確標記來源衝突或待確認差異。");
-  const sources = Array.isArray(page.data.sources) ? page.data.sources : [];
-  if (!sources.some((source) => acceptedMirrorFiles.has(String(source?.file ?? "").replaceAll("\\", "/")))) reasons.push("主要來源尚未包含本出版品英文鏡像。");
   const expectedPrefix = `entry:${publicationId}:${CATEGORY_META[entity.category].kind}:`;
   const actualPublication = String(page.data.entity_id ?? "").match(/^entry:([^:]+):/)?.[1];
   const expectedYear = Number(publicationId.match(/(\d{4})/)?.[1]);
   const actualYear = Number(actualPublication?.match(/(\d{4})/)?.[1]);
   const newerReprint = Number.isInteger(expectedYear) && Number.isInteger(actualYear) && actualYear > expectedYear;
-  if (entity.category !== "dependencies" && !newerReprint && !String(page.data.entity_id ?? "").startsWith(expectedPrefix)) reasons.push(`entity_id 尚未指向最新出版品 ${publicationId}。`);
+  if (newerReprint) {
+    return {
+      ...base,
+      wiki_target: page.target,
+      status: "out_of_scope",
+      reasons: ["已有較新正式出版品條目；此舊版規則已被取代，不列入舊版補全佇列。"],
+    };
+  }
+  const sources = Array.isArray(page.data.sources) ? page.data.sources : [];
+  if (!sources.some((source) => acceptedMirrorFiles.has(String(source?.file ?? "").replaceAll("\\", "/")))) reasons.push("主要來源尚未包含本出版品英文鏡像。");
+  if (entity.category !== "dependencies" && !String(page.data.entity_id ?? "").startsWith(expectedPrefix)) reasons.push(`entity_id 尚未指向最新出版品 ${publicationId}。`);
   let status = "matched";
   if (hasConflict) status = "conflict";
   else if (reasons.some((reason) => reason.startsWith("缺少必要結構"))) status = "incomplete";
@@ -191,6 +235,40 @@ export function mirrorManifest(publicationId, profile) {
   const manifest = YAML.parse(fs.readFileSync(manifestPath, "utf8"));
   const snapshotPath = path.join(ROOT, manifest.snapshot?.file ?? "");
   return { manifestPath, manifest, snapshotPath, missing: !manifest.snapshot?.file || !fs.existsSync(snapshotPath) };
+}
+
+function loadMirrorDatasets(profile, mirror) {
+  const configured = Array.isArray(profile.canonical_mirror?.datasets) ? profile.canonical_mirror.datasets : [];
+  const recorded = Array.isArray(mirror.manifest?.datasets) ? mirror.manifest.datasets : [];
+  const byFile = new Map([...recorded, ...configured].filter((dataset) => typeof dataset?.file === "string").map((dataset) => [dataset.file.replaceAll("\\", "/"), dataset]));
+  return [...byFile.values()].flatMap((dataset) => {
+    const file = dataset.file.replaceAll("\\", "/");
+    const target = path.join(ROOT, file);
+    if (!fs.existsSync(target)) return [];
+    try {
+      const parsed = JSON.parse(fs.readFileSync(target, "utf8"));
+      return [{ ...dataset, file, spells: Array.isArray(parsed.spell) ? parsed.spell : [] }];
+    } catch {
+      return [];
+    }
+  });
+}
+
+function mirrorDatasetStatus(profile, mirror) {
+  const configured = Array.isArray(profile.canonical_mirror?.datasets) ? profile.canonical_mirror.datasets : [];
+  const recorded = Array.isArray(mirror.manifest?.datasets) ? mirror.manifest.datasets : [];
+  const byFile = new Map([...recorded, ...configured]
+    .filter((dataset) => typeof dataset?.file === "string")
+    .map((dataset) => [dataset.file.replaceAll("\\", "/"), dataset]));
+  return [...byFile.values()].map((dataset) => {
+    const file = dataset.file.replaceAll("\\", "/");
+    return {
+      file,
+      url: dataset.url ?? null,
+      available: fs.existsSync(path.join(ROOT, file)),
+      recorded: recorded.some((item) => String(item?.file ?? "").replaceAll("\\", "/") === file),
+    };
+  });
 }
 
 export function createAuditReport({ publicationId, publication, profile, category, pages = loadWikiEntries() }) {
@@ -208,12 +286,28 @@ export function createAuditReport({ publicationId, publication, profile, categor
     entities = [{ category: "dependencies", english_name: null, source: { file: mirror.manifest.snapshot.file, locator: mirror.manifest.publication_title }, wiki_target: null, status: "out_of_scope", reasons: ["MM2025 僅作其他角色選項必要資料卡的原文依據；不獨立吸收一般怪物。"] }];
   } else {
     const book = JSON.parse(fs.readFileSync(mirror.snapshotPath, "utf8"));
-    const sourceEntities = extractSourceEntities(book, { publicationId, manifest: { ...mirror.manifest, character_options: selected } });
+    const datasets = loadMirrorDatasets(profile, mirror);
+    const unavailableSpellDataset = mirrorDatasetStatus(profile, mirror)
+      .some((dataset) => !dataset.available && /(?:^|\/)spells[-/]/i.test(dataset.file));
+    const sourceEntities = extractSourceEntities(book, { publicationId, manifest: { ...mirror.manifest, character_options: selected }, datasets });
     const mirrorFiles = new Set([
       mirror.manifest.snapshot.file.replaceAll("\\", "/"),
-      ...(mirror.manifest.datasets ?? []).map((dataset) => String(dataset.file ?? "").replaceAll("\\", "/")),
+      ...(Array.isArray(mirror.manifest.chapters) ? mirror.manifest.chapters : [])
+        .map((chapter) => typeof chapter?.file === "string" ? chapter.file.replaceAll("\\", "/") : null)
+        .filter(Boolean),
+      ...datasets.map((dataset) => dataset.file),
     ]);
-    entities = sourceEntities.map((entity) => classifyEntity(entity, pages, { publicationId, mirrorFiles }));
+    entities = sourceEntities.map((entity) => {
+      const result = classifyEntity(entity, pages, { publicationId, ruleset: publication.ruleset, mirrorFiles });
+      if (entity.category === "spells" && entity.source_shape === "statblock" && unavailableSpellDataset) {
+        return {
+          ...result,
+          status: "blocked",
+          reasons: [...result.reasons.filter((reason) => reason !== "主要來源尚未包含本出版品英文鏡像。"), "英文鏡像僅有法術名稱指標；缺少可核對正文的 spells 資料集。"],
+        };
+      }
+      return result;
+    });
     for (const item of selected) {
       if (!sourceEntities.some((entity) => entity.category === item)) {
         entities.push({ category: item, english_name: null, source: { file: mirror.manifest.snapshot.file, locator: mirror.manifest.publication_title }, wiki_target: null, status: "out_of_scope", reasons: ["英文鏡像未列出此類別的獨立角色選項或直接相依資料卡。"] });
@@ -227,7 +321,9 @@ export function createAuditReport({ publicationId, publication, profile, categor
     publication_title: publication.canonical_rules_source,
     requested_category: category ?? null,
     character_options: configured,
-    mirror: mirror.missing ? { status: "missing" } : { status: "available", file: mirror.manifest.snapshot.file, sha256: mirror.manifest.snapshot.sha256, url: mirror.manifest.upstream_url },
+    mirror: mirror.missing
+      ? { status: "missing", datasets: mirrorDatasetStatus(profile, mirror) }
+      : { status: "available", file: mirror.manifest.snapshot.file, sha256: mirror.manifest.snapshot.sha256, url: mirror.manifest.upstream_url, datasets: mirrorDatasetStatus(profile, mirror) },
     generated_at: new Date().toISOString(),
     summary,
     entities,

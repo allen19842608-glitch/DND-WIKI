@@ -1,6 +1,150 @@
 {
   "schema_version": 1,
   "sources": {
+    "原始資料/劍灣冒險者指南/職業/武僧-日魂宗.md": {
+      "status": "duplicate",
+      "reason": "日魂宗的特性名稱、取得等級與規則正文已由《珊娜薩的萬事指南》角色選項/武僧/日魂宗.md 重印；Wiki 保留 XGE2017 的既有 2014 Legacy 條目（wiki/職業/2014/武僧/日魂宗.md），避免建立同規則的 SCAG 重複頁。"
+    },
+    "原始資料/劍灣冒險者指南/種族/提夫林變體.md": {
+      "status": "superseded",
+      "reason": "此檔僅提供取代 2014 提夫林部分特質的可選變體；對應 2014 基礎種族已由《玩家手冊（2024）》同名提夫林取代（wiki/種族/2014/提夫林.md 的 compatibility_2024: replaced），依舊版資料僅優先處理未被取代內容的治理方針，不另建立現行可用頁面。"
+    },
+    "原始資料/劍灣冒險者指南/種族/地底侏儒.md": {
+      "status": "superseded",
+      "reason": "地底侏儒已有《魔鄧肯鉅獻：多元宇宙的怪物》修訂的 2014 Legacy 條目（wiki/種族/2014/多元宇宙種族/地底侏儒.md）；依舊版資料僅優先處理未被取代內容的治理方針，不建立 SCAG 早期亞種複本。"
+    },
+    "原始資料/劍灣冒險者指南/種族/灰矮人.md": {
+      "status": "superseded",
+      "reason": "灰矮人已有《魔鄧肯鉅獻：多元宇宙的怪物》修訂的 2014 Legacy 條目（wiki/種族/2014/多元宇宙種族/灰矮人.md）；依舊版資料僅優先處理未被取代內容的治理方針，不建立 SCAG 早期亞種複本。"
+    },
+    "原始資料/劍灣冒險者指南/戲法.md": {
+      "status": "duplicate",
+      "reason": "本檔僅為新戲法的職業列表與使用者概述；其列出的轟雷劍、翠炎劍、閃電牽引與劍刃爆發已在同出版品的新戲法詳述檔與《塔莎的萬事坩堝》重印資料中逐頁表示。"
+    },
+    "原始資料/劍灣冒險者指南/新戲法.md": {
+      "status": "duplicate",
+      "reason": "轟雷劍、翠炎劍、閃電牽引與劍刃爆發均已由《塔莎的萬事坩堝》重印，Wiki 現有 2014 Legacy 法術頁採用 TCE2020 可定位來源，避免建立同規則的 SCAG 複本。"
+    },
+    "原始資料/劍灣冒險者指南/新背景選項.md": {
+      "status": "duplicate",
+      "reason": "此檔是 SCAG 新背景選項的總覽；其中城市守衛、城市獵人、宗族工匠、朝臣、派系特工、深水人貴族、烏斯伽部族成員、繼承人、老傭兵、與世隔絕的學者、遠行者與騎士團成員已各自建立於 wiki/背景/2014/，不另建立重複總覽規則頁。"
+    },
+    "原始資料/劍灣冒險者指南/其他世界的職業選項.md": {
+      "status": "duplicate",
+      "reason": "本檔僅列出其他正式出版品的職業選項交叉參照，不含可獨立吸收的 SCAG 規則正文；對應子職應以各自的原出版品與既有 Wiki 條目為準。"
+    },
+    "原始資料/劍灣冒險者指南/職業/劍詠.md": {
+      "status": "superseded",
+      "reason": "劍詠已有《塔莎的萬事坩堝》修訂的 2014 Legacy 條目（wiki/職業/2014/法師/劍詠.md）；依舊版資料僅優先處理未被取代內容的治理方針，不建立 SCAG 早期規則複本。"
+    },
+    "原始資料/劍灣冒險者指南/職業/術士-風暴術法.md": {
+      "status": "duplicate",
+      "reason": "風暴術法已由《珊娜薩的萬事指南》重印，Wiki 保留 XGE2017 的既有 2014 Legacy 條目（wiki/職業/2014/術士/風暴術法.md），避免建立同規則的 SCAG 複本。"
+    },
+    "原始資料/劍灣冒險者指南/職業/遊蕩者-策士.md": {
+      "status": "duplicate",
+      "reason": "策士已由《珊娜薩的萬事指南》重印，Wiki 保留 XGE2017 的既有 2014 Legacy 條目（wiki/職業/2014/遊蕩者/策士.md），避免建立同規則的 SCAG 複本。"
+    },
+    "原始資料/劍灣冒險者指南/職業/遊蕩者-風流劍客.md": {
+      "status": "duplicate",
+      "reason": "風流劍客已由《珊娜薩的萬事指南》重印，Wiki 保留 XGE2017 的既有 2014 Legacy 條目（wiki/職業/2014/遊蕩者/風流劍客.md），避免建立同規則的 SCAG 複本。"
+    },
+    "原始資料/劍灣冒險者指南/前言.md": {
+      "status": "excluded",
+      "reason": "出版導讀、封面插畫說明與讀者歡迎詞；未提供可獨立吸收的規則或設定實體。"
+    },
+    "原始資料/外部來源鏡像/SCAG2015/chapters/01-Preface.md": {
+      "status": "duplicate",
+      "reason": "由 SCAG2015 book-scag.json 產生的可讀章節鏡像；規則與設定主張以同快照的 JSON 資料集及中文原始資料引用，避免同一快照重複計數。"
+    },
+    "原始資料/外部來源鏡像/SCAG2015/chapters/02-Welcome to the Realms.md": {
+      "status": "duplicate",
+      "reason": "由 SCAG2015 book-scag.json 產生的可讀章節鏡像；規則與設定主張以同快照的 JSON 資料集及中文原始資料引用，避免同一快照重複計數。"
+    },
+    "原始資料/外部來源鏡像/SCAG2015/chapters/03-The Sword Coast and the North.md": {
+      "status": "duplicate",
+      "reason": "由 SCAG2015 book-scag.json 產生的可讀章節鏡像；規則與設定主張以同快照的 JSON 資料集及中文原始資料引用，避免同一快照重複計數。"
+    },
+    "原始資料/外部來源鏡像/SCAG2015/chapters/04-Races of the Realms.md": {
+      "status": "duplicate",
+      "reason": "由 SCAG2015 book-scag.json 產生的可讀章節鏡像；規則與設定主張以同快照的 JSON 資料集及中文原始資料引用，避免同一快照重複計數。"
+    },
+    "原始資料/外部來源鏡像/SCAG2015/chapters/05-Classes.md": {
+      "status": "duplicate",
+      "reason": "由 SCAG2015 book-scag.json 產生的可讀章節鏡像；規則與設定主張以同快照的 JSON 資料集及中文原始資料引用，避免同一快照重複計數。"
+    },
+    "原始資料/外部來源鏡像/SCAG2015/chapters/06-Backgrounds.md": {
+      "status": "duplicate",
+      "reason": "由 SCAG2015 book-scag.json 產生的可讀章節鏡像；規則與設定主張以同快照的 JSON 資料集及中文原始資料引用，避免同一快照重複計數。"
+    },
+    "原始資料/外部來源鏡像/SCAG2015/manifest.yml": {
+      "status": "asset",
+      "reason": "鏡像快照的取得時間、雜湊與章節清單中繼資料；不含可吸收規則或設定正文。"
+    },
+    "原始資料/外部來源鏡像/FRHOF2025/chapters/01-Introduction- A World of Epic Heroes.md": {
+      "status": "duplicate",
+      "reason": "由 FRHOF2025 book-frhof.json 產生的可讀章節鏡像；規則與設定主張以同快照的 JSON 資料集及中文原始資料引用，避免同一快照重複計數。"
+    },
+    "原始資料/外部來源鏡像/FRHOF2025/chapters/02-Chapter 1- Character Options.md": {
+      "status": "duplicate",
+      "reason": "由 FRHOF2025 book-frhof.json 產生的可讀章節鏡像；角色選項稽核已確認 79 筆均有對應 Wiki 條目，避免同一快照重複計數。"
+    },
+    "原始資料/外部來源鏡像/FRHOF2025/chapters/03-Chapter 2- A Guide to the Realms.md": {
+      "status": "duplicate",
+      "reason": "由 FRHOF2025 book-frhof.json 產生的可讀章節鏡像；規則與設定主張以同快照的 JSON 資料集及中文原始資料引用，避免同一快照重複計數。"
+    },
+    "原始資料/外部來源鏡像/FRHOF2025/chapters/04-Chapter 3- Gods of Faerûn.md": {
+      "status": "duplicate",
+      "reason": "由 FRHOF2025 book-frhof.json 產生的可讀章節鏡像；規則與設定主張以同快照的 JSON 資料集及中文原始資料引用，避免同一快照重複計數。"
+    },
+    "原始資料/外部來源鏡像/FRHOF2025/chapters/05-Chapter 4- Aurora's Whole Realms Catalog.md": {
+      "status": "duplicate",
+      "reason": "由 FRHOF2025 book-frhof.json 產生的可讀章節鏡像；規則與設定主張以同快照的 JSON 資料集及中文原始資料引用，避免同一快照重複計數。"
+    },
+    "原始資料/外部來源鏡像/FRHOF2025/chapters/06-Chapter 5- Magic of Faerûn.md": {
+      "status": "duplicate",
+      "reason": "由 FRHOF2025 book-frhof.json 產生的可讀章節鏡像；規則與設定主張以同快照的 JSON 資料集及中文原始資料引用，避免同一快照重複計數。"
+    },
+    "原始資料/外部來源鏡像/FRHOF2025/chapters/07-Chapter 6- Factions of the Realms.md": {
+      "status": "duplicate",
+      "reason": "由 FRHOF2025 book-frhof.json 產生的可讀章節鏡像；規則與設定主張以同快照的 JSON 資料集及中文原始資料引用，避免同一快照重複計數。"
+    },
+    "原始資料/外部來源鏡像/FRHOF2025/chapters/08-Atlas of Faerûn.md": {
+      "status": "duplicate",
+      "reason": "由 FRHOF2025 book-frhof.json 產生的可讀章節鏡像；規則與設定主張以同快照的 JSON 資料集及中文原始資料引用，避免同一快照重複計數。"
+    },
+    "原始資料/外部來源鏡像/FRHOF2025/manifest.yml": {
+      "status": "asset",
+      "reason": "鏡像快照的取得時間、雜湊與章節清單中繼資料；不含可吸收規則或設定正文。"
+    },
+    "原始資料/外部來源鏡像/FRAIF2025/chapters/01-Running the Realms.md": {
+      "status": "duplicate",
+      "reason": "由 FRAIF2025 book-fraif.json 產生的可讀章節鏡像；規則與設定主張以同快照的 JSON 資料集及中文原始資料引用，避免同一快照重複計數。"
+    },
+    "原始資料/外部來源鏡像/FRAIF2025/chapters/05-Moonshae Isles.md": {
+      "status": "duplicate",
+      "reason": "由 FRAIF2025 book-fraif.json 產生的可讀章節鏡像；規則與設定主張以同快照的 JSON 資料集及中文原始資料引用，避免同一快照重複計數。"
+    },
+    "原始資料/外部來源鏡像/FRAIF2025/chapters/08-Magic Items.md": {
+      "status": "duplicate",
+      "reason": "由 FRAIF2025 book-fraif.json 產生的可讀章節鏡像；既有 FRAIF 魔法物品以資料集與中文原始資料個別引用，避免同一快照重複計數。"
+    },
+    "原始資料/外部來源鏡像/FRAIF2025/chapters/09-Bestiary.md": {
+      "status": "duplicate",
+      "reason": "由 FRAIF2025 book-fraif.json 產生的可讀章節鏡像；怪物資料卡以個別資料集與中文原始資料引用，避免同一快照重複計數。"
+    },
+    "原始資料/外部來源鏡像/FRAIF2025/chapters/appendix-Atlas of Faerûn.md": {
+      "status": "duplicate",
+      "reason": "由 FRAIF2025 book-fraif.json 產生的可讀附錄鏡像；設定主張以同快照的 JSON 資料集及中文原始資料引用，避免同一快照重複計數。"
+    },
+    "原始資料/外部來源鏡像/FRAIF2025/manifest.yml": {
+      "status": "asset",
+      "reason": "鏡像快照的取得時間、雜湊與章節清單中繼資料；不含可吸收規則或設定正文。"
+    },
+    "原始資料/劍灣冒險者指南/職業/職業.md": {
+      "status": "duplicate",
+      "reason": "本檔僅為 SCAG 職業章的範圍導讀，沒有獨立規則或設定實體；職業選項已由各子職、法術及職業來源分別處理。"
+    },
     "原始資料/冒險者聯盟/D&D Adventurers League Service Rewards v2026.1_FormFillable.pdf": {
       "status": "duplicate",
       "reason": "官方可填表複本；規則正文與標準版 v2026.1 相同，Wiki 只引用標準版以避免重複吸收。"
@@ -36,6 +180,10 @@
     "原始資料/玩家手冊2024/附錄B_生物數據卡.md": {
       "status": "superseded",
       "reason": "來源僅含附錄說明，並明示生物數據卡已由《怪物圖鑑 2025》取代；不得作為怪物條目的主要來源。"
+    },
+    "原始資料/魔鄧肯鉅獻：多元宇宙的怪物/圖鑑/巨人/巨魔.md": {
+      "status": "superseded",
+      "reason": "對應 Wiki 條目「巨魔 (Troll)」已採用《怪物圖鑑 2025》的可定位現行資料卡（wiki/怪物/巨人/巨魔.md），故不再以 MPMM 2022 作為主要來源。"
     },
     "原始資料/地下城主指南2024/第四章_創建冒險/佈置背景/common-map-symbols.jpg": {
       "status": "asset",
@@ -108,6 +256,334 @@
     "原始資料/艾伯倫：奇械鍛爐/第六章/螃蟹神殿爭奪戰.md": {
       "status": "excluded",
       "reason": "依總編輯決定，不收錄官方書籍附帶的可直接運行短劇本。"
+    },
+    "原始資料/玩家手冊2014/The Planes of Existence.jpg": {
+      "status": "asset",
+      "reason": "位面示意插圖素材；不含可獨立編譯的規則正文。"
+    },
+    "原始資料/玩家手冊2014/個性與背景/個性與背景.files/image001.jpg": {
+      "status": "asset",
+      "reason": "背景章節插圖素材；不含可獨立編譯的規則正文。"
+    },
+    "原始資料/玩家手冊2014/個性與背景/個性與背景.files/image003.jpg": {
+      "status": "asset",
+      "reason": "背景章節插圖素材；不含可獨立編譯的規則正文。"
+    },
+    "原始資料/玩家手冊2014/個性與背景/個性與背景.files/image004.jpg": {
+      "status": "asset",
+      "reason": "背景章節插圖素材；不含可獨立編譯的規則正文。"
+    },
+    "原始資料/玩家手冊2014/個性與背景/個性與背景.files/image005.jpg": {
+      "status": "asset",
+      "reason": "背景章節插圖素材；不含可獨立編譯的規則正文。"
+    },
+    "原始資料/玩家手冊2014/個性與背景/個性與背景.files/image007.jpg": {
+      "status": "asset",
+      "reason": "背景章節插圖素材；不含可獨立編譯的規則正文。"
+    },
+    "原始資料/玩家手冊2014/個性與背景/個性與背景.files/image009.jpg": {
+      "status": "asset",
+      "reason": "背景章節插圖素材；不含可獨立編譯的規則正文。"
+    },
+    "原始資料/玩家手冊2014/施法/效應範圍示意圖.png": {
+      "status": "asset",
+      "reason": "法術效應範圍示意插圖；不含可獨立編譯的規則正文。"
+    },
+    "原始資料/玩家手冊2014/種族/半獸人.files/image001.png": {
+      "status": "asset",
+      "reason": "種族章節插圖素材；不含可獨立編譯的規則正文。"
+    },
+    "原始資料/玩家手冊2014/種族/提夫林.files/image001.png": {
+      "status": "asset",
+      "reason": "種族章節插圖素材；不含可獨立編譯的規則正文。"
+    },
+    "原始資料/玩家手冊2014/職業/武僧/四象宗.files/image001.png": {
+      "status": "asset",
+      "reason": "職業章節插圖素材；不含可獨立編譯的規則正文。"
+    },
+    "原始資料/玩家手冊2014/職業/聖騎士/奉獻之誓.files/image001.png": {
+      "status": "asset",
+      "reason": "職業章節插圖素材；不含可獨立編譯的規則正文。"
+    },
+    "原始資料/玩家手冊2014/裝備/冒險用品.files/image001.png": {
+      "status": "asset",
+      "reason": "裝備章節插圖素材；不含可獨立編譯的規則正文。"
+    },
+    "原始資料/玩家手冊2014/裝備/裝備.files/image001.png": {
+      "status": "asset",
+      "reason": "裝備章節插圖素材；不含可獨立編譯的規則正文。"
+    },
+    "原始資料/畢格比鉅獻：巨人之榮耀/符文/blood-rune.gif": { "status": "asset", "reason": "符文圖像素材；不含可獨立編譯的規則正文。" },
+    "原始資料/畢格比鉅獻：巨人之榮耀/符文/cloud-rune.gif": { "status": "asset", "reason": "符文圖像素材；不含可獨立編譯的規則正文。" },
+    "原始資料/畢格比鉅獻：巨人之榮耀/符文/death-rune.gif": { "status": "asset", "reason": "符文圖像素材；不含可獨立編譯的規則正文。" },
+    "原始資料/畢格比鉅獻：巨人之榮耀/符文/dragon-rune.gif": { "status": "asset", "reason": "符文圖像素材；不含可獨立編譯的規則正文。" },
+    "原始資料/畢格比鉅獻：巨人之榮耀/符文/enemy-rune.gif": { "status": "asset", "reason": "符文圖像素材；不含可獨立編譯的規則正文。" },
+    "原始資料/畢格比鉅獻：巨人之榮耀/符文/fire-rune.gif": { "status": "asset", "reason": "符文圖像素材；不含可獨立編譯的規則正文。" },
+    "原始資料/畢格比鉅獻：巨人之榮耀/符文/friend-rune.gif": { "status": "asset", "reason": "符文圖像素材；不含可獨立編譯的規則正文。" },
+    "原始資料/畢格比鉅獻：巨人之榮耀/符文/frost-rune.gif": { "status": "asset", "reason": "符文圖像素材；不含可獨立編譯的規則正文。" },
+    "原始資料/畢格比鉅獻：巨人之榮耀/符文/hill-rune.gif": { "status": "asset", "reason": "符文圖像素材；不含可獨立編譯的規則正文。" },
+    "原始資料/畢格比鉅獻：巨人之榮耀/符文/journey-rune.gif": { "status": "asset", "reason": "符文圖像素材；不含可獨立編譯的規則正文。" },
+    "原始資料/畢格比鉅獻：巨人之榮耀/符文/king-rune.gif": { "status": "asset", "reason": "符文圖像素材；不含可獨立編譯的規則正文。" },
+    "原始資料/畢格比鉅獻：巨人之榮耀/符文/life-rune.gif": { "status": "asset", "reason": "符文圖像素材；不含可獨立編譯的規則正文。" },
+    "原始資料/畢格比鉅獻：巨人之榮耀/符文/light-rune.gif": { "status": "asset", "reason": "符文圖像素材；不含可獨立編譯的規則正文。" },
+    "原始資料/畢格比鉅獻：巨人之榮耀/符文/mountain-rune.gif": { "status": "asset", "reason": "符文圖像素材；不含可獨立編譯的規則正文。" },
+    "原始資料/畢格比鉅獻：巨人之榮耀/符文/sacred-rune.gif": { "status": "asset", "reason": "符文圖像素材；不含可獨立編譯的規則正文。" },
+    "原始資料/畢格比鉅獻：巨人之榮耀/符文/shield-rune.gif": { "status": "asset", "reason": "符文圖像素材；不含可獨立編譯的規則正文。" },
+    "原始資料/畢格比鉅獻：巨人之榮耀/符文/stone-rune.gif": { "status": "asset", "reason": "符文圖像素材；不含可獨立編譯的規則正文。" },
+    "原始資料/畢格比鉅獻：巨人之榮耀/符文/storm-rune.gif": { "status": "asset", "reason": "符文圖像素材；不含可獨立編譯的規則正文。" },
+    "原始資料/畢格比鉅獻：巨人之榮耀/符文/war-rune.gif": { "status": "asset", "reason": "符文圖像素材；不含可獨立編譯的規則正文。" },
+    "原始資料/畢格比鉅獻：巨人之榮耀/符文/wind-rune.gif": { "status": "asset", "reason": "符文圖像素材；不含可獨立編譯的規則正文。" },
+    "原始資料/艾伯倫：從終末戰爭中崛起/第二章/khorvaire.jpg": {
+      "status": "asset",
+      "reason": "科瓦雷地圖插圖素材；不含可獨立編譯的規則正文。"
+    },
+    "原始資料/鴉閣魔域：魔障深藏/第一章/子職/artificer-with-companion.jpg": {
+      "status": "asset",
+      "reason": "子職章節插圖素材；不含可獨立編譯的規則正文。"
+    },
+    "原始資料/被遺忘的國度：費倫英雄/第三章/本莎芭.md": {
+      "status": "empty",
+      "reason": "來源僅有神祇標題與英文名稱，沒有可吸收的正文；現有神祇頁已有可定位的其他出版品來源。"
+    },
+    "原始資料/被遺忘的國度：費倫英雄/第三章/歐呂爾.md": {
+      "status": "empty",
+      "reason": "來源僅有神祇標題與英文名稱，沒有可吸收的正文；現有神祇頁已有可定位的其他出版品來源。"
+    },
+    "原始資料/被遺忘的國度：費倫英雄/第三章/班恩.md": {
+      "status": "empty",
+      "reason": "來源僅有神祇標題與英文名稱，沒有可吸收的正文；現有神祇頁已有可定位的其他出版品來源。"
+    },
+    "原始資料/被遺忘的國度：費倫英雄/第三章/阿斯蒙蒂斯.md": {
+      "status": "empty",
+      "reason": "來源僅有神祇標題與英文名稱，沒有可吸收的正文；現有神祇頁已有可定位的其他出版品來源。"
+    },
+    "原始資料/被遺忘的國度：費倫英雄/第三章/阿曼納塔.md": {
+      "status": "empty",
+      "reason": "來源僅有神祇標題與英文名稱，沒有可吸收的正文；現有神祇頁已有可定位的其他出版品來源。"
+    },
+    "原始資料/被遺忘的國度：費倫英雄/第三章/阿祖斯.md": {
+      "status": "empty",
+      "reason": "來源僅有神祇標題與英文名稱，沒有可吸收的正文；現有神祇頁已有可定位的其他出版品來源。"
+    },
+    "原始資料/外部來源鏡像/ABH2025/chapters/01-Introduction- Vampires Own the Night.md": {
+      "status": "duplicate",
+      "reason": "由 ABH2025 book-abh.json 產生的可讀導言鏡像；設定主張已由同快照資料集與中文原始資料逐頁引用，避免同一快照重複計數。"
+    },
+    "原始資料/外部來源鏡像/ABH2025/chapters/02-Chapter 1- Vampiric Character Options.md": {
+      "status": "duplicate",
+      "reason": "由 ABH2025 book-abh.json 產生的可讀章節鏡像；角色選項稽核已確認 20 筆均有對應 Wiki 條目，避免同一快照重複計數。"
+    },
+    "原始資料/外部來源鏡像/ABH2025/chapters/03-Chapter 2- Creatures of the Night.md": {
+      "status": "duplicate",
+      "reason": "由 ABH2025 book-abh.json 產生的可讀章節鏡像；本章 5 個獨立怪物資料卡及已列名的角色設定均已有逐頁來源，避免同一快照重複計數。"
+    },
+    "原始資料/外部來源鏡像/ABH2025/manifest.yml": {
+      "status": "asset",
+      "reason": "鏡像快照的取得時間、雜湊與章節清單中繼資料；不含可吸收規則或設定正文。"
+    },
+    "原始資料/阿斯代倫的飢渴之書/專長.md": {
+      "status": "duplicate",
+      "reason": "此檔僅為 16 項專長的分類清單；角色選項稽核已確認每項都有對應 Wiki 條目與逐頁來源。"
+    },
+    "原始資料/阿斯代倫的飢渴之書/第一章：血族角色選項.md": {
+      "status": "duplicate",
+      "reason": "此檔僅為第一章的範圍導讀；背景、半血裔與專長規則均由各自的原始資料檔及 Wiki 條目承接。"
+    },
+    "原始資料/阿斯代倫的飢渴之書/第二章：黑夜中的生物.md": {
+      "status": "duplicate",
+      "reason": "此檔僅為第二章的範圍導讀；5 個本書怪物資料卡已有逐頁來源，其他怪物規則明確交由《怪物圖鑑》處理。"
+    },
+    "原始資料/阿斯代倫的飢渴之書/角色種族.md": {
+      "status": "duplicate",
+      "reason": "此檔僅指向半血裔章節；半血裔規則已由原始資料/阿斯代倫的飢渴之書/半血裔.md 與對應 Wiki 條目承接。"
+    },
+    "原始資料/阿斯代倫的飢渴之書/角色背景.md": {
+      "status": "duplicate",
+      "reason": "此檔僅為背景章節導讀與敘事引文；三個背景與其專長規則均由各自的原始資料檔及 Wiki 條目承接。"
+    },
+    "原始資料/外部來源鏡像/RTHW2026/chapters/02-Chapter 1- Character Options.md": {
+      "status": "duplicate",
+      "reason": "由 RTHW2026 book-rhw.json 產生的可讀章節鏡像；角色選項稽核已確認 26 筆均有對應 Wiki 條目，避免同一快照重複計數。"
+    },
+    "原始資料/外部來源鏡像/RTHW2026/manifest.yml": {
+      "status": "asset",
+      "reason": "鏡像快照的取得時間、雜湊與章節清單中繼資料；不含可吸收規則或設定正文。"
+    },
+    "原始資料/外部來源鏡像/PHB2024/chapters/01-Introduction- Welcome to Adventure.md": {
+      "status": "duplicate",
+      "reason": "由 PHB2024 book-phb.json 產生的可讀章節鏡像；規則主張以同快照資料集與中文原始資料逐頁引用，避免同一快照重複計數。"
+    },
+    "原始資料/外部來源鏡像/PHB2024/chapters/02-Chapter 1- Playing the Game.md": {
+      "status": "duplicate",
+      "reason": "由 PHB2024 book-phb.json 產生的可讀章節鏡像；規則主張以同快照資料集與中文原始資料逐頁引用，避免同一快照重複計數。"
+    },
+    "原始資料/外部來源鏡像/PHB2024/chapters/03-Chapter 2- Creating a Character.md": {
+      "status": "duplicate",
+      "reason": "由 PHB2024 book-phb.json 產生的可讀章節鏡像；角色選項稽核已確認 603 筆均有對應 Wiki 條目，避免同一快照重複計數。"
+    },
+    "原始資料/外部來源鏡像/PHB2024/chapters/04-Chapter 3- Character Classes.md": {
+      "status": "duplicate",
+      "reason": "由 PHB2024 book-phb.json 產生的可讀章節鏡像；角色選項稽核已確認 603 筆均有對應 Wiki 條目，避免同一快照重複計數。"
+    },
+    "原始資料/外部來源鏡像/PHB2024/chapters/05-Chapter 4- Character Origins.md": {
+      "status": "duplicate",
+      "reason": "由 PHB2024 book-phb.json 產生的可讀章節鏡像；角色選項稽核已確認 603 筆均有對應 Wiki 條目，避免同一快照重複計數。"
+    },
+    "原始資料/外部來源鏡像/PHB2024/chapters/06-Chapter 5- Feats.md": {
+      "status": "duplicate",
+      "reason": "由 PHB2024 book-phb.json 產生的可讀章節鏡像；角色選項稽核已確認 603 筆均有對應 Wiki 條目，避免同一快照重複計數。"
+    },
+    "原始資料/外部來源鏡像/PHB2024/chapters/07-Chapter 6- Equipment.md": {
+      "status": "duplicate",
+      "reason": "由 PHB2024 book-phb.json 產生的可讀章節鏡像；規則主張以同快照資料集與中文原始資料逐頁引用，避免同一快照重複計數。"
+    },
+    "原始資料/外部來源鏡像/PHB2024/chapters/08-Chapter 7- Spells.md": {
+      "status": "duplicate",
+      "reason": "由 PHB2024 book-phb.json 產生的可讀章節鏡像；法術條目以同快照資料集與中文原始資料逐頁引用，避免同一快照重複計數。"
+    },
+    "原始資料/外部來源鏡像/PHB2024/chapters/11-Rules Glossary.md": {
+      "status": "duplicate",
+      "reason": "由 PHB2024 book-phb.json 產生的可讀術語鏡像；規則定義以同快照資料集與既有規則頁逐項承接，避免重建來源內部導覽。"
+    },
+    "原始資料/外部來源鏡像/PHB2024/chapters/appendix A- The Multiverse.md": {
+      "status": "duplicate",
+      "reason": "由 PHB2024 book-phb.json 產生的可讀附錄鏡像；設定與規則主張以同快照資料集及對應 Wiki 條目引用，避免同一快照重複計數。"
+    },
+    "原始資料/外部來源鏡像/PHB2024/chapters/appendix B- Creature Stat Blocks.md": {
+      "status": "duplicate",
+      "reason": "由 PHB2024 book-phb.json 產生的可讀附錄鏡像；怪物資料卡應以《怪物圖鑑 2025》或其正式擴充書的逐頁來源為準，不以渲染附錄重複計數。"
+    },
+    "原始資料/外部來源鏡像/PHB2024/manifest.yml": {
+      "status": "asset",
+      "reason": "鏡像快照的取得時間、雜湊與章節清單中繼資料；不含可吸收規則或設定正文。"
+    },
+    "原始資料/外部來源鏡像/DMG2024/chapters/01-Chapter 1- The Basics.md": {
+      "status": "duplicate",
+      "reason": "由 DMG2024 book-dmg.json 產生的可讀章節鏡像；規則主張以同快照資料集與中文原始資料逐頁引用，避免同一快照重複計數。"
+    },
+    "原始資料/外部來源鏡像/DMG2024/chapters/02-Chapter 2- Running the Game.md": {
+      "status": "duplicate",
+      "reason": "由 DMG2024 book-dmg.json 產生的可讀章節鏡像；規則主張以同快照資料集與中文原始資料逐頁引用，避免同一快照重複計數。"
+    },
+    "原始資料/外部來源鏡像/DMG2024/chapters/03-Chapter 3- DM's Toolbox.md": {
+      "status": "duplicate",
+      "reason": "由 DMG2024 book-dmg.json 產生的可讀章節鏡像；規則主張以同快照資料集與中文原始資料逐頁引用，避免同一快照重複計數。"
+    },
+    "原始資料/外部來源鏡像/DMG2024/chapters/04-Chapter 4- Creating Adventures.md": {
+      "status": "duplicate",
+      "reason": "由 DMG2024 book-dmg.json 產生的可讀章節鏡像；可直接運行的範例冒險依既定方針不收錄，其餘規則以對應 Wiki 條目引用。"
+    },
+    "原始資料/外部來源鏡像/DMG2024/chapters/05-Chapter 5- Creating Campaigns.md": {
+      "status": "duplicate",
+      "reason": "由 DMG2024 book-dmg.json 產生的可讀章節鏡像；戰役設計規則以同快照資料集及對應 Wiki 條目引用，避免同一快照重複計數。"
+    },
+    "原始資料/外部來源鏡像/DMG2024/chapters/06-Chapter 6- Cosmology.md": {
+      "status": "duplicate",
+      "reason": "由 DMG2024 book-dmg.json 產生的可讀章節鏡像；宇宙觀設定以同快照資料集及對應 Wiki 條目引用，避免同一快照重複計數。"
+    },
+    "原始資料/外部來源鏡像/DMG2024/chapters/07-Chapter 7- Treasure.md": {
+      "status": "duplicate",
+      "reason": "由 DMG2024 book-dmg.json 產生的可讀章節鏡像；魔法物品與寶藏規則以同快照資料集與中文原始資料逐頁引用，避免同一快照重複計數。"
+    },
+    "原始資料/外部來源鏡像/DMG2024/chapters/08-Chapter 8- Bastions.md": {
+      "status": "duplicate",
+      "reason": "由 DMG2024 book-dmg.json 產生的可讀章節鏡像；據點規則以同快照資料集與中文原始資料逐頁引用，避免同一快照重複計數。"
+    },
+    "原始資料/外部來源鏡像/DMG2024/chapters/appendix B- Maps.md": {
+      "status": "duplicate",
+      "reason": "由 DMG2024 book-dmg.json 產生的可讀附錄鏡像；地圖內容由各地點與戰役設定條目承接，不以渲染附錄重複計數。"
+    },
+    "原始資料/外部來源鏡像/DMG2024/chapters/appendix C- Tracking Sheets.md": {
+      "status": "asset",
+      "reason": "由 DMG2024 book-dmg.json 產生的記錄表鏡像；屬可供使用的表單素材，不含可獨立吸收的規則正文。"
+    },
+    "原始資料/外部來源鏡像/DMG2024/manifest.yml": {
+      "status": "asset",
+      "reason": "鏡像快照的取得時間、雜湊與章節清單中繼資料；不含可吸收規則或設定正文。"
+    },
+    "原始資料/外部來源鏡像/BPGG2023/manifest.yml": {
+      "status": "asset",
+      "reason": "鏡像快照的取得時間、雜湊、章節與圖片清單中繼資料；不含可吸收規則或設定正文。"
+    },
+    "原始資料/外部來源鏡像/EBER2025/manifest.yml": {
+      "status": "asset",
+      "reason": "鏡像快照的取得時間、雜湊、章節與圖片清單中繼資料；不含可吸收規則或設定正文。"
+    },
+    "原始資料/外部來源鏡像/EBER2025/chapters/appendix-Art of Eberron.md": {
+      "status": "asset",
+      "reason": "可讀鏡像僅列出《艾伯倫奇械鍛爐》附錄插圖連結；不含可獨立吸收的規則或設定正文。"
+    },
+    "原始資料/外部來源鏡像/SO2023/chapters/05-Poster Map.md": {
+      "status": "asset",
+      "reason": "可讀鏡像僅含海報地圖標題與來源中繼資料，未含可吸收規則或設定正文。"
+    },
+    "原始資料/玩家手冊2014/簡介.md": {
+      "status": "excluded",
+      "reason": "來源檔僅含標題，未提供可吸收規則、設定或導言正文。"
+    },
+    "原始資料/艾伯倫：從終末戰爭中崛起/第一章/精靈.md": {
+      "status": "excluded",
+      "reason": "來源檔僅含標題，未提供可吸收的種族規則或設定正文。"
+    },
+    "原始資料/外部來源鏡像/ERLW2019/manifest.yml": {
+      "status": "asset",
+      "reason": "鏡像快照的取得時間、雜湊、章節與圖片清單中繼資料；不含可吸收規則或設定正文。"
+    },
+    "原始資料/外部來源鏡像/FTD2021/manifest.yml": {
+      "status": "asset",
+      "reason": "鏡像快照的取得時間、雜湊、章節與圖片清單中繼資料；不含可吸收規則或設定正文。"
+    },
+    "原始資料/外部來源鏡像/MM2025/manifest.yml": {
+      "status": "asset",
+      "reason": "鏡像快照的取得時間、雜湊、章節與圖片清單中繼資料；不含可吸收規則或設定正文。"
+    },
+    "原始資料/外部來源鏡像/MPMM2022/manifest.yml": {
+      "status": "asset",
+      "reason": "鏡像快照的取得時間、雜湊、章節與圖片清單中繼資料；不含可吸收規則或設定正文。"
+    },
+    "原始資料/外部來源鏡像/MPP2023/manifest.yml": {
+      "status": "asset",
+      "reason": "鏡像快照的取得時間、雜湊、章節與圖片清單中繼資料；不含可吸收規則或設定正文。"
+    },
+    "原始資料/外部來源鏡像/NF2025/manifest.yml": {
+      "status": "asset",
+      "reason": "鏡像快照的取得時間、雜湊、章節與圖片清單中繼資料；不含可吸收規則或設定正文。"
+    },
+    "原始資料/外部來源鏡像/PHB2014/manifest.yml": {
+      "status": "asset",
+      "reason": "鏡像快照的取得時間、雜湊、章節與圖片清單中繼資料；不含可吸收規則或設定正文。"
+    },
+    "原始資料/外部來源鏡像/SO2023/manifest.yml": {
+      "status": "asset",
+      "reason": "鏡像快照的取得時間、雜湊、章節與圖片清單中繼資料；不含可吸收規則或設定正文。"
+    },
+    "原始資料/外部來源鏡像/TCE2020/manifest.yml": {
+      "status": "asset",
+      "reason": "鏡像快照的取得時間、雜湊、章節與圖片清單中繼資料；不含可吸收規則或設定正文。"
+    },
+    "原始資料/外部來源鏡像/XGE2017/manifest.yml": {
+      "status": "asset",
+      "reason": "鏡像快照的取得時間、雜湊、章節與圖片清單中繼資料；不含可吸收規則或設定正文。"
+    },
+    "原始資料/玩家手冊2024/歡迎/你需要什麼.md": {
+      "status": "excluded",
+      "reason": "出版品導言，說明遊戲所需物品與玩家角色；不構成可獨立引用的規則條目。"
+    },
+    "原始資料/玩家手冊2024/歡迎/使用本書.md": {
+      "status": "excluded",
+      "reason": "出版品章節導覽；其內容由 Wiki 根索引與各規則索引承擔，不另建導言頁。"
+    },
+    "原始資料/玩家手冊2024/歡迎/充滿冒險的世界.md": {
+      "status": "excluded",
+      "reason": "出版品世界觀導言，沒有可獨立定位的規則主張；設定正文依專題條目吸收。"
+    },
+    "原始資料/玩家手冊2024/術語匯編/術語速查.md": {
+      "status": "excluded",
+      "reason": "術語跳轉索引素材；Wiki 使用既有術語與規則條目，不重建來源內部導航頁。"
+    },
+    "原始資料/魔鄧肯鉅獻：多元宇宙的怪物/紙條模板.md": {
+      "status": "asset",
+      "reason": "僅含塔莎與魔鄧肯的紙條署名模板，屬版面素材，沒有可獨立吸收的規則、怪物資料或設定正文。"
     }
   }
 }

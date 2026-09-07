@@ -9,6 +9,8 @@ outputs:
   magic_items: "wiki/魔法物品/2014"
 inputs:
   character_options: "角色選項"
+  feats_file: "角色選項/專長.md"
+  feats_require_prerequisite: true
   giant_treasure: "巨人寶藏"
   lore:
     include:

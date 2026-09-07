@@ -3,8 +3,10 @@ source_root: "原始資料/艾伯倫：從終末戰爭中崛起"
 setting: "艾伯倫"
 ruleset: "2014"
 outputs:
+  species: "wiki/種族/2014"
   settings: "wiki/戰役設定/艾伯倫"
 inputs:
+  species: "第一章/種族"
   chapter_2: "第二章"
   lore:
     include:

@@ -14,6 +14,7 @@ const POLICY = path.join(ROOT, ".agents", "詳細維護規範.md");
 const CACHE_ROOT = path.join(ROOT, ".wiki-cache");
 const MANIFEST = path.join(CACHE_ROOT, "source-manifest.json");
 const DISPOSITIONS = path.join(ROOT, "config", "source-dispositions.json");
+const PUBLICATIONS = path.join(ROOT, "config", "publications.yml");
 const TEXT_EXTENSIONS = new Set([".md", ".txt", ".html", ".htm", ".json", ".yaml", ".yml", ".csv", ".tsv"]);
 
 function posix(value) {
@@ -210,9 +211,28 @@ function readDispositions() {
   return new Map(Object.entries(parsed?.sources ?? {}));
 }
 
+export function publicationSourceRoots(publicationId) {
+  const parsed = parseDocument(fs.readFileSync(PUBLICATIONS, "utf8"));
+  if (parsed.errors.length) throw new Error(`無法讀取出版品註冊表：${parsed.errors[0].message}`);
+  const publication = parsed.toJS()?.publications?.[publicationId];
+  if (!publication) throw new Error(`未知出版品：${publicationId}`);
+  const assets = Array.isArray(publication.source_assets) ? publication.source_assets : [];
+  return [
+    ...assets.map((asset) => asset?.path).filter((value) => typeof value === "string"),
+    `原始資料/外部來源鏡像/${publicationId}`,
+  ].map((value) => value.replaceAll("\\", "/"));
+}
+
+export function belongsToPublication(file, publicationId, roots = publicationSourceRoots(publicationId)) {
+  const normalized = String(file).replaceAll("\\", "/");
+  return roots.some((root) => normalized === root || normalized.startsWith(`${root}/`));
+}
+
 function manifestCommand(values, unabsorbedOnly = false) {
   const { options } = argumentsOf(values);
   const maximum = positiveInteger(options.get("--max"), 100);
+  const publicationId = options.get("--publication");
+  const publicationRoots = publicationId ? publicationSourceRoots(String(publicationId)) : null;
   const previous = new Map(readPreviousManifest().map((record) => [record.file, record]));
   const dispositions = readDispositions();
   const sources = currentManifest();
@@ -221,19 +241,20 @@ function manifestCommand(values, unabsorbedOnly = false) {
     disposition: dispositions.get(record.file) ?? null,
     status: !previous.has(record.file) ? "new" : previous.get(record.file).sha256 === record.sha256 ? "unchanged" : "changed",
   }));
-  const newFiles = records.filter((record) => record.status === "new");
-  const changed = records.filter((record) => record.status === "changed");
-  const excluded = records.filter((record) => record.absorbed_by.length === 0 && record.disposition);
-  const unabsorbed = records.filter((record) => record.absorbed_by.length === 0 && !record.disposition);
+  const scoped = publicationRoots ? records.filter((record) => belongsToPublication(record.file, publicationId, publicationRoots)) : records;
+  const newFiles = scoped.filter((record) => record.status === "new");
+  const changed = scoped.filter((record) => record.status === "changed");
+  const excluded = scoped.filter((record) => record.absorbed_by.length === 0 && record.disposition);
+  const unabsorbed = scoped.filter((record) => record.absorbed_by.length === 0 && !record.disposition);
   if (options.has("--update")) {
     fs.mkdirSync(CACHE_ROOT, { recursive: true });
     fs.writeFileSync(MANIFEST, `${JSON.stringify({ schema_version: 1, sources: records }, null, 2)}\n`, "utf8");
   }
   if (options.has("--json")) {
-    process.stdout.write(`${JSON.stringify({ total: records.length, new: newFiles, changed, excluded, unabsorbed }, null, 2)}\n`);
+    process.stdout.write(`${JSON.stringify({ publication: publicationId ?? null, total: scoped.length, new: newFiles, changed, excluded, unabsorbed }, null, 2)}\n`);
     return;
   }
-  process.stdout.write(`來源總數：${records.length}；新增：${newFiles.length}；變更：${changed.length}；已記錄排除：${excluded.length}；尚無 Wiki 引用：${unabsorbed.length}\n`);
+  process.stdout.write(`${publicationId ? `出版品：${publicationId}；` : ""}來源總數：${scoped.length}；新增：${newFiles.length}；變更：${changed.length}；已記錄排除：${excluded.length}；尚無 Wiki 引用：${unabsorbed.length}\n`);
   const selected = unabsorbedOnly ? unabsorbed : [...newFiles, ...changed];
   const label = unabsorbedOnly ? "尚無 Wiki 引用" : "新增或變更";
   if (!selected.length) process.stdout.write(`${label}：無\n`);
@@ -356,7 +377,7 @@ function indexesCommand(values) {
 }
 
 function help() {
-  process.stdout.write(`可用指令：\n  policy <章節>\n  source-find <文字> [--source 範圍] [--max 30] [--context 2]\n  glossary <詞彙> [--max 20]\n  manifest [--update] [--json] [--max 100]\n  unabsorbed [--json] [--max 100]\n  indexes [--changed] [--apply]\n`);
+  process.stdout.write(`可用指令：\n  policy <章節>\n  source-find <文字> [--source 範圍] [--max 30] [--context 2]\n  glossary <詞彙> [--max 20]\n  manifest [--publication ID] [--update] [--json] [--max 100]\n  unabsorbed [--publication ID] [--json] [--max 100]\n  indexes [--changed] [--apply]\n`);
 }
 
 if (path.resolve(process.argv[1] ?? "") === fileURLToPath(import.meta.url)) {

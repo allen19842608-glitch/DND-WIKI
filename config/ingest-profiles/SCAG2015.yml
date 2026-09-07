@@ -2,9 +2,13 @@ publication_id: "SCAG2015"
 source_root: "原始資料/劍灣冒險者指南"
 setting: "被遺忘的國度"
 ruleset: "2014"
+character_options:
+  - "backgrounds"
 outputs:
   settings: "wiki/戰役設定/被遺忘的國度"
+  backgrounds: "wiki/背景/2014"
 inputs:
+  backgrounds: "新背景選項"
   lore:
     extract_named_sections: true
     include:

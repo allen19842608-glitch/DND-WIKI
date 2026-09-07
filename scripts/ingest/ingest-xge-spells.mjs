@@ -10,6 +10,8 @@ const inputRoot = path.join(ROOT, profile.source_root, profile.inputs.spells);
 const outputRoot = path.join(ROOT, profile.outputs.spells);
 const sourceBook = "原始資料/珊娜薩的萬事指南";
 const sourcePdf = `${sourceBook}/Xanathars_Guide_to_Everything.pdf`;
+const mirrorDataset = "原始資料/外部來源鏡像/XGE2017/datasets/spells-xge.json";
+const mirrorDatasetUrl = "https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/spells/spells-xge.json";
 const converterRoot = process.env.XGE_OPENCC_PATH ?? "C:\\Users\\Owner\\AppData\\Local\\Temp\\dnd-wiki-xge-opencc";
 const python = process.env.XGE_PYTHON ?? "C:\\Users\\Owner\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe";
 const openccProgram = "import sys;sys.path.insert(0,sys.argv[1]);from opencc import OpenCC;sys.stdout.write(OpenCC('s2twp').convert(sys.stdin.read()))";
@@ -68,10 +70,6 @@ function bodyParts(lines) {
   const higher = higherIndex < 0 ? undefined : stripped.slice(higherIndex).join("\n").replace(/^\*\*升環施法[。.]?\*\*\s*/, "").trim();
   return { effect, higher };
 }
-function targetArea(effect) {
-  const prose = effect.split(/\r?\n/).find((line) => line.trim() && !line.startsWith("|") && !line.startsWith(">"))?.trim() ?? "";
-  return prose.match(/^.+?[。！？]/)?.[0] ?? "依下列效果敘述與來源條文判定。";
-}
 function checkType(effect) {
   const saves = [...effect.matchAll(/(力量|敏捷|體質|智力|感知|魅力)豁免/g)].map((match) => match[1]);
   const attack = effect.match(/(近戰|遠程)?法術攻擊/)?.[0];
@@ -106,7 +104,41 @@ function addBacklink(current, legacyLink) {
   fs.writeFileSync(current, content, "utf8");
 }
 function frontmatter({ title, english, source, locator, ring }) {
-  return `---\ntitle: "${quote(title)}"\nentity_id: "entry:${publicationId}:spell:${slug(english)}"\nconcept_id: "concept:spell:${slug(english)}"\nruleset: "2014"\ncontent_scope: "expansion"\nstatus: "legacy"\ncategory: "法術"\nversion: "2014-Legacy"\ntags:\n  - "${publication.wiki.tag}"\n  - "法術_${ring.name}"\nsources:\n  - file: "${source}"\n    locator: "${quote(locator)}"\n    authority: "官方"\n    translation: "community"\n  - file: "${sourcePdf}"\n    locator: "Chapter 3: Spells；${quote(english)}"\n    authority: "官方"\n    translation: "none"\nsource_type: "official"\nconfidence: "interpreted"\nrules_sources:\n  - "${publication.canonical_rules_source}"\nerrata: []\nupdated: "${today()}"\n---`;
+  return [
+    "---",
+    `title: "${quote(title)}"`,
+    `entity_id: "entry:${publicationId}:spell:${slug(english)}"`,
+    `concept_id: "concept:spell:${slug(english)}"`,
+    'ruleset: "2014"',
+    'content_scope: "expansion"',
+    'status: "legacy"',
+    'category: "法術"',
+    'version: "2014-Legacy"',
+    "tags:",
+    `  - "${publication.wiki.tag}"`,
+    `  - "法術_${ring.name}"`,
+    "sources:",
+    `  - file: "${mirrorDataset}"`,
+    `    locator: "spell:${quote(english)}"`,
+    `    url: "${mirrorDatasetUrl}"`,
+    '    authority: "官方"',
+    '    translation: "none"',
+    `  - file: "${source}"`,
+    `    locator: "${quote(locator)}"`,
+    '    authority: "官方"',
+    '    translation: "community"',
+    `  - file: "${sourcePdf}"`,
+    `    locator: "Chapter 3: Spells；${quote(english)}"`,
+    '    authority: "官方"',
+    '    translation: "none"',
+    'source_type: "official"',
+    'confidence: "interpreted"',
+    "rules_sources:",
+    `  - "${publication.canonical_rules_source}"`,
+    "errata: []",
+    `updated: "${today()}"`,
+    "---",
+  ].join("\n");
 }
 
 const terms = [];
@@ -142,8 +174,7 @@ for (const entry of fs.readdirSync(inputRoot).filter((name) => ringForFile(name)
       `- **環階**：${ring.name}`, `- **學派**：${meta.school}`,
       `- **施法時間 (Casting Time)**：${field(block, "施法時間")}`,
       `- **施法距離 (Range)**：${field(block, "施法距離")}`,
-      `- **目標／範圍 (Target/Area)**：${targetArea(effect)}`,
-      `- **法術成分 (Components)**：${components}`,
+      `- **法術成分 (Components)**：${components.replace(/([,、]\s*)?M（[^）]+）/u, "M").replace(/,\s*/gu, "、")}`,
       ...(materialDetail(components) ? [`- **材料成本與消耗**：${materialDetail(components)}`] : []),
       `- **持續時間 (Duration)**：${duration}`, `- **專注 (Concentration)**：${concentration}`,
       `- **儀式 (Ritual)**：${ritual}`, `- **施法職業**：${classLinks(meta.classes)}`, "",

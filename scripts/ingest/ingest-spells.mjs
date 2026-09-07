@@ -2,7 +2,6 @@ import fs from "node:fs";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
 import { ROOT, defaultSource, frontmatter, loadIngestProfile, loadPublication, parseOptions, writableCandidate, writeIngestReport } from "../core/ingest-publication-utils.mjs";
-import { extractTargetArea } from "../core/spell-target-area.mjs";
 
 const options = parseOptions();
 const publication = loadPublication(options.publicationId);
@@ -118,6 +117,10 @@ function componentsDetail(components) {
   return material ? `${material}；未標示成本／不消耗` : "含材料成分；成本與消耗依來源確認";
 }
 
+function componentsMarker(components) {
+  return components.replace(/([,、]\s*)?M[（(][^）)]+[）)]/u, "M").replace(/,\s*/gu, "、");
+}
+
 function rulesText(block) {
   const body = block.filter((line) => !/^_|^(?:\*\*)?(施法時間|施法距離|法術成分|持續時間)[：:]/.test(line));
   const higher = body.find((line) => /^\*\*升環施法[。.]?\*\*/.test(line));
@@ -139,7 +142,6 @@ function spellPage({ spell, source, ring, block }) {
   const duration = field(block, "持續時間");
   const material = componentsDetail(components);
   const { effect, higher } = rulesText(block);
-  const extractedTargetArea = extractTargetArea({ range, effect });
   const concentration = /^專注[，,]/.test(duration) ? "是" : "否";
   const ritual = details.ritual || /儀式/.test(castingTime) ? "是" : "否";
   const classes = details.classes.length ? details.classes.join("、") : "依來源確認";
@@ -159,10 +161,7 @@ function spellPage({ spell, source, ring, block }) {
     `- **學派**：${details.school}`,
     `- **施法時間 (Casting Time)**：${castingTime}`,
     `- **施法距離 (Range)**：${range}`,
-    ...(extractedTargetArea.confidence === "high-confidence" && extractedTargetArea.value
-      ? [`- **目標／範圍 (Target/Area)**：${extractedTargetArea.value}`]
-      : []),
-    `- **法術成分 (Components)**：${components}`,
+    `- **法術成分 (Components)**：${componentsMarker(components)}`,
     ...(material ? [`- **材料成本與消耗**：${material}`] : []),
     `- **持續時間 (Duration)**：${duration}`,
     `- **專注 (Concentration)**：${concentration}`,
