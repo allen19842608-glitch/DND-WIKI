@@ -29,8 +29,8 @@ const placement = {
   "wiki/戰役設定/艾伯倫/組織與派系/瓦達利斯家族.md": ["059-05-018.house-vadalis.webp"],
   "wiki/職業/奇械師/裝甲師.md": ["060-06-001.an-armorer-explorer-exploring-ancient-ruins.webp", "087-09-016.armorer.webp"],
   "wiki/戰役設定/艾伯倫/組織與派系/翡翠利爪教團.md": ["061-06-002.emerald-claw-knights.webp"],
-  "wiki/戰役設定/艾伯倫/事件/莫格雷夫遠征索引.md": ["062-06-003.morgrave-university.webp", "063-06-004.faces-of-morgrave.webp"],
-  "wiki/戰役設定/艾伯倫/文化與族群/元素飛艇索引.md": ["064-06-005.elemental-airships.webp", "066-07-001.airship-battle.webp", "067-07-002.airship-getaway.webp", "085-09-015.airship.webp"],
+  "wiki/戰役設定/艾伯倫/事件/冒險框架/莫格雷夫遠征索引.md": ["062-06-003.morgrave-university.webp", "063-06-004.faces-of-morgrave.webp"],
+  "wiki/戰役設定/艾伯倫/文化與族群/交通與生活/元素飛艇索引.md": ["064-06-005.elemental-airships.webp", "066-07-001.airship-battle.webp", "067-07-002.airship-getaway.webp", "085-09-015.airship.webp"],
   "wiki/職業/奇械師/煉金師.md": ["083-09-012.alchemist.webp"],
   "wiki/職業/奇械師/魔炮師.md": ["089-09-018.artillerist.webp"],
 };

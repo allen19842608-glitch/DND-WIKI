@@ -17,6 +17,7 @@ import {
 import { syncLoreIndexes } from "../core/lore-indexes.mjs";
 
 const SCRIPT = fileURLToPath(import.meta.url);
+const CURATED_LAYOUT = JSON.parse(fs.readFileSync(path.join(ROOT, "config/multiverse-layout.json"), "utf8"));
 const STATUS = new Set(["新增", "合併", "別名", "來源衝突", "譯名待確認", "排除"]);
 
 function rel(file) {
@@ -337,7 +338,9 @@ function makeCandidates({ files, publicationId, publication, profile, sourceRoot
         return source.includes(term) || entry.chinese.includes(term) || entry.english?.includes(term);
       });
       if (tokens.length && !matchesOnly) continue;
-      const exclusionReason = nonEntityReason(entry);
+      const curatedGroup = setting === "多元宇宙" ? CURATED_LAYOUT.groups.find(group => group.names.includes(entry.chinese)) : null;
+      const exclusionReason = curatedGroup?.directory.startsWith("../")
+        ? `已歸入 ${curatedGroup.directory}；由既有核定頁維護。` : nonEntityReason(entry);
       let type = classifyLoreType(`${sourceRelative} ${entry.chinese}`, typeOverride);
       let loreType = typeCatalog.get(type);
       let destinationRel = `${world.root}/${loreType.directory}/${safeFileName(entry.chinese)}.md`;
@@ -350,13 +353,14 @@ function makeCandidates({ files, publicationId, publication, profile, sourceRoot
       const match = sameSource ?? sameEnglish ?? sameChinese;
       if (!exclusionReason && match) {
         target = match.rel;
-        if (match.data.lore_type !== type && !sameSource) {
+        destinationRel = match.rel;
+        if (match.data.lore_type !== type) {
           // 分類是匯入器的輔助推論；既有概念頁的人工分類優先，並把新書資料合併進同一頁。
           type = match.data.lore_type;
           loreType = typeCatalog.get(type);
           destinationRel = match.rel;
           status = "合併";
-          reason = "沿用既有概念頁的故事類型，累加此來源。";
+          reason = sameSource ? "既有頁已引用相同來源定位；沿用核定分類與路徑。" : "沿用既有概念頁的故事類型，累加此來源。";
         } else if (sameEnglish && normalize(splitBilingual(match.data.title).chinese) !== normalize(entry.chinese)) {
           status = "別名";
           reason = "英文實體名稱相同，但中文名稱不同；保留為別名紀錄。";

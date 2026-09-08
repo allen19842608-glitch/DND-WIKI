@@ -35,7 +35,7 @@ function page(file) {
 }
 
 function linkTarget(rel) {
-  return rel.replace(/^wiki\//, "").replace(/\.md$/, "");
+  return rel.replace(/\.md$/, "");
 }
 
 function quoted(value) {
@@ -53,6 +53,7 @@ function replaceFirstTag(text, tag) {
 }
 
 function addLink(text, target, label) {
+  if ([...text.matchAll(/\[\[([^|\]#^]+)/g)].some(m => m[1].replace(/\\$/, "").replace(/^wiki\//, "") === target.replace(/^wiki\//, ""))) return text;
   const pattern = new RegExp(`\\[\\[${target.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?:[|#^]|\\]\\])`);
   if (pattern.test(text)) return text;
   const line = `- [[${target}|${label}]]`;
@@ -112,7 +113,7 @@ function linkTargetsOutsideAuto(text) {
   // In a Markdown table, a Wiki-link alias uses `\|`; trim that escape from
   // the target before comparing it with a repository-relative link target.
   return new Set([...outside.matchAll(/\[\[([^|\]#^]+)/g)]
-    .map((match) => match[1].trim().replace(/\\$/, "")));
+    .map((match) => `wiki/${match[1].trim().replace(/\\$/, "").replace(/^wiki\//, "")}`));
 }
 
 function isCuratedIndex(text) {
@@ -128,7 +129,7 @@ function write(file, content, apply, changes) {
   fs.writeFileSync(file, content, "utf8");
 }
 
-export function syncLoreIndexes({ apply = false } = {}) {
+export function syncLoreIndexes({ apply = false, setting = null } = {}) {
   const config = YAML.parse(fs.readFileSync(CONFIG_PATH, "utf8"));
   const records = walk(WIKI_ROOT).map(page).filter(Boolean);
   const contentPages = records.filter((record) => record.data?.category === "戰役設定"
@@ -138,6 +139,7 @@ export function syncLoreIndexes({ apply = false } = {}) {
   const worldLinks = [];
 
   for (const [worldId, world] of Object.entries(config.worlds)) {
+    if (setting && world.label !== setting) continue;
     const worldPages = contentPages.filter((record) => record.data.setting === world.label);
     if (!worldPages.length) continue;
     const representative = worldPages
@@ -157,10 +159,15 @@ export function syncLoreIndexes({ apply = false } = {}) {
       // Do not duplicate it in the generated navigation block.
       const existingIndexText = fs.existsSync(indexFile) ? fs.readFileSync(indexFile, "utf8") : "";
       const existingIndexTargets = linkTargetsOutsideAuto(existingIndexText);
-      const entries = members
-        .filter((record) => !existingIndexTargets.has(linkTarget(record.rel)))
-        .map((record) => `- [[${linkTarget(record.rel)}|${record.data.title}]]`)
-        .join("\n");
+      // A curated index owns its visible grouping.  Its auto block remains
+      // deliberately empty so a later synchronization cannot reintroduce an
+      // alphabetical mix of otherwise separate subtopics.
+      const entries = isCuratedIndex(existingIndexText)
+        ? ""
+        : members
+          .filter((record) => !existingIndexTargets.has(linkTarget(record.rel)))
+          .map((record) => `- [[${linkTarget(record.rel)}|${record.data.title}]]`)
+          .join("\n");
       const conceptId = `concept:setting:${worldId}:index:${typeId}`;
       const body = `本頁彙整${world.label}的${loreType.label}條目。\n\n${START}\n## 條目\n\n${entries}\n${END}\n\n## 🔗 相關連結\n\n- [[${linkTarget(world.index)}|${world.label}索引]]\n- [[戰役設定/戰役設定索引|戰役設定索引]]`;
       let content;
@@ -215,7 +222,7 @@ export function syncLoreIndexes({ apply = false } = {}) {
     worldLinks.push(`- [[${linkTarget(world.index)}|${world.label}]]（${worldPages.length}）`);
   }
 
-  if (worldLinks.length) {
+  if (worldLinks.length && !setting) {
     const first = contentPages[0];
     const globalFile = path.join(WIKI_ROOT, "戰役設定索引.md");
     const block = `## 世界索引\n\n${worldLinks.join("\n")}`;

@@ -335,7 +335,10 @@ function rebuildBody(page) {
   return `# ${title}\n\n${spoiler}## 概覽\n\n${overview}\n\n## 歷史與現況\n\n${history}\n\n## 重要關係\n\n${sectionOrNone(map, "重要關係")}${statBlock}\n\n## 來源差異與不確定性\n\n${sectionOrNone(map, "來源差異與不確定性")}\n\n## 🔗 相關連結\n\n${relatedLines}\n`;
 }
 
-function rebuiltText(page) {
+export function rebuiltText(page) {
+  // 已編譯內容可能包含完整表格、人工核對段落與導覽；不得用固定段數重新摘要。
+  // 自動補全只處理明確佔位頁，其餘內容修正由來源覆核流程產生可審查的差異。
+  if (!isPlaceholderPage(page.body) && !hasEmptyPlaceholderOverview(page.body)) return page.text;
   const body = rebuildBody(page);
   if (body === page.body) return page.text;
   const updated = addMirrorSource(page.frontmatter, page.data).replace(/^updated:\s*"[^"]*"\s*$/m, `updated: "${today()}"`);
