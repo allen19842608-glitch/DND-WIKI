@@ -5,6 +5,7 @@ import process from "node:process";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { parseDocument } from "yaml";
+import { syncLoreIndexes } from "./lore-indexes.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const RAW_ROOT = path.join(ROOT, "原始資料");
@@ -316,6 +317,8 @@ function indexesCommand(values) {
   const { options } = argumentsOf(values);
   const apply = options.has("--apply");
   const changedOnly = options.has("--changed");
+  const settingAt = values.indexOf("--setting");
+  const setting = settingAt >= 0 ? values[settingAt + 1] : null;
   const changedDirectories = changedOnly ? changedWikiDirectories() : null;
   const wikiNameCounts = new Map();
   for (const file of walk(WIKI_ROOT).filter((file) => file.endsWith(".md"))) {
@@ -327,6 +330,8 @@ function indexesCommand(values) {
   for (const indexFile of walk(WIKI_ROOT).filter((file) => file.endsWith("索引.md")).sort()) {
     let indexText = fs.readFileSync(indexFile, "utf8");
     if (/^index_scope:\s+"curated"\s*$/m.test(indexText)) continue;
+    // 戰役設定的主題索引由 lore-indexes.mjs 管理，避免兩個自動區塊互相重複。
+    if (relative(indexFile).startsWith("wiki/戰役設定/") && /^lore_type:\s+"索引"\s*$/m.test(indexText)) continue;
     const directory = path.dirname(indexFile);
     const directoryRel = relative(directory);
     if (changedOnly && !changedDirectories.has(directoryRel)) continue;
@@ -374,10 +379,13 @@ function indexesCommand(values) {
     for (const file of missing) if (backlinkPage(file, indexFile)) updatedCount += 1;
   }
   process.stdout.write(`索引缺漏：${missingCount}；${apply ? `已更新檔案：${updatedCount}` : "使用 --apply 可自動補入"}\n`);
+  const lore = syncLoreIndexes({ apply, setting });
+  process.stdout.write(`戰役索引故事頁：${lore.pages}；${apply ? "已更新" : "待更新"}：${lore.changes.length}\n`);
+  for (const file of lore.changes) process.stdout.write(`- ${file}\n`);
 }
 
 function help() {
-  process.stdout.write(`可用指令：\n  policy <章節>\n  source-find <文字> [--source 範圍] [--max 30] [--context 2]\n  glossary <詞彙> [--max 20]\n  manifest [--publication ID] [--update] [--json] [--max 100]\n  unabsorbed [--publication ID] [--json] [--max 100]\n  indexes [--changed] [--apply]\n`);
+  process.stdout.write(`可用指令：\n  policy <章節>\n  source-find <文字> [--source 範圍] [--max 30] [--context 2]\n  glossary <詞彙> [--max 20]\n  manifest [--publication ID] [--update] [--json] [--max 100]\n  unabsorbed [--publication ID] [--json] [--max 100]\n  indexes [--changed] [--setting 世界名稱] [--apply]\n`);
 }
 
 if (path.resolve(process.argv[1] ?? "") === fileURLToPath(import.meta.url)) {

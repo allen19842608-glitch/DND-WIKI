@@ -5,10 +5,17 @@ schema_version: 1
 worlds:
   forgotten-realms:
     label: "被遺忘的國度"
+    short_label: "FR"
     root: "wiki/戰役設定/被遺忘的國度"
     index: "wiki/戰役設定/被遺忘的國度/被遺忘的國度索引.md"
+  dragonlance:
+    label: "龍槍"
+    short_label: "DL"
+    root: "wiki/戰役設定/龍槍"
+    index: "wiki/戰役設定/龍槍/龍槍索引.md"
   eberron:
     label: "艾伯倫"
+    short_label: "EB"
     root: "wiki/戰役設定/艾伯倫"
     index: "wiki/戰役設定/艾伯倫/艾伯倫索引.md"
   greyhawk:
@@ -17,6 +24,7 @@ worlds:
     index: "wiki/戰役設定/灰鷹/灰鷹索引.md"
   ravenloft:
     label: "鴉閣魔域"
+    short_label: "RV"
     root: "wiki/戰役設定/鴉閣魔域"
     index: "wiki/戰役設定/鴉閣魔域/鴉閣魔域索引.md"
   multiverse:
@@ -52,3 +60,34 @@ lore_types:
   index:
     label: "索引"
     directory: "索引"
+
+# 導覽呈現與 AL 規則合法性分開管理；此處不得作為 al_campaigns 的來源。
+navigation:
+  al_primary_worlds:
+    - "forgotten-realms"
+    - "dragonlance"
+    - "eberron"
+    - "ravenloft"
+  shared_worlds:
+    - "greyhawk"
+    - "multiverse"
+  topic_order:
+    - "worldview"
+    - "history"
+    - "faith"
+    - "geography"
+    - "event"
+    - "person"
+    - "faction"
+    - "culture"
+  featured_sections:
+    forgotten-realms:
+      - label: "費倫"
+        target: "戰役設定/被遺忘的國度/世界觀/被遺忘的國度"
+      - label: "Spelljammer"
+        target: "戰役設定/多元宇宙/世界觀/世界觀索引"
+      - label: "Planescape"
+        target: "戰役設定/多元宇宙/地理/城市與聚居地/印記城/印記城索引"
+  shared_links:
+    - label: "戰役創作"
+      target: "戰役設定/戰役創作/戰役創作索引"
