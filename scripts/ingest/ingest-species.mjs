@@ -8,6 +8,7 @@ const profile = loadIngestProfile(options.publicationId);
 const sourceRoot = options.source ? path.resolve(ROOT, options.source) : defaultSource(publication);
 const inputDir = path.join(sourceRoot, profile.inputs.species ?? "角色起源/種族");
 const outputRoot = path.resolve(options.output ? path.join(ROOT, options.output) : path.join(ROOT, profile.outputs.species ?? "wiki/種族"));
+const missingIntroductions = [];
 
 if (!fs.existsSync(inputDir)) throw new Error(`找不到種族來源目錄：${inputDir}`);
 
@@ -41,11 +42,14 @@ for (const input of fs.readdirSync(inputDir, { withFileTypes: true })) {
   }
   if (current) traitBlocks.push(current);
   const traitText = traitBlocks.map((trait) => `#### ${trait.chinese} (${trait.english})\n\n- **效果**：${trait.body.join(" ") || "依來源確認。"}`).join("\n\n");
-  const firstParagraph = lines.slice(1, Math.max(1, lines.findIndex((line) => /特質\s+[A-Za-z]/.test(line)))).filter((line) => line.trim()).join(" ").trim();
   const size = value("體型").replace(/（約[^）]+）/g, "").replace("，在選取此種族時選擇", "");
   const speed = value("速度").replaceAll("尺", " 呎").replace(/\s+/g, " ").trim();
-  const page = `${frontmatter({ publicationId: options.publicationId, publication, kind: "species", concept: english, title: `${chinese} (${english})`, category: "種族", tag: `種族_${chinese}`, source, locator: `標題：${chinese}` })}\n\n# ${chinese} (${english})\n\n## ⚙️ 規則條文 (Rule Text)\n\n> [!IMPORTANT]\n> **種族摘要**：${firstParagraph || "依可定位來源確認。"}\n\n### 基本資料\n\n| 生物類型 | 體型 | 速度 |\n| :--- | :--- | :--- |\n| ${value("生物類型")} | ${size} | ${speed} |\n\n### 種族特質 (Species Traits)\n\n${traitText || "依可定位來源補齊特質。"}\n\n## 🔗 相關連結\n\n- [[種族索引|種族索引 (Species Index)]]\n`;
+  // Background text needs editorial source review.  Never treat a source prefix as
+  // a complete introduction or emit a placeholder sentence as published content.
+  missingIntroductions.push({ chinese, source });
+  const page = `${frontmatter({ publicationId: options.publicationId, publication, kind: "species", concept: english, title: `${chinese} (${english})`, category: "種族", tag: `種族_${chinese}`, source, locator: `標題：${chinese}` })}\n\n# ${chinese} (${english})\n\n## ⚙️ 規則條文 (Rule Text)\n\n### 基本資料\n\n| 生物類型 | 體型 | 速度 |\n| :--- | :--- | :--- |\n| ${value("生物類型")} | ${size} | ${speed} |\n\n### 種族特質 (Species Traits)\n\n${traitText || "依可定位來源補齊特質。"}\n\n## 🔗 相關連結\n\n- [[種族索引|種族索引 (Species Index)]]\n`;
   writableCandidate({ destination: path.join(outputRoot, `${chinese}.md`), content: page, options, matchValues: [chinese, english, source] });
 }
 
 writeIngestReport({ options, publicationId: options.publicationId, category: "species" });
+for (const item of missingIntroductions) console.warn(`待補種族介紹：${item.chinese}（${item.source}）`);

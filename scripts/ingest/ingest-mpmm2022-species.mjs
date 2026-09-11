@@ -77,10 +77,11 @@ function page({ file, name, english, raw, locator, current }) {
   if (traits.length < 2) throw new Error(`${name} 特質解析不足：${traits.length}`);
   const sourceFile = path.join(sourceRoot, file);
   const title = `${name} (${english}，2014 Legacy)`;
-  const intro = `本條目出自《魔鄧肯鉅獻：多元宇宙的怪物》的 2014 Legacy 種族選項。採用 2024 角色建立規則時，屬性值提升改由背景提供。`;
-  const warning = current ? `> [!WARNING]\n> 本條目為 2014 舊版規則；2024 新版請參閱 [[${current}|${name} (${english})]]。\n\n` : "> [!IMPORTANT]\n> ";
+  const warning = current ? `> [!WARNING]\n> 本條目為 2014 舊版規則；2024 新版請參閱 [[${current}|${name} (${english})]]。\n\n` : "> [!WARNING]\n> 本條目為 2014 Legacy 種族選項；採用 2024 角色建立規則時，屬性值提升改由背景提供。\n\n";
   const metadata = frontmatter({ publicationId, publication, kind: "species", concept: english, title, category: "種族", tag: `種族_${name}`, source: sourceOf(sourceFile), locator }).replace("\ncategory:", `\ncompatibility_2024: "${current ? "replaced" : "compatible"}"\ncategory:`);
-  const content = `${metadata}\n\n# ${title}\n\n${warning}${intro}\n\n## ⚙️ 規則條文 (Rule Text)\n\n### 基本資料\n\n| 生物類型 | 體型 | 速度 | 其他速度 |\n| :--- | :--- | :--- | :--- |\n| ${data.typeValue} | ${data.sizeValue} | ${data.walk} | ${data.other} |\n\n### 種族特質 (Species Traits)\n\n${traits.map(traitBlock).join("\n\n")}\n\n## 🔗 相關連結\n\n- [[種族/2014/多元宇宙種族/多元宇宙種族索引|多元宇宙種族索引 (MPMM 2014 Legacy)]]\n- [[種族/2014/種族索引|2014 種族索引 (2014 Species Index)]]${current ? `\n- [[${current}|${name} (${english})]]` : ""}\n`;
+  // The rules source is parsed here, but background prose requires a separate
+  // editorial pass. Do not manufacture an introduction from a generic notice.
+  const content = `${metadata}\n\n# ${title}\n\n${warning}## ⚙️ 規則條文 (Rule Text)\n\n### 基本資料\n\n| 生物類型 | 體型 | 速度 | 其他速度 |\n| :--- | :--- | :--- | :--- |\n| ${data.typeValue} | ${data.sizeValue} | ${data.walk} | ${data.other} |\n\n### 種族特質 (Species Traits)\n\n${traits.map(traitBlock).join("\n\n")}\n\n## 🔗 相關連結\n\n- [[種族/2014/多元宇宙種族/多元宇宙種族索引|多元宇宙種族索引 (MPMM 2014 Legacy)]]\n- [[種族/2014/種族索引|2014 種族索引 (2014 Species Index)]]${current ? `\n- [[${current}|${name} (${english})]]` : ""}\n`;
   return { destination: path.join(outputRoot, `${name}.md`), content };
 }
 const results = [];

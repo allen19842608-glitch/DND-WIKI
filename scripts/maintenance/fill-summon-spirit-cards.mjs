@@ -35,9 +35,10 @@ for (const [level, spell, sourceFile, spirit] of entries) {
   const page = path.join(ROOT, "wiki", "法術", level, `${spell}.md`); let text = fs.readFileSync(page, "utf8");
   text = text.replace(/^\- \*\*豁免／法術攻擊\*\*：無\r?\n/m, "");
   const section = `## ${spirit.split(" ")[0]}資料\n\n${raw}\n\n`;
-  const existing = new RegExp(`\\n## ${spirit.split(" ")[0]}資料[\\s\\S]*?(?=\\n## (?:來源衝突與適用範圍|💡 實戰應用與裁量)|$)`);
+  const existing = new RegExp(`\\n## ${spirit.split(" ")[0]}資料[\\s\\S]*?(?=\\n## (?:來源衝突與適用範圍|💡 實戰應用與裁量|🔗 相關連結)|$)`);
   if (existing.test(text)) text = text.replace(existing, `\n${section.trimEnd()}`);
   else if (/\n## 來源衝突與適用範圍/.test(text)) text = text.replace(/\n## 來源衝突與適用範圍/, `\n\n${section}## 來源衝突與適用範圍`);
-  else text = text.replace(/\n## 💡 實戰應用與裁量/, `\n\n${section}## 💡 實戰應用與裁量`);
+  else if (/\n## 🔗 相關連結/.test(text)) text = text.replace(/\n## 🔗 相關連結/, `\n\n${section}## 🔗 相關連結`);
+  else text = `${text.trimEnd()}\n\n${section}`;
   fs.writeFileSync(page, text, "utf8"); console.log(`已補齊：${spell}`);
 }
