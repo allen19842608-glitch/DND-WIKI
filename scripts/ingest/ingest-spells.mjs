@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
 import { ROOT, defaultSource, frontmatter, loadIngestProfile, loadPublication, parseOptions, writableCandidate, writeIngestReport } from "../core/ingest-publication-utils.mjs";
+import { extractSpellRules } from "../core/spell-content.mjs";
 
 const options = parseOptions();
 const publication = loadPublication(options.publicationId);
@@ -9,6 +10,9 @@ const profile = loadIngestProfile(options.publicationId);
 const sourceRoot = options.source ? path.resolve(ROOT, options.source) : defaultSource(publication);
 const inputDir = path.join(sourceRoot, profile.inputs.spells ?? "法術詳述");
 const outputRoot = path.resolve(options.output ? path.join(ROOT, options.output) : path.join(ROOT, profile.outputs.spells ?? "wiki/法術"));
+const legacy = publication.ruleset === "2014";
+const linkRoot = legacy ? "法術/2014" : "法術";
+const editionLabel = legacy ? "2014 Legacy" : "2024";
 const openccRoot = process.env.DND_WIKI_OPENCC_PATH ?? "C:\\Users\\Owner\\.codex\\tools\\dnd-wiki-opencc";
 const python = process.env.DND_WIKI_PYTHON ?? "C:\\Users\\Owner\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe";
 const openccProgram = "import sys;sys.path.insert(0,sys.argv[1]);from opencc import OpenCC;sys.stdout.write(OpenCC('s2twp').convert(sys.stdin.read()))";
@@ -84,7 +88,7 @@ function appendIndexEntries(destination, entries) {
   if (!fs.existsSync(destination)) return false;
   let content = fs.readFileSync(destination, "utf8");
   const additions = entries.filter((entry) => !content.includes(`/${pageName(entry.chinese)}|`))
-    .map((entry) => `- [[法術/2014/${entry.ring.directory}/${pageName(entry.chinese)}|${entry.chinese} (${entry.english}，2014 Legacy)]]`);
+    .map((entry) => `- [[${linkRoot}/${entry.ring.directory}/${pageName(entry.chinese)}|${entry.chinese} (${entry.english}，${editionLabel})]]`);
   if (!additions.length) return false;
   content = content.replace(/\n## 🔗 相關連結/, `\n${additions.join("\n")}\n\n## 🔗 相關連結`);
   fs.writeFileSync(destination, content, "utf8");
@@ -122,13 +126,7 @@ function componentsMarker(components) {
 }
 
 function rulesText(block) {
-  const body = block.filter((line) => !/^_|^(?:\*\*)?(施法時間|施法距離|法術成分|持續時間)[：:]/.test(line));
-  const higher = body.find((line) => /^\*\*升環施法[。.]?\*\*/.test(line));
-  const effect = body.filter((line) => line !== higher).join(" ").replace(/\s+/g, " ").trim();
-  return {
-    effect,
-    higher: higher?.replace(/^\*\*升環施法[。.]?\*\*\s*/, "").trim(),
-  };
+  return extractSpellRules(block);
 }
 
 function spellPage({ spell, source, ring, block }) {
@@ -148,7 +146,7 @@ function spellPage({ spell, source, ring, block }) {
   const spellTag = `法術_${ring.name}`;
   const indexName = ring.number === 0 ? "戲法法術索引" : `${ring.name}法術索引`;
   const sourceLabel = `${publication.title_zh} ${publication.year}`;
-  const current = currentCounterpart(spell.english);
+  const current = legacy ? currentCounterpart(spell.english) : null;
   const currentLink = current
     ? `[[${wikiTarget(current)}|${fs.readFileSync(current, "utf8").match(/^title: "(.+?)"$/m)?.[1] ?? path.basename(current, ".md")}]]`
     : undefined;
@@ -170,16 +168,16 @@ function spellPage({ spell, source, ring, block }) {
     "",
     "## 🔮 法術效果描述",
     "",
-    `- **效果**：${effect || "請依可定位來源補齊效果。"}（來源：${sourceLabel}，法術詳述，${sourceLocator(spell)}）`,
+    `- **效果**：${effect}（來源：${sourceLabel}，法術詳述，${sourceLocator(spell)}）`,
     ...(higher ? [`- **升環施法 (At Higher Levels)**：${higher}`] : []),
     "",
     "## 🔗 相關連結",
     "",
-    `- [[法術/2014/${ring.directory}/${indexName}|${indexName} (2014 Legacy)]]`,
+    `- [[${linkRoot}/${ring.directory}/${indexName}|${indexName} (${editionLabel})]]`,
     ...(currentLink ? [`- ${currentLink}`] : []),
     "",
   ];
-  if (options.apply && current) addCurrentBacklink(current, `法術/2014/${ring.directory}/${pageName(spell.chinese)}`, `${spell.chinese} (${spell.english}，2014 Legacy)`);
+  if (!effect) throw new Error(`${spell.english} 未擷取到效果；停止產生占位頁。`);
   return lines.join("\n");
 }
 
@@ -197,27 +195,33 @@ for (const input of fs.readdirSync(inputDir).filter((name) => ringForFile(name))
     const end = headings[position + 1]?.index ?? lines.length;
     const block = lines.slice(spell.index + 1, end).filter((line) => line.trim());
     const page = spellPage({ spell, source, ring, block });
-    writableCandidate({ destination: path.join(outputRoot, ring.directory, `${pageName(spell.chinese)}.md`), content: page, options, matchValues: [spell.chinese, spell.english, source] });
+    const result = writableCandidate({ destination: path.join(outputRoot, ring.directory, `${pageName(spell.chinese)}.md`), content: page, options, matchValues: [spell.chinese, spell.english, source] });
+    if (result === "written") {
+      if (legacy) addCurrentBacklink(currentCounterpart(spell.english), `${linkRoot}/${ring.directory}/${pageName(spell.chinese)}`, `${spell.chinese} (${spell.english}，${editionLabel})`);
+      const indexName = ring.number === 0 ? "戲法法術索引" : `${ring.name}法術索引`;
+      appendIndexEntries(path.join(outputRoot, ring.directory, `${indexName}.md`), [{ ...spell, ring }]);
+    }
     return { ...spell, ring };
   });
   spellsByRing.set(ring.number, { ring, spells, source });
 }
 
 for (const { ring, spells, source } of spellsByRing.values()) {
+  if (options.only) continue;
   const indexName = ring.number === 0 ? "戲法法術索引" : `${ring.name}法術索引`;
-  const entries = spells.map((spell) => `- [[法術/2014/${ring.directory}/${pageName(spell.chinese)}|${spell.chinese} (${spell.english}，2014 Legacy)]]`).join("\n");
-  const content = `${frontmatter({ publicationId: options.publicationId, publication, kind: "spell-index", concept: `${ring.name}-spells`, title: `${ring.name}法術索引 (2014 ${ring.name} Spells Index)`, category: "法術", tag: "法術_索引", source, locator: `${ring.name}法術詳述` })}\n\n# ${ring.name}法術索引 (2014 ${ring.name} Spells Index)\n\n> 收錄《${publication.title_zh} ${publication.year}》的 ${ring.name} 法術。\n\n${entries}\n\n## 🔗 相關連結\n\n- [[法術/2014/法術索引|2014 法術索引 (2014 Spells Index)]]\n`;
+  const entries = spells.map((spell) => `- [[${linkRoot}/${ring.directory}/${pageName(spell.chinese)}|${spell.chinese} (${spell.english}，${editionLabel})]]`).join("\n");
+  const content = `${frontmatter({ publicationId: options.publicationId, publication, kind: "spell-index", concept: `${ring.name}-spells`, title: `${ring.name}法術索引 (${editionLabel} ${ring.name} Spells Index)`, category: "法術", tag: "法術_索引", source, locator: `${ring.name}法術詳述` })}\n\n# ${ring.name}法術索引 (${editionLabel} ${ring.name} Spells Index)\n\n> 收錄《${publication.title_zh} ${publication.year}》的 ${ring.name} 法術。\n\n${entries}\n\n## 🔗 相關連結\n\n- [[${linkRoot}/法術索引|${editionLabel} 法術索引 (${editionLabel} Spells Index)]]\n`;
   const destination = path.join(outputRoot, ring.directory, `${indexName}.md`);
   if (!appendIndexEntries(destination, spells)) writableCandidate({ destination, content, options });
 }
 
-if (spellsByRing.size) {
+if (spellsByRing.size && !options.only) {
   const source = [...spellsByRing.values()][0].source;
   const rows = [...spellsByRing.values()].sort((a, b) => a.ring.number - b.ring.number).map(({ ring }) => {
     const name = ring.number === 0 ? "戲法法術索引" : `${ring.name}法術索引`;
-    return `| ${ring.number} | [[法術/2014/${ring.directory}/${name}\\|${name} (2014 Legacy)]] |`;
+    return `| ${ring.number} | [[${linkRoot}/${ring.directory}/${name}\\|${name} (${editionLabel})]] |`;
   }).join("\n");
-  const content = `${frontmatter({ publicationId: options.publicationId, publication, kind: "spell-index", concept: "spells-index-2014", title: "2014 法術索引 (2014 Spells Index)", category: "法術", tag: "法術_索引", source, locator: "法術詳述 0–9 環" })}\n\n# 2014 法術索引 (2014 Spells Index)\n\n> 收錄《${publication.title_zh} ${publication.year}》的法術規則。與 2024 規則存在差異，或尚未完成逐條同一性確認的法術，保留在本 Legacy 索引。\n\n| 環階 | 索引 |\n| :---: | :--- |\n${rows}\n\n## 🔗 相關連結\n\n- [[法術索引|法術索引 (Spells Index)]]\n`;
+  const content = `${frontmatter({ publicationId: options.publicationId, publication, kind: "spell-index", concept: `spells-index-${publication.ruleset}`, title: `${editionLabel} 法術索引 (${editionLabel} Spells Index)`, category: "法術", tag: "法術_索引", source, locator: "法術詳述 0–9 環" })}\n\n# ${editionLabel} 法術索引 (${editionLabel} Spells Index)\n\n> 收錄《${publication.title_zh} ${publication.year}》的法術規則。${legacy ? "與現行規則不同的條目保留於此舊版索引。" : "此索引採用 2024 規則；舊版法術另見 2014 索引。"}\n\n| 環階 | 索引 |\n| :---: | :--- |\n${rows}\n\n## 🔗 相關連結\n\n- [[${legacy ? "法術/法術索引" : "索引"}|${legacy ? "現行法術索引" : "Wiki 首頁"}]]\n`;
   writableCandidate({ destination: path.join(outputRoot, "法術索引.md"), content, options });
 }
 
