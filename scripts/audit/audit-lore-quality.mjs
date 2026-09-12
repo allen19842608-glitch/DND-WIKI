@@ -1,56 +1,42 @@
-import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import YAML from "yaml";
+import { ROOT } from "../core/ingest-publication-utils.mjs";
+import { readWikiPages, isNavigationPage, writeReport } from "../core/wiki-records.mjs";
 
-const ROOT = fileURLToPath(new URL("../../", import.meta.url));
-function walk(root) {
-  return fs.readdirSync(root, { withFileTypes: true }).flatMap(entry => {
-    const file = path.join(root, entry.name);
-    return entry.isDirectory() ? walk(file) : entry.name.endsWith(".md") ? [file] : [];
-  });
+const INTRO = {
+  世界觀: ["世界概貌"], 歷史: ["時間與地點"], 事件: ["時間與地點"],
+  神祇與信仰: ["神職與象徵"], 地理: ["所屬區域與地點性質"],
+  人物: ["身分"], 組織與派系: ["宗旨與活動範圍"], 文化與族群: ["分布"],
+};
+function content(text) {
+  return text.replace(/<!--[^]*?-->/g, "").replace(/\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g, "$2$1").replace(/[\s*_`#|>-]/g, "");
 }
-function content(section = "") {
-  return section.replace(/<!--[^]*?-->/g, "").replace(/\[\[[^\]]+\]\]/g, "").replace(/[\s*_`#|>-]/g, "");
+export function assessLorePage(page) {
+  const data = page.data ?? {};
+  if (data.category !== "戰役設定" || isNavigationPage(page)) return null;
+  const sections = [...page.body.matchAll(/^##\s+(.+?)\r?\n([\s\S]*?)(?=^##\s|(?![\s\S]))/gm)];
+  const narrative = sections.filter(match => !/來源|版本|相關連結|引用/.test(match[1]));
+  const accepted = [...(INTRO[data.lore_type] ?? []), "概覽", "適用情境", "如何使用", "導覽與使用", "使用指引"];
+  const chars = content(narrative.map(match => match[2]).join("\n")).length;
+  const issues = [], hints = [];
+  if (!chars) issues.push("無可查閱正文");
+  // 篇幅與段落名稱只供人工判讀，不能由字數或模板差異核定完整性。
+  if (chars && chars < 180) hints.push(`正文精簡（${chars} 字元），請按來源判斷是否足夠`);
+  if (!sections.some(match => accepted.includes(match[1].trim()))) hints.push("未使用類型模板的入門段落，請人工檢視閱讀順序");
+  if (/\{\{[^}]+\}\}/.test(page.body)) issues.push("正文仍有模板占位符");
+  return { page: page.file, setting: data.setting ?? "戰役創作", title: data.title, lore_type: data.lore_type, issues, hints };
 }
-function sections(text) {
-  const out = new Map();
-  for (const match of text.matchAll(/^##\s+(.+?)\r?\n([\s\S]*?)(?=^##\s|(?![\s\S]))/gm)) out.set(match[1].trim(), match[2]);
-  return out;
-}
-export function auditLoreQuality({ apply = false } = {}) {
-  const records = walk(path.join(ROOT, "wiki", "戰役設定")).flatMap(file => {
-    const text = fs.readFileSync(file, "utf8");
-    const match = text.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n/);
-    if (!match) return [];
-    const data = YAML.parse(match[1]);
-    if (data.category !== "戰役設定" || data.lore_type === "索引") return [];
-    const s = sections(text);
-    const overview = content(s.get("概覽") ?? s.get("適用情境") ?? "");
-    const narrativeSections = [...s.entries()]
-      .filter(([heading]) => !["概覽", "適用情境", "來源差異與不確定性", "🔗 相關連結"].includes(heading))
-      .map(([, section]) => section)
-      .join("\n");
-    const details = content(narrativeSections);
-    // 正式章節入口可用「如何使用／導覽與使用」交代閱讀路徑；它們不應被迫
-    // 重複各子頁內容，但仍須保有足夠的可查閱說明。
-    const hasNavigationGuidance = ["如何使用", "導覽與使用", "使用指引"].some(heading => s.has(heading));
-    const minimumDetails = hasNavigationGuidance ? 100 : 180;
-    const issues = [];
-    // 導覽與地理條目的摘要可能很精煉；少於一個完整短句才視為不足。
-    if (overview.length < 40) issues.push("摘要不足");
-    if (details.length < minimumDetails) issues.push("可查閱內容不足");
-    if (/^.{0,80}(?:（來源：[^)]*）)?$/u.test((s.get("概覽") ?? "").trim()) && /(?:^|\n)-?\s*(?:——|「|「?費資本)/u.test(narrativeSections)) issues.push("引言取代摘要");
-    return [{ page: path.relative(ROOT, file).replaceAll("\\", "/"), setting: data.setting ?? "戰役創作", title: data.title, issues }];
-  });
-  const review = records.filter(record => record.issues.length);
-  const report = { schema_version: 1, summary: { pages: records.length, review: review.length, by_setting: Object.groupBy(review, r => r.setting) }, review };
+export function auditLoreQuality({ root = ROOT, apply = false } = {}) {
+  const records = readWikiPages(root).filter(page => page.file.startsWith("wiki/戰役設定/")).map(assessLorePage).filter(Boolean);
+  const review = records.filter(record => record.issues.length), hints = records.filter(record => record.hints.length);
+  const bySetting = {};
+  for (const record of review) (bySetting[record.setting] ??= []).push(record);
+  const report = { schema_version: 2, generated_at: new Date().toISOString(), scope: "戰役設定正文（排除索引與精選導覽）", summary: { pages: records.length, review: review.length, hints: hints.length, by_setting: bySetting }, review, hints };
   if (apply) {
-    fs.writeFileSync(path.join(ROOT, "reports", "lore-quality-current.json"), `${JSON.stringify(report, null, 2)}\n`);
-    const markdown = `# 戰役設定內容品質覆核\n\n共 ${records.length} 頁；${review.length} 頁需內容覆核。此報告只判斷可查閱性，不判斷來源正確性。\n\n${review.map(r => `- ${r.page}：${r.issues.join("、")}`).join("\n")}\n`;
-    fs.writeFileSync(path.join(ROOT, "reports", "lore-quality-current.md"), markdown);
+    writeReport(root, "reports/lore-quality-current.json", report);
+    writeReport(root, "reports/lore-quality-current.md", `# 戰役設定內容品質覆核\n\n產生時間：${report.generated_at}\n\n${report.scope}：${records.length} 頁；結構問題 ${review.length} 頁；人工提示 ${hints.length} 頁。字數不判定完整性；通過不代表來源或全文已核實。\n\n## 結構問題\n\n${review.map(r => `- ${r.page}：${r.issues.join("、")}`).join("\n") || "無。"}\n\n## 人工提示\n\n${hints.map(r => `- ${r.page}：${r.hints.join("、")}`).join("\n") || "無。"}\n`);
   }
-  console.log(`戰役設定內容品質：${records.length} 頁；待覆核 ${review.length} 頁`);
+  console.log(`戰役設定正文：${records.length} 頁；結構問題 ${review.length}；人工提示 ${hints.length}`);
   return report;
 }
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) auditLoreQuality({ apply: process.argv.includes("--apply") });

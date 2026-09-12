@@ -12,7 +12,9 @@ export const CHARACTER_OPTION_CATEGORIES = Object.freeze([
 
 export function option(args, name) {
   const index = args.indexOf(name);
-  return index < 0 ? undefined : args[index + 1];
+  if (index < 0) return undefined;
+  if (!args[index + 1] || args[index + 1].startsWith("--")) throw new Error(`${name} 必須指定值，不可使用下一個選項作為檔名。`);
+  return args[index + 1];
 }
 
 export function parseOptions(args = process.argv.slice(2)) {

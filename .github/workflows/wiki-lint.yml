@@ -9,6 +9,7 @@ on:
       - "模板/**"
       - "附件/**"
       - "scripts/**"
+      - "config/**"
       - "tests/**"
       - "package.json"
       - "package-lock.json"
@@ -23,6 +24,7 @@ on:
       - "模板/**"
       - "附件/**"
       - "scripts/**"
+      - "config/**"
       - "tests/**"
       - "package.json"
       - "package-lock.json"
@@ -55,3 +57,6 @@ jobs:
 
       - name: Lint the full Wiki
         run: npm run lint:all
+
+      - name: Check generated index drift (read-only)
+        run: npm run indexes:strict

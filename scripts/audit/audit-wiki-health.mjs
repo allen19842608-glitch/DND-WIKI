@@ -1,16 +1,19 @@
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
-import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { parseDocument } from "yaml";
 import { extractFrontmatter } from "../core/wiki-lint.mjs";
+import { sourceManifestSnapshot } from "../core/wiki-maintenance.mjs";
+import { englishTitle, isNavigationPage } from "../core/wiki-records.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const WIKI_ROOT = path.join(ROOT, "wiki");
-const MANIFEST = path.join(ROOT, ".wiki-cache", "source-manifest.json");
-const REPORT_JSON = path.join(ROOT, "reports", "wiki-health-current.json");
-const REPORT_MD = path.join(ROOT, "reports", "wiki-health-current.md");
+export function healthReportPaths(root, publicationId = null) {
+  if (publicationId && !/^[A-Za-z0-9_-]+$/.test(publicationId)) throw new Error("出版品 ID 格式錯誤。");
+  const base = path.join(root, "reports", `wiki-health-${publicationId ? `${publicationId}-` : ""}current`);
+  return { json: `${base}.json`, markdown: `${base}.md` };
+}
 
 function walk(root) {
   return fs.readdirSync(root, { withFileTypes: true }).flatMap((entry) => {
@@ -58,7 +61,7 @@ export function publicationFor(file, publications) {
 
 export function assessPage(page) {
   const data = page.data ?? {};
-  if (/索引/.test(page.file) || /索引/.test(page.title ?? "")) return null;
+  if (isNavigationPage(page)) return null;
   const sources = Array.isArray(data.sources) ? data.sources : [];
   const official = sources.length > 0 && sources.every((source) => source?.authority === "官方");
   const locatable = sources.length > 0 && sources.every((source) => typeof source?.file === "string" && typeof source?.locator === "string" && source.locator.trim());
@@ -109,7 +112,7 @@ function hasNamedRuleText(value, englishName) {
 function mirrorRuleTextFor(page, cache) {
   // Legacy titles append a localized status inside the English-name
   // parentheses, e.g. "Earth Tremor，2014 Legacy".
-  const englishName = String(page.data?.title ?? "").match(/\(([^()]+)\)$/)?.[1]?.split(/[，,]/u)[0]?.trim();
+  const englishName = englishTitle(page.data?.title);
   if (!englishName) return null;
   const mirrorSources = (Array.isArray(page.data?.sources) ? page.data.sources : []).filter((source) => source?.authority === "官方" && source?.translation === "none" && typeof source?.file === "string" && source.file.startsWith("原始資料/外部來源鏡像/") && source.file.endsWith(".json"));
   if (!mirrorSources.length) return null;
@@ -130,7 +133,7 @@ function mirrorRuleTextFor(page, cache) {
 }
 
 export function buildHealthReport({ pages, manifest, publications, publicationId = null, generatedAt = new Date().toISOString() }) {
-  const filteredPages = publicationId ? pages.filter((page) => page.publication === publicationId) : pages;
+  const filteredPages = publicationId ? pages.filter((page) => page.publication === publicationId || (page.data?.sources ?? []).some(source => publicationFor(source.file ?? "", publications) === publicationId)) : pages;
   const candidates = filteredPages.map(assessPage).filter(Boolean);
   const legacyBacklog = filteredPages
     .filter((page) => page.data?.ruleset === "2014"
@@ -162,7 +165,9 @@ export function buildHealthReport({ pages, manifest, publications, publicationId
     .map((source) => ({ ...source, priority: sourcePriority(source) }))
     .filter((source) => !publicationId || source.publication === publicationId);
   return {
-    schema_version: 1, generated_at: generatedAt, publication: publicationId,
+    schema_version: 2, generated_at: generatedAt, publication: publicationId,
+    scope: { type: publicationId ? "publication" : "global", publication: publicationId, selection: "entity_id 或來源登錄對應；同頁去重" },
+    source_status: { inspected_at: manifest.generated_at ?? generatedAt, mode: "live-read-only", total: manifest.sources.filter(source => !publicationId || publicationFor(source.file, publications) === publicationId).length, by_status: countBy(manifest.sources.filter(source => !publicationId || publicationFor(source.file, publications) === publicationId), source => source.status ?? "unknown") },
     pages: { total: filteredPages.length, by_category: countBy(filteredPages, (page) => page.data?.category), by_version: countBy(filteredPages, (page) => page.data?.version), by_confidence: countBy(filteredPages, (page) => page.data?.confidence) },
     candidates: {
       by_status: countBy(candidates, (candidate) => candidate.status),
@@ -182,11 +187,9 @@ function markdown(report) {
 
 function main() {
   const args = process.argv.slice(2); const index = args.indexOf("--publication");
-  if (args.some((arg, i) => arg !== "--publication" && i !== index + 1)) throw new Error("僅支援 --publication ID。");
+  if (args.some((arg, i) => !["--publication", "--apply"].includes(arg) && !(index >= 0 && i === index + 1))) throw new Error("僅支援 --publication ID、--apply。");
   const publicationId = index < 0 ? null : args[index + 1];
-  if (index >= 0 && !publicationId) throw new Error("--publication 必須指定 ID。");
-  const refresh = spawnSync(process.execPath, ["scripts/core/wiki-maintenance.mjs", "manifest", "--update"], { cwd: ROOT, encoding: "utf8" });
-  if (refresh.status !== 0) throw new Error(refresh.stderr || "來源 manifest 更新失敗。");
+  if (index >= 0 && (!publicationId || publicationId.startsWith("--"))) throw new Error("--publication 必須指定 ID。");
   const registry = parseDocument(fs.readFileSync(path.join(ROOT, "config", "publications.yml"), "utf8")).toJS().publications;
   if (publicationId && !registry[publicationId]) throw new Error(`未知出版品：${publicationId}`);
   const mirrorCache = new Map();
@@ -197,9 +200,16 @@ function main() {
     const page = { file, title: data?.title ?? path.basename(file, ".md"), data, body: frontmatter?.body ?? text, publication };
     return { ...page, mirrorRuleText: mirrorRuleTextFor(page, mirrorCache) };
   });
-  const report = buildHealthReport({ pages, manifest: JSON.parse(fs.readFileSync(MANIFEST, "utf8")), publications: Object.entries(registry), publicationId });
+  const report = buildHealthReport({ pages, manifest: sourceManifestSnapshot(), publications: Object.entries(registry), publicationId });
+  const paths = healthReportPaths(ROOT, publicationId);
   const legacySection = `\n## 舊版未被取代佇列\n\n> [!NOTE]\n> 僅列出尚未核定、非魔物、2014 Legacy 且標示為 \`compatible\` 或 \`conditional\` 的條目；這是待維護佇列，不代表缺頁。\n\n- 總數：${report.legacy_backlog.total}\n\n| 類別 | 數量 |\n| :--- | ---: |\n${Object.entries(report.legacy_backlog.by_category).map(([name, count]) => `| ${name} | ${count} |`).join("\\n") || "| 無 | 0 |"}\n`;
-  fs.mkdirSync(path.dirname(REPORT_JSON), { recursive: true }); fs.writeFileSync(REPORT_JSON, `${JSON.stringify(report, null, 2)}\n`); fs.writeFileSync(REPORT_MD, markdown(report).replace("\n## 未引用來源", `${legacySection}\n## 未引用來源`));
-  console.log(`已覆寫 reports/wiki-health-current.json 與 .md：${report.pages.total} 頁，${report.unreferenced_sources.total} 筆未引用來源。`);
+  const scope = publicationId ?? "全庫";
+  const intro = `範圍：${scope}；來源狀態：本次唯讀掃描 ${report.source_status.total} 個檔案。\n\n> 檢查通過不代表全文已核實；核定候選仍需人工覆核。\n\n`;
+  if (args.includes("--apply")) {
+    fs.mkdirSync(path.dirname(paths.json), { recursive: true });
+    fs.writeFileSync(paths.json, `${JSON.stringify(report, null, 2)}\n`);
+    fs.writeFileSync(paths.markdown, markdown(report).replace("產生時間：", `${intro}產生時間：`).replace("\n## 未引用來源", `${legacySection.replaceAll("\\n", "\n")}\n## 未引用來源`));
+  }
+  console.log(`${args.includes("--apply") ? "已寫入" : "預覽（--apply 寫入）"} ${path.relative(ROOT, paths.json)} 與 .md；範圍：${scope}；${report.pages.total} 頁，${report.unreferenced_sources.total} 筆未引用來源。`);
 }
 if (process.argv[1] && import.meta.url === new URL(`file:///${path.resolve(process.argv[1]).replaceAll("\\", "/")}`).href) main();

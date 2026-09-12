@@ -6,6 +6,7 @@ import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { parseDocument } from "yaml";
 import { syncLoreIndexes } from "./lore-indexes.mjs";
+import { syncGenericIndexes } from "./generic-indexes.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const RAW_ROOT = path.join(ROOT, "原始資料");
@@ -229,19 +230,24 @@ export function belongsToPublication(file, publicationId, roots = publicationSou
   return roots.some((root) => normalized === root || normalized.startsWith(`${root}/`));
 }
 
+export function sourceManifestSnapshot() {
+  const previous = new Map(readPreviousManifest().map((record) => [record.file, record]));
+  const dispositions = readDispositions();
+  const sources = currentManifest();
+  return { schema_version: 1, generated_at: new Date().toISOString(), sources: sources.map((record) => ({
+    ...record,
+    disposition: dispositions.get(record.file) ?? null,
+    status: !previous.has(record.file) ? "new" : previous.get(record.file).sha256 === record.sha256 ? "unchanged" : "changed",
+  })) };
+}
+
 function manifestCommand(values, unabsorbedOnly = false) {
   const { options } = argumentsOf(values);
   const maximum = positiveInteger(options.get("--max"), 100);
   const publicationId = options.get("--publication");
   const publicationRoots = publicationId ? publicationSourceRoots(String(publicationId)) : null;
-  const previous = new Map(readPreviousManifest().map((record) => [record.file, record]));
-  const dispositions = readDispositions();
-  const sources = currentManifest();
-  const records = sources.map((record) => ({
-    ...record,
-    disposition: dispositions.get(record.file) ?? null,
-    status: !previous.has(record.file) ? "new" : previous.get(record.file).sha256 === record.sha256 ? "unchanged" : "changed",
-  }));
+  const snapshot = sourceManifestSnapshot();
+  const records = snapshot.sources;
   const scoped = publicationRoots ? records.filter((record) => belongsToPublication(record.file, publicationId, publicationRoots)) : records;
   const newFiles = scoped.filter((record) => record.status === "new");
   const changed = scoped.filter((record) => record.status === "changed");
@@ -249,7 +255,7 @@ function manifestCommand(values, unabsorbedOnly = false) {
   const unabsorbed = scoped.filter((record) => record.absorbed_by.length === 0 && !record.disposition);
   if (options.has("--update")) {
     fs.mkdirSync(CACHE_ROOT, { recursive: true });
-    fs.writeFileSync(MANIFEST, `${JSON.stringify({ schema_version: 1, sources: records }, null, 2)}\n`, "utf8");
+    fs.writeFileSync(MANIFEST, `${JSON.stringify(snapshot, null, 2)}\n`, "utf8");
   }
   if (options.has("--json")) {
     process.stdout.write(`${JSON.stringify({ publication: publicationId ?? null, total: scoped.length, new: newFiles, changed, excluded, unabsorbed }, null, 2)}\n`);
@@ -296,92 +302,19 @@ function autoIndexTargets(text) {
   return new Set(match ? wikiLinkTargets(match[0]) : []);
 }
 
-function pageTitle(file) {
-  const text = fs.readFileSync(file, "utf8");
-  return text.match(/^title:\s+"([^"]+)"/m)?.[1] ?? text.match(/^#\s+(.+)$/m)?.[1] ?? path.basename(file, ".md");
-}
-
-function backlinkPage(file, indexFile) {
-  let text = fs.readFileSync(file, "utf8");
-  const indexName = path.basename(indexFile, ".md");
-  if (wikiLinkTargets(text).includes(indexName)) return false;
-  const title = pageTitle(indexFile);
-  const link = `- [[${indexName}|${title}]]`;
-  if (/^## 🔗 相關連結\s*$/m.test(text)) text = text.replace(/^## 🔗 相關連結\s*$/m, `## 🔗 相關連結\n\n${link}`);
-  else text = `${text.trimEnd()}\n\n## 🔗 相關連結\n\n${link}\n`;
-  fs.writeFileSync(file, text, "utf8");
-  return true;
-}
-
 function indexesCommand(values) {
   const { options } = argumentsOf(values);
-  const apply = options.has("--apply");
-  const changedOnly = options.has("--changed");
-  const settingAt = values.indexOf("--setting");
-  const setting = settingAt >= 0 ? values[settingAt + 1] : null;
-  const changedDirectories = changedOnly ? changedWikiDirectories() : null;
-  const wikiNameCounts = new Map();
-  for (const file of walk(WIKI_ROOT).filter((file) => file.endsWith(".md"))) {
-    const name = path.basename(file, ".md");
-    wikiNameCounts.set(name, (wikiNameCounts.get(name) ?? 0) + 1);
-  }
-  let missingCount = 0;
-  let updatedCount = 0;
-  for (const indexFile of walk(WIKI_ROOT).filter((file) => file.endsWith("索引.md")).sort()) {
-    let indexText = fs.readFileSync(indexFile, "utf8");
-    if (/^index_scope:\s+"curated"\s*$/m.test(indexText)) continue;
-    // 戰役設定的主題索引由 lore-indexes.mjs 管理，避免兩個自動區塊互相重複。
-    if (relative(indexFile).startsWith("wiki/戰役設定/") && /^lore_type:\s+"索引"\s*$/m.test(indexText)) continue;
-    const directory = path.dirname(indexFile);
-    const directoryRel = relative(directory);
-    if (changedOnly && !changedDirectories.has(directoryRel)) continue;
-    const siblings = fs.readdirSync(directory, { withFileTypes: true })
-      .filter((entry) => entry.isFile() && entry.name.endsWith(".md") && !entry.name.endsWith("索引.md"))
-      .map((entry) => path.join(directory, entry.name));
-    const autoTargets = autoIndexTargets(indexText);
-    const manualText = indexText.replace(/\n?<!-- AUTO-INDEX:START -->[\s\S]*?<!-- AUTO-INDEX:END -->\n?/, "\n");
-    const manualTargets = new Set(wikiLinkTargets(manualText));
-    const existing = new Set([...manualTargets, ...autoTargets]);
-    const missing = siblings.filter((file) => !existing.has(path.basename(file, ".md")));
-    missingCount += missing.length;
-    if (!apply) {
-      for (const file of missing) process.stdout.write(`${relative(indexFile)} 缺少 ${path.basename(file)}\n`);
-      continue;
-    }
-    const start = "<!-- AUTO-INDEX:START -->";
-    const end = "<!-- AUTO-INDEX:END -->";
-    const managed = siblings.filter((file) => {
-      const name = path.basename(file, ".md");
-      return autoTargets.has(name) || !manualTargets.has(name);
-    });
-    const lines = managed.map((file) => {
-      const name = path.basename(file, ".md");
-      const target = wikiNameCounts.get(name) === 1 ? name : relative(file).replace(/\.md$/u, "");
-      return `- [[${target}|${pageTitle(file)}]]`;
-    });
-    const block = lines.length ? `${start}\n## 自動維護條目\n\n${lines.join("\n")}\n${end}` : "";
-    const pattern = /\n?<!-- AUTO-INDEX:START -->[\s\S]*?<!-- AUTO-INDEX:END -->\n?/;
-    const match = indexText.match(pattern);
-    const next = match
-      ? (() => {
-        const before = indexText.slice(0, match.index).trimEnd();
-        const after = indexText.slice((match.index ?? 0) + match[0].length).replace(/^\r?\n+/, "");
-        const rebuilt = block ? `${before}\n\n${block}` : before;
-        return after ? `${rebuilt}\n\n${after}` : `${rebuilt}\n`;
-      })()
-      : block ? `${indexText.trimEnd()}\n\n${block}\n` : indexText;
-    const normalizedNext = next.replace(/(?:\r?\n){2,}$/u, "\n");
-    if (normalizedNext !== indexText) {
-      fs.writeFileSync(indexFile, normalizedNext, "utf8");
-      updatedCount += 1;
-      indexText = normalizedNext;
-    }
-    for (const file of missing) if (backlinkPage(file, indexFile)) updatedCount += 1;
-  }
-  process.stdout.write(`索引缺漏：${missingCount}；${apply ? `已更新檔案：${updatedCount}` : "使用 --apply 可自動補入"}\n`);
+  const apply = options.has("--apply"), strict = options.has("--strict");
+  if (apply && strict) throw new Error("--strict 是唯讀模式，不可搭配 --apply。");
+  const setting = options.get("--setting") ?? null;
+  if (setting === true) throw new Error("--setting 必須指定世界名稱。");
+  const generic = syncGenericIndexes({ apply, changedDirectories: options.has("--changed") ? changedWikiDirectories() : null });
+  process.stdout.write(`索引缺漏：${generic.missing}；${apply ? "已更新" : "待更新"}：${generic.changes.length}\n`);
+  for (const change of generic.changes) process.stdout.write(`- ${change.file}\n`);
   const lore = syncLoreIndexes({ apply, setting });
   process.stdout.write(`戰役索引故事頁：${lore.pages}；${apply ? "已更新" : "待更新"}：${lore.changes.length}\n`);
   for (const file of lore.changes) process.stdout.write(`- ${file}\n`);
+  if (strict && (generic.changes.length || lore.changes.length)) process.exitCode = 1;
 }
 
 function help() {
