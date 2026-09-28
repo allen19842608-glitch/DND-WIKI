@@ -86,6 +86,28 @@ test("FTD 平鋪子職進入共用候選器，龍裔特殊結構仍明列待處�
   assert.equal(subclasses.parser, "scripts/ingest/ingest-classes.mjs");
   assert.equal(species.adapter_status, "incomplete");
   assert.match(species.reason, /三份龍裔變體/);
+  const lore = adapters.find((item) => item.category === "戰役設定");
+  assert.equal(lore.adapter_status, "ready_for_preview");
+  assert.equal(lore.parser, "scripts/ingest/ingest-lore.mjs");
+});
+
+test("FTD 多元宇宙來源由設定式共用預覽盤點，已引用來源不重製候選", (context) => {
+  const directory = fs.mkdtempSync(path.join(ROOT, "reports", "test-ftd-lore-"));
+  context.after(() => fs.rmSync(directory, { recursive: true, force: true }));
+  const report = path.join(directory, "plan.json");
+  const result = spawnSync(process.execPath, ["scripts/core/wiki-tools.mjs", "preview", "--category", "戰役設定",
+    "--publication", "FTD2021", "--report", path.relative(ROOT, report)], { cwd: ROOT, encoding: "utf8" });
+  assert.equal(result.status, 0, result.stderr);
+  const plan = JSON.parse(fs.readFileSync(report, "utf8"));
+  assert.equal(plan.changes.length, 0);
+  assert.ok(plan.results.some((item) => item.status === "matched" && item.target === "wiki/戰役設定/多元宇宙/世界觀/第一世界.md"));
+  assert.ok(plan.results.some((item) => item.status === "out_of_scope"));
+  assert.ok(plan.results.every((item) => ["matched", "out_of_scope"].includes(item.status)));
+  assert.ok(plan.source_fingerprints["原始資料/費資本的巨龍寶庫/第一世界.md"]);
+  assert.ok(plan.source_fingerprints["原始資料/費資本的巨龍寶庫/遊戲中龍/龍之冒險.md"]);
+  assert.ok(plan.source_fingerprints["原始資料/外部來源鏡像/FTD2021/book-ftd.json"]);
+  assert.ok(plan.dependency_fingerprints["config/ingest-profiles/FTD2021.yml"]);
+  assert.ok(plan.dependency_fingerprints["config/lore.yml"]);
 });
 
 test("FTD 平鋪子職由共用預覽逐實體盤點；無自身英文頁碼不能產生候選", (context) => {

@@ -30,6 +30,33 @@ test("chapter or subclass-section page is never inherited", () => {
   });
 });
 
+test("戰役設定只取英文鏡像同名實體節點自身頁碼", () => {
+  const lore = { data: [{ type: "section", name: "Chapter", page: 5, entries: [
+    { type: "section", name: "The First World", page: 6, entries: [
+      { type: "entries", name: "A Dragon Legend", entries: ["text"] },
+    ] },
+  ] }] };
+  assert.deepEqual(findMirrorEntityPage(lore, { english: "The First World", kind: "lore" }), {
+    status: "matched", page: 6,
+  });
+  assert.deepEqual(findMirrorEntityPage(lore, { english: "A Dragon Legend", kind: "lore" }), {
+    status: "ambiguous", reason: "english_mirror_entity_page_unresolved",
+  });
+  lore.data[0].entries.push({ type: "entries", name: "The First World", page: 9 });
+  assert.deepEqual(findMirrorEntityPage(lore, { english: "The First World", kind: "lore" }), {
+    status: "conflict", reason: "english_mirror_entity_not_unique",
+  });
+  lore.data[0].entries[1].source = "OTHER";
+  assert.deepEqual(findMirrorEntityPage(lore, { english: "The First World", kind: "lore", source: "FTD" }), {
+    status: "matched", page: 6,
+  });
+  const ftd = mirrorEntityPage({ root: ROOT, profile: loadIngestProfile("FTD2021"), publicationId: "FTD2021",
+    english: "The First World", kind: "lore" });
+  assert.equal(ftd.status, "matched");
+  assert.equal(ftd.page, 6);
+  assert.match(ftd.locator, /p\. 6：The First World/u);
+});
+
 test("FTD 型 tag 子職也必須使用 statblock 自身頁碼", () => {
   const tagged = { data: [{ type: "section", page: 14, entries: [
     { type: "statblock", tag: "subclass", name: "Drakewarden", className: "Ranger" },

@@ -41,7 +41,8 @@ export function partitionTargetConflicts(changes, results = []) {
  * writing the workspace.  The returned changes retain each primary candidate's
  * on-disk `before` text, so the common transaction can detect stale plans.
  */
-export function withIndexEffects(changes, { root, source = "index-candidates" } = {}) {
+export function withIndexEffects(changes, { root, source = "index-candidates", includeStatuses = ["ready"] } = {}) {
+  const included = new Set(includeStatuses);
   const primary = new Map();
   for (const change of changes) {
     const previous = primary.get(change.target);
@@ -50,18 +51,20 @@ export function withIndexEffects(changes, { root, source = "index-candidates" } 
     }
     primary.set(change.target, change);
   }
-  const changedDirectories = new Set(changes.filter((change) => change.status === "ready")
+  const changedDirectories = new Set(changes.filter((change) => included.has(change.status))
     .map((change) => path.posix.dirname(change.target)));
   if (!changedDirectories.size) return [...primary.values()];
   const byFile = new Map(readWikiPages(root).map((page) => [page.file, page]));
   for (const change of primary.values()) {
-    if (change.status !== "ready") continue;
+    if (!included.has(change.status)) continue;
     if (change.operation === "delete") byFile.delete(change.target);
     else if (typeof change.after === "string") {
       const existing = byFile.get(change.target) ?? { absolute: path.join(root, change.target), file: change.target, text: "", data: null, body: "" };
       byFile.set(change.target, pageWithText(existing, change.after));
     }
   }
+  const effectStatus = changes.some((change) => included.has(change.status) && change.status === "manual_review")
+    ? "manual_review" : "ready";
   for (const effect of planGenericIndexes([...byFile.values()], { changedDirectories }).changes) {
     const original = primary.get(effect.file);
     const absolute = path.join(root, effect.file);
@@ -73,7 +76,7 @@ export function withIndexEffects(changes, { root, source = "index-candidates" } 
       operation: before === null ? "create" : "update",
       source: original?.source ?? source,
       locator: original?.locator ?? null,
-      status: "ready",
+      status: effectStatus,
     });
   }
   return [...primary.values()];

@@ -51,10 +51,17 @@ export function parseFlatPlayerOptionSource(text, { kind, chinese, sourceEnglish
       base.traits.push({ chinese: trait.replace(/^·\s*/u, ""), nested: /^·/u.test(trait), locator: locator(index, trait) });
       continue;
     }
-    const unmarked = lines[index].match(/^([^\s#*|>][^。]{1,18})。/u)?.[1]?.trim();
+    const plainHeading = lines[index].match(/^([^\s#*|>][^。]{1,18})。(.*)$/u);
+    const unmarked = plainHeading?.[1]?.trim();
     if (unmarked && unmarked !== "你擁有以下種族特質"
       && /(?:吐息|特質|抗性|防護|起源|心智|之翼)/u.test(unmarked)) {
-      (base.unmarked_traits ??= []).push({ chinese: unmarked, locator: locator(index, unmarked) });
+      const next = lines.slice(index + 1, index + 5).find((line) => line.trim());
+      if (/^\d+級起，/u.test(plainHeading[2]) && /^\*\*·\s*[^*]+。\*\*/u.test(next ?? "")) {
+        base.traits.push({ chinese: unmarked, nested: false, marker: "plain_heading",
+          locator: locator(index, unmarked) });
+      } else {
+        (base.unmarked_traits ??= []).push({ chinese: unmarked, locator: locator(index, unmarked) });
+      }
     }
   }
   if (base.traits.length < 4 || new Set(base.traits.map((item) => item.chinese)).size !== base.traits.length

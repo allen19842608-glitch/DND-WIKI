@@ -111,6 +111,12 @@ navigation:
     assert.ok(virtual.has("wiki/戰役設定/龍槍/世界觀/世界觀索引.md"));
     assert.ok(virtual.has("wiki/戰役設定/戰役設定索引.md"));
     assert.match(virtual.get(candidateTarget).after, /世界觀索引/);
+    const review = materializeLoreIndexEffects(new Map([[candidateTarget, {
+      before: null, after: entry("候選概覽", "龍槍"), source: "原始資料/candidate.md",
+      locator: "p. 3", status: "manual_review", review: ["正文待核實"],
+    }]]), { root, setting: "龍槍" });
+    assert.equal(review.get("wiki/戰役設定/龍槍/世界觀/世界觀索引.md")?.status, "manual_review");
+    assert.equal(review.get("wiki/戰役設定/戰役設定索引.md")?.status, "manual_review");
 
     const preview = syncLoreIndexes({ root, apply: false, setting: "龍槍" });
     assert.ok(preview.candidate_changes.some((change) => change.file === "wiki/戰役設定/龍槍/世界觀/世界觀索引.md" && change.before === null && change.after.includes("龍槍概覽")));

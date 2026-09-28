@@ -22,6 +22,7 @@ import {
 import { withIndexEffects } from "../core/index-candidates.mjs";
 import { syncLoreIndexes } from "../core/lore-indexes.mjs";
 import { lintWiki } from "../core/wiki-lint.mjs";
+import { mirrorEntityPage, mirrorEvidenceFiles } from "../core/mirror-entity-page.mjs";
 
 const SCRIPT = fileURLToPath(import.meta.url);
 const CURATED_LAYOUT = JSON.parse(fs.readFileSync(path.join(ROOT, "config/multiverse-layout.json"), "utf8"));
@@ -209,56 +210,49 @@ function sourceEntry(source, locator, publication) {
   };
 }
 
-function newPage(candidate, publication, world, loreType) {
+function newPage(candidate, publication, world, loreType, mirror) {
   const displayTitle = candidate.english ? `${candidate.chinese} (${candidate.english})` : candidate.chinese;
   const source = sourceEntry(candidate.source, candidate.locator, publication);
   const spoiler = /冒險|劇情|祕密|秘密|結局|真相|身分|身份/u.test(candidate.body)
     ? "> [!warning] 劇透警告\n> 本頁含有冒險劇情、祕密身分或結局資訊。\n\n"
     : "";
-  return `---\ntitle: "${quote(displayTitle)}"\nentity_id: "entry:${candidate.publicationId}:setting:${crypto.createHash("sha1").update(`${candidate.source}:${candidate.locator}`).digest("hex").slice(0, 10)}"\nconcept_id: "concept:setting:${world.id}:${loreType.id}:${slug(candidate.english ?? candidate.chinese, candidate.chinese)}"\nruleset: "${publication.ruleset}"\ncontent_scope: "${publication.content_scope}"\nstatus: "${publication.status}"\ncategory: "戰役設定"\nsetting: "${quote(candidate.setting)}"\nlore_type: "${quote(candidate.type)}"\nsetting_continuity: "continuous"\nversion: "${versionForPublication(publication)}"\ntags:\n  - "${quote(publication.wiki.tag)}"\n  - "戰役設定_${quote(candidate.setting)}"\nsources:\n  - file: "${quote(source.file)}"\n    locator: "${quote(source.locator)}"\n    authority: "${quote(source.authority)}"\n    translation: "${quote(source.translation)}"\nsource_type: "official"\nconfidence: "interpreted"\nrules_sources:\n  - "${quote(publication.canonical_rules_source)}"\nerrata: []\nupdated: "${today()}"\n---\n\n# ${candidate.chinese}\n\n${spoiler}## 設定資料\n\n${candidate.body || "本條目目前僅建立來源定位；內容仍需依原始資料補充。"}\n\n## 來源差異與不確定性\n\n- 本頁保存 ${publication.year} 年來源所述的世界觀；跨出版品差異應保留來源與適用範圍。\n\n## 🔗 相關連結\n\n- [[戰役設定/${candidate.setting}/${candidate.type}/${candidate.type}索引|${candidate.type}索引]]\n- [[戰役設定/${candidate.setting}/${candidate.setting}索引|${candidate.setting}索引]]\n`;
+  const mirrorCitation = mirror.ok ? `  - file: "${quote(mirror.file)}"\n    locator: "${quote(mirror.locator)}"\n    url: "${quote(mirror.url)}"\n    authority: "官方"\n    translation: "none"\n` : "";
+  return `---\ntitle: "${quote(displayTitle)}"\nentity_id: "entry:${candidate.publicationId}:setting:${crypto.createHash("sha1").update(`${candidate.source}:${candidate.locator}`).digest("hex").slice(0, 10)}"\nconcept_id: "concept:setting:${world.id}:${loreType.id}:${slug(candidate.english ?? candidate.chinese, candidate.chinese)}"\nruleset: "${publication.ruleset}"\ncontent_scope: "${publication.content_scope}"\nstatus: "${publication.status}"\ncategory: "戰役設定"\nsetting: "${quote(candidate.setting)}"\nlore_type: "${quote(candidate.type)}"\nsetting_continuity: "continuous"\nversion: "${versionForPublication(publication)}"\ntags:\n  - "${quote(publication.wiki.tag)}"\n  - "戰役設定_${quote(candidate.setting)}"\nsources:\n${mirrorCitation}  - file: "${quote(source.file)}"\n    locator: "${quote(source.locator)}"\n    authority: "${quote(source.authority)}"\n    translation: "${quote(source.translation)}"\nsource_type: "official"\nconfidence: "interpreted"\nrules_sources:\n  - "${quote(publication.canonical_rules_source)}"\nerrata: []\nupdated: "${today()}"\n---\n\n# ${candidate.chinese}\n\n${spoiler}## 設定資料\n\n${candidate.body || "本條目目前僅建立來源定位；內容仍需依原始資料補充。"}\n\n## 來源差異與不確定性\n\n- 本頁保存 ${publication.year} 年來源所述的世界觀；跨出版品差異應保留來源與適用範圍。\n\n## 🔗 相關連結\n\n- [[戰役設定/${candidate.setting}/${candidate.type}/${candidate.type}索引|${candidate.type}索引]]\n- [[戰役設定/${candidate.setting}/${candidate.setting}索引|${candidate.setting}索引]]\n`;
 }
 
-function addYamlListItem(text, field, item, beforeField) {
-  if (text.includes(`  - "${item}"`)) return text;
-  const marker = new RegExp(`^${beforeField}:`, "m");
-  return text.replace(marker, `  - "${quote(item)}"\n${beforeField}:`);
-}
-
-function promoteTag(text, tag) {
-  const match = text.match(/^tags:\r?\n((?:\s+- "[^"]+"\r?\n)+)sources:/m);
-  if (!match) return text;
-  const tags = [...match[1].matchAll(/^\s+- "([^"]+)"$/gm)].map((item) => item[1]);
-  const ordered = [tag, ...tags.filter((value) => value !== tag)];
-  return text.replace(match[0], `tags:\n${ordered.map((value) => `  - "${quote(value)}"`).join("\n")}\nsources:`);
-}
-
-function mergePage(existing, candidate, publication) {
-  if (existing.text.includes(`file: "${candidate.source}"`)) return existing.text;
+/** Existing lore is hand-curated. A new publication can only propose precise
+ * citations here; body, IDs, ruleset, AL and dates require separate review. */
+export function prepareExistingLoreCitation({ existing, candidate, publication, mirror }) {
+  const fields = existing.data;
+  if (fields?.category !== "戰役設定" || fields.setting !== candidate.setting) {
+    return { status: "conflict", reason: "existing_lore_identity_mismatch" };
+  }
+  if (!Array.isArray(fields.sources)) return { status: "incomplete", reason: "existing_lore_sources_unreadable" };
   const source = sourceEntry(candidate.source, candidate.locator, publication);
-  let next = existing.text.replace(/^source_type:/m, `  - file: "${quote(source.file)}"\n    locator: "${quote(source.locator)}"\n    authority: "${quote(source.authority)}"\n    translation: "${quote(source.translation)}"\nsource_type:`);
-  next = addYamlListItem(next, "rules_sources", publication.canonical_rules_source, "errata");
-  if (!next.includes(`  - "${publication.wiki.tag}"`)) next = next.replace(/^sources:/m, `  - "${quote(publication.wiki.tag)}"\nsources:`);
-  const years = (existing.data.rules_sources ?? []).flatMap((value) => String(value).match(/\b(20\d{2})\b/g) ?? []).map(Number);
-  if (!years.length || publication.year > Math.max(...years)) {
-    next = next
-      .replace(/^entity_id: "entry:[^:]+:(.+)"$/m, `entity_id: "entry:${candidate.publicationId}:$1"`)
-      .replace(/^ruleset: "[^"]+"$/m, `ruleset: "${publication.ruleset}"`)
-      .replace(/^content_scope: "[^"]+"$/m, `content_scope: "${publication.content_scope}"`)
-      .replace(/^status: "[^"]+"$/m, `status: "${publication.status}"`)
-      .replace(/^version: "[^"]+"$/m, `version: "${versionForPublication(publication)}"`);
-    next = promoteTag(next, publication.wiki.tag);
+  const entries = [
+    ...(mirror.ok ? [{ file: mirror.file, locator: mirror.locator, url: mirror.url,
+      authority: "官方", translation: "none" }] : []), source,
+  ];
+  const additions = [];
+  for (const entry of entries) {
+    const found = fields.sources.filter((item) => item?.file === entry.file && item.locator === entry.locator);
+    if (found.length > 1 || found.length && ["url", "authority", "translation"].some((key) =>
+      (found[0][key] ?? undefined) !== (entry[key] ?? undefined))) {
+      return { status: "conflict", reason: "existing_lore_citation_conflict" };
+    }
+    if (!found.length) additions.push(entry);
   }
-  next = next.replace(/^updated: "[^"]+"$/m, `updated: "${today()}"`);
-  // 英文鏡像是校對與完整性基準；既有中文頁只新增可定位來源，避免把未整理
-  // 的整段原文再次複製進 Wiki。中文正文的實質補充仍應由人工摘要後寫入。
-  if (candidate.source.startsWith("原始資料/外部來源鏡像/")) return next;
-  const heading = `## 《${publication.title_zh}》（${publication.year}）補充`;
-  const supplement = `${heading}\n\n${candidate.body}`;
-  if (!next.includes(heading)) {
-    if (/^## 🔗 相關連結\s*$/m.test(next)) next = next.replace(/^## 🔗 相關連結\s*$/m, `${supplement}\n\n## 🔗 相關連結`);
-    else next = `${next.trimEnd()}\n\n${supplement}\n`;
-  }
-  return next;
+  if (!additions.length) return { status: "unchanged", after: existing.text };
+  const headings = [...existing.text.matchAll(/^sources:\r?\n/gm)];
+  if (headings.length !== 1) return { status: "incomplete", reason: "existing_lore_source_layout_unsupported" };
+  const newline = existing.text.includes("\r\n") ? "\r\n" : "\n";
+  const citation = additions.map((entry) => [
+    `  - file: "${quote(entry.file)}"`, `    locator: "${quote(entry.locator)}"`,
+    ...(entry.url ? [`    url: "${quote(entry.url)}"`] : []),
+    `    authority: "${quote(entry.authority)}"`, `    translation: "${quote(entry.translation)}"`, "",
+  ].join(newline)).join("");
+  const insertion = headings[0].index + headings[0][0].length;
+  return { status: "ready", after: existing.text.slice(0, insertion) + citation + existing.text.slice(insertion) };
 }
 
 function monsterCatalog() {
@@ -267,20 +261,30 @@ function monsterCatalog() {
   for (const record of records) {
     const title = record.data.title ?? path.basename(record.file, ".md");
     const parsed = splitBilingual(title);
-    for (const value of [parsed.chinese, parsed.english, title]) if (value) byName.set(normalize(value), record);
+    for (const value of [parsed.chinese, parsed.english, title]) if (value) {
+      const key = normalize(value);
+      if (!byName.has(key)) byName.set(key, new Map());
+      byName.get(key).set(record.rel, record);
+    }
   }
   return byName;
 }
 
-function statLinks(candidate, monsters) {
+export function loreStatLinks(candidate, monsters) {
   if (candidate.type !== "人物") return [];
   const results = [];
   for (const match of candidate.body.matchAll(/\*\*([^*]{2,100})\*\*[^。\n]{0,40}(?:數據卡|資料卡)/gu)) {
     const parsed = splitBilingual(match[1]);
-    const monster = monsters.get(normalize(parsed.english)) ?? monsters.get(normalize(parsed.chinese));
-    results.push(monster
-      ? { status: "linked", name: match[1], target: monster.rel.replace(/^wiki\//, "").replace(/\.md$/, "") }
-      : { status: "missing-stat-link", name: match[1] });
+    const matches = new Map();
+    for (const key of [parsed.english, parsed.chinese].filter(Boolean)) {
+      for (const monster of monsters.get(normalize(key))?.values() ?? []) matches.set(monster.rel, monster);
+    }
+    const found = [...matches.values()];
+    if (found.length === 1) results.push({ status: "linked", name: match[1],
+      target: found[0].rel.replace(/^wiki\//, "").replace(/\.md$/, "") });
+    else if (found.length > 1) results.push({ status: "ambiguous-stat-link", name: match[1],
+      candidates: found.map((monster) => monster.rel).sort() });
+    else results.push({ status: "missing-stat-link", name: match[1] });
   }
   return results;
 }
@@ -305,35 +309,51 @@ function addMonsterBacklink(monsterRel, candidate, changes) {
     : `${text.trimEnd()}\n\n## 🔗 相關連結\n\n${link}\n`;
   changes.set(targetRel, {
     before: previous?.before ?? fs.readFileSync(file, "utf8"), after: text,
-    source: candidate.source, locator: candidate.locator, status: previous?.status ?? "ready", review: previous?.review ?? [],
+    source: candidate.source, locator: candidate.locator,
+    status: previous?.status === "manual_review" || changes.get(candidate.destinationRel)?.status === "manual_review"
+      ? "manual_review" : "ready",
+    review: previous?.review ?? [],
   });
 }
 
 function exactMirrorPage(candidate, profile) {
-  const declared = profile.canonical_mirror?.entity_pages;
-  const names = [candidate.english, candidate.chinese].filter(Boolean);
-  const entry = names.map((name) => declared?.[name]).find(Boolean);
-  const page = typeof entry === "object" ? entry.page : entry;
-  if (Number.isInteger(page) && page > 0) return { ok: true, page };
-  const mirror = profile.canonical_mirror?.output_root;
-  return {
-    ok: false,
-    reason: mirror
-      ? `英文鏡像 ${mirror} 尚未為「${candidate.english ?? candidate.chinese}」登錄實體精確頁碼；章節起始頁不可替代。`
-      : `出版品未登錄英文鏡像實體頁碼，無法依「${candidate.english ?? candidate.chinese}」核定。`,
+  if (!candidate.english) return { ok: false, reason: "中文來源未標示可唯一配對的英文實體名稱；不可由中文名稱猜測鏡像頁碼。" };
+  const result = mirrorEntityPage({ root: ROOT, profile, publicationId: candidate.publicationId,
+    english: candidate.english, kind: "lore" });
+  return result.status === "matched" ? { ...result, ok: true } : {
+    ok: false, status: result.status, reason: `英文鏡像實體「${candidate.english}」未能取得自身頁碼（${result.reason}）；不得沿用父章節頁碼。`,
   };
 }
 
+/** A cited source locator is a traceability match, not a content comparison. */
+export function loreCandidateOutcome(candidate, hasChange) {
+  const base = { source: candidate.source, target: candidate.destinationRel };
+  if (candidate.status === "排除") return { ...base, status: "out_of_scope", reason: candidate.reason };
+  if (candidate.status === "來源衝突") return { ...base, status: "conflict", reason: candidate.reason };
+  if (candidate.status === "別名") return { ...base, status: "ambiguous", reason: candidate.reason };
+  if (candidate.status === "譯名待確認" || candidate.review?.length) {
+    return { ...base, status: "manual_review", reason: [...(candidate.review ?? []),
+      candidate.status === "譯名待確認" ? candidate.reason : null].filter(Boolean).join("；") };
+  }
+  if (hasChange) return { ...base, status: "preview", reason: null };
+  if (candidate.status === "合併" && candidate.reason.includes("已引用相同來源定位")) {
+    return { ...base, status: "matched", reason: "既有頁已引用相同來源定位；正文尚未逐項核實。" };
+  }
+  return { ...base, status: "incomplete", reason: "來源已辨識但未形成候選；須核對目標頁與來源定位。" };
+}
+
 export function materializeLoreIndexEffects(changes, { setting, root = ROOT }) {
-  const ready = [...changes.entries()].filter(([target, change]) => target.startsWith("wiki/戰役設定/") && change.status === "ready");
-  if (!ready.length) return changes;
+  const indexed = [...changes.entries()].filter(([target, change]) => target.startsWith("wiki/戰役設定/")
+    && ["ready", "manual_review"].includes(change.status));
+  if (!indexed.length) return changes;
+  const indexStatus = indexed.some(([, change]) => change.status === "manual_review") ? "manual_review" : "ready";
   const temporary = fs.mkdtempSync(path.join(os.tmpdir(), "dnd-wiki-lore-plan-"));
   try {
     const wiki = path.join(root, "wiki", "戰役設定");
     fs.cpSync(wiki, path.join(temporary, "wiki", "戰役設定"), { recursive: true });
     fs.mkdirSync(path.join(temporary, "config"), { recursive: true });
     fs.copyFileSync(path.join(root, "config", "lore.yml"), path.join(temporary, "config", "lore.yml"));
-    for (const [target, change] of ready) {
+    for (const [target, change] of indexed) {
       const destination = path.join(temporary, ...target.split("/"));
       fs.mkdirSync(path.dirname(destination), { recursive: true });
       fs.writeFileSync(destination, change.after, "utf8");
@@ -346,7 +366,7 @@ export function materializeLoreIndexEffects(changes, { setting, root = ROOT }) {
       const original = changes.get(target);
       changes.set(target, {
         before: original?.before ?? before, after, source: original?.source ?? "lore-index",
-        locator: original?.locator ?? `${setting} 索引與反向連結`, status: original?.status ?? "ready", review: original?.review ?? [],
+        locator: original?.locator ?? `${setting} 索引與反向連結`, status: original?.status ?? indexStatus, review: original?.review ?? [],
       });
     }
     return changes;
@@ -516,7 +536,7 @@ export function runLoreIngest(args = process.argv.slice(2)) {
   const selection = selectSourceFiles(sourceRoot, selectedProfile);
   const candidates = makeCandidates({ files: selection.included, publicationId, publication, profile: selectedProfile, sourceRoot, setting, typeOverride, loreConfig, only });
   const monsters = monsterCatalog();
-  for (const candidate of candidates) candidate.stat_links = statLinks(candidate, monsters);
+  for (const candidate of candidates) candidate.stat_links = loreStatLinks(candidate, monsters);
   const actionable = candidates.filter((candidate) => candidate.status === "新增"
     || (candidate.status === "合併" && !candidate.reason.includes("已引用相同來源定位")));
   const changes = new Map();
@@ -527,17 +547,30 @@ export function runLoreIngest(args = process.argv.slice(2)) {
     const existing = previous
       ? pageFromText(targetRel, previous.after)
       : candidate.target ? readPage(path.join(ROOT, ...candidate.target.split("/"))) : null;
-    let content = existing ? mergePage(existing, candidate, publication) : newPage(candidate, publication, candidate.world, candidate.loreType);
-    content = addStatBlockSection(content, candidate.stat_links);
+    const mirror = exactMirrorPage(candidate, profile);
+    const prepared = existing ? prepareExistingLoreCitation({ existing, candidate, publication, mirror }) : null;
+    if (prepared && !["ready", "unchanged"].includes(prepared.status)) {
+      candidate.review = [prepared.reason];
+      continue;
+    }
+    let content = existing ? prepared.after : newPage(candidate, publication, candidate.world, candidate.loreType, mirror);
+    if (!existing) content = addStatBlockSection(content, candidate.stat_links);
     const destinationRel = existing ? existing.rel : candidate.destinationRel;
     candidate.destinationRel = destinationRel;
-    const mirror = exactMirrorPage(candidate, profile);
     candidate.mirror_page = mirror.page ?? null;
-    candidate.review = mirror.ok ? [] : [mirror.reason];
+    candidate.review = [
+      ...(mirror.ok ? [] : [mirror.reason]),
+      ...(existing && !existing.data.rules_sources?.includes(publication.canonical_rules_source)
+        ? ["既有頁尚未列本出版品為已採用規則來源；須核定內容與版本後才可加入 rules_sources。"] : []),
+      existing
+        ? "既有頁只提出精確來源引註；正文、識別碼、版本、AL 與日期均保留，內容是否吸收須另行覆核。"
+        : "新頁正文、譯名與分類仍須逐項覆核；英文鏡像頁碼不等於內容核定。",
+    ];
     if (content === existing?.text) continue;
     changes.set(destinationRel, {
       before: previous?.before ?? existing?.text ?? null, after: content, source: candidate.source, locator: candidate.locator,
-      status: mirror.ok && previous?.status !== "manual_review" ? "ready" : "manual_review",
+      status: existing && mirror.ok && existing.data.rules_sources?.includes(publication.canonical_rules_source)
+        && previous?.status !== "manual_review" ? "ready" : "manual_review",
       review: [...(previous?.review ?? []), ...candidate.review],
     });
     if (!actionableByTarget.has(destinationRel)) actionableByTarget.set(destinationRel, []);
@@ -545,37 +578,36 @@ export function runLoreIngest(args = process.argv.slice(2)) {
   }
 
   for (const [target, group] of actionableByTarget) {
-    if (changes.get(target)?.status !== "ready") continue;
+    if (!["ready", "manual_review"].includes(changes.get(target)?.status)) continue;
     for (const candidate of group) {
       for (const stat of candidate.stat_links.filter((item) => item.status === "linked")) addMonsterBacklink(`${stat.target}.md`, candidate, changes);
     }
   }
   const withLoreIndexes = materializeLoreIndexEffects(changes, { setting, root: ROOT });
-  const plannedChanges = withIndexEffects(asCandidateChanges(withLoreIndexes), { root: ROOT, source: "lore-generic-index" });
+  const plannedChanges = withIndexEffects(asCandidateChanges(withLoreIndexes), {
+    root: ROOT, source: "lore-generic-index", includeStatuses: ["ready", "manual_review"],
+  });
   const plan = planCandidateBatch(plannedChanges, {
     root: ROOT,
     lint: lintWiki,
-    sourceFiles: selection.included.map(rel),
+    sourceFiles: [sourceRootRelative, ...selection.included.map(rel), ...selection.excluded.map((item) => rel(item.file)),
+      ...mirrorEvidenceFiles({ root: ROOT, profile, kind: "lore" })],
+    dependencyFiles: [
+      `config/ingest-profiles/${publicationId}.yml`, "config/publications.yml", "config/lore.yml",
+      "config/multiverse-layout.json", "config/ingest-dispatch.json",
+    ],
   });
   const excluded = selection.excluded.map((item) => ({
     id: `${publicationId}:${crypto.createHash("sha1").update(rel(item.file)).digest("hex").slice(0, 10)}`,
     source: rel(item.file), status: "out_of_scope", reason: item.reason,
   }));
-  const missingStat = candidates.flatMap((candidate) => candidate.stat_links
-    .filter((item) => item.status === "missing-stat-link")
-    .map((item) => ({ candidate: candidate.id, source: candidate.source, name: item.name, code: "missing-stat-link" })));
+  const statReview = candidates.flatMap((candidate) => candidate.stat_links
+    .filter((item) => ["missing-stat-link", "ambiguous-stat-link"].includes(item.status))
+    .map((item) => ({ candidate: candidate.id, source: candidate.source, name: item.name,
+      code: item.status, ...(item.candidates ? { targets: item.candidates } : {}) })));
   const publicCandidates = candidates.map(({ body, world, loreType, ...candidate }) => candidate);
-  const results = [
-    ...publicCandidates.map((candidate) => {
-      const target = candidate.destinationRel;
-      const change = changes.get(target);
-      if (candidate.status === "排除") return { source: candidate.source, target, status: "out_of_scope", reason: candidate.reason };
-      if (candidate.status === "來源衝突") return { source: candidate.source, target, status: "conflict", reason: candidate.reason };
-      if (candidate.status === "譯名待確認" || candidate.review?.length) return { source: candidate.source, target, status: "manual_review", reason: [...(candidate.review ?? []), candidate.status === "譯名待確認" ? candidate.reason : null].filter(Boolean).join("；") };
-      return { source: candidate.source, target, status: change ? "preview" : "matched", reason: change ? null : "內容與既有頁相同。" };
-    }),
-    ...excluded,
-  ];
+  const results = [...publicCandidates.map((candidate) => loreCandidateOutcome(candidate,
+    changes.has(candidate.destinationRel))), ...excluded];
   const report = normalizeCandidatePlanResults({
     ...plan,
     category: "戰役設定",
@@ -585,11 +617,11 @@ export function runLoreIngest(args = process.argv.slice(2)) {
     candidate_summary: { candidates: candidates.length, actionable_candidates: actionable.length, excluded: excluded.length + candidates.filter((item) => item.status === "排除").length },
     errors: publicCandidates.filter((item) => item.status === "來源衝突"),
     warnings: [
-      ...publicCandidates.filter((item) => item.status === "譯名待確認"),
-      ...missingStat,
+      ...publicCandidates.filter((item) => ["譯名待確認", "別名"].includes(item.status)),
+      ...statReview,
     ],
-    information: publicCandidates.filter((item) => ["新增", "合併", "別名"].includes(item.status)),
-    manual_review: publicCandidates.filter((item) => ["來源衝突", "譯名待確認"].includes(item.status)),
+    information: publicCandidates.filter((item) => ["新增", "合併"].includes(item.status)),
+    manual_review: publicCandidates.filter((item) => ["來源衝突", "譯名待確認", "別名"].includes(item.status)),
     candidates: [...publicCandidates, ...excluded], results,
   });
   if (diff && sourceMode === "canonical") process.stdout.write(`英文鏡像候選差異：${plan.summary.ready} 個可套用、${plan.summary.manual_review} 個待人工覆核；完整差異請使用 --report。\n`);
@@ -606,7 +638,10 @@ export function runLoreIngest(args = process.argv.slice(2)) {
     const count = [...candidates, ...excluded].filter((item) => item.status === status).length;
     if (count) process.stdout.write(`- ${status}：${count}\n`);
   }
-  if (missingStat.length) process.stdout.write(`- missing-stat-link：${missingStat.length}\n`);
+  for (const status of ["missing-stat-link", "ambiguous-stat-link"]) {
+    const count = statReview.filter((item) => item.code === status).length;
+    if (count) process.stdout.write(`- ${status}：${count}\n`);
+  }
   return report;
 }
 

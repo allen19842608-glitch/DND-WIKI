@@ -20,12 +20,21 @@ test("FTD 平鋪子職逐項取得等級與定位，龍獸夥伴數據卡不被�
   assert.equal(entities[1].structure.features.some((item) => item.english === "Actions"), false);
 });
 
-test("FTD 龍裔來源逐項列特質，未標記的金屬龍吐息維持待覆核", () => {
+test("FTD 龍裔來源逐項列特質，金屬龍吐息以相鄰子項辨識未加粗標題", () => {
   const profile = loadIngestProfile("FTD2021");
   const entities = configuredFlatPlayerOptions({ root: ROOT, profile, category: "species" });
-  assert.deepEqual(entities.map((item) => item.structure.status), ["parsed", "parsed", "incomplete"]);
-  assert.deepEqual(entities.map((item) => item.structure.traits.length), [7, 8, 8]);
-  assert.deepEqual(entities[2].structure.unmarked_traits.map((item) => item.chinese), ["金屬龍吐息武器"]);
+  assert.deepEqual(entities.map((item) => item.structure.status), ["parsed", "parsed", "parsed"]);
+  assert.deepEqual(entities.map((item) => item.structure.traits.length), [7, 8, 9]);
+  assert.deepEqual(entities[2].structure.traits.filter((item) => item.marker === "plain_heading")
+    .map((item) => [item.chinese, item.locator]), [["金屬龍吐息武器", "L22 標題：金屬龍吐息武器"]]);
+  assert.equal(entities[2].structure.unmarked_traits, undefined);
+  const unsupported = parseFlatPlayerOptionSource([
+    "# 測試龍裔", "**測試龍裔 Test Dragonborn**", "**生物類型。**類人生物。",
+    "**體型。**中型。", "**速度。**30 尺。", "**抗性。**抗性。",
+    "特殊吐息。5級起，你獲得吐息。", "下一段沒有巢狀子項。",
+  ].join("\n"), { kind: "species", chinese: "測試龍裔", sourceEnglish: "Test Dragonborn" });
+  assert.equal(unsupported.status, "incomplete");
+  assert.deepEqual(unsupported.unmarked_traits.map((item) => item.chinese), ["特殊吐息"]);
   assert.equal(parseFlatPlayerOptionSource("# 甲\n**乙 Other**", {
     kind: "species", chinese: "甲", sourceEnglish: "Other",
   }).reason, "flat_option_title_mismatch");

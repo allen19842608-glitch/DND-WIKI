@@ -45,15 +45,16 @@ export function mirrorEvidenceFiles({ root, profile, kind }) {
 
 /** A page belongs to the entity itself, never to an enclosing chapter. */
 export function findMirrorEntityPage(book, { english, kind, parentClass, source } = {}) {
-  if (!["class", "subclass", "species", "background", "feat", "magic-item"].includes(kind)) throw new Error(`不支援的鏡像實體類別：${kind}`);
+  if (!["class", "subclass", "species", "background", "feat", "magic-item", "lore"].includes(kind)) throw new Error(`不支援的鏡像實體類別：${kind}`);
   const matches = [];
   function visit(value) {
     if (!value || typeof value !== "object") return;
     if (!Array.isArray(value)
-      && value.type === "statblock"
       && value.name === english
-      && (kind === "class" ? value.tag === "class" : kind === "species" ? ["race", "species"].includes(value.tag) : kind === "background" ? value.tag === "background" : kind === "feat" ? value.tag === "feat" : kind === "magic-item" ? value.tag === "item" : value.prop === "subclass" || value.tag === "subclass")
-      && (!source || (["background", "magic-item"].includes(kind)
+      && (kind === "lore" ? ["section", "entries"].includes(value.type) : value.type === "statblock"
+        && (kind === "class" ? value.tag === "class" : kind === "species" ? ["race", "species"].includes(value.tag) : kind === "background" ? value.tag === "background" : kind === "feat" ? value.tag === "feat" : kind === "magic-item" ? value.tag === "item" : value.prop === "subclass" || value.tag === "subclass"))
+      && (kind === "lore" ? !source || !value.source || value.source.toLowerCase() === source.toLowerCase()
+        : !source || (["background", "magic-item"].includes(kind)
         ? value.source?.toLowerCase() === source.toLowerCase()
         : !value.source || value.source.toLowerCase() === source.toLowerCase()))
       && (kind !== "subclass" || !parentClass || value.className === parentClass)) {

@@ -25,6 +25,20 @@ test("候選索引效果只處理本批變更所屬目錄，不順手改寫無�
   assert.ok(!changes.some((change) => change.target.startsWith("wiki/B/")));
 });
 
+test("人工覆核的新頁會把索引一併列入候選，但不變成可直接套用", (context) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "dnd-review-index-"));
+  context.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  fs.mkdirSync(path.join(root, "wiki", "A"), { recursive: true });
+  fs.writeFileSync(path.join(root, "wiki", "A", "A索引.md"), '---\ntitle: "A索引"\n---\n# A索引\n');
+  const primary = { target: "wiki/A/新頁.md", before: null, after: '---\ntitle: "新頁"\n---\n# 新頁\n',
+    operation: "create", status: "manual_review" };
+  assert.equal(withIndexEffects([primary], { root }).length, 1);
+  const changes = withIndexEffects([primary], { root, includeStatuses: ["ready", "manual_review"] });
+  const index = changes.find((change) => change.target === "wiki/A/A索引.md");
+  assert.equal(index?.status, "manual_review");
+  assert.match(index.after, /新頁/u);
+});
+
 test("索引效果不得先吞掉同目標的衝突來源", () => {
   assert.throws(() => withIndexEffects([
     { target: "wiki/怪物/眼魔.md", before: null, after: "A", operation: "create", status: "manual_review", source: "原始資料/眼魔介紹.md" },
