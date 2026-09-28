@@ -75,6 +75,12 @@
       "replacement": "wiki:preview --category 職業 的特殊來源盤點；正文與可選特性仍須另行覆核",
       "verification": "TCE2020 49 份來源、六份補充、兩處標題歧異及隔離新書路徑測試"
     },
+    "scripts/core/sidekick-class-source.mjs": {
+      "purpose": "盤點協力者職業的 1–20 級表格、雙語特性及來源內部歧異，不產生規則正文",
+      "writes": "只讀原始資料並回傳逐實體結構及定位，不直接寫入 Wiki",
+      "replacement": "wiki:preview --category 職業 --publication TCE2020；缺自身頁碼或來源衝突時維持覆核",
+      "verification": "三種協力者職業、缺級、來源衝突、越界設定與真實共用預覽測試"
+    },
     "scripts/core/sibling-class-candidates.mjs": {
       "purpose": "將相鄰職業與子職來源唯一對應既有 Wiki 頁，只在英文鏡像標示實體自身頁碼時建立來源引註候選",
       "writes": "只讀 Wiki、原始資料及英文鏡像並回傳候選，不直接寫入 Wiki",

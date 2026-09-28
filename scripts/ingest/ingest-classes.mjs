@@ -10,6 +10,7 @@ import { resolveClassSourceTitle } from "../core/class-source-title.mjs";
 import { analyzeClassReplacement, prepareExistingClassCitation } from "../core/class-replacement-review.mjs";
 import { configuredFlatPlayerOptions } from "../core/flat-player-option-source.mjs";
 import { siblingClassCitationCandidates } from "../core/sibling-class-candidates.mjs";
+import { configuredSidekickClassSources } from "../core/sidekick-class-source.mjs";
 import { createAuditReport } from "../core/character-options-lib.mjs";
 
 const root = ROOT;
@@ -41,7 +42,29 @@ if (!fs.existsSync(rawRoot)) {
 if (profile.inputs.class_sources?.layout === "sibling") {
   const adapter = siblingClassCitationCandidates({ root, profile, publication, publicationId, only, replace });
   const audit = createAuditReport({ publicationId, publication, profile });
-  const knownEnglish = new Set(adapter.results.map((item) => item.english_name).filter(Boolean));
+  const sidekickInventory = configuredSidekickClassSources({ root, profile });
+  const sidekickResults = sidekickInventory.filter((item) => !only || [item.source, item.chinese, item.english_name]
+    .some((value) => String(value).normalize("NFKC").toLowerCase()
+      .includes(String(only).normalize("NFKC").toLowerCase()))).map((item) => {
+    const auditEntity = audit.entities.find((entity) => entity.category === "classes"
+      && entity.english_name === item.english_name);
+    const mirror = mirrorEntityPage({ root, profile, publicationId,
+      english: item.english_name, kind: "class" });
+    return { category: "classes", kind: item.kind, english_name: item.english_name,
+      chinese: item.chinese, source: item.source, source_structure: item.structure,
+      wiki_status: auditEntity?.status ?? "missing", mirror_status: mirror.status,
+      ...(mirror.page ? { mirror_page: mirror.page } : {}),
+      status: item.structure.status === "conflict" ? "conflict"
+        : item.structure.status === "incomplete" ? "incomplete"
+          : mirror.status !== "matched" ? mirror.status : auditEntity?.status ?? "missing",
+      reason: item.structure.status === "conflict" ? "sidekick_source_table_heading_conflict"
+        : item.structure.status === "incomplete" ? item.structure.reason
+          : mirror.status !== "matched" ? mirror.reason : "sidekick_new_page_requires_content_review",
+      review: item.structure.issues ?? [],
+    };
+  });
+  const knownEnglish = new Set([...adapter.results, ...sidekickResults]
+    .map((item) => item.english_name).filter(Boolean));
   const mirrorOnly = audit.entities.filter((item) => ["classes", "subclasses"].includes(item.category)
     && !knownEnglish.has(item.english_name)
     && (!only || [item.english_name, item.wiki_target, item.source?.locator]
@@ -51,10 +74,12 @@ if (profile.inputs.class_sources?.layout === "sibling") {
       source: item.source, wiki_target: item.wiki_target, status: item.status,
       reason: item.reasons?.join("；") ?? "english_mirror_entity_without_sibling_source",
       review: item.reasons ?? [] }));
-  results.push(...adapter.results, ...mirrorOnly);
+  results.push(...adapter.results, ...sidekickResults, ...mirrorOnly);
   pending.push(...adapter.changes);
   const plan = planCandidateBatch(pending, { root, lint: lintWiki,
     sourceFiles: [path.relative(root, rawRoot).replaceAll("\\", "/"), ...adapter.sourceFiles,
+      ...sidekickInventory.filter((item) => item.structure.reason !== "sidekick_source_missing")
+        .map((item) => item.source),
       ...mirrorEvidenceFiles({ root, profile, kind: "class" })],
     dependencyFiles: [`config/ingest-profiles/${publicationId}.yml`, "config/publications.yml",
       "config/ingest-dispatch.json", "附件/翻譯詞彙表.md"],
@@ -63,9 +88,9 @@ if (profile.inputs.class_sources?.layout === "sibling") {
   writeIngestReport({ options, publicationId, category: "classes", extra: {
     changes: plan.changes, source_fingerprints: plan.source_fingerprints,
     dependency_fingerprints: plan.dependency_fingerprints, summary: plan.summary, lint: plan.lint,
-    source_inventory: adapter.inventory,
+    source_inventory: [...adapter.inventory, ...sidekickInventory],
   } });
-  if (!report) console.log(`相鄰職業來源 ${adapter.inventory.length} 份；另有無相鄰來源的鏡像實體 ${mirrorOnly.length} 筆；候選 ${pending.length} 項。`);
+  if (!report) console.log(`相鄰職業來源 ${adapter.inventory.length} 份；協力者職業 ${sidekickInventory.length} 份；另有無來源的鏡像實體 ${mirrorOnly.length} 筆；候選 ${pending.length} 項。`);
   process.exit(0);
 }
 

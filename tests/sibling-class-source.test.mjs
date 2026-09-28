@@ -49,7 +49,7 @@ test("相鄰來源解析器以設定接入新書，拒絕越界及不存在的�
   /不存在於相鄰結構/);
 });
 
-test("TCE 共用預覽保留 49 份逐檔來源結構與指紋，不產生未核定正文", (context) => {
+test("TCE 共用預覽保留 49 份相鄰及 3 份協力者來源結構與指紋，不產生未核定正文", (context) => {
   const directory = fs.mkdtempSync(path.join(ROOT, "reports", "test-tce-sibling-"));
   context.after(() => fs.rmSync(directory, { recursive: true, force: true }));
   const report = path.join(directory, "plan.json");
@@ -60,8 +60,8 @@ test("TCE 共用預覽保留 49 份逐檔來源結構與指紋，不產生未核
   assert.equal(plan.plan_type, "ingest-candidates");
   assert.equal(plan.changes.length, 0);
   assert.equal(plan.results.filter((item) => item.kind === "subclass").length, 30);
-  assert.equal(plan.results.filter((item) => item.english_name?.endsWith("Sidekick") && item.status === "missing").length, 3);
-  assert.equal(plan.source_inventory.length, 49);
+  assert.equal(plan.results.filter((item) => item.kind === "sidekick_class").length, 3);
+  assert.equal(plan.source_inventory.length, 52);
   assert.ok(plan.source_inventory.every((item) => plan.source_fingerprints[item.source]));
   assert.ok(plan.source_fingerprints["原始資料/外部來源鏡像/TCE2020/book-tce.json"]);
   assert.ok(plan.dependency_fingerprints["config/ingest-profiles/TCE2020.yml"]);
