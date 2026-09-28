@@ -52,6 +52,7 @@ inputs:
     - { file: "龍紋專長.md", directory: "龍紋專長", tag: "專長_起源" }
     - { file: "傳奇恩惠.md", directory: "史詩恩賜專長", tag: "專長_史詩恩賜" }
   spells: "第一章/法術.md"
+  magic_items_file: "附錄A：魔法物品.md"
   lore:
     include:
       - "巨龍預言.md"
@@ -63,3 +64,9 @@ inputs:
       # 依總編輯決定，不收錄官方書籍附帶的可直接運行短劇本。
       - "第四章/敵人的敵人.md"
       - "第六章/螃蟹神殿爭奪戰.md"
+parsers:
+  魔法物品:
+    candidate_ready: true
+    parser: "scripts/ingest/ingest-magic-items.mjs"
+    argument_profile: "magic_items"
+    candidate_scope: "單檔附錄逐件盤點；有英文鏡像實體自身頁碼且既有頁身分唯一時，--replace 僅提出來源引註候選。新頁完整正文候選仍未支援。"

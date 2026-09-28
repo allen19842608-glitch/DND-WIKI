@@ -118,10 +118,16 @@
       "verification": "世界範圍、總索引、反向連結與 strict 檢查"
     },
     "scripts/core/magic-item-identity.mjs": {
-      "purpose": "以出版品、版本、來源及識別碼比對既有魔法物品頁",
-      "writes": "純身分比對，無寫入",
+      "purpose": "以出版品、版本、來源及識別碼比對既有魔法物品頁，安全建立只補英文鏡像來源的候選",
+      "writes": "純身分比對及候選文字生成，無直接寫入",
       "replacement": "保留於魔法物品候選解析器",
-      "verification": "跨書同名、目標占用與版本歧義測試"
+      "verification": "跨書同名、目標占用、版本歧義、既有人工內容保留及真實虛擬 lint 測試"
+    },
+    "scripts/core/flat-magic-item-source.mjs": {
+      "purpose": "盤點擴充書單檔魔法物品附錄的雙語實體與物品資料定位",
+      "writes": "只讀原始資料並回傳逐件結構，不直接寫入 Wiki",
+      "replacement": "wiki:preview --category 魔法物品 的單檔來源盤點；正文候選仍須共用解析器支援",
+      "verification": "EBER2025 九件物品、缺資料、重名、越界路徑及共用預覽指紋測試"
     },
     "scripts/core/mirror-entity-page.mjs": {
       "purpose": "從書籍快照或資料集讀取實體自身的英文鏡像頁碼",

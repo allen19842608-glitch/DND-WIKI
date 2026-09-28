@@ -34,3 +34,40 @@ export function matchExistingMagicItem(pages, { english, target, publicationId, 
   if (uncertain.length) return { status: "ambiguous", reason: "existing_same_name_publication_unknown", matches: uncertain.map((page) => page.file) };
   return { status: "missing", matches: sameName.map((page) => page.file) };
 }
+
+/** Add only a verified entity-page citation to an existing item. Rule prose,
+ * IDs, version, AL and updated date stay byte-for-byte unchanged. */
+export function prepareExistingMagicItemCitation({ page, english, publicationId, source, mirror }) {
+  if (!Array.isArray(page?.data?.sources)) {
+    return { status: "incomplete", reason: "existing_magic_item_sources_unreadable" };
+  }
+  if (page.data?.category !== "魔法物品"
+    || normalizeName(englishTitle(page.data?.title)) !== normalizeName(english)
+    || !String(page.data?.entity_id ?? "").startsWith(`entry:${publicationId}:magic-item:`)
+    || !page.data.sources.some((entry) => entry?.file === source)) {
+    return { status: "conflict", reason: "existing_magic_item_identity_or_source_mismatch" };
+  }
+  if (mirror?.status !== "matched" || !mirror.file || !mirror.locator || !mirror.url) {
+    return { status: "incomplete", reason: "magic_item_mirror_entity_citation_unresolved" };
+  }
+  const existing = page.data.sources.filter((entry) => entry?.file === mirror.file);
+  if (existing.length > 1 || existing.length && (existing[0].locator !== mirror.locator
+    || existing[0].url !== mirror.url || existing[0].authority !== "官方"
+    || existing[0].translation !== "none")) {
+    return { status: "conflict", reason: "existing_magic_item_mirror_citation_conflict" };
+  }
+  if (existing.length) return { status: "unchanged", after: page.text };
+  const headings = [...page.text.matchAll(/^sources:\r?\n/gmu)];
+  if (headings.length !== 1) return { status: "incomplete", reason: "existing_magic_item_source_layout_unsupported" };
+  const newline = page.text.includes("\r\n") ? "\r\n" : "\n";
+  const citation = [
+    `  - file: ${JSON.stringify(mirror.file)}`,
+    `    locator: ${JSON.stringify(mirror.locator)}`,
+    `    url: ${JSON.stringify(mirror.url)}`,
+    '    authority: "官方"',
+    '    translation: "none"',
+    "",
+  ].join(newline);
+  const insertion = headings[0].index + headings[0][0].length;
+  return { status: "ready", after: page.text.slice(0, insertion) + citation + page.text.slice(insertion) };
+}

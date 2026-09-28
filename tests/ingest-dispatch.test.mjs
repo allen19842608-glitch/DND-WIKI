@@ -40,13 +40,13 @@ test("隔離新出版品只靠設定接入共用類別並明列特殊結構", (c
   assert.throws(() => resolveIngestDefinition({ category: "戰役設定", profile: unsafe, dispatch }), /未登錄為候選解析器/);
 });
 
-test("出版品檢視不隱藏已宣告但來源設定未完成的非角色類別", () => {
+test("出版品檢視區分已接入的單檔魔法物品與未完成的怪物結構", () => {
   const dispatch = JSON.parse(fs.readFileSync(path.join(ROOT, "config", "ingest-dispatch.json"), "utf8"));
   const profile = loadIngestProfile("EBER2025");
   const adapters = configuredIngestAdapters({ profile, dispatch });
   const magicItems = adapters.find((item) => item.category === "魔法物品");
-  assert.equal(magicItems.adapter_status, "incomplete");
-  assert.match(magicItems.reason, /inputs\.magic_items/);
+  assert.equal(magicItems.adapter_status, "ready_for_preview");
+  assert.match(magicItems.reason, /單檔附錄逐件盤點/);
   assert.equal(magicItems.entity_inventory, "not_run");
   assert.equal(adapters.find((item) => item.category === "職業").entity_inventory, "character_options_audit");
   assert.equal(adapters.find((item) => item.category === "怪物").entity_inventory, "dependencies_audit_only");

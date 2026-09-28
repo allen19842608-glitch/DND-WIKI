@@ -577,6 +577,7 @@ export function configuredIngestAdapters({ profile, dispatch }) {
     || (category === "角色建立與成長" && profile.inputs?.character_creation_tables !== undefined)
     || (category !== "角色建立與成長" && profile.outputs?.[fields.output] !== undefined)
     || profile.parsers?.[category] !== undefined || profile.parsers?.[fields.key] !== undefined
+    || (category === "魔法物品" && profile.inputs?.magic_items_file !== undefined)
     || (category === "專長" && (profile.inputs?.feats_file !== undefined || profile.inputs?.feat_sources !== undefined)))
     .map(([category]) => {
       const definition = resolveIngestDefinition({ category, profile, dispatch });
@@ -614,6 +615,7 @@ export function resolveIngestDefinition({ category, profile, dispatch, source = 
   }
   const inputConfigured = fields.key === "feats"
     ? Boolean(profile.inputs?.feats || profile.inputs?.feats_file || profile.inputs?.feat_sources)
+    : fields.key === "magic_items" ? Boolean(profile.inputs?.magic_items || profile.inputs?.magic_items_file)
     : Boolean(profile.inputs?.[fields.key]);
   const supportsSourceOverride = ["職業", "種族", "背景", "法術", "專長", "怪物"].includes(category);
   if (!inputConfigured && !(supportsSourceOverride && source)) {

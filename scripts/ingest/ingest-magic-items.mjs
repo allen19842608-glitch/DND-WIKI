@@ -3,8 +3,9 @@ import path from "node:path";
 import { ROOT, candidateChange, frontmatter, loadIngestProfile, loadPublication, option as publicationOption, planCandidateBatch, resolveRawInputPath, validateCliOptions, writeCandidatePlan } from "../core/ingest-publication-utils.mjs";
 import { withIndexEffects } from "../core/index-candidates.mjs";
 import { lintWiki } from "../core/wiki-lint.mjs";
-import { mirrorEntityPage } from "../core/mirror-entity-page.mjs";
-import { matchExistingMagicItem } from "../core/magic-item-identity.mjs";
+import { mirrorEntityPage, mirrorEvidenceFiles } from "../core/mirror-entity-page.mjs";
+import { matchExistingMagicItem, prepareExistingMagicItemCitation } from "../core/magic-item-identity.mjs";
+import { configuredFlatMagicItems } from "../core/flat-magic-item-source.mjs";
 import { readWikiPages } from "../core/wiki-records.mjs";
 
 const root = ROOT;
@@ -30,6 +31,7 @@ const updated = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Taipei" }).fo
 const publicationId = publicationOption(process.argv.slice(2), "--publication") ?? "DMG2024";
 const publication = loadPublication(publicationId);
 const profile = loadIngestProfile(publicationId);
+const flatInventory = configuredFlatMagicItems({ root, profile });
 const sourceRoot = profile.inputs.magic_items ? resolveRawInputPath({ root, sourceRoot: profile.source_root, input: profile.inputs.magic_items }) : null;
 const itemTypes = sourceRoot && requestedType ? [requestedType] : sourceRoot && fs.existsSync(sourceRoot)
   ? fs.readdirSync(sourceRoot, { withFileTypes: true }).filter((entry) => entry.isDirectory()).map((entry) => entry.name).sort()
@@ -47,7 +49,7 @@ for (const { sourcePath } of sourceFiles) {
 const existingPages = readWikiPages(root, { directory: "wiki/魔法物品" });
 const candidates = [];
 const results = [];
-if (!sourceRoot || !fs.existsSync(sourceRoot)) {
+if ((!sourceRoot || !fs.existsSync(sourceRoot)) && !flatInventory) {
   results.push({
     category: "魔法物品",
     status: "incomplete",
@@ -55,6 +57,75 @@ if (!sourceRoot || !fs.existsSync(sourceRoot)) {
   });
 }
 if (!profile.outputs.magic_items) results.push({ category: "魔法物品", status: "incomplete", reason: "缺少 outputs.magic_items" });
+for (const item of flatInventory?.entities ?? []) {
+  const base = { category: "魔法物品", source: flatInventory.source, locator: item.locator ?? null,
+    item_type: item.item_type ?? null, english_name: item.english_name ?? null,
+    chinese_name: item.chinese ?? null, source_structure: item };
+  if (item.status !== "parsed") {
+    results.push({ ...base, status: item.status, reason: item.reason });
+    continue;
+  }
+  if (requestedType && !item.item_type.startsWith(requestedType)) {
+    results.push({ ...base, status: "out_of_scope", reason: "type_filter" });
+    continue;
+  }
+  if (only && ![item.chinese, item.english_name].some((value) => value.toLowerCase().includes(only.toLowerCase()))) {
+    results.push({ ...base, status: "out_of_scope", reason: "only_filter" });
+    continue;
+  }
+  const simpleType = item.item_type.replace(/（.*$/u, "").trim();
+  const proposedTarget = /[\\/:*?"<>|\[\]()]/u.test(item.chinese) ? null
+    : path.posix.join(profile.outputs.magic_items, simpleType, `${item.chinese}.md`);
+  const identity = matchExistingMagicItem(existingPages, { english: item.english_name,
+    target: proposedTarget, publicationId, sourceRoot: profile.source_root,
+    mirrorRoot: profile.canonical_mirror?.output_root, ruleset: profile.ruleset });
+  const mirror = mirrorEntityPage({ root, profile, publicationId, english: item.english_name,
+    kind: "magic-item" });
+  const evidence = { ...base, wiki_status: identity.status,
+    ...(identity.target ? { wiki_target: identity.target } : {}),
+    ...(identity.matches?.length ? { wiki_matches: identity.matches } : {}),
+    mirror_status: mirror.status,
+    ...(mirror.page ? { mirror_page: mirror.page } : {}) };
+  if (["conflict", "ambiguous"].includes(identity.status)) {
+    results.push({ ...evidence, status: identity.status, reason: identity.reason });
+    continue;
+  }
+  if (identity.status === "matched" && !identity.same_target) {
+    results.push({ ...evidence, status: "ambiguous", reason: "flat_magic_item_chinese_identity_or_target_mismatch" });
+    continue;
+  }
+  if (mirror.status !== "matched") {
+    results.push({ ...evidence, status: mirror.status, reason: mirror.reason });
+    continue;
+  }
+  if (identity.status === "missing") {
+    results.push({ ...evidence, status: "missing", reason: "flat_magic_item_new_page_body_not_supported" });
+    continue;
+  }
+  if (!force) {
+    results.push({ ...evidence, status: "skipped", reason: "existing_page_preserved_use_replace_for_citation_preview" });
+    continue;
+  }
+  const page = existingPages.find((entry) => entry.file === identity.target);
+  const prepared = prepareExistingMagicItemCitation({ page, english: item.english_name,
+    publicationId, source: flatInventory.source, mirror });
+  if (prepared.status === "ready") {
+    candidates.push(candidateChange({ destination: path.join(root, identity.target), before: page.text,
+      after: prepared.after, operation: "update", source: flatInventory.source, locator: item.locator,
+      status: "ready" }));
+  }
+  results.push({ ...evidence, status: prepared.status, reason: prepared.reason ??
+    (prepared.status === "ready" ? "mirror_entity_citation_only_body_preserved" : "mirror_entity_citation_already_present") });
+}
+if (flatInventory && only && !flatInventory.entities.some((item) =>
+  [item.chinese, item.english_name].filter(Boolean).some((value) => value.toLowerCase().includes(only.toLowerCase())))) {
+  results.push({ category: "魔法物品", source: flatInventory.source, requested_entity: only,
+    status: "missing", reason: "requested_magic_item_not_found_in_flat_source" });
+}
+if (flatInventory && requestedType && !flatInventory.entities.some((item) => item.item_type?.startsWith(requestedType))) {
+  results.push({ category: "魔法物品", source: flatInventory.source, requested_type: requestedType,
+    status: "missing", reason: "requested_magic_item_type_not_found_in_flat_source" });
+}
 for (const itemType of itemTypes) {
   if (sourceFiles.some((item) => item.itemType === itemType)) continue;
   results.push({ category: "魔法物品", item_type: itemType, status: "incomplete", reason: "source_type_missing_or_empty" });
@@ -220,11 +291,14 @@ for (const { itemType, sourcePath } of sourceFiles) {
 const plan = {
   ...planCandidateBatch(withIndexEffects(candidates, { root, source: "magic-item-index" }), { root, lint: lintWiki,
     sourceFiles: [...sourceFiles.map((item) => path.relative(root, item.sourcePath).replaceAll("\\", "/")),
-      ...(profile.canonical_mirror?.output_root ? ["manifest.yml", `book-${profile.canonical_mirror.book_id}.json`]
-        .map((name) => path.join(profile.canonical_mirror.output_root, name).replaceAll("\\", "/")).filter((name) => fs.existsSync(path.join(root, name))) : [])] }),
+      ...(flatInventory && fs.existsSync(path.join(root, flatInventory.source)) ? [flatInventory.source] : []),
+      ...mirrorEvidenceFiles({ root, profile, kind: "magic-item" })],
+    dependencyFiles: [`config/ingest-profiles/${publicationId}.yml`, "config/publications.yml", "附件/翻譯詞彙表.md"] }),
   publication_id: publicationId,
   category: "魔法物品",
-  item_types: itemTypes,
+  item_types: [...new Set([...itemTypes, ...(flatInventory?.entities ?? [])
+    .map((item) => item.item_type?.replace(/（.*$/u, "").trim()).filter(Boolean)])],
+  source_inventory: flatInventory ? flatInventory.entities.map((item) => ({ ...item, source: flatInventory.source })) : [],
   results,
 };
 if (report) writeCandidatePlan(plan, report, { root });

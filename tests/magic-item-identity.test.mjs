@@ -4,9 +4,11 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
-import { matchExistingMagicItem } from "../scripts/core/magic-item-identity.mjs";
+import YAML from "yaml";
+import { matchExistingMagicItem, prepareExistingMagicItemCitation } from "../scripts/core/magic-item-identity.mjs";
 import { readWikiPages } from "../scripts/core/wiki-records.mjs";
-import { ROOT, resolveRawInputPath } from "../scripts/core/ingest-publication-utils.mjs";
+import { ROOT, planCandidateBatch, resolveRawInputPath } from "../scripts/core/ingest-publication-utils.mjs";
+import { lintWiki } from "../scripts/core/wiki-lint.mjs";
 
 const target = "wiki/魔法物品/戒指/新書防護戒指.md";
 const options = { english: "Ring of Protection", target, publicationId: "NEW2026",
@@ -43,6 +45,41 @@ test("無出版品證據的同名頁維持歧義，不以標題推定身分", ()
   const result = matchExistingMagicItem([unknown], options);
   assert.equal(result.status, "ambiguous");
   assert.equal(result.reason, "existing_same_name_publication_unknown");
+});
+
+test("既有擴充書物品只補已定位的鏡像引註，正文、識別碼、版本與日期保持不變", () => {
+  const existing = readWikiPages(ROOT, { directory: "wiki/魔法物品/奇物" })
+    .find((item) => item.file === "wiki/魔法物品/奇物/百變工具.md");
+  assert.ok(existing);
+  const source = "原始資料/艾伯倫：奇械鍛爐/附錄A：魔法物品.md";
+  const mirror = { status: "matched", file: "原始資料/外部來源鏡像/EBER2025/book-efa.json",
+    locator: "Eberron: Forge of the Artificer (2025), p. 42：Manifold Tool；測試用自身頁碼",
+    url: "https://example.test/book-efa.json" };
+  const args = { page: existing, english: "Manifold Tool", publicationId: "EBER2025", source, mirror };
+  const prepared = prepareExistingMagicItemCitation(args);
+  assert.equal(prepared.status, "ready");
+  const yaml = (text) => YAML.parse(text.match(/^---\r?\n([\s\S]*?)\r?\n---/u)[1]);
+  const after = yaml(prepared.after);
+  for (const field of ["entity_id", "concept_id", "ruleset", "content_scope", "status", "version",
+    "al_availability", "al_campaigns", "al_notes", "updated", "rules_sources", "errata"]) {
+    assert.deepEqual(after[field], existing.data[field], field);
+  }
+  assert.equal(prepared.after.slice(prepared.after.indexOf("---", 4) + 3),
+    existing.text.slice(existing.text.indexOf("---", 4) + 3));
+  assert.equal(after.sources.length, existing.data.sources.length + 1);
+  assert.equal(prepareExistingMagicItemCitation({ ...args,
+    page: { ...existing, text: prepared.after, data: after } }).status, "unchanged");
+  assert.equal(prepareExistingMagicItemCitation({ ...args,
+    page: { ...existing, text: prepared.after, data: after },
+    mirror: { ...mirror, locator: "另一頁碼" } }).reason,
+  "existing_magic_item_mirror_citation_conflict");
+  assert.equal(prepareExistingMagicItemCitation({ ...args, english: "Another Item" }).status, "conflict");
+  const plan = planCandidateBatch([{ target: existing.file, operation: "update", before: existing.text,
+    after: prepared.after, source, locator: "L3 標題：百變工具", status: "ready" }],
+  { root: ROOT, lint: lintWiki, sourceFiles: [source, mirror.file] });
+  assert.equal(plan.summary.ready, 1);
+  assert.equal(plan.lint.errors, 0);
+  assert.equal(fs.readFileSync(path.join(ROOT, existing.file), "utf8"), existing.text);
 });
 
 test("魔法物品盤點只讀取 Wiki 子目錄，拒絕越界掃描", (context) => {
