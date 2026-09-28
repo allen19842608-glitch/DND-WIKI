@@ -2,7 +2,10 @@ import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
 import { execFileSync } from "node:child_process";
-import { identityFields, loadPublication, option as publicationOption, versionForPublication } from "../core/ingest-publication-utils.mjs";
+import YAML from "yaml";
+import { candidateChange, identityFields, loadIngestProfile, loadPublication, option as publicationOption, planCandidateBatch, versionForPublication, writeCandidatePlan } from "../core/ingest-publication-utils.mjs";
+import { partitionTargetConflicts, withIndexEffects } from "../core/index-candidates.mjs";
+import { lintWiki } from "../core/wiki-lint.mjs";
 
 const root = process.cwd();
 const rawRoot = path.join(root, "原始資料");
@@ -26,11 +29,38 @@ const diff = has("--diff");
 const updated = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Taipei" }).format(new Date());
 const publicationId = publicationOption(process.argv.slice(2), "--publication") ?? "MM2025";
 const publication = loadPublication(publicationId);
-const sourceLanguage = publication.source_assets?.find((asset) => asset.format === "directory" && asset.status === "available")?.language;
+const ingestProfile = loadIngestProfile(publicationId);
+if (apply) fail("怪物解析器不直接寫入 Wiki；請使用 wiki:preview 產生候選，再以 wiki:apply 套用。 ");
+const sourceLanguage = ingestProfile.inputs?.monsters_language
+  ?? publication.source_assets?.find((asset) => asset.format === "directory" && asset.status === "available")?.language;
+if (sourceLanguage && !["zh-Hans", "zh-Hant"].includes(sourceLanguage)) fail(`不支援的怪物來源語言：${sourceLanguage}`);
 const python = process.platform === "win32" ? "py" : "python3";
 const openccRoot = process.env.DND_WIKI_OPENCC_PATH ?? "C:\\Users\\Owner\\.codex\\tools\\dnd-wiki-opencc";
 const openccProgram = "import sys;sys.path.insert(0,sys.argv[1]);from opencc import OpenCC;sys.stdout.write(OpenCC('s2twp').convert(sys.stdin.read()))";
 let convertedSourceTexts;
+
+function englishMirrorEvidence(candidate) {
+  const outputRoot = ingestProfile.canonical_mirror?.output_root;
+  if (!outputRoot) return { ok: false, reason: "出版品未設定英文鏡像資料集。" };
+  const manifestPath = path.resolve(root, outputRoot, "manifest.yml");
+  if (!manifestPath.startsWith(`${rawRoot}${path.sep}`)) return { ok: false, reason: "英文鏡像清單越出原始資料範圍。" };
+  if (!fs.existsSync(manifestPath)) return { ok: false, reason: `英文鏡像清單不存在：${path.relative(root, manifestPath).replaceAll("\\", "/")}` };
+  let manifest;
+  try {
+    manifest = YAML.parse(fs.readFileSync(manifestPath, "utf8"));
+  } catch {
+    return { ok: false, reason: "英文鏡像清單無法解析。" };
+  }
+  const chapter = (Array.isArray(manifest?.chapters) ? manifest.chapters : []).find((entry) => /Bestiary/i.test(entry.title ?? ""));
+  const chapterPath = chapter?.file && path.resolve(root, chapter.file);
+  if (chapterPath && !chapterPath.startsWith(`${rawRoot}${path.sep}`)) return { ok: false, reason: "英文鏡像章節越出原始資料範圍。" };
+  if (!candidate.english || !chapterPath || !fs.existsSync(chapterPath)) return { ok: false, reason: "英文鏡像找不到可比對的怪物章節或英文名稱。" };
+  const line = fs.readFileSync(chapterPath, "utf8").split(/\r?\n/).findIndex((value) => new RegExp(`^#{2,4}\\s+${escapeRegex(candidate.english)}\\s*$`, "i").test(value));
+  if (line < 0) return { ok: false, reason: `英文鏡像 Bestiary 找不到「${candidate.english}」。` };
+  // The mirrored book records a chapter start page but not an entity page.
+  // Never infer a page number by counting headings or lines.
+  return { ok: false, reason: `英文鏡像定位至 ${chapter.file}:L${line + 1}；僅有章節起始 p. ${chapter.page ?? "未標示"}，缺少此實體的精確頁碼。` };
+}
 
 function fail(message) {
   process.stderr.write(`${message}\n`);
@@ -154,7 +184,7 @@ function expandEmbeddedStatBlocks(lines) {
   return expanded;
 }
 
-const sectionNames = ["特性", "Traits", "動作", "Actions", "附贈動作", "Bonus Actions", "反應", "Reactions", "傳奇動作", "Legendary Actions", "巢穴動作", "Lair Actions"];
+const sectionNames = ["特性", "Traits", "動作", "Actions", "附贈動作", "Bonus Actions", "反應", "Reactions", "傳奇動作", "Legendary Actions", "巢穴動作", "Lair Actions", "區域效應", "Regional Effects"];
 
 function sectionHeader(line, names = sectionNames) {
   const trimmed = line.trim();
@@ -229,24 +259,37 @@ function sourceText(file) {
   if (convertedSourceTexts?.has(file)) return convertedSourceTexts.get(file);
   const text = fs.readFileSync(file, "utf8");
   if (sourceLanguage !== "zh-Hans") return text;
-  if (!fs.existsSync(openccRoot)) fail(`找不到 OpenCC：${openccRoot}`);
-  return execFileSync(python, ["-c", openccProgram, openccRoot], {
-    input: text,
-    encoding: "utf8",
-    maxBuffer: 32 * 1024 * 1024,
-  });
+  try {
+    if (!fs.existsSync(openccRoot)) throw new Error("OpenCC missing");
+    return execFileSync(python, ["-c", openccProgram, openccRoot], {
+      input: text, encoding: "utf8", maxBuffer: 32 * 1024 * 1024, stdio: ["pipe", "pipe", "pipe"],
+    });
+  } catch {
+    const failure = new Error("簡體來源轉換工具不可用；此來源未完成解析。");
+    failure.code = "translation_converter_unavailable";
+    throw failure;
+  }
 }
 
 function convertSourceTexts(files) {
   const texts = files.map((file) => fs.readFileSync(file, "utf8"));
   if (sourceLanguage !== "zh-Hans") return new Map(files.map((file, index) => [file, texts[index]]));
-  if (!fs.existsSync(openccRoot)) fail(`找不到 OpenCC：${openccRoot}`);
+  if (!fs.existsSync(openccRoot)) {
+    const failure = new Error("簡體來源轉換工具不可用；此來源未完成解析。");
+    failure.code = "translation_converter_unavailable";
+    throw failure;
+  }
   const program = "import json,sys;sys.path.insert(0,sys.argv[1]);from opencc import OpenCC;conv=OpenCC('s2twp');sys.stdout.write(json.dumps([conv.convert(v) for v in json.load(sys.stdin)],ensure_ascii=False))";
-  const converted = JSON.parse(execFileSync(python, ["-c", program, openccRoot], {
-    input: JSON.stringify(texts),
-    encoding: "utf8",
-    maxBuffer: 64 * 1024 * 1024,
-  }));
+  let converted;
+  try {
+    converted = JSON.parse(execFileSync(python, ["-c", program, openccRoot], {
+      input: JSON.stringify(texts), encoding: "utf8", maxBuffer: 64 * 1024 * 1024, stdio: ["pipe", "pipe", "pipe"],
+    }));
+  } catch {
+    const failure = new Error("簡體來源轉換工具不可用；此來源未完成解析。");
+    failure.code = "translation_converter_unavailable";
+    throw failure;
+  }
   return new Map(files.map((file, index) => [file, converted[index]]));
 }
 
@@ -262,7 +305,9 @@ function titleBeforeCard(lines, index) {
     const heading = /^#{1,3}\s+(.+)$/u.exec(line)?.[1]?.trim();
     const bold = /^\*\*(.+?)\*\*$/u.exec(line)?.[1]?.trim();
     const title = heading ?? bold;
-    return Boolean(title) && !/(?:譯者注|譯註|翻譯註)/u.test(title);
+    return Boolean(title)
+      && !/(?:譯者注|譯註|翻譯註)/u.test(title)
+      && !sectionNames.some((name) => title === name || title.endsWith(` ${name}`));
   });
 }
 
@@ -289,15 +334,15 @@ function candidatesFromFile(file, names) {
     const titleLine = titleBeforeCard(lines, index);
     const sourceName = path.basename(file, ".md");
     const rawTitle = titleLine?.line.replace(/^#{1,3}\s+/, "").replace(/^\*\*|\*\*$/g, "").trim() ?? sourceName;
-    const titleMatch = rawTitle.match(/^(.+?)\s+(.+)$/);
-    const titleEnglish = titleMatch && /[A-Za-z]/.test(titleMatch[2]) ? titleMatch[2].trim() : undefined;
+    const titleMatch = rawTitle.match(/^(.+?)\s+([A-Za-z].*)$/);
+    const titleEnglish = titleMatch?.[2]?.trim();
     const chinese = (titleEnglish ? titleMatch[1] : sourceName).trim();
     const exactEnglishHeading = lines
       .map((line) => line.match(new RegExp(`^#{1,3}\\s+${escapeRegex(chinese)}\\s+(.+)$`))?.[1])
       .filter((value) => /[A-Za-z]/.test(value ?? ""))
       .find(Boolean);
     const english = titleEnglish ?? exactEnglishHeading ?? names[chinese];
-    if (!/[\u3400-\u9fff]/.test(chinese)) continue;
+    if (!/[\u3400-\u9fff]/.test(chinese) || /(?:巢穴|區域效應)$/u.test(chinese)) continue;
     const ac = inlineValue(block, ["AC", "護甲等級"]);
     const hp = inlineValue(block, ["HP", "生命值"]);
     const speed = inlineValue(block, ["速度"]);
@@ -378,17 +423,71 @@ function renderOverview(overview, related) {
   return `---\ntitle: "${quote(title)}"\ncategory: "怪物"\nversion: "2024-Core"\ntags:\n  - "怪物圖鑑2025"\n  - "怪物_介紹"\nsources:\n  - file: "${quote(overview.source)}"\n    locator: "${quote(overview.locator)}"\n    authority: "官方"\n    translation: "community"\nsource_type: "official"\nconfidence: "confirmed"\nrules_sources:\n  - "Monster Manual (2025)"\nerrata: []\nupdated: "${updated}"\n---\n\n# ${title}\n\n## 📖 怪物介紹\n\n${overview.body.join("\n").trim()}\n\n## 🔗 相關條目\n\n${links}\n`;
 }
 
+function sourceEvidence(files, { includeMirror = false } = {}) {
+  const evidence = [relativeSource, ...files.map((file) => path.relative(root, file).replaceAll("\\", "/"))];
+  if (includeMirror && ingestProfile.canonical_mirror?.output_root) {
+    const manifestPath = path.resolve(root, ingestProfile.canonical_mirror.output_root, "manifest.yml");
+    const withinRaw = (file) => file.startsWith(`${rawRoot}${path.sep}`);
+    if (withinRaw(manifestPath) && fs.existsSync(manifestPath)) {
+      evidence.push(path.relative(root, manifestPath).replaceAll("\\", "/"));
+      try {
+        const manifest = YAML.parse(fs.readFileSync(manifestPath, "utf8"));
+        const bestiary = (manifest?.chapters ?? []).find((entry) => /Bestiary/i.test(entry.title ?? ""));
+        const chapterPath = bestiary?.file && path.resolve(root, bestiary.file);
+        if (chapterPath && withinRaw(chapterPath) && fs.existsSync(chapterPath)) {
+          evidence.push(path.relative(root, chapterPath).replaceAll("\\", "/"));
+        }
+      } catch {
+        // The manifest itself remains fingerprinted; entity matching reports its invalid structure.
+      }
+    }
+  }
+  return [...new Set(evidence)];
+}
+
+const dependencyFiles = [`config/ingest-profiles/${publicationId}.yml`, "config/publications.yml",
+  "config/monster-name-map.json", "附件/翻譯詞彙表.md"];
+function writeUnresolvedPlan(reason, files, { status = "incomplete", requestedEntity = null, sourceEntityCount = null } = {}) {
+  const plan = {
+    ...planCandidateBatch([], { root, lint: lintWiki, sourceFiles: sourceEvidence(files), dependencyFiles }),
+    publication_id: publicationId, category: "怪物", source: relativeSource,
+    results: [{ source: relativeSource, status, reason,
+      ...(requestedEntity ? { requested_entity: requestedEntity } : {}),
+      ...(sourceEntityCount !== null ? { source_entity_count: sourceEntityCount } : {}) }],
+  };
+  if (reportPath) {
+    writeCandidatePlan(plan, reportPath, { root });
+    process.stdout.write(`報告：${reportPath}\n`);
+  }
+  process.stdout.write(`怪物預覽結果：${status}；${reason}；0 個可套用候選。\n`);
+}
+
 const names = nameMap();
 const sourceFiles = markdownFiles(sourcePath);
-convertedSourceTexts = convertSourceTexts(sourceFiles);
+if (!sourceFiles.length) {
+  writeUnresolvedPlan("monster_markdown_files_missing", sourceFiles);
+  process.exit(0);
+}
+try {
+  convertedSourceTexts = convertSourceTexts(sourceFiles);
+} catch (error) {
+  if (error.code !== "translation_converter_unavailable") throw error;
+  writeUnresolvedPlan(error.code, sourceFiles);
+  process.exit(0);
+}
 // 「雪怪總」等檔案是生物族群介紹，不是可獨立吸收的怪物資料卡。
 const overviewFiles = sourceFiles.filter((file) => path.basename(file, ".md").endsWith("總"));
 const cardFiles = sourceFiles.filter((file) => !path.basename(file, ".md").endsWith("總"));
-const discovered = cardFiles.flatMap((file) => candidatesFromFile(file, names))
-  .filter((candidate) => !only || candidate.chinese === only || (candidate.english && normalizeEnglish(candidate.english) === normalizeEnglish(only)));
-if (only && !discovered.length) fail(`找不到可完整解析的怪物：${only}`);
+const allDiscovered = cardFiles.flatMap((file) => candidatesFromFile(file, names));
+const discovered = allDiscovered.filter((candidate) => !only || candidate.chinese === only
+  || (candidate.english && normalizeEnglish(candidate.english) === normalizeEnglish(only)));
+if (only && !discovered.length && allDiscovered.length) {
+  writeUnresolvedPlan("requested_monster_not_found_in_source", sourceFiles,
+    { status: "missing", requestedEntity: only, sourceEntityCount: allDiscovered.length });
+  process.exit(0);
+}
 if (!discovered.length) {
-  process.stdout.write("未發現完整怪物資料卡。來源須包含名稱、體型／類型、AC、HP、速度與六項屬性表。\n");
+  writeUnresolvedPlan("monster_statblocks_unresolved", sourceFiles);
   process.exit(0);
 }
 const overviews = includeOverviews ? overviewFiles.map(overviewFromFile) : [];
@@ -398,65 +497,91 @@ const report = { create: [], existing: [], pending: [] };
 for (const candidate of discovered) {
   const canonical = candidate.chinese;
   const existing = (candidate.english && existingByEnglish(candidate.english)) ?? existingByChinese(canonical);
+  const mirror = englishMirrorEvidence(candidate);
+  if (!mirror.ok) { report.pending.push({ candidate, canonical, existing, reason: mirror.reason }); continue; }
   if (existing && !replace) { report.existing.push({ candidate, existing }); continue; }
   report.create.push({ candidate, canonical, existing });
 }
 
-process.stdout.write(`來源：${relativeSource}\n${includeOverviews ? `介紹頁：${overviews.length}` : `略過介紹頁：${overviewFiles.length}`}\n候選資料卡：${discovered.length}\n可${apply ? "建立／覆寫" : "建立"}：${report.create.length}\n既有條目（未覆寫）：${report.existing.length}\n待確認譯名：${report.pending.length}\n`);
-for (const item of report.create.slice(0, 20)) process.stdout.write(`  ${apply ? "寫入" : "預覽"}：${item.canonical}${item.candidate.english ? ` (${item.candidate.english})` : ""}\n`);
+process.stdout.write(`來源：${relativeSource}\n${includeOverviews ? `介紹頁：${overviews.length}` : `略過介紹頁：${overviewFiles.length}`}\n候選資料卡：${discovered.length}\n可建立／覆寫：${report.create.length}\n既有條目（未覆寫）：${report.existing.length}\n待人工覆核：${report.pending.length}\n`);
+for (const item of report.create.slice(0, 20)) process.stdout.write(`  預覽：${item.canonical}${item.candidate.english ? ` (${item.candidate.english})` : ""}\n`);
 for (const item of report.existing.slice(0, 20)) process.stdout.write(`  保留既有：${item.candidate.english} → ${path.relative(root, item.existing)}\n`);
-for (const item of report.pending.slice(0, 20)) process.stdout.write(`  待確認譯名：${item.chinese} (${item.english ?? "英文名稱未辨識"})；${item.source} ${item.locator}\n`);
+for (const item of report.pending.slice(0, 20)) process.stdout.write(`  待人工覆核：${item.canonical} (${item.candidate.english ?? "英文名稱未辨識"})；${item.reason}\n`);
 if (report.create.length > 20 || report.existing.length > 20 || report.pending.length > 20) process.stdout.write("  ……其餘項目請以 --report 匯出。\n");
-if (reportPath) {
-  const target = path.resolve(root, reportPath);
-  if (path.relative(root, target).startsWith("..")) fail("--report 必須位於知識庫內。");
-  fs.mkdirSync(path.dirname(target), { recursive: true });
-  fs.writeFileSync(target, `${JSON.stringify({ source: relativeSource, generated_at: updated, overview_files: overviewFiles.map((file) => path.relative(root, file).replaceAll("\\", "/")), ...report }, null, 2)}\n`);
-  process.stdout.write(`報告：${path.relative(root, target).replaceAll("\\", "/")}\n`);
-}
-
-if (!apply) process.exit(0);
-const outputRoot = versionForPublication(publication) === "2014-Legacy"
-  ? path.join(wikiRoot, "2014")
-  : wikiRoot;
-fs.mkdirSync(outputRoot, { recursive: true });
+const outputRoot = path.resolve(root, ingestProfile.outputs?.monsters ?? "");
+if (!outputRoot.startsWith(`${wikiRoot}${path.sep}`) && outputRoot !== wikiRoot) fail("怪物輸出設定必須位於 wiki/怪物/。 ");
+const changes = [];
+const results = [];
 for (const item of report.create) {
   const target = path.join(outputRoot, item.candidate.folder, `${item.canonical}.md`);
   const content = withRegistryFrontmatter(
     render(item.candidate, item.canonical, overviewByDirectory.get(path.dirname(path.resolve(root, item.candidate.source)))),
     { publicationId, publication, kind: "monster", concept: item.candidate.english ?? item.canonical, title: item.candidate.english ? `${item.canonical} (${item.candidate.english})` : item.canonical, source: item.candidate.source },
   );
-  fs.mkdirSync(path.dirname(target), { recursive: true });
-  if (item.existing && path.resolve(item.existing) !== path.resolve(target) && fs.existsSync(item.existing)) fs.renameSync(item.existing, target);
-  if (diff && fs.existsSync(target)) {
-    const before = fs.readFileSync(target, "utf8");
-    const temp = path.join(process.env.TEMP ?? root, `dnd-monster-${process.pid}.md`);
-    fs.writeFileSync(temp, content);
-    try { process.stdout.write(execFileSync("git", ["diff", "--no-index", "--", target, temp], { encoding: "utf8" })); } catch (error) { process.stdout.write(error.stdout ?? ""); }
-    finally { fs.rmSync(temp, { force: true }); }
-    if (before === content) continue;
+  const before = fs.existsSync(target) ? fs.readFileSync(target, "utf8") : null;
+  if (before !== content) {
+    changes.push(candidateChange({ destination: target, before, after: content, operation: before === null ? "create" : "update", source: item.candidate.source, locator: item.candidate.locator }));
+    results.push({ target: path.relative(root, target).replaceAll("\\", "/"), status: "preview" });
+  } else results.push({ target: path.relative(root, target).replaceAll("\\", "/"), status: "unchanged" });
+  if (item.existing && path.resolve(item.existing) !== path.resolve(target)) {
+    changes.push(candidateChange({ destination: item.existing, before: fs.readFileSync(item.existing, "utf8"), after: null, operation: "delete", source: item.candidate.source, locator: item.candidate.locator }));
   }
-  fs.writeFileSync(target, content);
 }
 for (const overview of overviews) {
-  const target = path.join(wikiRoot, "介紹", `${overview.chinese}介紹.md`);
-  if (fs.existsSync(target) && !replace) continue;
-  fs.mkdirSync(path.dirname(target), { recursive: true });
+  const target = path.join(outputRoot, "介紹", `${overview.chinese}介紹.md`);
+  if (fs.existsSync(target) && !replace) {
+    results.push({ target: path.relative(root, target).replaceAll("\\", "/"), status: "skipped", reason: "existing_page_preserved" });
+    continue;
+  }
   const related = discovered.filter((candidate) => path.dirname(path.resolve(root, candidate.source)) === overview.directory);
-  fs.writeFileSync(target, withRegistryFrontmatter(
+  const content = withRegistryFrontmatter(
     renderOverview(overview, related),
     { publicationId, publication, kind: "monster-index", concept: overview.english ?? overview.chinese, title: `${overview.chinese}介紹${overview.english ? ` (${overview.english})` : ""}`, source: overview.source },
-  ));
+  );
+  const before = fs.existsSync(target) ? fs.readFileSync(target, "utf8") : null;
+  if (before !== content) changes.push(candidateChange({ destination: target, before, after: content, operation: before === null ? "create" : "update", source: overview.source, locator: overview.locator }));
 }
 if (pruneStale) {
-  const stale = fs.readdirSync(wikiRoot, { recursive: true })
-    .map((entry) => path.join(wikiRoot, entry))
+  const stale = (fs.existsSync(outputRoot) ? fs.readdirSync(outputRoot, { recursive: true }) : [])
+    .map((entry) => path.join(outputRoot, entry))
     .filter((file) => file.endsWith(".md") && fs.statSync(file).isFile())
     .filter((file) => {
       const text = fs.readFileSync(file, "utf8");
       const source = text.match(/^\s{4}file: "(.+)"$/m)?.[1];
       return source?.startsWith(relativeSource) && !fs.existsSync(path.resolve(root, source));
     });
-  for (const file of stale) fs.rmSync(file);
-  process.stdout.write(`清理失效來源頁：${stale.length}\n`);
+  for (const file of stale) changes.push(candidateChange({ destination: file, before: fs.readFileSync(file, "utf8"), after: null, operation: "delete", source: relativeSource, locator: "來源已不存在" }));
+  process.stdout.write(`預覽清理失效來源頁：${stale.length}\n`);
+}
+for (const item of report.pending) {
+  const target = path.join(outputRoot, item.candidate.folder, `${item.canonical}.md`);
+  const before = fs.existsSync(target) ? fs.readFileSync(target, "utf8") : null;
+  const content = withRegistryFrontmatter(
+    render(item.candidate, item.canonical, overviewByDirectory.get(path.dirname(path.resolve(root, item.candidate.source)))),
+    { publicationId, publication, kind: "monster", concept: item.candidate.english ?? item.canonical, title: item.candidate.english ? `${item.canonical} (${item.candidate.english})` : item.canonical, source: item.candidate.source },
+  );
+  changes.push(candidateChange({
+    destination: target, before, after: content, operation: before === null ? "create" : "update",
+    source: item.candidate.source, locator: item.candidate.locator, status: "manual_review", review: [item.reason],
+  }));
+  results.push({ target: path.relative(root, target).replaceAll("\\", "/"), status: "manual_review", reason: item.reason,
+    source: item.candidate.source, locator: item.candidate.locator });
+}
+for (const item of report.existing) results.push({ target: path.relative(root, item.existing).replaceAll("\\", "/"), status: "skipped", reason: "existing_page_preserved" });
+const { changes: safeChanges, conflicts, results: resolvedResults } = partitionTargetConflicts(changes, results);
+if (conflicts.size) process.stdout.write(`同目標來源衝突：${resolvedResults.filter((result) => result.status === "conflict").length} 筆／${conflicts.size} 個目標；未產生可套用候選。\n`);
+const plan = {
+  ...planCandidateBatch(withIndexEffects(safeChanges, { root, source: "monster-index" }), {
+    root, lint: lintWiki,
+    sourceFiles: sourceEvidence(sourceFiles, { includeMirror: true }), dependencyFiles,
+  }),
+  publication_id: publicationId,
+  category: "怪物",
+  source: relativeSource,
+  overview_files: overviewFiles.map((file) => path.relative(root, file).replaceAll("\\", "/")),
+  results: resolvedResults,
+};
+if (reportPath) {
+  writeCandidatePlan(plan, reportPath, { root });
+  process.stdout.write(`報告：${reportPath}\n`);
 }

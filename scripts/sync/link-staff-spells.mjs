@@ -1,11 +1,15 @@
 import fs from "node:fs";
 import path from "node:path";
+import { ROOT, applyCandidateBatch, candidateChange, parseOptions, planCandidateBatch, writeCandidatePlan } from "../core/ingest-publication-utils.mjs";
+import { lintWiki } from "../core/wiki-lint.mjs";
 
-const root = process.cwd();
+const root = ROOT;
 const spellRoot = path.join(root, "wiki", "法術");
 const staffRoot = path.join(root, "wiki", "魔法物品", "法杖");
-const apply = process.argv.includes("--apply");
+const options = parseOptions(process.argv.slice(2));
+if (options.apply && !options.report) throw new Error("套用 Wiki 變更必須指定 --report reports/<plan>.json，以保留可追溯報告。");
 const spells = new Map();
+const pending = [];
 
 for (const relative of fs.readdirSync(spellRoot, { recursive: true })) {
   if (!relative.endsWith(".md")) continue;
@@ -47,7 +51,10 @@ for (const name of fs.readdirSync(staffRoot)) {
   if (!count) continue;
   linked += count;
   files.push(name);
-  if (apply) fs.writeFileSync(file, after);
+  pending.push(candidateChange({ destination: file, before, after, operation: "link", source: "wiki/法術", locator: path.relative(root, file) }));
 }
-console.log(`${apply ? "已補上" : "可補上"} ${linked} 處法杖施展法術連結／${files.length} 個條目。`);
+const plan = planCandidateBatch(pending, { root, lint: lintWiki });
+writeCandidatePlan(plan, options.report, { root });
+if (options.apply) applyCandidateBatch(plan, { root, lint: lintWiki });
+console.log(`${options.apply ? "已補上" : "可補上"} ${linked} 處法杖施展法術連結／${files.length} 個條目。`);
 for (const name of files) console.log(`- ${name}`);

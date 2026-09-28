@@ -3,7 +3,10 @@ import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 import YAML from "yaml";
-import { ROOT } from "../core/ingest-publication-utils.mjs";
+import {
+  ROOT, applyCandidateBatch, candidateChange, parseOptions, planCandidateBatch, writeCandidatePlan,
+} from "../core/ingest-publication-utils.mjs";
+import { lintWiki } from "../core/wiki-lint.mjs";
 
 const WIKI_ROOT = path.join(ROOT, "wiki", "戰役設定");
 const GLOSSARY = path.join(ROOT, "附件", "翻譯詞彙表.md");
@@ -157,9 +160,11 @@ function rewrite(page) {
 }
 
 function run(args = process.argv.slice(2)) {
-  const apply = args.includes("--apply");
+  const options = parseOptions(args, { extraBooleanOptions: ["--diff"] });
+  if (options.apply && !options.report) throw new Error("套用 Wiki 變更必須指定 --report reports/<plan>.json，以保留可追溯報告。");
   const diff = args.includes("--diff");
   const summary = { checked: 0, changed: 0, located: 0, unresolved: [], skipped: [] };
+  const pending = [];
   for (const file of walk(WIKI_ROOT).sort()) {
     const page = parse(file);
     if (!isCandidate(file, page)) continue;
@@ -171,10 +176,18 @@ function run(args = process.argv.slice(2)) {
     if (next.text === page.text) continue;
     summary.changed += 1;
     if (diff) process.stdout.write(`${rel(file)}\t${next.reason}\n`);
-    if (apply) fs.writeFileSync(file, next.text, "utf8");
+    pending.push(candidateChange({
+      destination: file, before: page.text, after: next.text, operation: "update",
+      source: "原始資料/外部來源鏡像", locator: next.english ?? null,
+      status: next.reason === "located" ? "ready" : "manual_review",
+      review: next.reason === "located" ? [] : ["鏡像快照未能定位正式頁碼；請人工確認 locator 後再套用。"],
+    }));
   }
-  process.stdout.write(`鏡像來源正規化：${apply ? "已套用" : "預覽"}；檢查 ${summary.checked}；變更 ${summary.changed}；已定位 ${summary.located}；待定位 ${summary.unresolved.length}；略過 ${summary.skipped.length}。\n`);
-  return summary;
+  const plan = planCandidateBatch(pending, { root: ROOT, lint: lintWiki });
+  writeCandidatePlan(plan, options.report, { root: ROOT });
+  if (options.apply) applyCandidateBatch(plan, { root: ROOT, lint: lintWiki });
+  process.stdout.write(`鏡像來源正規化：${options.apply ? "已套用" : "預覽"}；檢查 ${summary.checked}；變更 ${summary.changed}；已定位 ${summary.located}；待定位 ${summary.unresolved.length}；略過 ${summary.skipped.length}；可套用 ${plan.summary.ready}。\n`);
+  return { ...summary, plan };
 }
 
 if (process.argv[1] && path.resolve(fileURLToPath(import.meta.url)) === path.resolve(process.argv[1])) run();

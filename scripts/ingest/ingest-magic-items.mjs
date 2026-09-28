@@ -1,26 +1,64 @@
 import fs from "node:fs";
 import path from "node:path";
-import { frontmatter, loadIngestProfile, loadPublication, option as publicationOption } from "../core/ingest-publication-utils.mjs";
+import { ROOT, candidateChange, frontmatter, loadIngestProfile, loadPublication, option as publicationOption, planCandidateBatch, resolveRawInputPath, validateCliOptions, writeCandidatePlan } from "../core/ingest-publication-utils.mjs";
+import { withIndexEffects } from "../core/index-candidates.mjs";
+import { lintWiki } from "../core/wiki-lint.mjs";
+import { mirrorEntityPage } from "../core/mirror-entity-page.mjs";
+import { matchExistingMagicItem } from "../core/magic-item-identity.mjs";
+import { readWikiPages } from "../core/wiki-records.mjs";
 
-const root = process.cwd();
+const root = ROOT;
 const cliArgs = process.argv.slice(2);
-const itemType = cliArgs.find((value, index) => !value.startsWith("--") && !["--only", "--publication"].includes(cliArgs[index - 1])) ?? "戒指";
-const force = process.argv.includes("--force");
+validateCliOptions(cliArgs, { extraBooleanOptions: ["--force"] });
+if (cliArgs.includes("--source") || cliArgs.includes("--output")) throw new Error("魔法物品解析器的來源與輸出只由出版品設定提供。");
+const positionals = [];
+for (let index = 0; index < cliArgs.length; index += 1) {
+  if (["--only", "--publication", "--report"].includes(cliArgs[index])) { index += 1; continue; }
+  if (!cliArgs[index].startsWith("--")) positionals.push(cliArgs[index]);
+}
+if (positionals.length > 1) throw new Error("魔法物品解析器最多只能指定一種類型。");
+const requestedType = positionals[0];
+if (requestedType && ([".", ".."].includes(requestedType) || /[\\/]/.test(requestedType))) {
+  throw new Error(`魔法物品類型必須是單一來源目錄名稱：${requestedType}`);
+}
+const force = process.argv.includes("--force") || process.argv.includes("--replace");
 const apply = process.argv.includes("--apply");
+if (apply) throw new Error("魔法物品解析器不直接寫入 Wiki；請使用 wiki:preview 產生候選，再以 wiki:apply 套用。");
 const only = process.argv.includes("--only") ? process.argv[process.argv.indexOf("--only") + 1] : undefined;
+const report = publicationOption(process.argv.slice(2), "--report");
 const updated = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Taipei" }).format(new Date());
 const publicationId = publicationOption(process.argv.slice(2), "--publication") ?? "DMG2024";
 const publication = loadPublication(publicationId);
 const profile = loadIngestProfile(publicationId);
-const sourceDir = path.join(root, profile.source_root, profile.inputs.magic_items ?? "第七章_寶藏/魔法物品詳述", itemType);
-const outputDir = path.join(root, profile.outputs.magic_items ?? "wiki/魔法物品", itemType);
-if (apply) fs.mkdirSync(outputDir, { recursive: true });
-const existingEnglishTitles = new Set(
-  fs.readdirSync(path.join(root, "wiki", "魔法物品"), { recursive: true })
-    .filter((name) => name.endsWith(".md"))
-    .map((name) => fs.readFileSync(path.join(root, "wiki", "魔法物品", name), "utf8").match(/^title: ".+ \((.+)\)"$/m)?.[1])
-    .filter(Boolean),
-);
+const sourceRoot = profile.inputs.magic_items ? resolveRawInputPath({ root, sourceRoot: profile.source_root, input: profile.inputs.magic_items }) : null;
+const itemTypes = sourceRoot && requestedType ? [requestedType] : sourceRoot && fs.existsSync(sourceRoot)
+  ? fs.readdirSync(sourceRoot, { withFileTypes: true }).filter((entry) => entry.isDirectory()).map((entry) => entry.name).sort()
+  : [];
+const sourceFiles = profile.outputs.magic_items ? itemTypes.flatMap((itemType) => {
+  const sourceDir = path.join(sourceRoot, itemType);
+  return fs.existsSync(sourceDir)
+    ? fs.readdirSync(sourceDir, { recursive: true }).filter((name) => name.endsWith(".md")).map((name) => ({ itemType, sourcePath: path.join(sourceDir, name) }))
+    : [];
+}) : [];
+const rawBoundary = `${path.resolve(root, "原始資料")}${path.sep}`;
+for (const { sourcePath } of sourceFiles) {
+  if (!fs.realpathSync(sourcePath).startsWith(rawBoundary)) throw new Error(`魔法物品來源越出原始資料/：${sourcePath}`);
+}
+const existingPages = readWikiPages(root, { directory: "wiki/魔法物品" });
+const candidates = [];
+const results = [];
+if (!sourceRoot || !fs.existsSync(sourceRoot)) {
+  results.push({
+    category: "魔法物品",
+    status: "incomplete",
+    reason: sourceRoot ? `設定的來源輸入不存在：${path.relative(root, sourceRoot).replaceAll("\\", "/")}` : "缺少 inputs.magic_items",
+  });
+}
+if (!profile.outputs.magic_items) results.push({ category: "魔法物品", status: "incomplete", reason: "缺少 outputs.magic_items" });
+for (const itemType of itemTypes) {
+  if (sourceFiles.some((item) => item.itemType === itemType)) continue;
+  results.push({ category: "魔法物品", item_type: itemType, status: "incomplete", reason: "source_type_missing_or_empty" });
+}
 
 function effectName(text) {
   const boldName = text.match(/^(?:\*\s+)?\*\*([^*]+?)\*\*[。.]?/);
@@ -98,20 +136,45 @@ function isDescription(text) {
     && !/(?:獲得|可以|能夠|具有|當你|受到|執行|消耗|恢復)/.test(text);
 }
 
-for (const sourcePath of fs.readdirSync(sourceDir, { recursive: true })
-  .filter((name) => name.endsWith(".md"))
-  .map((name) => path.join(sourceDir, name))) {
+for (const { itemType, sourcePath } of sourceFiles) {
+  const outputDir = path.join(root, profile.outputs.magic_items, itemType);
   const lines = fs.readFileSync(sourcePath, "utf8").split(/\r?\n/);
+  let entities = 0;
   for (let i = 0; i < lines.length; i += 1) {
     const match = lines[i].match(/^#{2,6}\s+(.+?)\s+([A-Za-z].*)$/);
     if (!match) continue;
+    entities += 1;
     const [, chinese, english] = match;
     const filename = chinese.replace(/[\\/:*?"<>|\[\]()]/g, "");
     const destination = path.join(outputDir, `${filename}.md`);
-    if (only && !filename.includes(only) && !english.toLowerCase().includes(only.toLowerCase())) continue;
-    if ((fs.existsSync(destination) || existingEnglishTitles.has(english.trim())) && !force) continue;
     const meta = lines.slice(i + 1, i + 4).map((line) => line.trim()).find((line) => /^(?:\*|_).+(?:\*|_)$/.test(line)) ?? "";
     const metaText = meta.replace(/^[*_]|[*_]$/g, "");
+    if (!/(?:普通|非普通|珍稀|極珍稀|傳說|神器|多種稀有度)/.test(metaText)) {
+      results.push({ item_type: itemType, english_name: english.trim(), source: path.relative(root, sourcePath).replaceAll("\\", "/"), status: "out_of_scope", reason: "non_magic_item_heading" });
+      continue;
+    }
+    if (only && !filename.includes(only) && !english.toLowerCase().includes(only.toLowerCase())) {
+      results.push({ item_type: itemType, english_name: english.trim(), target: path.relative(root, destination).replaceAll("\\", "/"), status: "out_of_scope", reason: "only_filter" });
+      continue;
+    }
+    const mirror = mirrorEntityPage({ root, profile, publicationId, english: english.trim(), kind: "magic-item" });
+    if (mirror.status !== "matched") {
+      results.push({ item_type: itemType, english_name: english.trim(), target: path.relative(root, destination).replaceAll("\\", "/"), status: mirror.status, reason: mirror.reason });
+      continue;
+    }
+    const destinationTarget = path.relative(root, destination).replaceAll("\\", "/");
+    const identity = matchExistingMagicItem(existingPages, { english: english.trim(), target: destinationTarget,
+      publicationId, sourceRoot: profile.source_root, mirrorRoot: profile.canonical_mirror?.output_root, ruleset: profile.ruleset });
+    if (["conflict", "ambiguous"].includes(identity.status)) {
+      results.push({ item_type: itemType, english_name: english.trim(), mirror_page: mirror.page, target: destinationTarget,
+        status: identity.status, reason: identity.reason, matches: identity.matches });
+      continue;
+    }
+    if (identity.status === "matched" && (!force || !identity.same_target)) {
+      results.push({ item_type: itemType, english_name: english.trim(), mirror_page: mirror.page, target: identity.target,
+        status: "matched", reason: "same_publication_page_preserved" });
+      continue;
+    }
     const itemCategory = metaText.match(/^(.+?)(?:，)?(?:普通|非普通|珍稀|極珍稀|傳說|神器|多種稀有度)(?:（[^）]+）)?$/)?.[1] ?? itemType;
     const rarity = metaText.match(/[），](普通|非普通|珍稀|極珍稀|傳說|神器)/)?.[1] ?? path.basename(sourcePath, ".md");
     const attunement = meta.includes("需同調") ? "需要" : "不需要";
@@ -146,8 +209,22 @@ for (const sourcePath of fs.readdirSync(sourceDir, { recursive: true })
     const dmSection = effects ? `\n## 💡 實戰應用與裁量 (DM Ruling)\n\n- **常見誤區**：啟用、充能與限制均依各效果的來源描述。\n` : "";
     const page = `---\ntitle: "${chinese} (${english})"\ncategory: "魔法物品"\nversion: "2024-Core"\ntags:\n  - "城主指南2024"\n  - "魔法物品_${itemType}"\nsources:\n  - file: "${source}"\n    locator: "L${i + 1} 標題：${chinese}"\n    authority: "官方"\n    translation: "community"\nsource_type: "official"\nconfidence: "confirmed"\nrules_sources:\n  - "Dungeon Master's Guide (2024)"\nerrata: []\nupdated: "${updated}"\n---\n\n# ${chinese} (${english})${descriptionSection}\n## ⚙️ 規則條文 (Rule Text)\n\n### 物品資料\n\n| 項目 | 內容 |\n| :--- | :--- |\n| 類別 (Category) | ${itemCategory} |\n| 稀有度 (Rarity) | ${rarity} |\n| 同調 (Attunement) | ${attunement} |\n| 消耗品 (Consumable) | 否 |\n| 充能 (Charges) | 依效果說明 |\n${effectsSection}${randomTables}${dmSection}\n## 🔗 相關連結\n\n- 無。\n`;
     const headerEnd = page.indexOf("\n---", 4);
-    const output = `${frontmatter({ publicationId, publication, kind: "magic-item", concept: english, title: `${chinese} (${english})`, category: "魔法物品", tag: `魔法物品_${itemType}`, source, locator: `L${i + 1} 標題：${chinese}` })}${page.slice(headerEnd + 4)}`;
-    if (apply) fs.writeFileSync(destination, output, "utf8");
-    console.log(`${apply ? "匯入" : "預覽"}：${path.relative(root, destination)}`);
+    const output = `${frontmatter({ publicationId, publication, kind: "magic-item", concept: english, title: `${chinese} (${english})`, category: "魔法物品", tag: `魔法物品_${itemType}`, source, locator: `L${i + 1} 標題：${chinese}`, mirror })}${page.slice(headerEnd + 4)}`;
+    const before = fs.existsSync(destination) ? fs.readFileSync(destination, "utf8") : null;
+    candidates.push(candidateChange({ destination, before, after: output, operation: before === null ? "create" : "update", source, locator: `L${i + 1} 標題：${chinese}`, status: "manual_review", review: ["magic_item_template_and_terminology_review_required"] }));
+    results.push({ item_type: itemType, english_name: english.trim(), mirror_page: mirror.page, target: path.relative(root, destination).replaceAll("\\", "/"), status: "manual_review", reason: "magic_item_template_and_terminology_review_required" });
   }
+  if (!entities) results.push({ item_type: itemType, source: path.relative(root, sourcePath).replaceAll("\\", "/"), status: "incomplete", reason: "source_structure_unsupported" });
 }
+
+const plan = {
+  ...planCandidateBatch(withIndexEffects(candidates, { root, source: "magic-item-index" }), { root, lint: lintWiki,
+    sourceFiles: [...sourceFiles.map((item) => path.relative(root, item.sourcePath).replaceAll("\\", "/")),
+      ...(profile.canonical_mirror?.output_root ? ["manifest.yml", `book-${profile.canonical_mirror.book_id}.json`]
+        .map((name) => path.join(profile.canonical_mirror.output_root, name).replaceAll("\\", "/")).filter((name) => fs.existsSync(path.join(root, name))) : [])] }),
+  publication_id: publicationId,
+  category: "魔法物品",
+  item_types: itemTypes,
+  results,
+};
+if (report) writeCandidatePlan(plan, report, { root });

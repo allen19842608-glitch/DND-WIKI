@@ -1,29 +1,40 @@
 import fs from "node:fs";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
-import { ROOT, frontmatter, loadPublication, today } from "../core/ingest-publication-utils.mjs";
+import {
+  ROOT, applyCandidateBatch, candidateChange, frontmatter, loadPublication, parseOptions, planCandidateBatch, today,
+} from "../core/ingest-publication-utils.mjs";
+import { lintWiki } from "../core/wiki-lint.mjs";
 
 const publicationId = "EBER2025";
 const publication = loadPublication(publicationId);
+const options = parseOptions(process.argv.slice(2));
+if (options.apply && !options.report) throw new Error("套用 Wiki 變更必須指定 --report reports/<plan>.json，以保留可追溯報告。");
 const sourceRoot = path.join(ROOT, "原始資料", "艾伯倫：奇械鍛爐", "第二章");
+const pending = [];
+const staged = new Map();
 
 function sourceOf(file) {
   return path.relative(ROOT, file).replaceAll(path.sep, "/");
 }
 
 function write(destination, content) {
-  if (fs.existsSync(destination) && fs.readFileSync(destination, "utf8") === content) return;
-  fs.mkdirSync(path.dirname(destination), { recursive: true });
-  for (let attempt = 0; attempt < 5; attempt += 1) {
-    try {
-      fs.writeFileSync(destination, content, "utf8");
-      break;
-    } catch (error) {
-      if (attempt === 4 || !["EBUSY", "EPERM", "UNKNOWN"].includes(error.code)) throw error;
-      Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 100 * (attempt + 1));
-    }
-  }
-  console.log(`匯入：${path.relative(ROOT, destination)}`);
+  const before = staged.has(destination)
+    ? staged.get(destination)
+    : fs.existsSync(destination) ? fs.readFileSync(destination, "utf8") : null;
+  if (before === content) return;
+  staged.set(destination, content);
+  const change = candidateChange({
+    destination, before: fs.existsSync(destination) ? fs.readFileSync(destination, "utf8") : null, after: content,
+    operation: fs.existsSync(destination) ? "update" : "create", source: "原始資料/艾伯倫：奇械鍛爐/第二章", locator: path.relative(ROOT, destination),
+  });
+  const index = pending.findIndex((item) => item.target === change.target);
+  if (index >= 0) pending[index] = change;
+  else pending.push(change);
+}
+
+function readWorking(destination) {
+  return staged.has(destination) ? staged.get(destination) : fs.readFileSync(destination, "utf8");
 }
 
 function replaceSection(text, heading, body, before = "## 🔗 相關連結") {
@@ -130,7 +141,7 @@ const existingOriginFeats = new Map([
 ]);
 
 function addRelatedLink(destination, link) {
-  let text = fs.readFileSync(destination, "utf8");
+  let text = readWorking(destination);
   if (text.includes(link)) return;
   text = text.replace("## 🔗 相關連結\n\n", `## 🔗 相關連結\n\n- ${link}\n`);
   write(destination, text);
@@ -155,7 +166,7 @@ for (const base of baseDragonmarks) {
 
 for (const background of backgrounds) {
   const backgroundPath = path.join(ROOT, "wiki", "背景", `${background}.md`);
-  let backgroundText = fs.readFileSync(backgroundPath, "utf8");
+  let backgroundText = readWorking(backgroundPath);
   backgroundText = backgroundText.replace(/(\*\*專長\*\*：)([^\n]+)/, (whole, label, value) => {
     const feat = [...featByName.values()].find((item) => value.startsWith(item.chinese));
     if (feat) {
@@ -171,13 +182,13 @@ for (const background of backgrounds) {
 }
 
 const backgroundIndex = path.join(ROOT, "wiki", "背景", "背景索引.md");
-let backgroundText = fs.readFileSync(backgroundIndex, "utf8");
+let backgroundText = readWorking(backgroundIndex);
 const backgroundLinks = `> 龍紋背景授予的龍紋專長，等同於角色建立時選擇的起源專長，並取代標準起源專長。\n\n${backgrounds.sort((a, b) => a.localeCompare(b, "zh-Hant")).map((name) => `- [[${name}|${name}]]`).join("\n")}`;
 backgroundText = replaceSection(backgroundText, "艾伯倫：奇械鍛爐背景", backgroundLinks);
 write(backgroundIndex, backgroundText);
 
 const featIndex = path.join(ROOT, "wiki", "專長", "專長索引.md");
-let featText = fs.readFileSync(featIndex, "utf8");
+let featText = readWorking(featIndex);
 const featGroups = featSources.map((descriptor) => {
   const entries = feats.filter((feat) => feat.directory === descriptor.directory).map((feat) => `[[專長/${descriptor.directory}/${feat.chinese}|${feat.chinese} (${feat.english})]]`).join(" · ");
   return `### ${descriptor.label ?? descriptor.directory}\n\n${entries}`;
@@ -275,3 +286,17 @@ for (const descriptor of featSources.filter((item) => !item.createIndex)) {
 }
 
 console.log(`完成：${backgrounds.length} 個背景、${feats.length} 個專長（${today()}）。`);
+
+const plan = planCandidateBatch(pending, { root: ROOT, lint: lintWiki });
+if (options.report) {
+  const reportPath = path.resolve(ROOT, options.report);
+  if (!reportPath.startsWith(`${path.resolve(ROOT, "reports")}${path.sep}`)) throw new Error("報告只能輸出至 reports/。");
+  fs.mkdirSync(path.dirname(reportPath), { recursive: true });
+  fs.writeFileSync(reportPath, `${JSON.stringify(plan, null, 2)}\n`, "utf8");
+}
+if (options.apply) {
+  const result = applyCandidateBatch(plan, { root: ROOT, lint: lintWiki });
+  console.log(`已套用 EBER2025 角色選項：${result.applied.length} 個候選變更。`);
+} else {
+  console.log(`預覽 EBER2025 角色選項：${plan.changes.length} 個候選變更；加入 --apply 才會寫入。`);
+}

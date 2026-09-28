@@ -1,9 +1,14 @@
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
-import { ROOT, loadPublication, today } from "../core/ingest-publication-utils.mjs";
+import {
+  ROOT, applyCandidateBatch, candidateChange, loadPublication, parseOptions, planCandidateBatch, today,
+} from "../core/ingest-publication-utils.mjs";
+import { lintWiki } from "../core/wiki-lint.mjs";
 
 const publicationId = "XGE2017";
+const options = parseOptions(process.argv.slice(2));
+if (options.apply && !options.report) throw new Error("套用 Wiki 變更必須指定 --report reports/<plan>.json，以保留可追溯報告。");
 const publication = loadPublication(publicationId);
 const source = "原始資料/珊娜薩的萬事指南/地下城主工具/獎勵魔法物品/普通魔法物品.md";
 const sourcePdf = "原始資料/珊娜薩的萬事指南/Xanathars_Guide_to_Everything.pdf";
@@ -79,12 +84,20 @@ function itemPage(item, counterpart) {
   return { destination, content };
 }
 
+const pending = [];
+
+function queueWrite(file, content, sourceFile, locator) {
+  const before = fs.existsSync(file) ? fs.readFileSync(file, "utf8") : null;
+  if (before === content) return;
+  pending.push(candidateChange({ destination: file, before, after: content, operation: before === null ? "create" : "update", source: sourceFile, locator }));
+}
+
 function addBacklink(counterpart, legacyTarget, legacyTitle) {
   let text = fs.readFileSync(counterpart.file, "utf8");
   const link = `[[${legacyTarget}|${legacyTitle}]]`;
   if (text.includes(link)) return;
   text = text.replace(/(## 🔗 相關連結\r?\n\r?\n)/, `$1- ${link}\n`);
-  fs.writeFileSync(counterpart.file, text, "utf8");
+  queueWrite(counterpart.file, text, source, `現行物品反向連結：${legacyTitle}`);
 }
 
 const items = parseItems(convert(fs.readFileSync(sourcePath, "utf8")));
@@ -93,19 +106,32 @@ const byType = new Map();
 for (const item of items) {
   const counterpart = current.get(item.english.toLowerCase());
   const { destination, content } = itemPage(item, counterpart);
-  fs.mkdirSync(path.dirname(destination), { recursive: true });
-  fs.writeFileSync(destination, content, "utf8");
+  queueWrite(destination, content, source, `###### ${item.chinese} ${item.english}`);
   if (counterpart) addBacklink(counterpart, wikiTarget(destination), `${item.chinese} (${item.english}，2014 Legacy)`);
   byType.set(item.type, [...(byType.get(item.type) ?? []), { item, destination }]);
 }
 
 const indexLists = [...byType.entries()].map(([type, entries]) => `## ${type}\n\n${entries.sort((a, b) => a.item.chinese.localeCompare(b.item.chinese, "zh-Hant")).map(({ item, destination }) => `- [[${wikiTarget(destination)}|${item.chinese} (${item.english}，2014 Legacy)]]`).join("\n")}`).join("\n\n");
 const index = `---\ntitle: "普通魔法物品索引 (2014 Legacy)"\nentity_id: "entry:${publicationId}:magic-item-index:common"\nconcept_id: "concept:magic-item-index:common-xge-2014"\nruleset: "2014"\ncontent_scope: "expansion"\nstatus: "legacy"\ncategory: "魔法物品"\nversion: "2014-Legacy"\ntags:\n  - "${publication.wiki.tag}"\n  - "魔法物品_索引"\nsources:\n  - file: "${source}"\n    locator: "L1 新普通魔法物品；Common Magic Items"\n    authority: "官方"\n    translation: "community"\n  - file: "${sourcePdf}"\n    locator: "Chapter 2: Dungeon Master's Tools；Common Magic Items"\n    authority: "官方"\n    translation: "none"\nsource_type: "official"\nconfidence: "interpreted"\nrules_sources:\n  - "${publication.canonical_rules_source}"\nerrata: []\nupdated: "${today()}"\n---\n\n# 普通魔法物品索引 (2014 Legacy)\n\n> 收錄《珊娜薩的萬事指南》新增的 48 件普通魔法物品；各項物品依類別分頁。\n\n${indexLists}\n\n## 🔗 相關連結\n\n- [[規則/2014/地下城主工具/獎勵魔法物品/普通魔法物品|新普通魔法物品 (2014 Legacy)]]\n- [[魔法物品/魔法物品索引|魔法物品索引 (Magic Item Index)]]\n`;
-fs.writeFileSync(path.join(outputRoot, "普通魔法物品索引.md"), index, "utf8");
+queueWrite(path.join(outputRoot, "普通魔法物品索引.md"), index, source, "L1 新普通魔法物品；Common Magic Items");
 
 let reference = fs.readFileSync(referencePath, "utf8");
 const frontmatterEnd = reference.indexOf("---", 4);
 const prefix = reference.slice(0, frontmatterEnd + 3);
 const guide = `\n\n# 新普通魔法物品 (2014 Legacy)\n\n> [!WARNING] 本頁保留《珊娜薩的萬事指南》的 2014 指引；如與現行規則衝突，以採用的規則版本為準。\n\n## 普通魔法物品\n\n《城主指南》中包含各種稀有度的魔法物品，但普通魔法物品數量很少。本節新增的物品主要用於角色扮演、趣味與情境發揮；完整物品說明依類別移至 [[魔法物品/2014/普通魔法物品索引|普通魔法物品索引 (2014 Legacy)]]。\n\n> [!NOTE] 設計更多普通魔法物品\n> 《城主指南》第七章的特殊特性可作為設計靈感，例如賦予語言、在邪魔附近發光，或把使用者聲音傳至遠處。這是 DM 設計指引，不是新增既有物品的規則。\n\n## 🔗 相關連結\n\n- [[魔法物品/2014/普通魔法物品索引|普通魔法物品索引 (2014 Legacy)]]\n- [[規則/2014/地下城主工具/地下城主工具索引|地下城主工具索引 (2014 Legacy)]]\n- [[規則/2014/XGE規則索引|XGE 規則索引 (2014 Legacy)]]\n`;
-fs.writeFileSync(referencePath, `${prefix}${guide}`, "utf8");
-console.log(`XGE 普通魔法物品：已歸類 ${items.length} 件；其中 ${items.filter((item) => current.has(item.english.toLowerCase())).length} 件建立現行版本雙向連結。`);
+queueWrite(referencePath, `${prefix}${guide}`, source, "普通魔法物品規則入口");
+
+const plan = planCandidateBatch(pending, { root: ROOT, lint: lintWiki });
+if (options.report) {
+  const reportPath = path.resolve(ROOT, options.report);
+  if (!reportPath.startsWith(`${path.resolve(ROOT, "reports")}${path.sep}`)) throw new Error("報告只能輸出至 reports/。");
+  fs.mkdirSync(path.dirname(reportPath), { recursive: true });
+  fs.writeFileSync(reportPath, `${JSON.stringify(plan, null, 2)}\n`, "utf8");
+}
+if (options.apply) {
+  const result = applyCandidateBatch(plan, { root: ROOT, lint: lintWiki });
+  console.log(`已套用 XGE 普通魔法物品：${result.applied.length} 個候選變更。`);
+} else {
+  console.log(`預覽 XGE 普通魔法物品：${plan.changes.length} 個候選變更；加入 --apply 才會寫入。`);
+}
+console.log(`其中 ${items.filter((item) => current.has(item.english.toLowerCase())).length} 件建立現行版本雙向連結。`);

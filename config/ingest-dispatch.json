@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "candidate_parsers": [],
+  "categories": {
+    "職業": { "parser": "scripts/ingest/ingest-classes.mjs", "argument_profile": "classes" },
+    "種族": { "parser": "scripts/ingest/ingest-species.mjs", "argument_profile": "character_option" },
+    "背景": { "parser": "scripts/ingest/ingest-backgrounds.mjs", "argument_profile": "character_option" },
+    "法術": { "parser": "scripts/ingest/ingest-spells.mjs", "argument_profile": "character_option" },
+    "專長": { "parser": "scripts/ingest/ingest-feats.mjs", "argument_profile": "character_option" },
+    "魔法物品": { "parser": "scripts/ingest/ingest-magic-items.mjs", "argument_profile": "magic_items" },
+    "角色建立與成長": { "parser": "scripts/ingest/append-character-creation-tables.mjs", "argument_profile": "character_creation" },
+    "怪物": { "parser": "scripts/ingest/ingest-monsters.mjs", "argument_profile": "monsters" },
+    "戰役設定": { "parser": "scripts/ingest/ingest-lore.mjs", "argument_profile": "lore" }
+  }
+}

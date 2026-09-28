@@ -2,6 +2,8 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import YAML from "yaml";
+import { applyCandidateBatch, candidateChange, parseOptions, planCandidateBatch, writeCandidatePlan } from "../core/ingest-publication-utils.mjs";
+import { lintWiki } from "../core/wiki-lint.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const WIKI = path.join(ROOT, "wiki");
@@ -302,7 +304,8 @@ function updateCurrentBody(record, al) {
   return `${body.trimEnd()}${section}\n## 🔗 相關連結\n`;
 }
 
-const apply = process.argv.includes("--apply");
+const options = parseOptions(process.argv.slice(2));
+if (options.apply && !options.report) throw new Error("套用 Wiki 變更必須指定 --report reports/<plan>.json，以保留可追溯報告。");
 const allRecords = walk(WIKI).map(parse).filter(Boolean);
 const records = allRecords.filter((record) => record
   && record.data.ruleset === "2014"
@@ -357,7 +360,9 @@ const overviewText = renderOverview(groups);
 if (!fs.existsSync(overview) || fs.readFileSync(overview, "utf8") !== overviewText) changes.push({ file: overview, next: overviewText });
 
 for (const change of changes) {
-  process.stdout.write(`${apply ? "套用" : "預覽"}：${path.relative(ROOT, change.file).replaceAll("\\", "/")}\n`);
-  if (apply) fs.writeFileSync(change.file, change.next, "utf8");
+  process.stdout.write(`${options.apply ? "套用" : "預覽"}：${path.relative(ROOT, change.file).replaceAll("\\", "/")}\n`);
 }
-process.stdout.write(`${apply ? "已更新" : "預覽"}：${records.length} 個 Legacy、${currentRecords.length} 個現行擴充玩家選項；${changes.length} 個檔案待寫入。\n`);
+const plan = planCandidateBatch(changes.map((change) => candidateChange({ destination: change.file, before: fs.readFileSync(change.file, "utf8"), after: change.next, operation: "update", source: AL_SOURCE, locator: AL_RULE })), { root: ROOT, lint: lintWiki });
+writeCandidatePlan({ ...plan, legacy_records: records.length, current_records: currentRecords.length }, options.report, { root: ROOT });
+if (options.apply) applyCandidateBatch(plan, { root: ROOT, lint: lintWiki });
+process.stdout.write(`${options.apply ? "已更新" : "預覽"}：${records.length} 個 Legacy、${currentRecords.length} 個現行擴充玩家選項；${changes.length} 個檔案待寫入。\n`);

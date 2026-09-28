@@ -1,9 +1,12 @@
 import fs from "node:fs";
 import path from "node:path";
+import { ROOT, applyCandidateBatch, candidateChange, parseOptions, planCandidateBatch, writeCandidatePlan } from "../core/ingest-publication-utils.mjs";
+import { lintWiki } from "../core/wiki-lint.mjs";
 
-const root = process.cwd();
+const root = ROOT;
 const magicItemRoot = path.join(root, "wiki", "魔法物品");
-const apply = process.argv.includes("--apply");
+const options = parseOptions(process.argv.slice(2));
+if (options.apply && !options.report) throw new Error("套用 Wiki 變更必須指定 --report reports/<plan>.json，以保留可追溯報告。");
 const genericName = "特殊能力";
 
 function walkMarkdown(directory) {
@@ -174,7 +177,7 @@ function uniqueName(name, used) {
   return candidate;
 }
 
-const plan = [];
+const entries = [];
 for (const file of walkMarkdown(magicItemRoot)) {
   const original = fs.readFileSync(file, "utf8");
   if (!/^category: "魔法物品"$/m.test(original)) continue;
@@ -190,7 +193,7 @@ for (const file of walkMarkdown(magicItemRoot)) {
     let end = index + 1;
     while (end < lines.length && !/^- \*\*/.test(lines[end]) && !/^##/.test(lines[end])) end += 1;
     const result = effectNameFromText(lines.slice(index + 1, end).join("\n"), title);
-    plan.push({
+    entries.push({
       file: path.relative(root, file).split(path.sep).join("/"),
       line: index + 1,
       title,
@@ -201,28 +204,34 @@ for (const file of walkMarkdown(magicItemRoot)) {
   }
 }
 
-const counts = Object.groupBy(plan, ({ confidence }) => confidence);
+const counts = Object.groupBy(entries, ({ confidence }) => confidence);
 console.log(JSON.stringify({
-  total: plan.length,
+  total: entries.length,
   counts: Object.fromEntries(Object.entries(counts).map(([key, entries]) => [key, entries.length])),
   needsReview: counts["needs-review"] ?? [],
 }, null, 2));
 
-if (!apply) process.exit(0);
-const unresolved = plan.filter(({ confidence }) => confidence === "needs-review");
-const selected = plan.filter(({ confidence }) => confidence !== "needs-review");
-if (selected.length > 0) {
-  const grouped = Map.groupBy(selected, ({ file }) => file);
-  for (const [file, changes] of grouped) {
-    let content = fs.readFileSync(path.join(root, file), "utf8");
-    for (const change of changes) {
-      const target = "- **特殊能力**：";
-      const replacement = `- **${change.name}**：`;
-      const offset = content.indexOf(target);
-      if (offset < 0) throw new Error(`${file}:${change.line} 找不到預期效果名稱。`);
-      content = `${content.slice(0, offset)}${replacement}${content.slice(offset + target.length)}`;
-    }
-    fs.writeFileSync(path.join(root, file), content, "utf8");
+const unresolved = entries.filter(({ confidence }) => confidence === "needs-review");
+const selected = entries.filter(({ confidence }) => confidence !== "needs-review");
+const pending = [];
+for (const [file, changes] of Map.groupBy(selected, ({ file }) => file)) {
+  const destination = path.join(root, file);
+  const before = fs.readFileSync(destination, "utf8");
+  let after = before;
+  for (const change of changes) {
+    const target = "- **特殊能力**：";
+    const replacement = `- **${change.name}**：`;
+    const offset = after.indexOf(target);
+    if (offset < 0) throw new Error(`${file}:${change.line} 找不到預期效果名稱。`);
+    after = `${after.slice(0, offset)}${replacement}${after.slice(offset + target.length)}`;
   }
+  pending.push(candidateChange({ destination, before, after, operation: "update", source: "泛用效果命名規則", locator: file }));
 }
-console.error(`已替換 ${selected.length} 項；保留 ${unresolved.length} 項待逐批確認。`);
+for (const entry of unresolved) {
+  const destination = path.join(root, entry.file); const before = fs.readFileSync(destination, "utf8");
+  pending.push(candidateChange({ destination, before, after: before, operation: "unchanged", status: "manual_review", review: [`${entry.file}:${entry.line} 無法可靠命名，保留「特殊能力」。`] }));
+}
+const candidatePlan = planCandidateBatch(pending, { root, lint: lintWiki });
+writeCandidatePlan(candidatePlan, options.report, { root });
+if (options.apply) applyCandidateBatch(candidatePlan, { root, lint: lintWiki });
+console.error(`${options.apply ? "已套用" : "預覽"} ${selected.length} 項；保留 ${unresolved.length} 項待逐批確認；可套用 ${candidatePlan.summary.ready} 個檔案。`);

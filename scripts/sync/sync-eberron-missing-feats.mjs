@@ -1,9 +1,12 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { applyCandidateBatch, candidateChange, parseOptions, planCandidateBatch, writeCandidatePlan } from "../core/ingest-publication-utils.mjs";
+import { lintWiki } from "../core/wiki-lint.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
-const APPLY = process.argv.includes("--apply");
+const options = parseOptions(process.argv.slice(2));
+if (options.apply && !options.report) throw new Error("套用 Wiki 變更必須指定 --report reports/<plan>.json，以保留可追溯報告。");
 const TODAY = new Date().toISOString().slice(0, 10);
 const MIRROR = "原始資料/外部來源鏡像/EBER2025/book-efa.json";
 const URL = "https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/book/book-efa.json";
@@ -25,11 +28,15 @@ function update(text, item) {
   return next;
 }
 const results = [];
+const pending = [];
 for (const item of entries) {
   const file = path.join(ROOT, "wiki", "專長", item.dir, item.file);
   if (!fs.existsSync(file)) { results.push({ ...item, status: "missing_file" }); continue; }
   const before = fs.readFileSync(file, "utf8"); const after = update(before, item); const changed = before !== after;
-  if (APPLY && changed) fs.writeFileSync(file, after, "utf8");
-  results.push({ ...item, status: changed ? (APPLY ? "written" : "preview") : "unchanged" });
+  if (changed) pending.push(candidateChange({ destination: file, before, after, operation: "update", source: MIRROR, locator: item.english }));
+  results.push({ ...item, status: changed ? (options.apply ? "written" : "preview") : "unchanged" });
 }
-process.stdout.write(`EBER2025 專長名稱與鏡像同步${APPLY ? "套用" : "預覽"}：${JSON.stringify(results.map(({ chinese, status }) => ({ chinese, status })))}\n`);
+const plan = planCandidateBatch(pending, { root: ROOT, lint: lintWiki });
+writeCandidatePlan({ ...plan, results }, options.report, { root: ROOT });
+if (options.apply) applyCandidateBatch(plan, { root: ROOT, lint: lintWiki });
+process.stdout.write(`EBER2025 專長名稱與鏡像同步${options.apply ? "套用" : "預覽"}：${JSON.stringify(results.map(({ chinese, status }) => ({ chinese, status })))}\n`);

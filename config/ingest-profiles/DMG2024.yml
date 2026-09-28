@@ -2,10 +2,16 @@ publication_id: "DMG2024"
 source_root: "原始資料/地下城主指南2024"
 setting: "灰鷹"
 ruleset: "2024"
+canonical_mirror:
+  provider: "5e.tools"
+  book_id: "xdmg"
+  url: "https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/book/book-xdmg.json"
+  output_root: "原始資料/外部來源鏡像/DMG2024"
 character_options: []
 outputs:
   magic_items: "wiki/魔法物品"
   rules: "wiki/規則"
+  settings: "wiki/戰役設定/灰鷹"
 inputs:
   magic_items: "第七章_寶藏/魔法物品詳述"
   lore:

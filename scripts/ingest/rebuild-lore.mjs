@@ -3,7 +3,7 @@ import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 import YAML from "yaml";
-import { ROOT, today } from "../core/ingest-publication-utils.mjs";
+import { ROOT, reportTargetPath, today } from "../core/ingest-publication-utils.mjs";
 
 const SCRIPT = fileURLToPath(import.meta.url);
 const WIKI_ROOT = path.join(ROOT, "wiki", "戰役設定");
@@ -377,6 +377,7 @@ function select(args) {
 
 export function rebuildLore(args = process.argv.slice(2)) {
   const apply = args.includes("--apply");
+  if (apply) throw new Error("舊戰役設定整頁重建已退役，不再直接寫入 Wiki；請使用 wiki:preview -- --category 戰役設定 產生候選。");
   const diff = args.includes("--diff");
   const { total, selected, batch, batches } = select(args);
   const report = { schema_version: 1, mode: apply ? "apply" : "preview", errors: [], warnings: [], information: [], translation_pending: [], source_conflicts: [], missing_page_citation: [], missing_stat_link: [], disposition: { rebuild: [], excluded: [] } };
@@ -397,8 +398,7 @@ export function rebuildLore(args = process.argv.slice(2)) {
   report.summary = { total_candidates: total, batch, batches, selected: selected.length, changed: report.disposition.rebuild.filter((item) => item.changed).length, excluded: report.disposition.excluded.length, errors: report.errors.length, warnings: report.warnings.length };
   const reportPath = option(args, "--report");
   if (reportPath) {
-    const target = path.resolve(ROOT, reportPath);
-    if (!target.startsWith(`${ROOT}${path.sep}`)) throw new Error("--report 必須位於工作區內。");
+    const target = reportTargetPath(reportPath);
     fs.mkdirSync(path.dirname(target), { recursive: true });
     fs.writeFileSync(target, `${JSON.stringify(report, null, 2)}\n`, "utf8");
   }

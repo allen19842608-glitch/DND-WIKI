@@ -1,6 +1,13 @@
 publication_id: "TCE2020"
 source_root: "原始資料/塔莎的萬事坩堝"
 ruleset: "2014"
+character_options:
+  - "classes"
+  - "subclasses"
+  # 定製血統為角色選項；英文書籍快照未列獨立種族資料卡，須明列結構待處理。
+  - "species"
+  - "feats"
+  - "spells"
 canonical_mirror:
   provider: "5e.tools"
   book_id: "tce"
@@ -19,7 +26,35 @@ outputs:
   settings: "wiki/戰役設定"
 inputs:
   character_options: "玩家選項"
+  classes: "玩家選項/職業"
+  class_sources:
+    layout: "sibling"
+    heading_suffixes:
+      - "（TCE）"
+      - "（舊版）"
+    full_classes:
+      - "奇械師.md"
+    non_subclasses:
+      - "奇械師/奇械師法術列表.md"
+      - "奇械師/奇械師注法.md"
+      - "戰士（TCE）/戰技選項.md"
+      - "戰士（TCE）/戰鬥大師構築.md"
+      - "遊俠（TCE）/馴獸師夥伴.md"
+      - "邪術師（TCE）/魔能祈喚.md"
   feats_file: "玩家選項/專長.md"
+  # 這一份專長檔已是繁體中文；不沿用來源目錄層級的簡體標記。
+  feats_language: "zh-Hant"
   spells: "法術/法術詳述"
+  # 此九份環階檔使用繁體字形；不沿用來源目錄層級的簡體標記。
+  spells_language: "zh-Hant"
   magic_items: "魔法物品/魔法物品詳述"
   dungeon_master_tools: "城主工具"
+parsers:
+  職業:
+    candidate_ready: true
+    parser: "scripts/ingest/ingest-classes.mjs"
+    argument_profile: "classes"
+    candidate_scope: "相鄰來源僅為具精確英文鏡像實體頁碼的既有頁產生來源引註候選；可選職業特性、同伴職業及新頁正文另待處理。"
+  種族:
+    candidate_ready: false
+    incomplete_reason: "定製血統來源屬特殊角色選項；英文書籍快照未提供獨立種族資料卡，尚不能用一般種族解析器建立候選。"

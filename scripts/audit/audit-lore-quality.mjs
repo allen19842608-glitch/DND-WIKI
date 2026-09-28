@@ -1,6 +1,6 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { ROOT } from "../core/ingest-publication-utils.mjs";
+import { ROOT, parseOptions } from "../core/ingest-publication-utils.mjs";
 import { readWikiPages, isNavigationPage, writeReport } from "../core/wiki-records.mjs";
 
 const INTRO = {
@@ -26,17 +26,21 @@ export function assessLorePage(page) {
   if (/\{\{[^}]+\}\}/.test(page.body)) issues.push("正文仍有模板占位符");
   return { page: page.file, setting: data.setting ?? "戰役創作", title: data.title, lore_type: data.lore_type, issues, hints };
 }
-export function auditLoreQuality({ root = ROOT, apply = false } = {}) {
+export function auditLoreQuality({ root = ROOT, reportPath = null } = {}) {
   const records = readWikiPages(root).filter(page => page.file.startsWith("wiki/戰役設定/")).map(assessLorePage).filter(Boolean);
   const review = records.filter(record => record.issues.length), hints = records.filter(record => record.hints.length);
   const bySetting = {};
   for (const record of review) (bySetting[record.setting] ??= []).push(record);
   const report = { schema_version: 2, generated_at: new Date().toISOString(), scope: "戰役設定正文（排除索引與精選導覽）", summary: { pages: records.length, review: review.length, hints: hints.length, by_setting: bySetting }, review, hints };
-  if (apply) {
-    writeReport(root, "reports/lore-quality-current.json", report);
-    writeReport(root, "reports/lore-quality-current.md", `# 戰役設定內容品質覆核\n\n產生時間：${report.generated_at}\n\n${report.scope}：${records.length} 頁；結構問題 ${review.length} 頁；人工提示 ${hints.length} 頁。字數不判定完整性；通過不代表來源或全文已核實。\n\n## 結構問題\n\n${review.map(r => `- ${r.page}：${r.issues.join("、")}`).join("\n") || "無。"}\n\n## 人工提示\n\n${hints.map(r => `- ${r.page}：${r.hints.join("、")}`).join("\n") || "無。"}\n`);
+  if (reportPath) {
+    writeReport(root, reportPath, report);
+    writeReport(root, reportPath.replace(/\.json$/u, ".md"), `# 戰役設定內容品質覆核\n\n產生時間：${report.generated_at}\n\n${report.scope}：${records.length} 頁；結構問題 ${review.length} 頁；人工提示 ${hints.length} 頁。字數不判定完整性；通過不代表來源或全文已核實。\n\n## 結構問題\n\n${review.map(r => `- ${r.page}：${r.issues.join("、")}`).join("\n") || "無。"}\n\n## 人工提示\n\n${hints.map(r => `- ${r.page}：${r.hints.join("、")}`).join("\n") || "無。"}\n`);
   }
   console.log(`戰役設定正文：${records.length} 頁；結構問題 ${review.length}；人工提示 ${hints.length}`);
   return report;
 }
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) auditLoreQuality({ apply: process.argv.includes("--apply") });
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  const options = parseOptions();
+  if (options.apply) throw new Error("戰役設定內容品質稽核為唯讀；請使用 --report reports/<name>.json。 ");
+  auditLoreQuality({ reportPath: options.report });
+}

@@ -1,7 +1,11 @@
 import fs from "node:fs";
 import path from "node:path";
+import { ROOT, applyCandidateBatch, candidateChange, parseOptions, planCandidateBatch, writeCandidatePlan } from "../core/ingest-publication-utils.mjs";
+import { lintWiki } from "../core/wiki-lint.mjs";
 
-const root = process.cwd();
+const root = ROOT;
+const options = parseOptions(process.argv.slice(2));
+if (options.apply && !options.report) throw new Error("套用受管理資料變更必須指定 --report reports/<plan>.json，以保留可追溯報告。");
 const wikiRoot = path.join(root, "wiki", "怪物");
 const glossaryPath = path.join(root, "附件", "翻譯詞彙表.md");
 const start = "<!-- MONSTER-GLOSSARY:START -->";
@@ -85,5 +89,14 @@ const glossary = fs.readFileSync(glossaryPath, "utf8");
 const replacement = `${start}\n\n${rows.join("\n")}\n\n${end}`;
 const expression = new RegExp(`${start}[\\s\\S]*?${end}`);
 if (!expression.test(glossary)) throw new Error("找不到怪物譯名表標記。");
-fs.writeFileSync(glossaryPath, glossary.replace(expression, replacement));
-console.log(`已同步 ${normalizedEntries.length} 筆怪物譯名對照。`);
+const after = glossary.replace(expression, replacement);
+const changes = after === glossary ? [] : [candidateChange({ destination: glossaryPath, before: glossary, after, operation: "update", source: "wiki/怪物", locator: "MONSTER-GLOSSARY" })];
+const lintManagedWiki = ({ files, overrides } = {}) => {
+  const wikiFiles = (files ?? []).filter((file) => file.replaceAll("\\", "/").startsWith("wiki/"));
+  const wikiOverrides = overrides ? new Map([...overrides].filter(([file]) => file.startsWith("wiki/"))) : undefined;
+  return wikiFiles.length ? lintWiki({ files: wikiFiles, overrides: wikiOverrides }) : { errors: 0, warnings: 0, information: 0 };
+};
+const plan = planCandidateBatch(changes, { root, lint: lintManagedWiki });
+writeCandidatePlan(plan, options.report, { root });
+if (options.apply) applyCandidateBatch(plan, { root, lint: lintManagedWiki });
+console.log(`${options.apply ? "已套用" : "預覽"} ${normalizedEntries.length} 筆怪物譯名對照；候選 ${plan.summary.ready}。`);

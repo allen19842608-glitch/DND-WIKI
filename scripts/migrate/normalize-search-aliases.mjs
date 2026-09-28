@@ -1,7 +1,8 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { ROOT } from "../core/ingest-publication-utils.mjs";
+import { ROOT, applyCandidateBatch, candidateChange, parseOptions, planCandidateBatch, writeCandidatePlan } from "../core/ingest-publication-utils.mjs";
+import { lintWiki } from "../core/wiki-lint.mjs";
 import { readWikiPages } from "../core/wiki-records.mjs";
 import { pageCatalog } from "../core/generic-indexes.mjs";
 import { approvedTerms, proposedAliases } from "../sync/sync-search-metadata.mjs";
@@ -37,13 +38,19 @@ export function planAliasNormalization({ root = ROOT } = {}) {
   }
   return changes;
 }
-export function normalizeSearchAliases({ root = ROOT, apply = false } = {}) {
+export function normalizeSearchAliases({ root = ROOT, apply = false, report = null } = {}) {
   const changes = planAliasNormalization({ root });
-  if (apply) for (const change of changes) fs.writeFileSync(path.join(root, change.file), change.text);
+  if (apply && !report) throw new Error("套用 Wiki 變更必須指定 --report reports/<plan>.json，以保留可追溯報告。");
+  const plan = planCandidateBatch(changes.map((change) => {
+    const destination = path.join(root, change.file);
+    return candidateChange({ destination, before: fs.readFileSync(destination, "utf8"), after: change.text, operation: "update", source: "aliases", locator: change.file });
+  }), { root, lint: lintWiki });
+  writeCandidatePlan(plan, report, { root });
+  const result = apply ? applyCandidateBatch(plan, { root, lint: lintWiki }) : plan;
   console.log(`${apply ? "已套用" : "預覽"}：${changes.length} 頁 aliases 正規化${apply ? "" : "（--apply 寫入）"}`);
-  return changes;
+  return result;
 }
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  if (process.argv.slice(2).some(arg => arg !== "--apply")) throw new Error("僅支援 --apply。");
-  normalizeSearchAliases({ apply: process.argv.includes("--apply") });
+  const options = parseOptions(process.argv.slice(2));
+  normalizeSearchAliases({ apply: options.apply, report: options.report });
 }

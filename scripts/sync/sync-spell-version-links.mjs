@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
-import { ROOT, today } from "../core/ingest-publication-utils.mjs";
+import { ROOT, applyCandidateBatch, candidateChange, parseOptions, planCandidateBatch, today, writeCandidatePlan } from "../core/ingest-publication-utils.mjs";
+import { lintWiki } from "../core/wiki-lint.mjs";
 
 const spellRoot = path.join(ROOT, "wiki", "法術");
 const identical = new Set(["火焰箭", "魔法飛彈", "護盾術", "迷蹤步", "寒冰錐", "連鎖閃電", "時間停止"]);
@@ -43,13 +44,17 @@ function update(file, { link, section }) {
     if (!text.includes(link)) text = text.replace(/(## 🔗 相關連結\r?\n)/, `$1\n- ${link}\n`);
   }
   text = text.replace(/^updated: "\d{4}-\d{2}-\d{2}"/m, `updated: "${today()}"`);
-  fs.writeFileSync(file, text, "utf8");
+  return text;
 }
+
+const options = parseOptions(process.argv.slice(2));
+if (options.apply && !options.report) throw new Error("套用 Wiki 變更必須指定 --report reports/<plan>.json，以保留可追溯報告。");
 
 const legacy = pages(path.join(spellRoot, "2014"));
 const current = pages(spellRoot).filter((file) => !file.startsWith(path.join(spellRoot, "2014")));
 const currentByName = new Map(current.map((file) => [path.basename(file, ".md"), file]));
 let linked = 0;
+const changes = new Map();
 
 for (const legacyFile of legacy) {
   const name = path.basename(legacyFile, ".md");
@@ -58,9 +63,15 @@ for (const legacyFile of legacy) {
   const same = identical.has(name);
   const currentLink = versionLink(wikiPath(currentFile), title(currentFile), "2024");
   const legacyLink = versionLink(wikiPath(legacyFile), title(legacyFile), "2014 Legacy");
-  update(legacyFile, { link: currentLink, section: same ? versionSection({ link: currentLink, targetVersion: "2024" }) : null });
-  update(currentFile, { link: legacyLink, section: same ? versionSection({ link: legacyLink, targetVersion: "2014 Legacy" }) : null });
+  changes.set(legacyFile, update(legacyFile, { link: currentLink, section: same ? versionSection({ link: currentLink, targetVersion: "2024" }) : null }));
+  changes.set(currentFile, update(currentFile, { link: legacyLink, section: same ? versionSection({ link: legacyLink, targetVersion: "2014 Legacy" }) : null }));
   linked += 1;
 }
 
-console.log(`已同步 ${linked} 組同名法術的雙向版本連結。`);
+const plan = planCandidateBatch([...changes].flatMap(([file, after]) => {
+  const before = fs.readFileSync(file, "utf8");
+  return before === after ? [] : [candidateChange({ destination: file, before, after, operation: "link", source: "spell-version-links", locator: path.relative(ROOT, file) })];
+}), { root: ROOT, lint: lintWiki });
+writeCandidatePlan(plan, options.report, { root: ROOT });
+if (options.apply) applyCandidateBatch(plan, { root: ROOT, lint: lintWiki });
+console.log(`${options.apply ? "已套用" : "預覽"} ${linked} 組同名法術的雙向版本連結；候選 ${plan.changes.length} 頁。`);

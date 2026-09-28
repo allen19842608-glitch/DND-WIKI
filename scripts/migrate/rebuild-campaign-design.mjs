@@ -2,6 +2,8 @@ import fs from "node:fs";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
+import { applyCandidateBatch, candidateChange, parseOptions, planCandidateBatch, writeCandidatePlan } from "../core/ingest-publication-utils.mjs";
+import { lintWiki } from "../core/wiki-lint.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const WIKI = path.join(ROOT, "wiki", "戰役設定", "戰役創作");
@@ -9,7 +11,8 @@ const DESIGN = path.join(WIKI, "戰役設計");
 const CORE = path.join(DESIGN, "核心流程");
 const TOPIC = path.join(DESIGN, "主題素材");
 const TODAY = "2026-08-31";
-const apply = process.argv.includes("--apply");
+const options = parseOptions(process.argv.slice(2));
+if (options.apply && !options.report) throw new Error("套用 Wiki 變更必須指定 --report reports/<plan>.json，以保留可追溯報告。");
 const INDEX_IDS = {
   "戰役創作索引 (Campaign Creation Index)": "campaign-creation",
   "戰役設計索引": "campaign-design",
@@ -101,9 +104,14 @@ const outputs = [
   [path.join(TOPIC, "主題素材索引.md"), topicIndex],
   [path.join(WIKI, "戰役創作索引.md"), syncedRootIndex],
 ];
-for (const [file] of outputs) console.log(`${apply ? "重建" : "預覽"}：${path.relative(ROOT, file)}`);
-if (!apply) process.exit(0);
-for (const [file, content] of outputs) { fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, content, "utf8"); }
-for (const [, , old] of outputs) if (old && fs.existsSync(old) && path.resolve(old) !== path.resolve(outputs.find(([file]) => file)?.[0])) fs.unlinkSync(old);
-for (const dir of [path.join(DESIGN, "戰役背景"), path.join(DESIGN, "規劃冒險")]) if (fs.existsSync(dir) && fs.readdirSync(dir).length === 0) fs.rmdirSync(dir);
-console.log(`完成：${pages.length} 篇重建頁與 4 個索引。`);
+const pending = [];
+for (const [file, content, old] of outputs) {
+  const before = fs.existsSync(file) ? fs.readFileSync(file, "utf8") : null;
+  if (before !== content) pending.push(candidateChange({ destination: file, before, after: content, operation: before === null ? "create" : "update", source: "戰役設計重建", locator: path.relative(ROOT, file) }));
+  if (old && fs.existsSync(old) && path.resolve(old) !== path.resolve(file)) pending.push(candidateChange({ destination: old, before: fs.readFileSync(old, "utf8"), after: null, operation: "delete", source: "戰役設計重建", locator: `遷移至 ${path.relative(ROOT, file)}` }));
+}
+const plan = planCandidateBatch(pending, { root: ROOT, lint: lintWiki });
+writeCandidatePlan(plan, options.report, { root: ROOT });
+if (options.apply) applyCandidateBatch(plan, { root: ROOT, lint: lintWiki });
+for (const [file] of outputs) console.log(`${options.apply ? "重建" : "預覽"}：${path.relative(ROOT, file)}`);
+console.log(`${options.apply ? "已套用" : "預覽"}：${pages.length} 篇重建頁與 4 個索引；可套用 ${plan.summary.ready}。`);

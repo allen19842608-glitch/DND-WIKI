@@ -4,8 +4,9 @@ import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
 import YAML from "yaml";
 import { walk } from "../migrate/organize-multiverse.mjs";
+import { parseOptions, reportTargetPath } from "../core/ingest-publication-utils.mjs";
 const ROOT=fileURLToPath(new URL("../../",import.meta.url));
-export function auditStructure({apply=false}={}){
+export function auditStructure({reportPath=null}={}){
   const migrationFile=path.join(ROOT,"reports/multiverse-migration.json");
   const migration=fs.existsSync(migrationFile)?JSON.parse(fs.readFileSync(migrationFile,"utf8")):[];
   const moved=new Map(migration.map(m=>[m.to,m]));
@@ -29,11 +30,17 @@ export function auditStructure({apply=false}={}){
   const counts={};for(const r of rows)counts[r.setting]=(counts[r.setting]??0)+1;
   const original=baseline.map(p=>rows.find(r=>r.original_page===p)).filter(Boolean);
   const report={summary:{pages:rows.length,by_setting:counts,original_multiverse_pages:baseline.length,classified_original_pages:original.length,moved:migration.length,missing_original_pages:baseline.filter(p=>!rows.some(r=>r.original_page===p))},errors:rows.filter(r=>r.sources.some(s=>!s.exists)),review:rows.filter(r=>r.issues.length),pages:rows,external_reference_candidates:[{url:"https://www.dndbeyond.com/posts/1576-what-to-know-before-you-visit-sigil-the-city-at",use:"印記城旅行限制交叉核對；正文已採本地正式出版品鏡像"},{url:"https://www.dndbeyond.com/posts/279-welcome-to-eberron-an-introduction-to-a-realm-of",use:"艾伯倫專屬宇宙觀的後續官方資料入口"}]};
-  if(apply){
-    fs.writeFileSync(path.join(ROOT,"reports/setting-structure-current.json"),JSON.stringify(report,null,2)+"\n");
+  if(reportPath){
+    if(!reportPath.endsWith(".json"))throw new Error("戰役設定結構報告必須是 reports/ 下的 .json 檔。");
+    const json=reportTargetPath(reportPath),mdPath=reportTargetPath(reportPath.replace(/\.json$/u,".md"));
+    fs.writeFileSync(json,JSON.stringify(report,null,2)+"\n");
     const md="# 戰役設定結構盤點\n\n"+`共 ${rows.length} 頁；原多元宇宙 ${baseline.length} 頁，已分類 ${original.length} 頁，搬移 ${migration.length} 頁。\n\n`+"## 世界分布\n\n"+Object.entries(counts).map(([k,v])=>`- ${k}：${v}`).join("\n")+"\n\n## 內容覆核候選\n\n以下是自動檢查候選，不代表已證實缺文；分類完成不等於逐句來源核定。\n\n"+report.review.map(r=>`- ${r.page}：${r.issues.join("；")}`).join("\n")+"\n\n## 後續世界順序\n\n被遺忘的國度 → 艾伯倫 → 灰鷹 → 鴉閣魔域；新版來源優先，舊版補充未被取代的設定。怪物數據卡另列最低優先級。\n";
-    fs.writeFileSync(path.join(ROOT,"reports/setting-structure-current.md"),md);
+    fs.writeFileSync(mdPath,md);
   }
   console.log(JSON.stringify(report.summary));return report;
 }
-if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url))auditStructure({apply:process.argv.includes("--apply")});
+if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){
+  const options=parseOptions();
+  if(options.apply)throw new Error("戰役設定結構稽核為唯讀；請使用 --report reports/<name>.json。 ");
+  auditStructure({reportPath:options.report});
+}

@@ -4,6 +4,7 @@ import process from "node:process";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { parseDocument } from "yaml";
 import { deriveSourceType, lintWiki } from "../core/wiki-lint.mjs";
+import { applyCandidateBatch, planCandidateBatch } from "../core/ingest-publication-utils.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const WIKI_ROOT = path.join(ROOT, "wiki");
@@ -172,7 +173,10 @@ function updateFrontmatter(text, frontmatter, target, root) {
 
   const data = parts.data;
   const merged = {
-    sources: mergeUnique(data.sources, frontmatter.sources, sourceKey),
+    // The Patch input names the authoritative source being applied.  Keep it
+    // first so an English mirror with a canonical page locator remains the
+    // primary citation while retaining existing community translations.
+    sources: mergeUnique(frontmatter.sources, data.sources, sourceKey),
     rules_sources: mergeUnique(data.rules_sources, frontmatter.rules_sources ?? []),
     errata: mergeUnique(data.errata, frontmatter.errata ?? []),
     confidence: frontmatter.confidence,
@@ -284,11 +288,13 @@ export function preparePatch(operations, { root = ROOT, lint = lintWiki } = {}) 
     let next = initial;
     if (operation.action === "update_frontmatter") {
       next = updateFrontmatter(next, operation.payload.frontmatter, operation.target.rel, root);
-      const updated = pageParts(next, operation.target.rel);
-      next = `${updated.start}${updated.yaml}${updated.separator}${insertAtAnchor(updated.body, operation.anchor_heading, marker(operation.patch_id), operation.target.rel)}`;
     } else {
       const fragment = `${marker(operation.patch_id)}\n${operation.payload.rule_content.trim()}`;
       next = `${parts.start}${parts.yaml}${parts.separator}${insertAtAnchor(parts.body, operation.anchor_heading, fragment, operation.target.rel)}`;
+    }
+    if (next === initial) {
+      status.push({ patchId: operation.patch_id, status: "skipped", target: operation.target.rel });
+      continue;
     }
     candidates.set(operation.target.rel, next);
     status.push({ patchId: operation.patch_id, status: "ready", target: operation.target.rel });
@@ -298,14 +304,30 @@ export function preparePatch(operations, { root = ROOT, lint = lintWiki } = {}) 
     ? lint({ files: [...candidates.keys()], overrides: candidates })
     : { errors: 0, warnings: 0, information: 0 };
   if (lintResult.errors > 0) fail(`Patch 虛擬 lint 失敗，共 ${lintResult.errors} 個錯誤；未寫入任何檔案。`);
-  return { candidates, status, lintResult, root, lint };
+  const sourceFiles = [...new Set(validated.flatMap((operation) => operation.action === "update_frontmatter"
+    ? operation.payload.frontmatter.sources.map((source) => source.file)
+    : []))];
+  return { candidates, status, lintResult, root, lint, sourceFiles };
 }
 
-export function applyPreparedPatch(prepared) {
-  for (const [target, content] of prepared.candidates) {
-    fs.writeFileSync(path.join(prepared.root, target), content, "utf8");
-  }
-  return prepared.lint({ files: [...prepared.candidates.keys()] });
+/** Convert validated Patch candidates into the common, reviewable plan format. */
+export function planPreparedPatch(prepared) {
+  const changes = [...prepared.candidates].map(([target, content]) => ({
+    target,
+    before: fs.readFileSync(path.join(prepared.root, target), "utf8"),
+    after: content,
+    operation: "update",
+    source: "JSON Patch",
+    status: "ready",
+  }));
+  return planCandidateBatch(changes, { root: prepared.root, lint: prepared.lint, sourceFiles: prepared.sourceFiles });
+}
+
+export function applyPreparedPatch(prepared, { authorization } = {}) {
+  const plan = planPreparedPatch(prepared);
+  const applied = applyCandidateBatch(plan, { root: prepared.root, lint: prepared.lint, authorization });
+  // Preserve the small programmatic result shape used by existing callers.
+  return { ...applied, ...applied.lint };
 }
 
 function cli() {
@@ -330,9 +352,7 @@ function cli() {
     process.stdout.write(`預覽完成：${prepared.candidates.size} 個檔案可更新；加入 --apply 才會寫入。\n`);
     return;
   }
-  const result = applyPreparedPatch(prepared);
-  if (result.errors > 0) fail(`寫入後 lint 失敗，共 ${result.errors} 個錯誤。`);
-  process.stdout.write(`已套用：${prepared.candidates.size} 個檔案。\n`);
+  fail("JSON Patch 不直接套用；請以 wiki:preview 產生候選計畫，再用 wiki:apply 套用。");
 }
 
 const isMain = process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href;

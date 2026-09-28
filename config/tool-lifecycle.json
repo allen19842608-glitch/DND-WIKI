@@ -1,0 +1,880 @@
+{
+  "schema_version": 1,
+  "classes": {
+    "daily_core": { "writes_wiki": true, "replacement": "wiki:inspect / wiki:preview / wiki:apply / wiki:check", "verification": "lint + indexes:strict" },
+    "publication_parser": { "writes_wiki": false, "replacement": "wiki:preview", "verification": "candidate virtual lint" },
+    "historical": { "writes_wiki": false, "replacement": "review retained script and create a new candidate workflow", "verification": "wiki:check" },
+    "independent_integration": { "writes_wiki": false, "replacement": "separate integration workflow", "verification": "integration-specific read-back" }
+  },
+  "rules": [
+    { "prefix": "scripts/core/", "class": "daily_core", "purpose": "共用維護能力", "writes": "候選計畫或檢查輸出" },
+    { "prefix": "scripts/ingest/", "class": "historical", "purpose": "保留的單書吸收或歷史來源工具", "writes": "不得作為日常 Wiki 寫入入口" },
+    { "prefix": "scripts/migrate/", "class": "historical", "purpose": "歷史搬移或格式修補", "writes": "不得作為日常 Wiki 寫入入口" },
+    { "prefix": "scripts/sync/", "class": "historical", "purpose": "歷史同步或連結整理", "writes": "不得作為日常 Wiki 寫入入口" },
+    { "prefix": "scripts/audit/", "class": "historical", "purpose": "稽核或一次性覆核", "writes": "報告或候選，不得直接套用 Wiki" },
+    { "prefix": "scripts/publish/", "class": "independent_integration", "purpose": "外部發布整合", "writes": "外部系統，非 Wiki 更新鏈" }
+  ],
+  "details": {
+    "scripts/core/approved-translation.mjs": {
+      "purpose": "由核定詞彙表建立譯名對照並拒絕未核定或衝突名稱",
+      "writes": "純比對函式，無寫入",
+      "replacement": "保留於共用解析與候選檢查層",
+      "verification": "核定／未核定譯名隔離測試"
+    },
+    "scripts/core/campaign-design-layout.mjs": {
+      "purpose": "定義戰役設計資料的既有目錄與目標路徑",
+      "writes": "純路徑函式，無寫入",
+      "replacement": "保留供結構檢查；不恢復整批重建入口",
+      "verification": "目錄映射與戰役索引檢查"
+    },
+    "scripts/core/character-creation-tables.mjs": {
+      "purpose": "依出版品設定建構角色建立表格候選",
+      "writes": "只回傳 Wiki 候選；不直接寫入",
+      "replacement": "wiki:preview --category 角色建立與成長",
+      "verification": "設定式新書、缺來源、越界及表格差異測試"
+    },
+    "scripts/core/character-options-lib.mjs": {
+      "purpose": "共用角色選項實體抽取、身分比對與涵蓋稽核",
+      "writes": "唯讀來源及 Wiki，回傳稽核結果",
+      "replacement": "wiki:inspect 出版品涵蓋；舊 audit 匯入僅相容轉接",
+      "verification": "跨書同名、識別碼、鏡像頁碼與譯名測試"
+    },
+    "scripts/core/class-source-title.mjs": {
+      "purpose": "在既有英文名與核定譯名間辨識職業來源標題",
+      "writes": "純解析函式，無寫入",
+      "replacement": "保留於職業候選解析器",
+      "verification": "單語與雙語職業標題測試"
+    },
+    "scripts/core/class-replacement-review.mjs": {
+      "purpose": "既有職業頁只補精確英文鏡像引用，並評估整頁重建會遺失的欄位與人工章節",
+      "writes": "純候選與差異分析函式，無直接寫入",
+      "replacement": "保留於職業候選預覽，正文差異維持人工覆核",
+      "verification": "來源引用冪等與 AL／識別碼保留測試、EBER2025 六頁實際預覽"
+    },
+    "scripts/core/errata.mjs": {
+      "purpose": "精確舊文替換、官方定位及相依反向連結的勘誤候選",
+      "writes": "只建立 Wiki 候選與覆核原因，不直接寫入",
+      "replacement": "wiki:preview --errata",
+      "verification": "舊文唯一性、未核定譯名、人工段落保留及重跑無差異測試"
+    },
+    "scripts/core/feat-page-candidates.mjs": {
+      "purpose": "為既有專長頁建立英文鏡像實體頁碼來源補正候選",
+      "writes": "只建立 Wiki 候選，不直接寫入",
+      "replacement": "wiki:preview 的專長頁碼補正模式",
+      "verification": "同名跨書、來源頁碼與逐檔來源差異"
+    },
+    "scripts/core/flat-player-option-source.mjs": {
+      "purpose": "解析平鋪子職與無英文特質標題的種族來源，輸出逐項定位及未解析結構",
+      "writes": "只讀原始資料並回傳結構，不直接寫入 Wiki",
+      "replacement": "wiki:preview 的出版品特殊來源盤點；完整產文仍須共用候選器",
+      "verification": "FTD2021 五個實體、伴侶數據卡、無標記特質與來源越界隔離測試"
+    },
+    "scripts/core/sibling-class-source.mjs": {
+      "purpose": "盤點父職業檔與同名子職目錄相鄰的出版品來源，辨別完整職業、子職、補充與標題衝突",
+      "writes": "只讀原始資料並回傳逐檔結構及定位，不直接寫入 Wiki",
+      "replacement": "wiki:preview --category 職業 的特殊來源盤點；正文與可選特性仍須另行覆核",
+      "verification": "TCE2020 49 份來源、六份補充、兩處標題歧異及隔離新書路徑測試"
+    },
+    "scripts/core/sibling-class-candidates.mjs": {
+      "purpose": "將相鄰職業與子職來源唯一對應既有 Wiki 頁，只在英文鏡像標示實體自身頁碼時建立來源引註候選",
+      "writes": "只讀 Wiki、原始資料及英文鏡像並回傳候選，不直接寫入 Wiki",
+      "replacement": "wiki:preview --category 職業 --publication TCE2020 --replace；正文與同伴職業另待內容候選",
+      "verification": "隔離新書的自身頁碼、人工正文與 AL 保留、第二次預覽無差異，以及真實 TCE 缺頁碼零候選"
+    },
+    "scripts/core/generic-indexes.mjs": {
+      "purpose": "計算通用分類索引與增量索引缺漏",
+      "writes": "正式工作樹只建候選；隔離根目錄測試可寫入索引",
+      "replacement": "wiki:preview --category 索引；wiki:check 及 indexes:strict 驗證",
+      "verification": "索引差異、範圍限制與全庫 strict 檢查"
+    },
+    "scripts/core/index-candidates.mjs": {
+      "purpose": "合併頁面變更的必要索引效果並標出同目標衝突",
+      "writes": "純候選建構，無直接寫入",
+      "replacement": "保留於 wiki:preview 共用計畫",
+      "verification": "同目標衝突與索引相依候選測試"
+    },
+    "scripts/core/ingest-publication-utils.mjs": {
+      "purpose": "共用來源／設定驗證、虛擬候選計畫、報告與交易式套用",
+      "writes": "唯一日常 Wiki 套用能力；另可寫 reports/ 報告，不寫原始資料",
+      "replacement": "wiki:preview 建計畫，僅 wiki:apply 授權套用已存 ready 項目",
+      "verification": "真實虛擬 lint、來源及目標指紋、混合批次回復與越界測試"
+    },
+    "scripts/core/ingest.mjs": {
+      "purpose": "依出版品設定將支援類別調度到解析器並正規化預覽結果",
+      "writes": "只產生候選及 reports/ 未支援原因；拒絕直接 --apply",
+      "replacement": "wiki:preview 為日常出版品入口；舊 ingest 保留預覽相容轉接",
+      "verification": "設定式新書、未知類別、未支援結構及 CLI 互斥測試"
+    },
+    "scripts/core/lore-indexes.mjs": {
+      "purpose": "計算戰役世界、主題與總索引的連結及結構",
+      "writes": "正式根目錄只建候選；隔離根目錄測試可寫入索引",
+      "replacement": "wiki:preview --category 索引；indexes:strict 驗證",
+      "verification": "世界範圍、總索引、反向連結與 strict 檢查"
+    },
+    "scripts/core/magic-item-identity.mjs": {
+      "purpose": "以出版品、版本、來源及識別碼比對既有魔法物品頁",
+      "writes": "純身分比對，無寫入",
+      "replacement": "保留於魔法物品候選解析器",
+      "verification": "跨書同名、目標占用與版本歧義測試"
+    },
+    "scripts/core/mirror-entity-page.mjs": {
+      "purpose": "從書籍快照或資料集讀取實體自身的英文鏡像頁碼",
+      "writes": "唯讀來源，無寫入",
+      "replacement": "保留於出版品稽核與候選頁碼閘門",
+      "verification": "自身頁碼、父章節頁碼排除與重名衝突測試"
+    },
+    "scripts/core/navigation-candidates.mjs": {
+      "purpose": "產生快速查找及近期實質更新的導覽候選",
+      "writes": "只建立 Wiki 候選並讀取成功套用紀錄",
+      "replacement": "wiki:preview --category 導覽",
+      "verification": "首頁與導覽同批、純格式排除及重跑穩定測試"
+    },
+    "scripts/core/search-navigation-candidates.mjs": {
+      "purpose": "依既有魔法物品稀有度欄位與怪物圖鑑棲息地索引建立原生查找候選",
+      "writes": "唯讀 Wiki 頁並回傳新導覽、主索引與快速查找候選；不直接寫入",
+      "replacement": "wiki:preview --category 導覽",
+      "verification": "493 件物品實跑、跨版本同名與未知變體隔離測試、導覽虛擬 lint 及 Wiki 依賴過期檢查"
+    },
+    "scripts/core/retired-tool.mjs": {
+      "purpose": "舊 npm 指令的退役原因及替代入口提示",
+      "writes": "不寫入 Wiki、附件或來源",
+      "replacement": "提示 wiki:inspect、wiki:preview 或 wiki:check；不轉執行舊程式",
+      "verification": "舊指令結束碼與替代提示測試"
+    },
+    "scripts/core/source-fragment.mjs": {
+      "purpose": "按章節、具名項或行號切出可定位來源片段",
+      "writes": "純來源文字解析，無寫入",
+      "replacement": "保留為共用能力；完整原文回填工具持續退役",
+      "verification": "具名項與行號來源切片測試"
+    },
+    "scripts/core/source-update-state.mjs": {
+      "purpose": "分開記錄已觀察來源雜湊與已成功處理更新",
+      "writes": "只寫本機 .wiki-cache/ 狀態，不寫 Wiki 或原始資料",
+      "replacement": "wiki:inspect 查未處理變更；成功 wiki:apply 後推進處理基準",
+      "verification": "快取重建、連續未處理更新與冪等重跑測試"
+    },
+    "scripts/core/spell-content.mjs": {
+      "purpose": "抽取法術規則正文、升環文字與來源片段",
+      "writes": "純解析函式，無寫入",
+      "replacement": "保留於法術候選解析器",
+      "verification": "法術正文與升環結構測試"
+    },
+    "scripts/core/spell-target-area.mjs": {
+      "purpose": "解析、分離及驗證法術目標與區域欄位",
+      "writes": "純文字轉換與驗證，無寫入",
+      "replacement": "保留於法術模板、解析器及 lint",
+      "verification": "Target／Area 分離、例外及保留既有欄位測試"
+    },
+    "scripts/core/tool-lifecycle.mjs": {
+      "purpose": "盤點腳本分類、呼叫者、依賴與逐支明細缺口",
+      "writes": "可寫 reports/ 清單；不寫 Wiki 或來源",
+      "replacement": "tools:lifecycle",
+      "verification": "無效明細、未分類及日常歸檔依賴測試"
+    },
+    "scripts/core/wiki-lint.mjs": {
+      "purpose": "檢查 Frontmatter、識別碼、連結、版本與條目結構",
+      "writes": "唯讀 Wiki；回報錯誤、警告與資訊",
+      "replacement": "wiki:check 為日常入口；lint:all 供全庫驗收",
+      "verification": "真實新增／更新／刪除虛擬集合與全庫 lint"
+    },
+    "scripts/core/wiki-maintenance.mjs": {
+      "purpose": "政策查詢、來源狀態與快取、索引檢查及維護 CLI",
+      "writes": "sources:update 只寫 .wiki-cache/；正式索引寫入由候選流程接管",
+      "replacement": "來源用 sources:status/update；Wiki 更新用四個日常入口",
+      "verification": "來源雜湊、索引 strict 與參數驗證"
+    },
+    "scripts/core/wiki-records.mjs": {
+      "purpose": "共用 Wiki 頁讀取、導覽辨識及 reports/ 報告輸出",
+      "writes": "只可寫 reports/，不寫 Wiki",
+      "replacement": "保留供唯讀稽核器使用",
+      "verification": "報告路徑範圍與唯讀稽核測試"
+    },
+    "scripts/core/wiki-tools.mjs": {
+      "purpose": "四個日常入口的檢視、預覽、儲存計畫套用與檢查",
+      "writes": "預覽只寫 reports/；僅 apply 透過共用交易器寫 Wiki 及更新計畫執行記錄",
+      "replacement": "wiki:inspect、wiki:preview、wiki:apply、wiki:check",
+      "verification": "互斥參數、已存計畫、來源／目標過期及後置驗證測試"
+    },
+    "scripts/audit/audit-character-options.mjs": {
+      "purpose": "盤點角色選項的出版品身分與待覆核狀態",
+      "writes": "唯讀 Wiki；指定路徑時只輸出稽核報告，拒絕 --apply",
+      "replacement": "wiki:inspect 為日常入口；audit:character-options 保留唯讀補充診斷",
+      "verification": "角色選項稽核測試及報告路徑檢查"
+    },
+    "scripts/audit/audit-lore-ingestion.mjs": {
+      "purpose": "盤點戰役設定來源吸收與現有頁對照",
+      "writes": "唯讀 Wiki；選擇 --report 時只輸出 reports/ 稽核報告",
+      "replacement": "wiki:inspect 為日常入口；audit:lore 保留唯讀補充診斷",
+      "verification": "來源對照報告與戰役設定 lint"
+    },
+    "scripts/audit/audit-lore-placement.mjs": {
+      "purpose": "檢查戰役設定頁的世界、類型與目錄歸屬",
+      "writes": "唯讀 Wiki；選擇 --report 時只輸出 reports/ 稽核報告",
+      "replacement": "wiki:check 為日常入口；audit:lore-placement 保留唯讀補充診斷",
+      "verification": "戰役目錄結構與 config/lore.yml 對照"
+    },
+    "scripts/audit/audit-lore-quality.mjs": {
+      "purpose": "盤點戰役設定頁結構問題與需人工核對的內容提示",
+      "writes": "唯讀 Wiki；指定報告時輸出 JSON 與 Markdown 至 reports/",
+      "replacement": "wiki:check 為日常入口；audit:lore-quality 保留唯讀補充診斷",
+      "verification": "品質報告分類、來源定位及戰役設定 lint"
+    },
+    "scripts/audit/audit-magic-item-spell-links.mjs": {
+      "purpose": "掃描魔法物品對法術的連結語境與不確定引用",
+      "writes": "唯讀 Wiki；只輸出主控台診斷，無本機檔案寫入",
+      "replacement": "wiki:check 驗證連結；audit:magic-item-spell-links 保留語境補充診斷",
+      "verification": "法術目標存在性與不確定語境逐項覆核"
+    },
+    "scripts/audit/audit-mirror-citations.mjs": {
+      "purpose": "稽核正文中的英文鏡像引用及可正規化候選",
+      "writes": "唯讀 Wiki；可在 reports/ 輸出候選報告，不直接套用",
+      "replacement": "wiki:inspect 查來源；正文引用補正須另經 wiki:preview 候選流程",
+      "verification": "來源鏡像身分測試與候選差異"
+    },
+    "scripts/audit/audit-setting-structure.mjs": {
+      "purpose": "檢查戰役設定目錄、metadata、索引與結構",
+      "writes": "唯讀 Wiki；指定報告時只輸出 JSON 與 Markdown 至 reports/",
+      "replacement": "wiki:check 為日常入口；audit:setting-structure 保留唯讀補充診斷",
+      "verification": "戰役設定結構測試與 indexes:strict"
+    },
+    "scripts/audit/audit-spell-completeness.mjs": {
+      "purpose": "盤點 PHB2024 法術資料及 Wiki 頁面的完整性缺口",
+      "writes": "唯讀 Wiki；--report 只輸出固定 reports/ 報告",
+      "replacement": "wiki:inspect 查出版品涵蓋；audit:spell-completeness 保留唯讀補充診斷",
+      "verification": "法術實體清單與缺口原因逐項覆核"
+    },
+    "scripts/audit/audit-spell-version-diff.mjs": {
+      "purpose": "比對法術不同版本的欄位與正文差異",
+      "writes": "唯讀 Wiki；--report 只輸出 reports/ 差異報告",
+      "replacement": "wiki:inspect 查版本待辦；保留唯讀差異分析",
+      "verification": "版本差異範例測試與人工機制比對"
+    },
+    "scripts/audit/audit-wiki-health.mjs": {
+      "purpose": "彙整 Wiki 健康、來源追溯、待辦新增與已解決事項",
+      "writes": "唯讀 Wiki；只輸出 reports/ JSON 與 Markdown，拒絕 --apply",
+      "replacement": "wiki:inspect 為日常入口；audit:wiki-health 保留完整健康報告",
+      "verification": "健康報告增量分類測試與來源佇列核對"
+    },
+    "scripts/audit/character-options-lib.mjs": {
+      "purpose": "角色選項稽核函式的歷史匯入轉接路徑",
+      "writes": "純重新匯出共用函式，無寫入",
+      "replacement": "scripts/core/character-options-lib.mjs",
+      "verification": "依賴圖確認日常入口不匯入舊路徑"
+    },
+    "scripts/audit/preview-eberron-character-options.mjs": {
+      "purpose": "EBER2025 角色選項舊版預覽清單",
+      "writes": "唯讀來源與 Wiki；只輸出主控台或 JSON 結果",
+      "replacement": "wiki:inspect --publication EBER2025；舊稽核可作唯讀對照",
+      "verification": "英文鏡像與 Wiki 身分逐項比對"
+    },
+    "scripts/audit/preview-mirror-image-wiki-candidates.mjs": {
+      "purpose": "預覽英文鏡像圖片與現有 Wiki 頁的匹配提示",
+      "writes": "唯讀來源與 Wiki；只輸出 reports/ 候選清單，不寫圖片或正文",
+      "replacement": "素材附件尚無等價日常候選入口；保留唯讀圖片對照報告",
+      "verification": "鏡像 manifest、圖片路徑與候選目標逐項覆核"
+    },
+    "scripts/ingest/discover-frwiki-lore.mjs": {
+      "purpose": "取得社群戰役設定頁作官方來源線索與候選覆核",
+      "writes": "獨立網路來源取得及 reports/ 發現報告；不直接寫 Wiki",
+      "replacement": "保留獨立來源研究，不列入日常 Wiki 更新鏈",
+      "verification": "社群與官方來源分級、取得失敗及報告範圍測試"
+    },
+    "scripts/ingest/mirror-5etools-images.mjs": {
+      "purpose": "獨立取得出版品英文鏡像的圖片與 manifest",
+      "writes": "可寫原始資料鏡像素材與 manifest；本期禁止執行來源寫入",
+      "replacement": "保留獨立來源取得；Wiki 圖片嵌入另走候選與附件範圍",
+      "verification": "圖片 URL、manifest、來源授權及 reports/ 路徑檢查"
+    },
+    "scripts/ingest/mirror-5etools.mjs": {
+      "purpose": "獨立取得英文書籍章節、實體資料集及來源 manifest",
+      "writes": "可寫原始資料鏡像與 reports/；本期禁止執行來源寫入",
+      "replacement": "保留獨立來源取得，不列入日常 Wiki 更新鏈",
+      "verification": "來源 URL、資料集結構、manifest 指紋及報告範圍測試"
+    },
+    "scripts/ingest/append-character-creation-tables.mjs": {
+      "purpose": "出版品角色建立表格解析器與同批候選入口",
+      "writes": "只建立 Wiki 候選及 reports/ 報告，拒絕直接 --apply",
+      "replacement": "wiki:preview --category 角色建立與成長",
+      "verification": "設定式新書、來源缺漏及人工表格內容保留測試"
+    },
+    "scripts/ingest/feat-heading-utils.mjs": {
+      "purpose": "抽取單檔或逐章來源中的真正專長標題",
+      "writes": "純解析函式，無寫入",
+      "replacement": "保留供專長解析器使用",
+      "verification": "分類標記、子效果排除及標題測試"
+    },
+    "scripts/ingest/ingest-backgrounds.mjs": {
+      "purpose": "背景來源解析、英文實體身分比對及起源專長反向連結候選",
+      "writes": "只產生 Wiki 候選與 reports/ 報告，拒絕直接 --apply",
+      "replacement": "wiki:preview --category 背景",
+      "verification": "同書唯一配對、實體頁碼、人工內容與反向連結測試"
+    },
+    "scripts/ingest/ingest-classes.mjs": {
+      "purpose": "職業與子職來源解析及必要索引候選",
+      "writes": "只產生 Wiki 候選與 reports/ 報告，拒絕直接 --apply",
+      "replacement": "wiki:preview --category 職業",
+      "verification": "職業特性表、授法表、鏡像實體頁碼及保留既有內容"
+    },
+    "scripts/ingest/ingest-feats.mjs": {
+      "purpose": "專長來源抽取、鏡像頁碼與譯名比對候選",
+      "writes": "只產生 Wiki 候選與 reports/ 報告，拒絕直接 --apply",
+      "replacement": "wiki:preview --category 專長",
+      "verification": "跨書同名、先決條件、未核定譯名及來源指紋測試"
+    },
+    "scripts/ingest/ingest-lore.mjs": {
+      "purpose": "戰役設定來源解析、人物反向連結與世界索引候選",
+      "writes": "只產生 Wiki 候選與 reports/ 報告，拒絕直接 --apply",
+      "replacement": "wiki:preview --category 戰役設定",
+      "verification": "世界分類、概念識別碼、來源頁碼與索引測試"
+    },
+    "scripts/ingest/ingest-magic-items.mjs": {
+      "purpose": "魔法物品分類掃描、英文實體身分與物品結構候選",
+      "writes": "只產生 Wiki 候選與 reports/ 報告，拒絕直接 --apply",
+      "replacement": "wiki:preview --category 魔法物品",
+      "verification": "九種來源類型、跨版本同名、稀有度及完整性測試"
+    },
+    "scripts/ingest/ingest-monsters.mjs": {
+      "purpose": "怪物資料卡解析、英文實體定位與索引候選",
+      "writes": "只產生 Wiki 候選與 reports/ 報告，拒絕直接 --apply",
+      "replacement": "wiki:preview --category 怪物",
+      "verification": "怪物來源清單、精確頁碼、數據卡及索引測試"
+    },
+    "scripts/ingest/ingest-patches.mjs": {
+      "purpose": "既有 JSON Patch 追加、metadata 與衝突標記的候選轉接",
+      "writes": "只建立 Wiki 候選；由 wiki:apply 套用已保存計畫",
+      "replacement": "wiki:preview --patch",
+      "verification": "Patch 內容限制、衝突標記與第二次預覽無差異測試"
+    },
+    "scripts/ingest/ingest-species.mjs": {
+      "purpose": "種族來源解析、鏡像實體定位及譯名候選",
+      "writes": "只產生 Wiki 候選與 reports/ 報告，拒絕直接 --apply",
+      "replacement": "wiki:preview --category 種族",
+      "verification": "同名版本、未核定譯名及來源指紋測試"
+    },
+    "scripts/ingest/ingest-spells.mjs": {
+      "purpose": "法術來源解析、精確鏡像頁碼與既有欄位保留候選",
+      "writes": "只產生 Wiki 候選與 reports/ 報告，拒絕直接 --apply",
+      "replacement": "wiki:preview --category 法術",
+      "verification": "來源頁碼、目標／區域、升環、版本及冪等測試"
+    },
+    "scripts/ingest/sync-character-option-sources.mjs": {
+      "purpose": "角色選項既有頁的來源引用補正候選",
+      "writes": "只產生 Wiki 候選與 reports/ 報告，拒絕直接 --apply",
+      "replacement": "wiki:preview --category 角色選項來源",
+      "verification": "來源指紋、人工正文保留與舊入口退役測試"
+    },
+    "scripts/ingest/ingest-bpgg2023-giant-treasure.mjs": {
+      "purpose": "BPGG2023 巨人寶藏與城主工具章節的舊單書轉檔",
+      "writes": "只產生 Wiki 預覽候選與報告；共用函式拒絕直接 --apply",
+      "replacement": "wiki:inspect 查 BPGG2023 涵蓋；特殊寶藏結構尚待接入共用預覽",
+      "verification": "來源章節、規則頁目標及逐檔差異"
+    },
+    "scripts/ingest/ingest-bpgg2023-monsters.mjs": {
+      "purpose": "BPGG2023 怪物資料卡的舊單書解析",
+      "writes": "產生 Wiki 候選報告；舊套用不獲日常授權",
+      "replacement": "wiki:preview --category 怪物；特殊怪物欄位需在共用解析器確認",
+      "verification": "怪物實體清單、數據卡與來源頁碼逐項核對"
+    },
+    "scripts/ingest/ingest-bpgg2023-player-options.mjs": {
+      "purpose": "BPGG2023 巨人主題玩家選項的舊單書轉檔",
+      "writes": "只產生 Wiki 預覽候選與報告；共用函式拒絕直接 --apply",
+      "replacement": "wiki:inspect 查玩家選項；特殊結構尚待分類接入共用預覽",
+      "verification": "專長與背景實體清單、譯名及來源定位"
+    },
+    "scripts/ingest/ingest-dmg-general.mjs": {
+      "purpose": "DMG2024 一般規則與戰役設計章節的舊批次匯入及標題整理",
+      "writes": "舊直接寫入模式在讀取或寫入前退役；保留唯讀預覽能力",
+      "replacement": "wiki:inspect 查 DMG2024；戰役設定與魔法物品使用各自共用預覽，其他規則結構待接入",
+      "verification": "退役子程序測試、來源章節與逐檔差異"
+    },
+    "scripts/ingest/ingest-eber2025-setting-chapters.mjs": {
+      "purpose": "EBER2025 戰役設定章節的舊單書轉檔",
+      "writes": "只產生 Wiki 預覽候選與報告；共用函式拒絕直接 --apply",
+      "replacement": "wiki:preview --category 戰役設定；章節特殊結構需核對共用解析結果",
+      "verification": "戰役世界、lore_type、來源章節及索引連結"
+    },
+    "scripts/ingest/ingest-eber2025-statblocks.mjs": {
+      "purpose": "EBER2025 數據卡的舊單書怪物轉檔",
+      "writes": "只產生 Wiki 預覽候選與報告；共用函式拒絕直接 --apply",
+      "replacement": "wiki:preview --category 怪物；特殊數據卡結構仍待接入",
+      "verification": "怪物類型、數據欄位與英文實體來源頁碼"
+    },
+    "scripts/ingest/ingest-eber2025-supplements.mjs": {
+      "purpose": "EBER2025 工具箱與據點等補充章節的舊單書轉檔",
+      "writes": "只產生 Wiki 預覽候選與報告；共用函式拒絕直接 --apply",
+      "replacement": "wiki:inspect 查出版品涵蓋；混合規則與設定章節尚待分流接入",
+      "verification": "來源章節、輸出類別與逐檔差異"
+    },
+    "scripts/ingest/ingest-eberron-character-options.mjs": {
+      "purpose": "EBER2025 角色選項的舊單書匯入",
+      "writes": "產生 Wiki 候選報告；舊套用不獲日常授權",
+      "replacement": "wiki:preview 依職業、種族、背景、專長分開調度；特殊選項仍需覆核",
+      "verification": "角色選項實體清單、譯名、AL 與來源定位"
+    },
+    "scripts/ingest/ingest-eberron-magic-items.mjs": {
+      "purpose": "EBER2025 魔法物品的舊單書匯入",
+      "writes": "產生 Wiki 候選報告；舊套用不獲日常授權",
+      "replacement": "wiki:preview --category 魔法物品；特殊物品結構尚待確認",
+      "verification": "物品分類、稀有度、實體頁碼與來源差異"
+    },
+    "scripts/ingest/ingest-eberron-rftlw-ch2.mjs": {
+      "purpose": "ERLW2019 第二章舊整批匯入及附件複製",
+      "writes": "程式入口立即退役，禁止 Wiki 或附件直寫",
+      "replacement": "wiki:preview --category 戰役設定；章節附件需獨立候選範圍",
+      "verification": "退役子程序測試、戰役設定 lint 與附件清單"
+    },
+    "scripts/ingest/ingest-eberron-rftlw-ch3.mjs": {
+      "purpose": "ERLW2019 第三章冒險與設定內容的舊單書匯入",
+      "writes": "產生 Wiki 候選報告；舊套用不獲日常授權",
+      "replacement": "wiki:preview --category 戰役設定；章節內容需逐項對照",
+      "verification": "戰役設定來源、世界分類及索引連結"
+    },
+    "scripts/ingest/ingest-eberron-rftlw-ch4.mjs": {
+      "purpose": "ERLW2019 第四章設定內容的舊單書匯入",
+      "writes": "產生 Wiki 候選報告；舊套用不獲日常授權",
+      "replacement": "wiki:preview --category 戰役設定；章節內容需逐項對照",
+      "verification": "戰役設定來源、世界分類及索引連結"
+    },
+    "scripts/ingest/ingest-eberron-welcome.mjs": {
+      "purpose": "ERLW2019 導入頁與章節入口的舊單書匯入",
+      "writes": "產生 Wiki 候選報告；舊套用不獲日常授權",
+      "replacement": "wiki:preview --category 導覽 或戰役設定；特殊導入頁需人工覆核",
+      "verification": "來源章節、戰役入口索引及雙向連結"
+    },
+    "scripts/ingest/ingest-erlw2019-statblocks.mjs": {
+      "purpose": "ERLW2019 第六章怪物數據卡的舊單書轉檔",
+      "writes": "只產生 Wiki 預覽候選與報告；共用函式拒絕直接 --apply",
+      "replacement": "wiki:preview --category 怪物；特殊數據卡欄位仍待接入",
+      "verification": "怪物數據卡、類型與英文實體來源頁碼"
+    },
+    "scripts/ingest/ingest-ftd-bpgg-magic-items.mjs": {
+      "purpose": "FTD2021 與 BPGG2023 魔法物品的舊合併轉檔",
+      "writes": "只產生 Wiki 預覽候選與報告；共用函式拒絕直接 --apply",
+      "replacement": "wiki:preview --category 魔法物品；須分出版品及實體來源核對",
+      "verification": "跨書同名、物品結構、譯名與來源頁碼"
+    },
+    "scripts/ingest/ingest-ftd2021-player-options.mjs": {
+      "purpose": "FTD2021 龍裔與龍系玩家選項的舊單書轉檔",
+      "writes": "只產生 Wiki 預覽候選與報告；共用函式拒絕直接 --apply",
+      "replacement": "wiki:inspect 查 FTD2021；種族與專長分別接入共用預覽",
+      "verification": "選項實體、譯名、版本與來源頁碼"
+    },
+    "scripts/ingest/ingest-legacy-backgrounds.mjs": {
+      "purpose": "2014 Legacy 背景的舊批次匯入",
+      "writes": "產生 Wiki 候選報告；舊套用不獲日常授權",
+      "replacement": "wiki:preview --category 背景；Legacy 與 AL 狀態須分別覆核",
+      "verification": "背景實體清單、版本與來源引用"
+    },
+    "scripts/ingest/ingest-monster-appendices.mjs": {
+      "purpose": "MM2025 附錄 B 特殊怪物與 NPC 數據卡的舊批次匯入",
+      "writes": "產生 Wiki 候選報告；舊套用不獲日常授權",
+      "replacement": "wiki:preview --category 怪物；附錄專有結構需核對共用解析器",
+      "verification": "附錄來源、怪物資料卡與頁碼逐項核對"
+    },
+    "scripts/ingest/ingest-mpmm2022-species.mjs": {
+      "purpose": "MPMM2022 種族的舊單書轉檔",
+      "writes": "只產生 Wiki 預覽候選與報告；共用函式拒絕直接 --apply",
+      "replacement": "wiki:preview --category 種族；Legacy 來源與版本需個別覆核",
+      "verification": "種族實體、譯名、版本與來源定位"
+    },
+    "scripts/ingest/ingest-tce-artificer.mjs": {
+      "purpose": "TCE2020 奇械師職業的舊專用轉檔",
+      "writes": "只產生 Wiki 預覽候選與報告；共用函式拒絕直接 --apply",
+      "replacement": "wiki:preview --category 職業；奇械師特殊表格需專門解析核對",
+      "verification": "職業特性表、子職連結與來源頁碼"
+    },
+    "scripts/ingest/ingest-tce-character-options.mjs": {
+      "purpose": "TCE2020 玩家角色選項的舊單書轉檔",
+      "writes": "只產生 Wiki 預覽候選與報告；共用函式拒絕直接 --apply",
+      "replacement": "wiki:inspect 查 TCE2020；各角色選項類別分流共用預覽",
+      "verification": "類別實體清單、譯名與來源定位"
+    },
+    "scripts/ingest/ingest-tce-dm-tools.mjs": {
+      "purpose": "TCE2020 城主工具與附件的舊專用轉檔",
+      "writes": "直接 --apply 在讀取來源前退役；預覽只產生 Wiki 候選，附件需獨立範圍",
+      "replacement": "wiki:inspect 查 TCE2020；特殊城主工具及素材附件仍待獨立候選流程",
+      "verification": "退役子程序測試、Wiki 候選與附件目標範圍檢查"
+    },
+    "scripts/ingest/ingest-tce-magic-items.mjs": {
+      "purpose": "TCE2020 魔法物品的舊單書轉檔",
+      "writes": "只產生 Wiki 預覽候選與報告；共用函式拒絕直接 --apply",
+      "replacement": "wiki:preview --category 魔法物品；特殊結構仍待覆核",
+      "verification": "物品模板、稀有度、效果與來源頁碼"
+    },
+    "scripts/ingest/ingest-tce-overviews.mjs": {
+      "purpose": "TCE2020 章節總覽頁的舊單書轉檔",
+      "writes": "只產生 Wiki 預覽候選與報告；共用函式拒絕直接 --apply",
+      "replacement": "wiki:preview --category 導覽；特殊章節總覽不等於規則正文",
+      "verification": "章節來源、索引與雙向連結"
+    },
+    "scripts/ingest/ingest-tce-reference-sections.mjs": {
+      "purpose": "TCE2020 規則參考章節的舊單書轉檔",
+      "writes": "只產生 Wiki 預覽候選與報告；共用函式拒絕直接 --apply",
+      "replacement": "wiki:inspect 查規則來源；參考章節特殊解析尚未共用化",
+      "verification": "規則章節來源與逐檔差異"
+    },
+    "scripts/ingest/ingest-tce-subclasses.mjs": {
+      "purpose": "TCE2020 子職的舊單書匯入",
+      "writes": "產生 Wiki 候選報告；舊套用不獲日常授權",
+      "replacement": "wiki:preview --category 職業；子職特性與授法表需專門核對",
+      "verification": "父職連結、特性表、授法表與來源頁碼"
+    },
+    "scripts/ingest/ingest-xge-character-options.mjs": {
+      "purpose": "XGE2017 子職與角色選項的舊單書匯入",
+      "writes": "產生 Wiki 候選報告；舊套用不獲日常授權",
+      "replacement": "wiki:inspect 查 XGE2017；選項依類別進入共用預覽",
+      "verification": "子職與選項實體、版本與來源頁碼"
+    },
+    "scripts/ingest/ingest-xge-character-rules.mjs": {
+      "purpose": "XGE2017 角色建立與成長規則的舊單書匯入",
+      "writes": "產生 Wiki 候選報告；舊套用不獲日常授權",
+      "replacement": "wiki:preview --category 角色建立與成長；特殊章節尚待接入",
+      "verification": "規則章節、表格及來源定位"
+    },
+    "scripts/ingest/ingest-xge-common-magic-items.mjs": {
+      "purpose": "XGE2017 普通魔法物品章節的舊單書匯入",
+      "writes": "產生 Wiki 候選報告；舊套用不獲日常授權",
+      "replacement": "wiki:preview --category 魔法物品；普通物品結構需確認",
+      "verification": "物品實體、稀有度、效果及來源定位"
+    },
+    "scripts/ingest/ingest-xge-racial-feats.mjs": {
+      "purpose": "XGE2017 種族專長的舊單書匯入",
+      "writes": "產生 Wiki 候選報告；舊套用不獲日常授權",
+      "replacement": "wiki:preview --category 專長；種族先決條件與版本需覆核",
+      "verification": "專長實體、先決條件、譯名及來源頁碼"
+    },
+    "scripts/ingest/ingest-xge-reference-sections.mjs": {
+      "purpose": "XGE2017 規則參考章節的舊單書匯入",
+      "writes": "產生 Wiki 候選報告；舊套用不獲日常授權",
+      "replacement": "wiki:inspect 查來源；參考章節特殊解析尚未共用化",
+      "verification": "來源章節、規則頁範圍及逐檔差異"
+    },
+    "scripts/ingest/ingest-xge-spells.mjs": {
+      "purpose": "XGE2017 法術的舊單書匯入",
+      "writes": "產生 Wiki 候選報告；舊套用不獲日常授權",
+      "replacement": "wiki:preview --category 法術；逐條核對版本及來源頁碼",
+      "verification": "法術實體、欄位、升環與版本關係"
+    },
+    "scripts/ingest/insert-eber-direct-candidate-images.mjs": {
+      "purpose": "一次性 EBER2025 既有頁圖片嵌入",
+      "writes": "直接 --apply 立即退役；唯讀預覽僅提供圖片匹配提示",
+      "replacement": "audit:image-wiki-candidates 保留唯讀對照；圖片與附件寫入需獨立候選範圍",
+      "verification": "退役子程序測試、圖片存在性與逐頁嵌入候選"
+    },
+    "scripts/ingest/rebuild-lore.mjs": {
+      "purpose": "一次性戰役設定整頁重建",
+      "writes": "直接 --apply 立即退役；只保留舊候選預覽",
+      "replacement": "wiki:preview --category 戰役設定；保留既有人工內容及穩定識別碼",
+      "verification": "退役子程序測試、虛擬 lint、索引與逐檔差異"
+    },
+    "scripts/publish/character-rules-equipment.mjs": {
+      "purpose": "外部角色規則整合的裝備候選資料編譯",
+      "writes": "只寫獨立整合的本機候選報告，不寫 Wiki",
+      "replacement": "保留獨立發布流程；不納入四個 Wiki 日常入口",
+      "verification": "裝備身分、來源引用及候選報告比對"
+    },
+    "scripts/publish/character-rules-inventory.mjs": {
+      "purpose": "外部角色規則整合的本機與遠端實體清單對照",
+      "writes": "只寫獨立整合的本機清單報告，不寫 Wiki",
+      "replacement": "保留獨立發布稽核流程",
+      "verification": "遠端分頁完整性、穩定識別碼與清單差異"
+    },
+    "scripts/publish/character-rules-repair-report.mjs": {
+      "purpose": "外部角色規則資料的修復差異及 Wiki 預覽報告",
+      "writes": "只寫本機整合報告與差異，不直接套用 Wiki",
+      "replacement": "保留獨立整合稽核；正式 Wiki 變更須另建候選計畫",
+      "verification": "來源證據、原文雜湊與逐檔差異"
+    },
+    "scripts/publish/character-rules-sources.mjs": {
+      "purpose": "外部角色規則整合的英文來源身分與引用定位",
+      "writes": "唯讀來源與暫存資料，無直接寫入",
+      "replacement": "保留獨立整合的來源比對共用函式",
+      "verification": "跨出版品身分、變體及實體頁碼測試"
+    },
+    "scripts/publish/character-rules-variants.mjs": {
+      "purpose": "外部角色規則整合的物品與選項變體拆分",
+      "writes": "純資料轉換，無寫入",
+      "replacement": "保留獨立整合的變體編譯函式",
+      "verification": "同名變體、稀有度與穩定識別碼測試"
+    },
+    "scripts/publish/character-rules.mjs": {
+      "purpose": "外部角色規則候選、執行狀態及回讀資料編譯",
+      "writes": "可寫獨立整合的本機候選報告；不屬 Wiki 套用器",
+      "replacement": "保留獨立外部發布流程，不列入日常 Wiki 更新鏈",
+      "verification": "內容雜湊、祖先路徑、非空內容及遠端回讀"
+    },
+    "scripts/publish/notion-wiki.mjs": {
+      "purpose": "將 Wiki 內容以獨立計畫發布至 Notion 並處理遠端狀態",
+      "writes": "可寫 reports/ 同步計畫及外部 Notion；本期不執行發布",
+      "replacement": "保留獨立整合，不由 wiki:apply 或日常 Wiki 入口呼叫",
+      "verification": "遠端 task succeeded、內容雜湊、祖先與非空正文回讀"
+    },
+    "scripts/migrate/classify-2014-compatibility.mjs": {
+      "purpose": "一次性分類 2014 Legacy 玩家選項與 2024 相容索引",
+      "writes": "產生 Wiki 更新與索引候選；歷史 --apply 不獲日常套用授權",
+      "replacement": "wiki:inspect 分開覆核版本與 AL；無等價自動分類入口",
+      "verification": "wiki:check、indexes:strict 與逐條版本證據"
+    },
+    "scripts/migrate/create-missing-indexes.mjs": {
+      "purpose": "一次性補建遺漏分類索引與反向連結",
+      "writes": "候選標為 manual_review；歷史 --apply 不獲日常套用授權",
+      "replacement": "wiki:preview --category 索引",
+      "verification": "indexes:strict、wiki:check 與索引 metadata 覆核"
+    },
+    "scripts/migrate/normalize-al-citations.mjs": {
+      "purpose": "一次性正規化冒險者聯盟引用文字",
+      "writes": "產生 Wiki 更新候選；歷史套用不獲日常授權",
+      "replacement": "wiki:preview --category 索引 不涵蓋正文；引用差異須用精確勘誤候選處理",
+      "verification": "wiki:check 與 AL 引用逐檔對照"
+    },
+    "scripts/migrate/normalize-lore-mirror-sources.mjs": {
+      "purpose": "一次性補正戰役設定英文鏡像來源引用",
+      "writes": "產生 Wiki 來源欄位候選；歷史套用不獲日常授權",
+      "replacement": "wiki:inspect 查來源；必要補正須產生新的來源候選",
+      "verification": "wiki:check 與英文鏡像實體定位對照"
+    },
+    "scripts/migrate/normalize-monster-intro-quotes.mjs": {
+      "purpose": "一次性整理怪物介紹頁引述格式",
+      "writes": "產生 Wiki 更新候選；歷史 --apply 不獲日常套用授權",
+      "replacement": "無等價日常批次入口；個別來源差異須作候選預覽",
+      "verification": "wiki:check 與引述來源逐檔核對"
+    },
+    "scripts/migrate/normalize-search-aliases.mjs": {
+      "purpose": "一次性依核定詞彙表正規化搜尋別名",
+      "writes": "產生 Wiki 欄位候選；歷史套用不獲日常授權",
+      "replacement": "wiki:preview --category 導覽；一般條目別名補正仍須新候選流程",
+      "verification": "wiki:check 與詞彙表核定狀態對照"
+    },
+    "scripts/migrate/normalize-species-introductions.mjs": {
+      "purpose": "一次性整理種族介紹、標題及 Legacy 警告",
+      "writes": "產生 Wiki 更新與 manual_review 候選；歷史 --apply 不獲日常套用授權",
+      "replacement": "wiki:preview --category 種族；缺來源支持的介紹保留人工覆核",
+      "verification": "wiki:check、種族模板與正文逐檔差異"
+    },
+    "scripts/migrate/normalize-spell-material-components.mjs": {
+      "purpose": "一次性正規化法術材料成分欄位",
+      "writes": "產生 Wiki 更新候選；歷史 --apply 不獲日常套用授權",
+      "replacement": "wiki:preview --category 法術；既有頁局部修正須精確候選",
+      "verification": "wiki:check、法術模板與材料欄位逐檔差異"
+    },
+    "scripts/migrate/organize-campaign-lore.mjs": {
+      "purpose": "一次性戰役設定目錄搬移、合併與連結修正",
+      "writes": "產生 Wiki 建立／更新／刪除與連結候選報告；歷史 --apply 不獲日常套用授權",
+      "replacement": "wiki:inspect 檢查戰役來源；跨目錄搬移目前無等價日常入口，需另建完整候選流程",
+      "verification": "wiki:check、indexes:strict 與搬移前後連結清單"
+    },
+    "scripts/migrate/rebuild-campaign-design.mjs": {
+      "purpose": "一次性戰役設計頁及四個索引重建",
+      "writes": "產生 Wiki 建立／更新／刪除候選報告；歷史 --apply 不獲日常套用授權",
+      "replacement": "wiki:preview --category 索引 可處理索引；戰役設計正文重建無等價日常入口",
+      "verification": "wiki:check、indexes:strict 與重建頁逐檔差異"
+    },
+    "scripts/migrate/organize-monster-wiki.mjs": {
+      "purpose": "一次性怪物介紹與類型索引目錄整理",
+      "writes": "產生 Wiki 建立／更新／刪除及連結候選；歷史 --apply 不獲日常套用授權",
+      "replacement": "wiki:preview --category 索引 可處理索引；跨目錄搬移需另建完整候選流程",
+      "verification": "wiki:check、indexes:strict 與搬移前後連結清單"
+    },
+    "scripts/migrate/organize-multiverse.mjs": {
+      "purpose": "一次性多元宇宙目錄佈局與連結搬移",
+      "writes": "產生 Wiki 建立／更新／刪除候選；歷史套用不獲日常授權",
+      "replacement": "wiki:preview --category 戰役設定 可處理內容；跨目錄搬移需另建完整候選流程",
+      "verification": "wiki:check、indexes:strict 與搬移前後連結清單"
+    },
+    "scripts/migrate/reclassify-lore.mjs": {
+      "purpose": "一次性戰役設定 lore_type、concept_id、路徑與連結重分類",
+      "writes": "產生 Wiki 建立／更新／刪除及連結候選；歷史套用不獲日常授權",
+      "replacement": "wiki:inspect 檢查分類；重分類需另建完整候選流程",
+      "verification": "wiki:check、indexes:strict 與 concept_id 保留檢查"
+    },
+    "scripts/migrate/cleanup-generic-spell-rulings.mjs": {
+      "purpose": "一次性清除現行法術頁的泛用裁量文字",
+      "writes": "產生 Wiki 更新候選報告；歷史 --apply 不獲日常套用授權",
+      "replacement": "wiki:preview --category 法術；仍需清理的個別裁量改以精確勘誤候選處理",
+      "verification": "wiki:check 與法術正文逐檔差異"
+    },
+    "scripts/migrate/cleanup-magic-item-structure.mjs": {
+      "purpose": "一次性魔法物品舊格式結構清理",
+      "writes": "產生 Wiki 更新候選報告；歷史 --apply 不獲日常套用授權",
+      "replacement": "wiki:preview --category 魔法物品；結構要求由魔法物品模板與 lint 維持",
+      "verification": "wiki:check 與魔法物品結構 lint"
+    },
+    "scripts/migrate/rename-generic-magic-item-effects.mjs": {
+      "purpose": "一次性泛稱魔法物品效果命名與未定項覆核",
+      "writes": "產生 Wiki 更新及 manual_review 候選報告；歷史 --apply 不獲日常套用授權",
+      "replacement": "wiki:preview --category 魔法物品；效果名稱仍需依物品正文逐項確認",
+      "verification": "wiki:check、效果名稱 lint 與逐檔差異"
+    },
+    "scripts/migrate/migrate-staff-charge-structure.mjs": {
+      "purpose": "一次性法杖舊充能結構整理",
+      "writes": "產生 Wiki 更新候選報告；歷史 --apply 不獲日常套用授權",
+      "replacement": "wiki:preview --category 魔法物品；充能欄位依模板與結構檢查器維持",
+      "verification": "wiki:check、魔法物品結構 lint 與逐檔差異"
+    },
+    "scripts/migrate/restore-lore-source-text.mjs": {
+      "purpose": "已停用的戰役設定完整原文回填預覽；來源切片函式已抽離至共用層",
+      "writes": "只輸出 reports/ 候選資訊；--apply 在讀取來源前拒絕",
+      "replacement": "wiki:inspect 查核來源；需要內容更新時使用 wiki:preview --category 戰役設定，禁止整頁原文回填",
+      "verification": "來源切片測試、wiki:check 與報告路徑檢查"
+    },
+    "scripts/migrate/sync-al-availability.mjs": {
+      "purpose": "一次性依指定 AL 指南更新玩家選項可用性及相容索引",
+      "writes": "產生 Wiki 正文、欄位與索引候選；歷史 --apply 不獲日常套用授權",
+      "replacement": "wiki:inspect 查 AL 待辦；指南版本更新需獨立逐項覆核候選",
+      "verification": "wiki:check、indexes:strict 與 AL 指南版本定位"
+    },
+    "scripts/migrate/sync-phb2024-compatibility.mjs": {
+      "purpose": "一次性 PHB2024 與舊版條目的相容性連結整理",
+      "writes": "產生 Wiki 相容欄位與連結候選；歷史套用不獲日常授權",
+      "replacement": "wiki:inspect 分開覆核版本替代；逐條差異另建候選",
+      "verification": "wiki:check、雙向連結與逐條機制比對"
+    },
+    "scripts/migrate/sync-spell-target-area.mjs": {
+      "purpose": "一次性把法術射程中的目標／區域拆入獨立欄位",
+      "writes": "產生 Wiki 欄位更新候選；歷史套用不獲日常授權",
+      "replacement": "wiki:preview --category 法術；欄位規則由共用檢查器維持",
+      "verification": "wiki:check 與 Target／Area 隔離測試"
+    },
+    "scripts/sync/link-fraif-mirror-items.mjs": {
+      "purpose": "一次性將 FRAIF2025 魔法物品資料集引用補至既有頁",
+      "writes": "產生 Wiki 來源欄位候選；歷史套用不獲日常授權",
+      "replacement": "wiki:inspect 查來源；既有頁引用補正需精確候選",
+      "verification": "資料集實體身分、頁碼及未配對清單"
+    },
+    "scripts/sync/link-fraif-mirror-monsters.mjs": {
+      "purpose": "一次性將 FRAIF2025 怪物資料集與中文來源對應至 Wiki 頁",
+      "writes": "產生 Wiki 來源欄位候選；歷史套用不獲日常授權",
+      "replacement": "wiki:inspect 查來源；怪物既有頁引用補正需精確候選",
+      "verification": "英文實體、中文來源與未配對清單逐項核對"
+    },
+    "scripts/sync/normalize-eberron-background-fields.mjs": {
+      "purpose": "一次性整理 EBER2025 背景既有頁欄位與起源專長資訊",
+      "writes": "產生 Wiki 更新候選；歷史 --apply 不獲日常套用授權",
+      "replacement": "wiki:preview --category 背景；既有欄位修正需逐頁候選",
+      "verification": "wiki:check、起源專長雙向連結與逐檔差異"
+    },
+    "scripts/sync/reconcile-feat-sources.mjs": {
+      "purpose": "一次性 PHB2024 專長與分類索引的來源引用補正",
+      "writes": "產生 Wiki 更新候選報告；歷史 --apply 不獲日常套用授權",
+      "replacement": "wiki:preview --category 專長；既有頁來源補正另需精確來源候選",
+      "verification": "wiki:check、indexes:strict 與來源引用逐檔差異"
+    },
+    "scripts/sync/link-monster-spells.mjs": {
+      "purpose": "一次性將怪物施法文字連向既有法術頁",
+      "writes": "產生 Wiki 連結候選；歷史 --apply 不獲日常套用授權",
+      "replacement": "wiki:preview --category 怪物；無法唯一對應的法術連結需人工覆核",
+      "verification": "wiki:check、未配對名稱報告與逐檔連結差異"
+    },
+    "scripts/sync/link-staff-spells.mjs": {
+      "purpose": "一次性將法杖效果文字連向既有法術頁",
+      "writes": "產生 Wiki 連結候選；歷史 --apply 不獲日常套用授權",
+      "replacement": "wiki:preview --category 魔法物品；無法唯一對應的法術連結需人工覆核",
+      "verification": "wiki:check 與法杖連結逐檔差異"
+    },
+    "scripts/sync/sync-2024-expansion-spell-lists.mjs": {
+      "purpose": "一次性同步 2024 擴充法術與職業法術表",
+      "writes": "產生法術與職業頁連結候選；歷史 --apply 不獲日常套用授權",
+      "replacement": "wiki:preview --category 法術；職業表相依頁須與正文候選同批檢查",
+      "verification": "wiki:check、職業法術表與反向連結核對"
+    },
+    "scripts/sync/sync-eberron-background-titles.mjs": {
+      "purpose": "一次性補正 EBER2025 背景中英文標題及書籍鏡像引用",
+      "writes": "產生 Wiki 更新候選；歷史 --apply 不獲日常套用授權",
+      "replacement": "wiki:preview --category 背景；標題與譯名仍須依核定詞彙覆核",
+      "verification": "wiki:check、英文鏡像名稱及詞彙表對照"
+    },
+    "scripts/sync/sync-eberron-missing-feats.mjs": {
+      "purpose": "一次性補正 EBER2025 專長既有頁標題或鏡像引用",
+      "writes": "產生 Wiki 更新候選；歷史 --apply 不獲日常套用授權",
+      "replacement": "wiki:preview --category 專長；缺項與同名歧義另列人工覆核",
+      "verification": "wiki:check、英文鏡像實體頁碼及核定譯名對照"
+    },
+    "scripts/sync/sync-monster-glossary.mjs": {
+      "purpose": "一次性由怪物頁同步翻譯詞彙表區塊",
+      "writes": "目標為附件/翻譯詞彙表.md，非 Wiki；歷史腳本不可由 Wiki 計畫直接套用",
+      "replacement": "無等價日常 Wiki 入口；詞彙表需獨立附件範圍候選及核定流程",
+      "verification": "附件範圍檢查、詞彙核定狀態與逐列差異"
+    },
+    "scripts/sync/sync-monster-source-titles.mjs": {
+      "purpose": "一次性補正怪物頁中文來源檔名與來源標題",
+      "writes": "產生 Wiki 來源欄位候選；歷史 --apply 不獲日常套用授權",
+      "replacement": "wiki:inspect 查來源檔狀態；引用補正需精確候選",
+      "verification": "wiki:check、實際來源路徑與逐檔差異"
+    },
+    "scripts/sync/sync-mpmm2022-legacy-mirror-citations.mjs": {
+      "purpose": "一次性補入 MPMM2022 Legacy 種族的英文章節鏡像引用",
+      "writes": "產生 Wiki 來源欄位候選；歷史 --apply 不獲日常套用授權",
+      "replacement": "wiki:inspect 查來源；既有頁引用補正需精確候選",
+      "verification": "wiki:check、英文章節定位與版本身分對照"
+    },
+    "scripts/sync/sync-multiverse-navigation.mjs": {
+      "purpose": "一次性更新多元宇宙世界與分類導覽頁",
+      "writes": "產生 Wiki 建立／更新候選；歷史套用不獲日常授權",
+      "replacement": "wiki:preview --category 導覽；戰役索引由同批候選處理",
+      "verification": "wiki:check、indexes:strict 與導覽反向連結"
+    },
+    "scripts/sync/sync-phb2014-legacy-mirror-citations.mjs": {
+      "purpose": "一次性補入 PHB2014 Legacy 選項的英文書籍鏡像引用",
+      "writes": "產生 Wiki 來源欄位候選；歷史 --apply 不獲日常套用授權",
+      "replacement": "wiki:inspect 查來源與版本；既有頁引用補正需精確候選",
+      "verification": "wiki:check、英文章節定位與版本身分對照"
+    },
+    "scripts/sync/sync-search-metadata.mjs": {
+      "purpose": "一次性依核定詞彙與連結目錄同步搜尋別名",
+      "writes": "產生 Wiki metadata 候選；歷史套用不獲日常授權",
+      "replacement": "wiki:preview --category 導覽；條目 metadata 變更須另建同批候選",
+      "verification": "wiki:check、詞彙表核定狀態與搜尋入口測試"
+    },
+    "scripts/sync/sync-spell-version-links.mjs": {
+      "purpose": "一次性補入 2014 與 2024 法術版本連結",
+      "writes": "產生 Wiki 版本連結候選；歷史 --apply 不獲日常套用授權",
+      "replacement": "wiki:inspect 先逐條覆核版本關係；確認後用同批候選更新雙向連結",
+      "verification": "wiki:check、雙向連結與法術機制逐條比對"
+    },
+    "scripts/sync/sync-xge-2024-compatibility.mjs": {
+      "purpose": "一次性整理 XGE2017 選項的 2024 相容註記及反向連結",
+      "writes": "產生 Wiki metadata、正文與連結候選；歷史 --apply 不獲日常套用授權",
+      "replacement": "wiki:inspect 分開覆核版本與 AL；機制相同不能只靠同名推斷",
+      "verification": "wiki:check、雙向連結與逐條版本證據"
+    },
+    "scripts/sync/sync-xge-legacy-chapter-mirrors.mjs": {
+      "purpose": "一次性依健康報告補入 XGE2017 舊版章節鏡像引用",
+      "writes": "產生 Wiki 來源欄位候選；歷史 --apply 不獲日常套用授權",
+      "replacement": "wiki:inspect 查來源待辦；必要補正需精確來源候選",
+      "verification": "wiki:check、健康報告與章節來源定位"
+    },
+    "scripts/sync/sync-xge-spell-dataset-citations.mjs": {
+      "purpose": "一次性補入 XGE2017 法術資料集引用",
+      "writes": "產生 Wiki 來源欄位候選；歷史套用不獲日常授權",
+      "replacement": "wiki:preview --category 法術；既有頁引用差異需精確候選",
+      "verification": "wiki:check、英文鏡像實體頁碼與逐檔差異"
+    }
+  },
+  "tools": {
+    "scripts/core/wiki-tools.mjs": "daily_core",
+    "scripts/core/ingest.mjs": "publication_parser",
+    "scripts/ingest/append-character-creation-tables.mjs": "publication_parser",
+    "scripts/ingest/feat-heading-utils.mjs": "publication_parser",
+    "scripts/ingest/ingest-backgrounds.mjs": "publication_parser",
+    "scripts/ingest/ingest-classes.mjs": "publication_parser",
+    "scripts/ingest/ingest-feats.mjs": "publication_parser",
+    "scripts/ingest/ingest-lore.mjs": "publication_parser",
+    "scripts/ingest/ingest-magic-items.mjs": "publication_parser",
+    "scripts/ingest/ingest-monsters.mjs": "publication_parser",
+    "scripts/ingest/ingest-patches.mjs": "publication_parser",
+    "scripts/ingest/ingest-species.mjs": "publication_parser",
+    "scripts/ingest/ingest-spells.mjs": "publication_parser",
+    "scripts/ingest/sync-character-option-sources.mjs": "publication_parser",
+    "scripts/ingest/discover-frwiki-lore.mjs": "independent_integration",
+    "scripts/migrate/organize-campaign-lore.mjs": "historical",
+    "scripts/migrate/rebuild-campaign-design.mjs": "historical",
+    "scripts/migrate/cleanup-generic-spell-rulings.mjs": "historical",
+    "scripts/migrate/cleanup-magic-item-structure.mjs": "historical",
+    "scripts/migrate/rename-generic-magic-item-effects.mjs": "historical",
+    "scripts/migrate/migrate-staff-charge-structure.mjs": "historical",
+    "scripts/migrate/restore-lore-source-text.mjs": "historical",
+    "scripts/publish/notion-wiki.mjs": "independent_integration",
+    "scripts/ingest/mirror-5etools.mjs": "independent_integration",
+    "scripts/ingest/mirror-5etools-images.mjs": "independent_integration"
+  }
+}

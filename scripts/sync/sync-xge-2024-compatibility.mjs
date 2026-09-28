@@ -2,9 +2,13 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import YAML from "yaml";
+import { applyCandidateBatch, candidateChange, parseOptions, planCandidateBatch, writeCandidatePlan } from "../core/ingest-publication-utils.mjs";
+import { lintWiki } from "../core/wiki-lint.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const WIKI = path.join(ROOT, "wiki");
+const options = parseOptions(process.argv.slice(2));
+if (options.apply && !options.report) throw new Error("套用 Wiki 變更必須指定 --report reports/<plan>.json，以保留可追溯報告。");
 const XGE_TAG = "珊娜薩的萬事指南2017";
 const OPTION_TYPES = new Set(["subclass", "spell", "feat"]);
 const today = (() => {
@@ -95,7 +99,7 @@ for (const record of records) {
   if (record.data.tags?.[0] !== XGE_TAG || !OPTION_TYPES.has(entityType(record.data.entity_id))) continue;
   const english = englishTitle(record.data.title);
   const replacement = english ? currentByCategoryAndEnglish.get(`${record.data.category}:${english.toLowerCase()}`) : undefined;
-  const state = replacement ? "superseded" : "compatible";
+  const state = replacement ? "replaced" : "compatible";
   const parentClass = entityType(record.data.entity_id) === "subclass"
     ? currentClassByChinese.get(record.data.parent_class)
     : undefined;
@@ -119,5 +123,15 @@ for (const record of records) {
   }
 }
 
-for (const [file, record] of writes) fs.writeFileSync(file, `---\n${record.frontmatter}\n---\n${record.body}`, "utf8");
-console.log(`XGE 2024 相容性：可用 ${compatible} 項，已取代 ${superseded} 項，寫入 ${writes.size} 頁。`);
+const pending = [...writes].flatMap(([file, record]) => {
+  const before = fs.readFileSync(file, "utf8");
+  const after = `---\n${record.frontmatter}\n---\n${record.body}`;
+  return before === after ? [] : [candidateChange({
+    destination: file, before, after, operation: "update", source: "XGE2017",
+    locator: record.data?.title ?? path.relative(ROOT, file),
+  })];
+});
+const plan = planCandidateBatch(pending, { root: ROOT, lint: lintWiki });
+writeCandidatePlan({ ...plan, compatible, superseded }, options.report, { root: ROOT });
+if (options.apply) applyCandidateBatch(plan, { root: ROOT, lint: lintWiki });
+console.log(`XGE 2024 相容性：可用 ${compatible} 項，已取代 ${superseded} 項，${options.apply ? "套用" : "候選"} ${plan.changes.length} 頁。`);

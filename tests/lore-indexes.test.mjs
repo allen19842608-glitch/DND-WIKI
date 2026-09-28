@@ -5,6 +5,7 @@ import path from "node:path";
 import test from "node:test";
 import YAML from "yaml";
 import { linkTargetsOutsideAuto, renderFeaturedSections, renderGlobalNavigation, renderTopicEntries, renderTopicNavigation, syncLoreIndexes, topicIndexConceptId } from "../scripts/core/lore-indexes.mjs";
+import { materializeLoreIndexEffects } from "../scripts/ingest/ingest-lore.mjs";
 
 const config = YAML.parse(`
 worlds:
@@ -102,6 +103,37 @@ navigation:
     write("wiki/戰役設定/龍槍/世界觀/龍槍概覽.md", entry("龍槍概覽", "龍槍"));
     write("wiki/戰役設定/艾伯倫/世界觀/艾伯倫概覽.md", entry("艾伯倫概覽", "艾伯倫"));
 
+    const candidateTarget = "wiki/戰役設定/龍槍/世界觀/候選概覽.md";
+    const virtual = materializeLoreIndexEffects(new Map([[candidateTarget, {
+      before: null, after: entry("候選概覽", "龍槍"), source: "原始資料/candidate.md", locator: "p. 3", status: "ready", review: [],
+    }]]), { root, setting: "龍槍" });
+    assert.ok(virtual.has(candidateTarget));
+    assert.ok(virtual.has("wiki/戰役設定/龍槍/世界觀/世界觀索引.md"));
+    assert.ok(virtual.has("wiki/戰役設定/戰役設定索引.md"));
+    assert.match(virtual.get(candidateTarget).after, /世界觀索引/);
+
+    const preview = syncLoreIndexes({ root, apply: false, setting: "龍槍" });
+    assert.ok(preview.candidate_changes.some((change) => change.file === "wiki/戰役設定/龍槍/世界觀/世界觀索引.md" && change.before === null && change.after.includes("龍槍概覽")));
+    assert.equal(fs.existsSync(path.join(root, "wiki", "戰役設定", "龍槍", "世界觀", "世界觀索引.md")), false);
+    const scoped = syncLoreIndexes({ root, apply: false, changedFiles: new Set(["wiki/戰役設定/龍槍/世界觀/龍槍概覽.md"]) });
+    assert.deepEqual(scoped.checked_worlds, ["dragonlance"]);
+    assert.equal(scoped.checked_global, true);
+    assert.ok(scoped.changes.some((file) => file.includes("龍槍")));
+    assert.ok(scoped.changes.includes("wiki/戰役設定/戰役設定索引.md"));
+    assert.ok(!scoped.changes.some((file) => file.includes("艾伯倫")));
+    const unrelated = syncLoreIndexes({ root, apply: false, changedFiles: new Set(["wiki/法術/測試.md"]) });
+    assert.deepEqual(unrelated.checked_worlds, []);
+    assert.equal(unrelated.checked_global, false);
+    assert.deepEqual(unrelated.changes, []);
+    const globalOnly = syncLoreIndexes({ root, apply: false, changedFiles: new Set(["wiki/戰役設定/戰役設定索引.md"]) });
+    assert.deepEqual(globalOnly.checked_worlds, []);
+    assert.equal(globalOnly.checked_global, true);
+    assert.deepEqual(globalOnly.changes, ["wiki/戰役設定/戰役設定索引.md"]);
+    const unknownWorld = syncLoreIndexes({ root, apply: false, changedFiles: new Set(["wiki/戰役設定/新世界/概覽.md"]) });
+    assert.deepEqual(unknownWorld.checked_worlds, ["dragonlance", "eberron"]);
+    const configChange = syncLoreIndexes({ root, apply: false, changedFiles: new Set(["config/lore.yml"]) });
+    assert.deepEqual(configChange.checked_worlds, ["dragonlance", "eberron"]);
+    assert.ok(configChange.changes.some((file) => file.includes("艾伯倫")));
     const first = syncLoreIndexes({ root, apply: true, setting: "龍槍" });
     assert.ok(first.changes.includes("wiki/戰役設定/戰役設定索引.md"));
     assert.ok(first.changes.includes("wiki/戰役設定/龍槍/世界觀/世界觀索引.md"));

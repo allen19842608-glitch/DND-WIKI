@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
-import { ROOT, defaultSource, frontmatter, loadIngestProfile, loadPublication, parseOptions, quote, walkMarkdown, writableCandidate, writeIngestReport } from "../core/ingest-publication-utils.mjs";
+import { ROOT, applyCandidateBatch, candidateChange, defaultSource, frontmatter, loadIngestProfile, loadPublication, parseOptions, planCandidateBatch, walkMarkdown } from "../core/ingest-publication-utils.mjs";
+import { lintWiki } from "../core/wiki-lint.mjs";
 
 function field(text, label) {
   const normalized = text.replace(/\*\*/g, "");
@@ -65,12 +66,14 @@ function pageFor(data, publication, publicationId, source, current) {
 }
 
 const options = parseOptions();
+if (options.apply && !options.report) throw new Error("套用 Wiki 變更必須指定 --report reports/<plan>.json，以保留可追溯報告。");
 const publicationId = options.publicationId;
 const publication = loadPublication(publicationId);
 const profile = loadIngestProfile(publicationId);
 const sourceRoot = options.source ? path.resolve(ROOT, options.source) : defaultSource(publication);
 const input = path.join(sourceRoot, profile.inputs.backgrounds ?? "個性與背景");
 const outputRoot = path.join(ROOT, profile.outputs.backgrounds ?? "wiki/背景/2014");
+const pending = [];
 for (const sourcePath of walkMarkdown(input)) {
   const data = parseSource(sourcePath);
   if (!data.chinese || !data.english || !data.skills || !data.equipment || !data.feature) {
@@ -80,6 +83,29 @@ for (const sourcePath of walkMarkdown(input)) {
   const source = path.relative(ROOT, sourcePath).split(path.sep).join("/");
   const current = currentCounterpart(data.chinese);
   const destination = path.join(outputRoot, `${data.chinese}.md`);
-  writableCandidate({ destination, content: pageFor(data, publication, publicationId, source, current), options, matchValues: [data.chinese, data.english, source] });
+  const matchValues = [data.chinese, data.english, source, path.relative(ROOT, destination).split(path.sep).join("/")];
+  const filter = String(options.only ?? "").normalize("NFKC").toLowerCase();
+  if (filter && !matchValues.some((value) => value.normalize("NFKC").toLowerCase().includes(filter))) {
+    options.results.push({ target: matchValues.at(-1), status: "filtered" });
+    continue;
+  }
+  if (fs.existsSync(destination) && !options.replace) {
+    options.results.push({ target: matchValues.at(-1), status: "skipped", reason: "existing_page_preserved" });
+    continue;
+  }
+  const before = fs.existsSync(destination) ? fs.readFileSync(destination, "utf8") : null;
+  const after = pageFor(data, publication, publicationId, source, current);
+  if (before === after) {
+    options.results.push({ target: matchValues.at(-1), status: "unchanged" });
+    continue;
+  }
+  pending.push(candidateChange({ destination, before, after, operation: before === null ? "create" : "update", source, locator: `L1 標題：${data.chinese}` }));
+  options.results.push({ target: matchValues.at(-1), status: "preview" });
 }
-writeIngestReport({ options, publicationId, category: "legacy-backgrounds" });
+const plan = planCandidateBatch(pending, { root: ROOT, lint: lintWiki });
+if (options.report) {
+  const reportPath = path.resolve(ROOT, options.report);
+  fs.mkdirSync(path.dirname(reportPath), { recursive: true });
+  fs.writeFileSync(reportPath, `${JSON.stringify({ ...plan, publication_id: publicationId, category: "legacy-backgrounds", results: options.results }, null, 2)}\n`, "utf8");
+}
+if (options.apply) applyCandidateBatch(plan, { root: ROOT, lint: lintWiki });

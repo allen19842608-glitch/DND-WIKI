@@ -4,7 +4,7 @@ import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 import YAML from "yaml";
-import { ROOT } from "../core/ingest-publication-utils.mjs";
+import { ROOT, writeReportText } from "../core/ingest-publication-utils.mjs";
 
 const SCRIPT = fileURLToPath(import.meta.url);
 const WIKI_ROOT = path.join(ROOT, "wiki", "戰役設定");
@@ -197,7 +197,7 @@ function audit(args = process.argv.slice(2)) {
     manual_review: issues.filter((issue) => issue.code === "TITLE_SOURCE_MISMATCH"),
   };
   const reportPath = option(args, "--report");
-  if (reportPath) fs.writeFileSync(path.resolve(ROOT, reportPath), `${JSON.stringify(report, null, 2)}\n`, "utf8");
+  if (reportPath) writeReportText(`${JSON.stringify(report, null, 2)}\n`, reportPath);
   process.stdout.write(`故事資料錯置稽核：來源映射 ${report.summary.source_mappings}；錯誤 ${report.summary.errors}；警告 ${report.summary.warnings}；來源定位有效 ${report.summary.valid_source_locators}。\n`);
   return report;
 }

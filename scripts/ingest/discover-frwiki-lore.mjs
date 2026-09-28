@@ -3,7 +3,7 @@ import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 import YAML from "yaml";
-import { ROOT, option } from "../core/ingest-publication-utils.mjs";
+import { ROOT, option, reportTargetPath, writeReportText } from "../core/ingest-publication-utils.mjs";
 
 const SCRIPT = fileURLToPath(import.meta.url);
 const CONFIG_PATH = path.join(ROOT, "config", "frwiki-intake.yml");
@@ -266,6 +266,8 @@ function inputPayload(input) {
 }
 
 export async function discoverFrwikiLore(args = process.argv.slice(2)) {
+  const reportPath = option(args, "--report");
+  if (reportPath) reportTargetPath(reportPath);
   const config = YAML.parse(fs.readFileSync(CONFIG_PATH, "utf8"));
   const type = option(args, "--type") ?? "person";
   const input = option(args, "--input");
@@ -300,13 +302,7 @@ export async function discoverFrwikiLore(args = process.argv.slice(2)) {
     local_primary_source_candidates: candidates.reduce((total, candidate) => total + candidate.summary.local_primary_source_candidates, 0),
     needs_source_acquisition: candidates.reduce((total, candidate) => total + candidate.summary.needs_source_acquisition, 0),
   };
-  const reportPath = option(args, "--report");
-  if (reportPath) {
-    const target = path.resolve(ROOT, reportPath);
-    if (!target.startsWith(`${ROOT}${path.sep}`)) throw new Error("--report 必須位於工作區內。");
-    fs.mkdirSync(path.dirname(target), { recursive: true });
-    fs.writeFileSync(target, `${JSON.stringify(report, null, 2)}\n`, "utf8");
-  }
+  if (reportPath) writeReportText(`${JSON.stringify(report, null, 2)}\n`, reportPath);
   process.stdout.write(`Fandom 候選盤點：${report.summary.entities} 個實體；本機官方原書待逐段核對 ${report.summary.local_primary_source_candidates} 則；待取得原文 ${report.summary.needs_source_acquisition} 則；頁面失敗 ${report.errors.length} 筆。\n`);
   return report;
 }

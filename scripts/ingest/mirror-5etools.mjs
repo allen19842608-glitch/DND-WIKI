@@ -4,17 +4,12 @@ import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 import YAML from "yaml";
-import { ROOT, loadIngestProfile, loadPublication } from "../core/ingest-publication-utils.mjs";
+import { ROOT, loadIngestProfile, loadPublication, option, reportTargetPath, writeReportText } from "../core/ingest-publication-utils.mjs";
 
 const SCRIPT = fileURLToPath(import.meta.url);
 const DEFAULT_TIMEOUT_MS = 30_000;
 const BOOK_MAP = YAML.parse(fs.readFileSync(path.join(ROOT, "config", "5etools-book-map.yml"), "utf8")).books ?? {};
 const NON_CHAPTER_SECTIONS = new Set(["credits"]);
-
-function option(args, name) {
-  const index = args.indexOf(name);
-  return index >= 0 ? args[index + 1] : undefined;
-}
 
 function posix(value) {
   return value.split(path.sep).join("/");
@@ -274,6 +269,8 @@ function previewDiff(files, rawText) {
 }
 
 export async function mirrorPublication(args = process.argv.slice(2)) {
+  const reportPath = option(args, "--report");
+  if (reportPath) reportTargetPath(reportPath);
   const requested = option(args, "--publication");
   const selected = requested ? [withMirror(loadIngestProfile(requested))] : args.includes("--all") ? profiles() : [];
   if (!selected.length) throw new Error("請指定 --publication <ID>，或使用 --all；--all 只處理已登錄 5e.tools 鏡像的出版品。");
@@ -309,8 +306,7 @@ export async function mirrorPublication(args = process.argv.slice(2)) {
     reports.push({ publication_id: profile.publication_id, status: missing.length ? "incomplete" : "complete", output_root: mirror.output_root, sha256: sha256(rawText), refreshed: args.includes("--refresh"), diff, chapters: documents.map((chapter) => ({ number: chapter.number, title: chapter.title, page: chapter.page, status: chapter.found ? "complete" : "missing" })), written });
   }
   const result = { schema_version: 1, mode: apply ? "apply" : "preview", reports, errors: reports.filter((item) => item.status === "incomplete" || item.status === "unmapped") };
-  const report = option(args, "--report");
-  if (report) fs.writeFileSync(path.resolve(ROOT, report), `${JSON.stringify(result, null, 2)}\n`, "utf8");
+  if (reportPath) writeReportText(`${JSON.stringify(result, null, 2)}\n`, reportPath);
   for (const item of reports) process.stdout.write(`${apply ? "套用" : "預覽"} ${item.publication_id}：${item.status}${item.written ? `；寫入 ${item.written.length} 檔` : ""}\n`);
   return result;
 }

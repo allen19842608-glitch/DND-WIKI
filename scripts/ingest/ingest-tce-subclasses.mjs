@@ -1,10 +1,16 @@
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
-import { ROOT, frontmatter, loadIngestProfile, loadPublication, parseOptions, writableCandidate } from "../core/ingest-publication-utils.mjs";
+import {
+  ROOT, applyCandidateBatch, candidateChange, frontmatter, loadIngestProfile, loadPublication, parseOptions, planCandidateBatch,
+} from "../core/ingest-publication-utils.mjs";
+import { lintWiki } from "../core/wiki-lint.mjs";
 
 const options = parseOptions();
-const publicationId = options.publicationId ?? "TCE2020";
+if (options.apply && !options.report) throw new Error("套用 Wiki 變更必須指定 --report reports/<plan>.json，以保留可追溯報告。");
+const pending = [];
+const staged = new Map();
+const publicationId = process.argv.includes("--publication") ? options.publicationId : "TCE2020";
 const publication = loadPublication(publicationId);
 const profile = loadIngestProfile(publicationId);
 const sourceRoot = path.join(ROOT, profile.source_root, profile.inputs.character_options, "職業");
@@ -75,10 +81,28 @@ function currentCounterpart(parent, english) {
 }
 function addBacklink(current, target, title) {
   if (!current) return;
-  let text = fs.readFileSync(current, "utf8"); const link = `[[${target}|${title}]]`;
+  let text = staged.get(current) ?? fs.readFileSync(current, "utf8"); const link = `[[${target}|${title}]]`;
   if (text.includes(link)) return;
   text = text.replace(/(## 🔗 相關連結\r?\n\r?\n)/, `$1- ${link}\n`);
-  fs.writeFileSync(current, text, "utf8");
+  queueWrite(current, text, "現行子職反向連結");
+}
+
+function queueWrite(destination, content, locator) {
+  const before = fs.existsSync(destination) ? fs.readFileSync(destination, "utf8") : null;
+  if (before === content || staged.get(destination) === content) return;
+  staged.set(destination, content);
+  const change = candidateChange({ destination, before, after: content, operation: before === null ? "create" : "update", source: locator, locator });
+  const index = pending.findIndex((item) => item.target === change.target);
+  if (index >= 0) pending[index] = change;
+  else pending.push(change);
+}
+
+function queueCandidate(destination, content, matchValues = []) {
+  const filter = String(options.only ?? "").normalize("NFKC").toLowerCase();
+  if (filter && !matchValues.concat(destination).some((value) => String(value).normalize("NFKC").toLowerCase().includes(filter))) return false;
+  if (fs.existsSync(destination) && !options.replace) return false;
+  queueWrite(destination, content, matchValues.at(-1) ?? destination);
+  return true;
 }
 
 const indexEntries = [];
@@ -98,9 +122,23 @@ for (const [rawParent, [parent, parentEnglish]] of parents) {
       .replace(/\n---$/, `\nentry_type: "子職"\nparent_class: "${parent}"\n---`);
     const content = `${metadata}\n\n# ${legacyTitle}\n\n> [!WARNING] 本條目為 2014 舊版規則。${current ? `2024 新版請參閱 [[職業/${parent}/${path.basename(current, ".md")}|${fs.readFileSync(current, "utf8").match(/^title: "(.+?)"$/m)?.[1] ?? path.basename(current, ".md")}]]。` : ""}\n\n**子職定位**：${introduction(lines, features[0]) || "依可定位來源確認。"}\n\n## ⚙️ 規則條文 (Rule Text)\n\n### 子職特性表\n\n| 職業等級 | 子職特性 |\n| :--: | :--- |\n${table}\n\n### 子職特性詳解\n\n${details(lines, features)}\n\n## 🔗 相關連結\n\n- [[職業/${parent}|${parent} (${parentEnglish})]]\n${currentLink}`;
     const destination = path.join(outputRoot, parent, `${safeName(chinese)}.md`);
-    writableCandidate({ destination, content, options });
-    if (options.apply && current) addBacklink(current, `職業/2014/${parent}/${safeName(chinese)}`, legacyTitle);
+    const queued = queueCandidate(destination, content, [chinese, english, source]);
+    if (queued && current) addBacklink(current, `職業/2014/${parent}/${safeName(chinese)}`, legacyTitle);
     indexEntries.push({ parent, parentEnglish, chinese, english, file: safeName(chinese), source });
   }
 }
 console.log(`TCE 子職：${indexEntries.length} 個。`);
+
+const plan = planCandidateBatch(pending, { root: ROOT, lint: lintWiki });
+if (options.report) {
+  const reportPath = path.resolve(ROOT, options.report);
+  if (!reportPath.startsWith(`${path.join(ROOT, "reports")}${path.sep}`)) throw new Error("報告只能輸出至 reports/。");
+  fs.mkdirSync(path.dirname(reportPath), { recursive: true });
+  fs.writeFileSync(reportPath, `${JSON.stringify(plan, null, 2)}\n`, "utf8");
+}
+if (options.apply) {
+  const result = applyCandidateBatch(plan, { root: ROOT, lint: lintWiki });
+  console.log(`已套用 TCE 子職：${result.applied.length} 個候選變更。`);
+} else {
+  console.log(`預覽 TCE 子職：${plan.changes.length} 個候選變更；加入 --apply 才會寫入。`);
+}

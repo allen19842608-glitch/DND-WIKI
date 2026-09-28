@@ -2,6 +2,8 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import YAML from "yaml";
+import { applyCandidateBatch, candidateChange, parseOptions, planCandidateBatch, writeCandidatePlan } from "../core/ingest-publication-utils.mjs";
+import { lintWiki } from "../core/wiki-lint.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const CATEGORIES = ["職業", "種族", "背景", "專長"];
@@ -169,7 +171,8 @@ function statusFor(category, data, file) {
   return null;
 }
 
-const apply = process.argv.includes("--apply");
+const options = parseOptions(process.argv.slice(2));
+if (options.apply && !options.report) throw new Error("套用 Wiki 變更必須指定 --report reports/<plan>.json，以保留可追溯報告。");
 const updates = [];
 const legacyRows = new Map(CATEGORIES.map((category) => [category, []]));
 for (const category of CATEGORIES) {
@@ -186,9 +189,11 @@ for (const category of CATEGORIES) {
 
 for (const update of updates) {
   process.stdout.write(`${path.relative(ROOT, update.file).replaceAll("\\", "/")} -> ${update.compatibility}\n`);
-  if (apply) fs.writeFileSync(update.file, update.next, "utf8");
 }
-if (apply) {
+const plan = planCandidateBatch(updates.map((update) => candidateChange({ destination: update.file, before: fs.readFileSync(update.file, "utf8"), after: update.next, operation: "update", source: "2014-compatibility", locator: update.compatibility })), { root: ROOT, lint: lintWiki });
+writeCandidatePlan({ ...plan, legacy_rows: Object.fromEntries([...legacyRows].map(([category, rows]) => [category, rows.map((row) => path.relative(ROOT, row.file).replaceAll("\\", "/"))])) }, options.report, { root: ROOT });
+if (options.apply) {
+  applyCandidateBatch(plan, { root: ROOT, lint: lintWiki });
   process.stdout.write("2024／AL 雙狀態索引請以 migrate:sync-al-availability -- --apply 重建。\n");
 }
-process.stdout.write(`${apply ? "已更新" : "預覽"}：${updates.length} 個 Legacy 條目。\n`);
+process.stdout.write(`${options.apply ? "已更新" : "預覽"}：${updates.length} 個 Legacy 條目。\n`);

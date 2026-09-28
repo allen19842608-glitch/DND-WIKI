@@ -3,7 +3,7 @@ import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 import YAML from "yaml";
-import { ROOT } from "../core/ingest-publication-utils.mjs";
+import { ROOT, writeReportText } from "../core/ingest-publication-utils.mjs";
 import { runLoreIngest } from "../ingest/ingest-lore.mjs";
 
 const SCRIPT = fileURLToPath(import.meta.url);
@@ -77,11 +77,7 @@ function audit(args = process.argv.slice(2)) {
     })),
   };
   const reportPath = option(args, "--report");
-  if (reportPath) {
-    const absolute = path.resolve(ROOT, reportPath);
-    fs.mkdirSync(path.dirname(absolute), { recursive: true });
-    fs.writeFileSync(absolute, `${JSON.stringify(result, null, 2)}\n`, "utf8");
-  }
+  if (reportPath) writeReportText(`${JSON.stringify(result, null, 2)}\n`, reportPath);
   process.stdout.write(`故事資料吸收稽核：出版品 ${result.summary.publications}；候選 ${result.summary.candidates}；待套用 ${result.summary.pending_files}；錯誤 ${result.summary.errors}；警告 ${result.summary.warnings}；人工核定 ${result.summary.manual_review}。\n`);
   if (errors.length) process.exitCode = 1;
   return result;

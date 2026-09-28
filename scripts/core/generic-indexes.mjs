@@ -66,6 +66,9 @@ export function planGenericIndexes(pages, { changedDirectories = null } = {}) {
   return { missing, changes: [...changes].map(([file, text]) => ({ file, text })) };
 }
 export function syncGenericIndexes({ root = ROOT, apply = false, changedDirectories = null } = {}) {
+  if (apply && path.resolve(root) === path.resolve(ROOT)) {
+    throw new Error("正式 Wiki 索引不得直接寫入；請使用 wiki:preview -- --category 索引 儲存候選。 ");
+  }
   const plan = planGenericIndexes(readWikiPages(root), { changedDirectories });
   if (apply) for (const change of plan.changes) fs.writeFileSync(path.join(root, change.file), change.text);
   return plan;

@@ -2,6 +2,8 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import YAML from "yaml";
+import { applyCandidateBatch, candidateChange, parseOptions, planCandidateBatch, writeCandidatePlan } from "../core/ingest-publication-utils.mjs";
+import { lintWiki } from "../core/wiki-lint.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const MIRROR_ROOT = "原始資料/外部來源鏡像/PHB2014/chapters";
@@ -73,13 +75,14 @@ function candidate(file) {
   return { file, page, sourceFile: MIRROR_BOOK, name, chapter, changed: true, next: page.text.replace(page.yaml, nextYaml) };
 }
 
-const apply = process.argv.includes("--apply");
+const options = parseOptions(process.argv.slice(2), { extraBooleanOptions: ["--eligible-only"] });
+if (options.apply && !options.report) throw new Error("套用 Wiki 變更必須指定 --report reports/<plan>.json，以保留可追溯報告。");
 const eligibleOnly = process.argv.includes("--eligible-only");
 const rows = walk(path.join(ROOT, "wiki")).map(candidate).filter(Boolean)
   .filter((row) => !eligibleOnly || ["compatible", "conditional"].includes(row.page.data?.compatibility_2024))
   .filter((row) => row.changed);
-for (const row of rows) {
-  console.log(`${apply ? "套用" : "預覽"}：${path.relative(ROOT, row.file).replaceAll("\\", "/")} ← ${row.sourceFile}（${row.name}）`);
-  if (apply) fs.writeFileSync(row.file, row.next, "utf8");
-}
-console.log(`${apply ? "已更新" : "預覽"}：${rows.length} 頁。`);
+const plan = planCandidateBatch(rows.map((row) => candidateChange({ destination: row.file, before: fs.readFileSync(row.file, "utf8"), after: row.next, operation: "update", source: row.sourceFile, locator: row.name })), { root: ROOT, lint: lintWiki });
+writeCandidatePlan(plan, options.report, { root: ROOT });
+if (options.apply) applyCandidateBatch(plan, { root: ROOT, lint: lintWiki });
+for (const row of rows) console.log(`${options.apply ? "套用" : "預覽"}：${path.relative(ROOT, row.file).replaceAll("\\", "/")} ← ${row.sourceFile}（${row.name}）`);
+console.log(`${options.apply ? "已更新" : "預覽"}：${rows.length} 頁。`);

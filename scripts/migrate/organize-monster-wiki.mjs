@@ -1,11 +1,13 @@
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
-import { frontmatter, loadPublication, option as publicationOption } from "../core/ingest-publication-utils.mjs";
+import { ROOT, applyCandidateBatch, candidateChange, frontmatter, loadPublication, option as publicationOption, parseOptions, planCandidateBatch, writeCandidatePlan } from "../core/ingest-publication-utils.mjs";
+import { lintWiki } from "../core/wiki-lint.mjs";
 
-const root = process.cwd();
+const root = ROOT;
 const wikiRoot = path.join(root, "wiki", "怪物");
-const apply = process.argv.includes("--apply");
+const options = parseOptions(process.argv.slice(2));
+if (options.apply && !options.report) throw new Error("套用 Wiki 變更必須指定 --report reports/<plan>.json，以保留可追溯報告。");
 const updated = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Taipei" }).format(new Date());
 const source = "原始資料/怪物圖鑑2025/附錄B/附錄B：怪物速查.md";
 const publicationId = publicationOption(process.argv.slice(2), "--publication") ?? "MM2025";
@@ -109,14 +111,16 @@ for (const file of allFiles) {
   if (changed !== text) writes.set(file, changed);
 }
 
+const pending = [
+  ...[...writes].flatMap(([file, content]) => {
+    const before = fs.existsSync(file) ? read(file) : null;
+    return before === content ? [] : [candidateChange({ destination: file, before, after: content, operation: before === null ? "create" : "update", source, locator: path.relative(root, file) })];
+  }),
+  ...renames.filter(({ from, to }) => from !== to && fs.existsSync(from)).map(({ from }) => candidateChange({ destination: from, before: read(from), after: null, operation: "delete", source, locator: path.relative(root, from) })),
+];
+const plan = planCandidateBatch(pending, { root, lint: lintWiki });
+writeCandidatePlan({ ...plan, renames: renames.map(({ from, to }) => ({ from: path.relative(root, from), to: path.relative(root, to) })) }, options.report, { root });
+if (options.apply) applyCandidateBatch(plan, { root, lint: lintWiki });
 console.log(`介紹頁搬移：${renames.length}`);
 console.log(`類型索引：${typeNames.length}`);
 console.log(`更新／新增：${writes.size}`);
-if (apply) {
-  fs.mkdirSync(overviewDir, { recursive: true });
-  for (const rename of renames) if (fs.existsSync(rename.from)) fs.renameSync(rename.from, rename.to);
-  for (const [file, content] of writes) {
-    fs.mkdirSync(path.dirname(file), { recursive: true });
-    fs.writeFileSync(file, content);
-  }
-}

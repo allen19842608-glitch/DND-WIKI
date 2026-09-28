@@ -1,9 +1,13 @@
 import fs from "node:fs";
 import path from "node:path";
-import process from "node:process";
+import {
+  ROOT, applyCandidateBatch, candidateChange, parseOptions, planCandidateBatch, writeCandidatePlan,
+} from "../core/ingest-publication-utils.mjs";
+import { lintWiki } from "../core/wiki-lint.mjs";
 
-const root = process.cwd();
-const apply = process.argv.includes("--apply");
+const root = ROOT;
+const options = parseOptions(process.argv.slice(2));
+if (options.apply && !options.report) throw new Error("套用 Wiki 變更必須指定 --report reports/<plan>.json，以保留可追溯報告。");
 const rawRoot = path.join(root, "原始資料", "玩家手冊2024", "專長");
 const wikiRoot = path.join(root, "wiki", "專長");
 const groups = [
@@ -12,58 +16,56 @@ const groups = [
   { raw: "傳奇恩惠專長.md", wiki: "史詩恩賜專長", index: "史詩恩賜專長索引.md" },
 ];
 
-function normalizeEnglish(value) {
-  return value.toLowerCase().replace(/[^a-z0-9]/g, "");
-}
-
-function englishTitle(text) {
-  const title = text.match(/^title:\s+"(.+)"\s*$/m)?.[1];
-  return title?.match(/\(([^()]*)\)$/)?.[1];
-}
-
+function normalizeEnglish(value) { return value.toLowerCase().replace(/[^a-z0-9]/g, ""); }
+function englishTitle(text) { return text.match(/^title:\s+"(.+)"\s*$/m)?.[1]?.match(/\(([^()]*)\)$/)?.[1]; }
 function sourceEntries(file) {
   return fs.readFileSync(file, "utf8").split(/\r?\n/).flatMap((line, index) => {
     const bold = line.match(/^\*\*([^*]+)\*\*/)?.[1]?.replace(/[。.:：]+$/, "").trim();
     if (!bold) return [];
     const ascii = bold.search(/[A-Z]/);
     if (ascii < 0) return [];
-    const english = bold.slice(ascii).replace(/[。.:：]+$/, "").trim();
-    return [{ english, label: bold, line: index + 1 }];
+    return [{ english: bold.slice(ascii).replace(/[。.:：]+$/, "").trim(), label: bold, line: index + 1 }];
   });
 }
 
-function addPrimarySource(file, source, locator) {
-  const original = fs.readFileSync(file, "utf8");
+function withPrimarySource(file, original, source, locator) {
   const bom = original.startsWith("\uFEFF") ? "\uFEFF" : "";
-  let text = original.replace(/^\uFEFF/, "");
-  if (text.includes(`file: "${source}"`)) return false;
-  const block = `sources:\n  - file: "${source}"\n    locator: "${locator.replaceAll('"', '\\"')}"\n    authority: "官方"\n    translation: "community"`;
+  const text = original.replace(/^\uFEFF/, "");
+  if (text.includes(`file: "${source}"`)) return null;
   if (!/^sources:\s*$/m.test(text)) throw new Error(`缺少 sources：${path.relative(root, file)}`);
-  text = text.replace(/^sources:\s*$/m, block);
-  if (apply) fs.writeFileSync(file, `${bom}${text}`, "utf8");
-  return true;
+  const block = `sources:\n  - file: "${source}"\n    locator: "${locator.replaceAll('"', '\\"')}"\n    authority: "官方"\n    translation: "community"`;
+  return `${bom}${text.replace(/^sources:\s*$/m, block)}`;
 }
 
 let matched = 0;
-let changed = 0;
+const pending = [];
 for (const group of groups) {
   const rawFile = path.join(rawRoot, group.raw);
   const source = path.relative(root, rawFile).replaceAll("\\", "/");
-  const entries = sourceEntries(rawFile);
-  const byEnglish = new Map(entries.map((entry) => [normalizeEnglish(entry.english), entry]));
+  const byEnglish = new Map(sourceEntries(rawFile).map((entry) => [normalizeEnglish(entry.english), entry]));
   const wikiDirectory = path.join(wikiRoot, group.wiki);
-  const pages = fs.readdirSync(wikiDirectory)
-    .filter((name) => name.endsWith(".md") && name !== group.index)
-    .map((name) => path.join(wikiDirectory, name));
+  const pages = fs.readdirSync(wikiDirectory).filter((name) => name.endsWith(".md") && name !== group.index).map((name) => path.join(wikiDirectory, name));
   for (const page of pages) {
-    const english = englishTitle(fs.readFileSync(page, "utf8").replace(/^\uFEFF/, ""));
+    const before = fs.readFileSync(page, "utf8");
+    const english = englishTitle(before.replace(/^\uFEFF/, ""));
     const entry = english ? byEnglish.get(normalizeEnglish(english)) : undefined;
-    if (!entry) throw new Error(`來源找不到對應專長：${path.relative(root, page)} (${english ?? "無英文標題"})`);
+    if (!entry) {
+      pending.push(candidateChange({
+        destination: page, before, after: before, operation: "unchanged", status: "manual_review",
+        review: [`玩家手冊 2024 的 ${group.raw} 找不到英文標題 ${english ?? "（無英文標題）"}；保留既有來源，請人工確認該頁所屬出版品。`],
+      }));
+      continue;
+    }
     matched += 1;
-    if (addPrimarySource(page, source, `L${entry.line} 專長：${entry.label}`)) changed += 1;
+    const after = withPrimarySource(page, before, source, `L${entry.line} 專長：${entry.label}`);
+    if (after) pending.push(candidateChange({ destination: page, before, after, operation: "update", source, locator: `L${entry.line}` }));
   }
   const indexFile = path.join(wikiDirectory, group.index);
-  if (addPrimarySource(indexFile, source, `L1 標題：${path.basename(group.raw, ".md")}`)) changed += 1;
+  const before = fs.readFileSync(indexFile, "utf8");
+  const after = withPrimarySource(indexFile, before, source, `L1 標題：${path.basename(group.raw, ".md")}`);
+  if (after) pending.push(candidateChange({ destination: indexFile, before, after, operation: "update", source, locator: "L1" }));
 }
-
-console.log(`${apply ? "已補入" : "預覽"}專長來源：對應 ${matched} 個專長頁；異動 ${changed} 個檔案。`);
+const plan = planCandidateBatch(pending, { root, lint: lintWiki });
+writeCandidatePlan(plan, options.report, { root });
+if (options.apply) applyCandidateBatch(plan, { root, lint: lintWiki });
+console.log(`${options.apply ? "已套用" : "預覽"}專長來源：對應 ${matched} 個專長頁；候選 ${pending.length} 個檔案。`);

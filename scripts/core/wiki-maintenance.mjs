@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 import { parseDocument } from "yaml";
 import { syncLoreIndexes } from "./lore-indexes.mjs";
 import { syncGenericIndexes } from "./generic-indexes.mjs";
+import { recordObservedSources } from "./source-update-state.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const RAW_ROOT = path.join(ROOT, "原始資料");
@@ -254,6 +255,7 @@ function manifestCommand(values, unabsorbedOnly = false) {
   const excluded = scoped.filter((record) => record.absorbed_by.length === 0 && record.disposition);
   const unabsorbed = scoped.filter((record) => record.absorbed_by.length === 0 && !record.disposition);
   if (options.has("--update")) {
+    recordObservedSources(records);
     fs.mkdirSync(CACHE_ROOT, { recursive: true });
     fs.writeFileSync(MANIFEST, `${JSON.stringify(snapshot, null, 2)}\n`, "utf8");
   }
@@ -273,7 +275,7 @@ function manifestCommand(values, unabsorbedOnly = false) {
   if (options.has("--update")) process.stdout.write(`已更新快取：${relative(MANIFEST)}\n`);
 }
 
-function changedWikiDirectories() {
+function changedRepositoryPaths() {
   const commands = [
     ["diff", "--name-only", "HEAD"],
     ["ls-files", "--others", "--exclude-standard"],
@@ -282,10 +284,12 @@ function changedWikiDirectories() {
     const result = spawnSync("git", ["-c", "core.quotepath=false", ...args], { cwd: ROOT, encoding: "utf8" });
     return result.status === 0 ? result.stdout.split(/\r?\n/) : [];
   });
-  return new Set(files
-    .map((line) => line.trim().replace(/\\/g, "/"))
-    .filter((line) => line.startsWith("wiki/") && line.endsWith(".md"))
-    .map((line) => path.posix.dirname(line)));
+  return new Set(files.map((line) => line.trim().replace(/\\/g, "/")).filter(Boolean));
+}
+
+function changedWikiDirectories(files) {
+  return new Set([...files].filter((file) => file.startsWith("wiki/") && file.endsWith(".md"))
+    .map((file) => path.posix.dirname(file)));
 }
 
 function wikiLinkTargets(text) {
@@ -306,19 +310,21 @@ function indexesCommand(values) {
   const { options } = argumentsOf(values);
   const apply = options.has("--apply"), strict = options.has("--strict");
   if (apply && strict) throw new Error("--strict 是唯讀模式，不可搭配 --apply。");
+  if (apply) throw new Error("索引不再直接寫入 Wiki；請使用 wiki:preview -- --category 索引 --report reports/index-plan.json，再審閱與套用。 ");
   const setting = options.get("--setting") ?? null;
   if (setting === true) throw new Error("--setting 必須指定世界名稱。");
-  const generic = syncGenericIndexes({ apply, changedDirectories: options.has("--changed") ? changedWikiDirectories() : null });
-  process.stdout.write(`索引缺漏：${generic.missing}；${apply ? "已更新" : "待更新"}：${generic.changes.length}\n`);
+  const changedPaths = options.has("--changed") ? changedRepositoryPaths() : null;
+  const generic = syncGenericIndexes({ apply: false, changedDirectories: changedPaths === null ? null : changedWikiDirectories(changedPaths) });
+  process.stdout.write(`索引缺漏：${generic.missing}；待更新：${generic.changes.length}\n`);
   for (const change of generic.changes) process.stdout.write(`- ${change.file}\n`);
-  const lore = syncLoreIndexes({ apply, setting });
-  process.stdout.write(`戰役索引故事頁：${lore.pages}；${apply ? "已更新" : "待更新"}：${lore.changes.length}\n`);
+  const lore = syncLoreIndexes({ apply: false, setting, changedFiles: changedPaths });
+  process.stdout.write(`戰役索引故事頁：${lore.pages}；覆核世界：${lore.checked_worlds.length}；覆核總索引：${lore.checked_global ? "是" : "否"}；待更新：${lore.changes.length}\n`);
   for (const file of lore.changes) process.stdout.write(`- ${file}\n`);
   if (strict && (generic.changes.length || lore.changes.length)) process.exitCode = 1;
 }
 
 function help() {
-  process.stdout.write(`可用指令：\n  policy <章節>\n  source-find <文字> [--source 範圍] [--max 30] [--context 2]\n  glossary <詞彙> [--max 20]\n  manifest [--publication ID] [--update] [--json] [--max 100]\n  unabsorbed [--publication ID] [--json] [--max 100]\n  indexes [--changed] [--setting 世界名稱] [--apply]\n`);
+  process.stdout.write(`可用指令：\n  policy <章節>\n  source-find <文字> [--source 範圍] [--max 30] [--context 2]\n  glossary <詞彙> [--max 20]\n  manifest [--publication ID] [--update] [--json] [--max 100]\n  unabsorbed [--publication ID] [--json] [--max 100]\n  indexes [--changed] [--setting 世界名稱] [--strict]\n`);
 }
 
 if (path.resolve(process.argv[1] ?? "") === fileURLToPath(import.meta.url)) {

@@ -1,13 +1,20 @@
 import fs from "node:fs";
 import path from "node:path";
-import { ROOT, frontmatter, loadPublication } from "../core/ingest-publication-utils.mjs";
+import {
+  ROOT, applyCandidateBatch, candidateChange, frontmatter, loadPublication, parseOptions, planCandidateBatch,
+} from "../core/ingest-publication-utils.mjs";
+import { lintWiki } from "../core/wiki-lint.mjs";
 
 const publicationId = "ERLW2019";
 const publication = loadPublication(publicationId);
+const options = parseOptions(process.argv.slice(2));
+if (options.apply && !options.report) throw new Error("套用 Wiki 變更必須指定 --report reports/<plan>.json，以保留可追溯報告。");
 const sourceRoot = path.join(ROOT, "原始資料", "艾伯倫：從終末戰爭中崛起", "歡迎來到艾伯倫");
 const eberronRoot = path.join(ROOT, "wiki", "戰役設定", "艾伯倫");
 const worldviewRoot = path.join(eberronRoot, "世界觀");
 const sourcePrefix = "原始資料/艾伯倫：從終末戰爭中崛起/歡迎來到艾伯倫";
+const pending = [];
+const staged = new Map();
 
 const entries = [
   ["艾伯倫概覽", "Welcome to Eberron", "歡迎來到艾伯倫.md", "艾伯倫的核心主題、冒險基調與世界理解方式。"],
@@ -51,9 +58,14 @@ function normalize(file) {
 }
 
 function write(target, content) {
-  fs.mkdirSync(path.dirname(target), { recursive: true });
-  fs.writeFileSync(target, content, "utf8");
-  console.log(`匯入：${path.relative(ROOT, target)}`);
+  const before = fs.existsSync(target) ? fs.readFileSync(target, "utf8") : null;
+  if (before === content || staged.get(target) === content) return;
+  staged.set(target, content);
+  const change = candidateChange({ destination: target, before, after: content, operation: before === null ? "create" : "update", source: sourcePrefix, locator: path.relative(ROOT, target) });
+  const index = pending.findIndex((item) => item.target === change.target);
+  if (index >= 0) pending[index] = change;
+  else pending.push(change);
+  console.log(`預覽：${path.relative(ROOT, target)}`);
 }
 
 function relatedLinks() {
@@ -102,16 +114,16 @@ ${indexLinks}
 write(path.join(worldviewRoot, "艾伯倫世界觀索引.md"), indexContent);
 
 const rootPath = path.join(eberronRoot, "艾伯倫索引.md");
-let root = fs.readFileSync(rootPath, "utf8");
+let root = staged.get(rootPath) ?? fs.readFileSync(rootPath, "utf8");
 const sourceRecord = `  - file: "${sourcePath("歡迎來到艾伯倫.md")}"\n    locator: "標題：歡迎來到艾伯倫"\n    authority: "官方"\n    translation: "community"\n`;
 if (!root.includes(sourcePath("歡迎來到艾伯倫.md"))) root = root.replace("source_type:", `${sourceRecord}source_type:`);
 const section = "## 世界觀與冒險基調\n\n- [[戰役設定/艾伯倫/世界觀/艾伯倫世界觀索引|艾伯倫世界觀索引 (Eberron Worldbuilding Index)]]：歷史、日常生活、魔法、巨龍預言與冒險風格。\n\n";
 if (!root.includes("艾伯倫世界觀索引")) root = root.replace("## 地理與文化", `${section}## 地理與文化`);
-fs.writeFileSync(rootPath, root, "utf8");
+write(rootPath, root);
 console.log(`更新：${path.relative(ROOT, rootPath)}`);
 
 const warPath = path.join(eberronRoot, "冒險與勢力", "終末戰爭.md");
-let war = fs.readFileSync(warPath, "utf8");
+let war = staged.get(warPath) ?? fs.readFileSync(warPath, "utf8");
 const warSource = sourcePath("終末戰爭.md");
 const warRecord = `  - file: "${warSource}"\n    locator: "標題：終末戰爭"\n    authority: "官方"\n    translation: "community"\n`;
 if (!war.includes(warSource)) war = war.replace("source_type:", `${warRecord}source_type:`);
@@ -120,5 +132,19 @@ const warAddition = `${warHeading}\n\n${normalize("終末戰爭.md")}\n\n`;
 if (!war.includes(warHeading)) war = war.replace("## 🔗 相關連結", `${warAddition}## 🔗 相關連結`);
 const worldviewIndex = "- [[戰役設定/艾伯倫/世界觀/艾伯倫世界觀索引|艾伯倫世界觀索引 (Eberron Worldbuilding Index)]]";
 if (!war.includes("|艾伯倫世界觀索引")) war = war.replace("## 🔗 相關連結", `## 🔗 相關連結\n\n${worldviewIndex}`);
-fs.writeFileSync(warPath, war, "utf8");
+write(warPath, war);
 console.log(`更新：${path.relative(ROOT, warPath)}`);
+
+const plan = planCandidateBatch(pending, { root: ROOT, lint: lintWiki });
+if (options.report) {
+  const reportPath = path.resolve(ROOT, options.report);
+  if (!reportPath.startsWith(`${path.join(ROOT, "reports")}${path.sep}`)) throw new Error("報告只能輸出至 reports/。");
+  fs.mkdirSync(path.dirname(reportPath), { recursive: true });
+  fs.writeFileSync(reportPath, `${JSON.stringify(plan, null, 2)}\n`, "utf8");
+}
+if (options.apply) {
+  const result = applyCandidateBatch(plan, { root: ROOT, lint: lintWiki });
+  console.log(`已套用 Eberron 歡迎章節：${result.applied.length} 個候選變更。`);
+} else {
+  console.log(`預覽 Eberron 歡迎章節：${plan.changes.length} 個候選變更；加入 --apply 才會寫入。`);
+}

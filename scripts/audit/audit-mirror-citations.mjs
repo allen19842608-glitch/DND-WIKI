@@ -3,15 +3,12 @@ import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 import YAML from "yaml";
+import { candidateChange, parseOptions, planCandidateBatch } from "../core/ingest-publication-utils.mjs";
+import { lintWiki } from "../core/wiki-lint.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const WIKI_ROOT = path.join(ROOT, "wiki");
 const MIRROR_ROOT = path.join(ROOT, "原始資料", "外部來源鏡像");
-
-function option(args, name) {
-  const index = args.indexOf(name);
-  return index < 0 ? undefined : args[index + 1];
-}
 
 function walk(root) {
   if (!fs.existsSync(root)) return [];
@@ -111,14 +108,16 @@ function sourceHealth(data, eligible) {
 }
 
 export function auditMirrorCitations(args = process.argv.slice(2)) {
-  const apply = args.includes("--apply");
-  const publicationId = option(args, "--publication");
-  const only = option(args, "--only");
+  const options = parseOptions(args);
+  if (options.apply) throw new Error("鏡像引用稽核為唯讀；請以預覽報告交由 wiki:apply 套用已審閱候選。 ");
+  const publicationId = args.includes("--publication") ? options.publicationId : undefined;
+  const only = options.only;
   const records = publications().filter((publication) => !publicationId || publication.id === publicationId);
   if (publicationId && !records.length) throw new Error(`找不到已鏡像的出版品：${publicationId}`);
   const pages = [];
   let pagesScanned = 0;
-  const report = { schema_version: 1, mode: apply ? "apply" : "preview", errors: [], warnings: [], information: [], translation_pending: [], source_conflicts: [], missing_page_citation: [], missing_stat_link: [] };
+  const pending = [];
+  const report = { schema_version: 2, mode: "preview", errors: [], warnings: [], information: [], translation_pending: [], source_conflicts: [], missing_page_citation: [], missing_stat_link: [] };
   for (const file of walk(WIKI_ROOT)) {
     const relative = rel(file);
     if (only && !relative.includes(only)) continue;
@@ -133,7 +132,7 @@ export function auditMirrorCitations(args = process.argv.slice(2)) {
     report.missing_page_citation.push(...normalized.unresolved.map((item) => ({ page: relative, publication_ids: eligible.map((publication) => publication.id), ...item })));
     if (normalized.changes.length) {
       pages.push({ page: relative, publications: eligible.map((publication) => publication.id), citations: normalized.changes });
-      if (apply) fs.writeFileSync(file, `${original.slice(0, original.length - body.length)}${normalized.text}`, "utf8");
+      pending.push(candidateChange({ destination: file, before: original, after: `${original.slice(0, original.length - body.length)}${normalized.text}`, operation: "update", source: eligible.map((publication) => publication.root).join("、"), locator: "正文鏡像引用" }));
     }
   }
   report.summary = {
@@ -145,14 +144,15 @@ export function auditMirrorCitations(args = process.argv.slice(2)) {
     warnings: report.warnings.length,
   };
   report.information = pages;
-  const reportPath = option(args, "--report");
-  if (reportPath) {
-    const target = path.resolve(ROOT, reportPath);
-    if (!target.startsWith(`${ROOT}${path.sep}`)) throw new Error("--report 必須位於工作區內。");
+  const plan = planCandidateBatch(pending, { root: ROOT, lint: lintWiki });
+  report.changes = plan.changes;
+  report.summary = { ...report.summary, ...plan.summary };
+  if (options.report) {
+    const target = path.resolve(ROOT, options.report);
     fs.mkdirSync(path.dirname(target), { recursive: true });
     fs.writeFileSync(target, `${JSON.stringify(report, null, 2)}\n`, "utf8");
   }
-  process.stdout.write(`${apply ? "套用" : "預覽"}鏡像正文引用：出版品 ${report.summary.publications}；改寫 ${report.summary.citations_normalized} 處／${report.summary.pages_changed} 頁；缺頁碼 ${report.summary.missing_page_citation}；警告 ${report.summary.warnings}。\n`);
+  process.stdout.write(`預覽鏡像正文引用：出版品 ${report.summary.publications}；改寫 ${report.summary.citations_normalized} 處／${report.summary.pages_changed} 頁；缺頁碼 ${report.summary.missing_page_citation}；警告 ${report.summary.warnings}。\n`);
   return report;
 }
 

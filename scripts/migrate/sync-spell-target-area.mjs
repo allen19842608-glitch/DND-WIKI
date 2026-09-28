@@ -4,7 +4,8 @@ import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { parseDocument } from "yaml";
 import { parseTargetAreaExceptions, planSpellTargetArea } from "../core/spell-target-area.mjs";
-import { today } from "../core/ingest-publication-utils.mjs";
+import { applyCandidateBatch, candidateChange, planCandidateBatch, today, writeCandidatePlan, writeReportText } from "../core/ingest-publication-utils.mjs";
+import { lintWiki } from "../core/wiki-lint.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const SPELL_ROOT = path.join(ROOT, "wiki", "法術");
@@ -98,24 +99,23 @@ export function migrateSpellTargetArea(options, { root = ROOT, beforeWrite } = {
     else layouts.legacy_combined += 1;
   }
   const summary = { selected: entries.length, proposed: entries.filter((entry) => entry.status === "change").length, applied: 0, unchanged: entries.filter((entry) => entry.status === "unchanged").length, exceptions: entries.filter((entry) => entry.status === "exception").length, conflicts: 0, layouts };
+  const lint = path.resolve(root) === ROOT ? lintWiki : undefined;
+  const plan = planCandidateBatch(entries.filter((item) => item.status === "change").map((entry) => candidateChange({
+    destination: entry.absolute, before: fs.readFileSync(entry.absolute, "utf8"), after: entry.text, operation: "update",
+    source: "spell-target-area", locator: entry.entity_id ?? entry.file,
+  })), { root, lint });
   if (options.apply) {
     beforeWrite?.(entries);
-    for (const entry of entries.filter((item) => item.status === "change")) {
-      const current = fs.readFileSync(entry.absolute, "utf8");
-      if (sha256(current) !== entry.before_sha256) {
-        entry.status = "conflict"; entry.reason = "預覽後檔案已變更，未覆寫"; summary.conflicts += 1; continue;
-      }
-      fs.writeFileSync(entry.absolute, entry.text, "utf8");
-      entry.status = "applied"; summary.applied += 1;
-    }
+    const result = applyCandidateBatch(plan, { root, lint });
+    for (const entry of entries.filter((item) => result.applied.includes(item.file))) entry.status = "applied";
+    summary.applied = result.applied.length;
   }
-  const report = { schema_version: 1, generated_at: new Date().toISOString(), mode: options.apply ? "apply" : "dry-run", publication: options.publication, summary, entries: entries.map(({ absolute, text, ...entry }) => entry) };
+  const report = { ...plan, generated_at: new Date().toISOString(), mode: options.apply ? "apply" : "dry-run", publication: options.publication, summary, entries: entries.map(({ absolute, text, ...entry }) => entry) };
   if (options.report) {
     const reportPath = path.resolve(root, options.report);
     if (!inside(path.join(root, "reports"), reportPath)) throw new Error("報告必須寫入 reports/ 下。");
-    fs.mkdirSync(path.dirname(reportPath), { recursive: true });
-    fs.writeFileSync(reportPath, `${JSON.stringify(report, null, 2)}\n`, "utf8");
-    fs.writeFileSync(reportPath.replace(/\.json$/u, ".md"), reportMarkdown(report), "utf8");
+    writeCandidatePlan(report, path.relative(root, reportPath), { root });
+    writeReportText(reportMarkdown(report), path.relative(root, reportPath.replace(/\.json$/u, ".md")), { root });
   }
   return report;
 }

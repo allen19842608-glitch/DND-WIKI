@@ -2,10 +2,11 @@ import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
+import { ROOT, applyCandidateBatch, candidateChange, parseOptions, planCandidateBatch, writeCandidatePlan } from "../core/ingest-publication-utils.mjs";
+import { lintWiki } from "../core/wiki-lint.mjs";
 
-const root = process.cwd();
+const root = ROOT;
 const scopeRoot = path.join(root, "wiki", "冒險者聯盟");
-const apply = process.argv.includes("--apply");
 const UPDATED = "2026-08-31";
 
 const publications = [
@@ -51,7 +52,8 @@ export function normalizeDocument(text) {
   return { text: `${normalizedHead}${normalizedBody}`, changed, unresolved: [] };
 }
 
-export function run({ write = apply } = {}) {
+export function run({ apply = false, report = null } = {}) {
+  if (apply && !report) throw new Error("套用 Wiki 變更必須指定 --report reports/<plan>.json，以保留可追溯報告。");
   const changed = [];
   const unresolved = [];
   for (const filename of walk(scopeRoot)) {
@@ -61,12 +63,15 @@ export function run({ write = apply } = {}) {
     if (result.changed) changed.push({ filename, text: result.text });
   }
   if (unresolved.length) throw new Error(`有未辨識的 AL 頁碼引用：${unresolved.map((item) => item.filename).join("、")}`);
-  if (write) for (const item of changed) fs.writeFileSync(item.filename, item.text);
-  return { changed: changed.map((item) => path.relative(root, item.filename).replaceAll("\\", "/")), unresolved };
+  const plan = planCandidateBatch(changed.map((item) => candidateChange({ destination: item.filename, before: fs.readFileSync(item.filename, "utf8"), after: item.text, operation: "update", source: "AL-citations", locator: path.relative(root, item.filename) })), { root, lint: lintWiki });
+  writeCandidatePlan({ ...plan, unresolved }, report, { root });
+  if (apply) applyCandidateBatch(plan, { root, lint: lintWiki });
+  return { ...plan, unresolved };
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  const result = run();
-  console.log(`${apply ? "已套用" : "預覽"}：${result.changed.length} 頁`);
-  for (const file of result.changed) console.log(file);
+  const options = parseOptions(process.argv.slice(2));
+  const result = run({ apply: options.apply, report: options.report });
+  console.log(`${options.apply ? "已套用" : "預覽"}：${result.changes.length} 頁`);
+  for (const change of result.changes) console.log(change.target);
 }

@@ -1,8 +1,13 @@
 import fs from "node:fs";
 import path from "node:path";
-import { ROOT, frontmatter } from "../core/ingest-publication-utils.mjs";
+import {
+  ROOT, applyCandidateBatch, candidateChange, frontmatter, parseOptions, planCandidateBatch,
+} from "../core/ingest-publication-utils.mjs";
+import { lintWiki } from "../core/wiki-lint.mjs";
 
 const publicationId = "EBER2025";
+const options = parseOptions(process.argv.slice(2));
+if (options.apply && !options.report) throw new Error("套用 Wiki 變更必須指定 --report reports/<plan>.json，以保留可追溯報告。");
 const publication = {
   ruleset: "2024",
   content_scope: "expansion",
@@ -22,10 +27,17 @@ const items = [
   ["戒指", "法力恢復戒指", "Spell-Refueling Ring", "非普通", "需要（施法者）", "恢復法術位", "著裝期間，以一個附贈動作恢復一枚已消耗、至多三環的法術位。", "使用後直到下個黎明無法再次使用。"],
   ["武器", "眩目武器", "Dazzling Weapon", "珍稀", "需要", "眩目反擊", "以此武器進行攻擊的攻擊檢定與傷害擲骰有 +1 加值。以附贈動作令其發出 30 呎明亮光照與額外 30 呎微光，或熄滅光照。武器有 4 充能；被攻擊命中後，可用反應消耗 1 充能，迫使攻擊者進行 DC 15 體質豁免，失敗則目盲至其下個回合結束。", "每日黎明恢復 1d4 已消耗的充能。"],
 ];
+const pending = [];
+const staged = new Map();
 
 function write(file, content) {
-  fs.mkdirSync(path.dirname(file), { recursive: true });
-  fs.writeFileSync(file, content, "utf8");
+  const before = fs.existsSync(file) ? fs.readFileSync(file, "utf8") : null;
+  if (before === content || staged.get(file) === content) return;
+  staged.set(file, content);
+  const change = candidateChange({ destination: file, before, after: content, operation: before === null ? "create" : "update", source, locator: path.relative(ROOT, file) });
+  const index = pending.findIndex((item) => item.target === change.target);
+  if (index >= 0) pending[index] = change;
+  else pending.push(change);
 }
 
 function insertSection(file, heading, content) {
@@ -52,3 +64,17 @@ for (const [folder, links] of grouped) {
 }
 
 console.log(`完成：${items.length} 件魔法物品。`);
+
+const plan = planCandidateBatch(pending, { root: ROOT, lint: lintWiki });
+if (options.report) {
+  const reportPath = path.resolve(ROOT, options.report);
+  if (!reportPath.startsWith(`${path.join(ROOT, "reports")}${path.sep}`)) throw new Error("報告只能輸出至 reports/。");
+  fs.mkdirSync(path.dirname(reportPath), { recursive: true });
+  fs.writeFileSync(reportPath, `${JSON.stringify(plan, null, 2)}\n`, "utf8");
+}
+if (options.apply) {
+  const result = applyCandidateBatch(plan, { root: ROOT, lint: lintWiki });
+  console.log(`已套用 EBER2025 魔法物品：${result.applied.length} 個候選變更。`);
+} else {
+  console.log(`預覽 EBER2025 魔法物品：${plan.changes.length} 個候選變更；加入 --apply 才會寫入。`);
+}

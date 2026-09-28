@@ -2,8 +2,8 @@ import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
 import YAML from "yaml";
+import { ROOT, reportTargetPath } from "../core/ingest-publication-utils.mjs";
 
-const ROOT = process.cwd();
 const args = process.argv.slice(2);
 
 function option(name) {
@@ -17,11 +17,12 @@ if (!publication || !reportArg) {
   console.error("Usage: node scripts/audit/preview-mirror-image-wiki-candidates.mjs --publication <ID> --report <path>");
   process.exit(1);
 }
+if (!/^[A-Za-z0-9_-]+$/.test(publication)) throw new Error("出版品 ID 格式錯誤。");
 
 const mirrorRoot = path.join(ROOT, "原始資料", "外部來源鏡像", publication);
 const manifest = YAML.parse(fs.readFileSync(path.join(mirrorRoot, "manifest.yml"), "utf8"));
 const snapshot = JSON.parse(fs.readFileSync(path.join(mirrorRoot, path.basename(manifest.snapshot.file)), "utf8"));
-const reportPath = path.resolve(ROOT, reportArg);
+const reportPath = reportTargetPath(reportArg);
 
 function escapeCell(value) {
   return String(value ?? "").replaceAll("|", "\\|").replaceAll("\n", "<br>");

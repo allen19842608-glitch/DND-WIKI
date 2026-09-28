@@ -1,14 +1,16 @@
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
-import { frontmatter, loadPublication, option as publicationOption } from "../core/ingest-publication-utils.mjs";
+import { ROOT, applyCandidateBatch, candidateChange, frontmatter, loadPublication, parseOptions, planCandidateBatch } from "../core/ingest-publication-utils.mjs";
+import { lintWiki } from "../core/wiki-lint.mjs";
 
-const root = process.cwd();
+const root = ROOT;
 const sourceRoot = path.join(root, "原始資料", "怪物圖鑑2025", "附錄B");
 const wikiRoot = path.join(root, "wiki", "怪物");
-const apply = process.argv.includes("--apply");
+const options = parseOptions();
+if (options.apply && !options.report) throw new Error("套用 Wiki 變更必須指定 --report reports/<plan>.json，以保留可追溯報告。");
 const updated = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Taipei" }).format(new Date());
-const publicationId = publicationOption(process.argv.slice(2), "--publication") ?? "MM2025";
+const publicationId = process.argv.includes("--publication") ? options.publicationId : "MM2025";
 const publication = loadPublication(publicationId);
 
 if (!fs.existsSync(sourceRoot)) throw new Error("找不到原始資料/怪物圖鑑2025/附錄B。");
@@ -72,5 +74,22 @@ const outputs = [
 ];
 console.log(`怪物資料卡連結：${monsterLinks.length}`);
 console.log(`附錄 B 頁面：${outputs.length}`);
-for (const output of outputs) console.log(`${apply ? "寫入" : "預覽"}：${path.relative(root, output.target)}`);
-if (apply) for (const output of outputs) fs.writeFileSync(output.target, output.content);
+const pending = outputs.map((output) => {
+  const before = fs.existsSync(output.target) ? fs.readFileSync(output.target, "utf8") : null;
+  return candidateChange({ destination: output.target, before, after: output.content, operation: before === null ? "create" : "update", source: "怪物圖鑑2025附錄B", locator: path.basename(output.target) });
+}).filter((change) => {
+  const only = String(options.only ?? "").normalize("NFKC").toLowerCase();
+  return (!only || change.target.normalize("NFKC").toLowerCase().includes(only)) && (options.replace || change.before === null);
+});
+for (const output of pending) console.log(`預覽：${output.target}`);
+const plan = planCandidateBatch(pending, { root: ROOT, lint: lintWiki });
+if (options.report) {
+  const reportPath = path.resolve(ROOT, options.report);
+  fs.mkdirSync(path.dirname(reportPath), { recursive: true });
+  fs.writeFileSync(reportPath, `${JSON.stringify({ ...plan, publication_id: publicationId, category: "monster-appendices" }, null, 2)}\n`, "utf8");
+  console.log(`報告：${path.relative(ROOT, reportPath).split(path.sep).join("/")}`);
+}
+if (options.apply) {
+  const result = applyCandidateBatch(plan, { root: ROOT, lint: lintWiki });
+  console.log(`已套用怪物附錄：${result.applied.length} 個候選變更。`);
+}

@@ -4,10 +4,11 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { nonEntityReason, parseBilingualTitle } from "../scripts/ingest/ingest-lore.mjs";
-import { sourceFragment } from "../scripts/migrate/restore-lore-source-text.mjs";
+import { sourceFragment } from "../scripts/core/source-fragment.mjs";
 import {
   deriveSourceType,
   collectLintTargets,
+  changedWikiFiles,
   extractFrontmatter,
   lintWiki,
   parseWikiLink,
@@ -17,6 +18,16 @@ import {
   validateMagicItemStructure,
   validateSpellTargetArea,
 } from "../scripts/core/wiki-lint.mjs";
+
+test("增量 lint 將 Git 刪除頁列入範圍", () => {
+  const requests = [];
+  const files = changedWikiFiles({ git: (args) => {
+    requests.push(args);
+    return args[0] === "diff" && args.includes("HEAD") ? ["wiki/法術/已刪除.md", "原始資料/無關.md"] : [];
+  } });
+  assert.deepEqual(files, ["wiki/法術/已刪除.md"]);
+  assert.ok(requests.some((args) => args.includes("--diff-filter=ACMRD") && args.includes("HEAD")));
+});
 import { parseTargetAreaExceptions, planSpellTargetArea, preserveSpellFieldsForImport, splitCombinedTargetArea, validateSpellField } from "../scripts/core/spell-target-area.mjs";
 import { normalizeMirrorCitations } from "../scripts/audit/audit-mirror-citations.mjs";
 import { buildHealthReport, isSourcePlaceholder, publicationFor, sourcePriority } from "../scripts/audit/audit-wiki-health.mjs";
@@ -482,6 +493,35 @@ test("單檔專長來源可要求頂層先決條件，避免將子特性誤判�
     "目標受到額外傷害。",
   ], { directFeatFile: true, requirePrerequisiteHeading: true });
   assert.deepEqual(headings, [{ index: 0, chinese: "巨人打擊", english: "Strike of the Giants" }]);
+});
+
+test("單檔龍類專長來源不將分類標題誤判為第四項專長", () => {
+  const headings = collectFeatHeadings([
+    "**龍類專長 Draconic Feats**",
+    "**色彩龍賦禮 Gift of the Chromatic Dragon**",
+    "**寶石龍賦禮 Gift of the Gem Dragon**",
+    "**金屬龍賦禮 Gift of the Metallic Dragon**",
+  ], { directFeatFile: true });
+  assert.deepEqual(headings.map(({ chinese, english }) => ({ chinese, english })), [
+    { chinese: "色彩龍賦禮", english: "Gift of the Chromatic Dragon" },
+    { chinese: "寶石龍賦禮", english: "Gift of the Gem Dragon" },
+    { chinese: "金屬龍賦禮", english: "Gift of the Metallic Dragon" },
+  ]);
+});
+
+test("逐章專長來源只認專長分類標記，不把效果段落當成獨立專長", () => {
+  const headings = collectFeatHeadings([
+    "**高等異種龍紋 Greater Aberrant Mark**",
+    "_通用專長（先決：等級4+）_",
+    "**直覺銳化 Improved Intuition。**",
+    "當你使用本專長的增益時，投擲1d6。",
+    "**異種龍紋 Aberrant Dragonmark**",
+    "_龍紋專長（先決：艾伯倫戰役）_",
+  ]);
+  assert.deepEqual(headings, [
+    { index: 0, chinese: "高等異種龍紋", english: "Greater Aberrant Mark" },
+    { index: 4, chinese: "異種龍紋", english: "Aberrant Dragonmark" },
+  ]);
 });
 
 test("lint 可在指定範圍驗證記憶體候選內容", () => {

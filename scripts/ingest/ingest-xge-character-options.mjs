@@ -1,10 +1,15 @@
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
-import { ROOT, loadIngestProfile, loadPublication, today } from "../core/ingest-publication-utils.mjs";
+import {
+  ROOT, applyCandidateBatch, candidateChange, loadIngestProfile, loadPublication, parseOptions, planCandidateBatch, today,
+} from "../core/ingest-publication-utils.mjs";
+import { lintWiki } from "../core/wiki-lint.mjs";
 
 const publicationId = "XGE2017";
 const publication = loadPublication(publicationId);
+const options = parseOptions(process.argv.slice(2));
+if (options.apply && !options.report) throw new Error("套用 Wiki 變更必須指定 --report reports/<plan>.json，以保留可追溯報告。");
 const profile = loadIngestProfile(publicationId);
 const sourceRoot = path.join(ROOT, profile.source_root, profile.inputs.character_options);
 const outputRoot = path.join(ROOT, profile.outputs.classes);
@@ -13,6 +18,8 @@ const sourcePdf = `${sourceBook}/Xanathars_Guide_to_Everything.pdf`;
 const converterRoot = process.env.XGE_OPENCC_PATH ?? "C:\\Users\\Owner\\AppData\\Local\\Temp\\dnd-wiki-xge-opencc";
 const python = process.env.XGE_PYTHON ?? "C:\\Users\\Owner\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe";
 const openccProgram = "import sys;sys.path.insert(0,sys.argv[1]);from opencc import OpenCC;sys.stdout.write(OpenCC('s2twp').convert(sys.stdin.read()))";
+const pending = [];
+const staged = new Map();
 
 const classes = new Map([
   ["野蠻人", ["野蠻人", "Barbarian"]], ["吟遊詩人", ["吟遊詩人", "Bard"]],
@@ -42,6 +49,16 @@ function sourceOf(file) { return path.relative(ROOT, file).split(path.sep).join(
 function escaped(value) { return String(value).replaceAll('"', '\\"'); }
 function safeName(value) { return value.replace(/[\\/:*?"<>|]/g, "-").replace(/\s+/g, " ").trim(); }
 function englishName(value) { return value.replace(/^The\s+/i, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""); }
+function queueWrite(destination, content, locator) {
+  const before = fs.existsSync(destination) ? fs.readFileSync(destination, "utf8") : null;
+  if (before === content || staged.get(destination) === content) return;
+  staged.set(destination, content);
+  const change = candidateChange({ destination, before, after: content, operation: before === null ? "create" : "update", source: sourceBook, locator });
+  const index = pending.findIndex((item) => item.target === change.target);
+  if (index >= 0) pending[index] = change;
+  else pending.push(change);
+}
+function readWorking(file) { return staged.has(file) ? staged.get(file) : fs.readFileSync(file, "utf8"); }
 
 function titleFrom(text, fallback) {
   const lines = text.split(/\r?\n/);
@@ -226,10 +243,10 @@ function currentCounterpart(parent, english) {
 function addCurrentBacklink(counterpart, legacy) {
   if (!counterpart) return;
   const link = `[[職業/2014/${legacy.parent}/${legacy.name}|${legacy.title}]]`;
-  let text = fs.readFileSync(counterpart.path, "utf8");
+  let text = readWorking(counterpart.path);
   if (text.includes(link)) return;
   text = text.replace(/(## 🔗 相關連結\r?\n\r?\n)/, `$1- ${link}\n`);
-  fs.writeFileSync(counterpart.path, text, "utf8");
+  queueWrite(counterpart.path, text, "現行子職反向連結");
 }
 
 function frontmatter({ title, concept, source, locator, tag }) {
@@ -302,9 +319,8 @@ for (const [rawParent, [parent, parentEnglish]] of classes) {
     const currentLink = current ? `\n> [!WARNING] 本條目為 2014 舊版規則；2024 新版請參閱 [[職業/${parent}/${current.name}|${current.title}]]。\n` : "\n> [!WARNING] 本條目為 2014 舊版規則。\n";
     const principles = preFeatureSections(lines, name, tableStart);
     const content = `${frontmatter({ title, concept: name.english, source, locator: `L1 標題；${name.chinese}`, tag: { parent } }).replace(`Chapter 1: Character Options；${title}`, `Chapter 1: Character Options；${name.english}`)}\n\n# ${title}\n${currentLink}\n**子職定位**：${subclassDescription(lines, name, tableStart)}\n\n## ⚙️ 規則條文 (Rule Text)\n\n### 子職特性表\n\n| 職業等級 | 子職特性 |\n| :--: | :--- |\n${tableRows}${principles ? `\n\n${principles}` : ""}\n\n### 子職特性詳解\n\n${details || "依可定位來源補齊。"}\n\n## 🔗 相關連結\n\n- [[職業/2014/${parent}/${parent}子職索引|${parent}子職索引 (2014 Legacy)]]\n- [[職業/${parent}|${parent} (${parentEnglish})]]\n${current ? `- [[職業/${parent}/${current.name}|${current.title}]]\n` : ""}`;
-    fs.mkdirSync(outputDirectory, { recursive: true });
     const destination = path.join(outputDirectory, `${safeName(name.chinese)}.md`);
-    fs.writeFileSync(destination, content, "utf8");
+    queueWrite(destination, content, `L1 標題；${name.chinese}`);
     entries.push({ name, title, file: safeName(name.chinese) });
     terms.push({ ...name, source });
     addCurrentBacklink(current, { parent, name: safeName(name.chinese), title });
@@ -314,14 +330,13 @@ for (const [rawParent, [parent, parentEnglish]] of classes) {
   entries.sort((a, b) => a.name.chinese.localeCompare(b.name.chinese, "zh-Hant"));
   const indexSource = sourceOf(path.join(sourceRoot, `${rawParent}.md`));
   const index = `---\ntitle: "${parent}子職索引 (2014 Legacy)"\nentity_id: "entry:${publicationId}:subclass-index:${englishName(parentEnglish)}"\nconcept_id: "concept:subclass-index:${englishName(parentEnglish)}-2014"\nruleset: "2014"\ncontent_scope: "expansion"\nstatus: "legacy"\ncategory: "職業"\nversion: "2014-Legacy"\ntags:\n  - "${publication.wiki.tag}"\n  - "職業_索引"\nsources:\n  - file: "${indexSource}"\n    locator: "L1 標題：${rawParent}"\n    authority: "官方"\n    translation: "community"\n  - file: "${sourcePdf}"\n    locator: "Chapter 1: Character Options；${parentEnglish}"\n    authority: "官方"\n    translation: "none"\nsource_type: "official"\nconfidence: "interpreted"\nrules_sources:\n  - "${publication.canonical_rules_source}"\nerrata: []\nupdated: "${today()}"\n---\n\n# ${parent}子職索引 (2014 Legacy)\n\n> 收錄《${publication.title_zh}》的 ${parent} 2014 子職；此索引不取代現行 2024 職業頁。\n\n${entries.map((item) => `- [[${item.file}|${item.title}]]`).join("\n")}\n\n## 🔗 相關連結\n\n- [[職業/2014/職業索引|職業索引 (2014 Legacy)]]\n- [[職業/${parent}|${parent} (${parentEnglish})]]\n`;
-  fs.writeFileSync(path.join(outputDirectory, `${parent}子職索引.md`), index, "utf8");
+  queueWrite(path.join(outputDirectory, `${parent}子職索引.md`), index, `L1 標題：${rawParent}`);
   byParent.set(parent, { parentEnglish, entries });
 }
 
 const rootEntries = [...byParent.entries()].map(([parent, data]) => `- [[職業/2014/${parent}/${parent}子職索引|${parent}子職索引 (${data.parentEnglish}，2014 Legacy)]]`).join("\n");
 const rootIndex = `---\ntitle: "職業索引 (2014 Legacy)"\nentity_id: "entry:${publicationId}:class-index:2014"\nconcept_id: "concept:class-index:2014"\nruleset: "2014"\ncontent_scope: "expansion"\nstatus: "legacy"\ncategory: "職業"\nversion: "2014-Legacy"\ntags:\n  - "${publication.wiki.tag}"\n  - "職業_索引"\nsources:\n  - file: "${sourceBook}/角色選項/構建角色生平.md"\n    locator: "L1 標題：構建角色生平；角色選項章節"\n    authority: "官方"\n    translation: "community"\n  - file: "${sourcePdf}"\n    locator: "Chapter 1: Character Options"\n    authority: "官方"\n    translation: "none"\nsource_type: "official"\nconfidence: "interpreted"\nrules_sources:\n  - "${publication.canonical_rules_source}"\nerrata: []\nupdated: "${today()}"\n---\n\n# 職業索引 (2014 Legacy)\n\n> 收錄《${publication.title_zh}》的 2014 子職選項；現行角色規則以 2024 核心規則與其適用擴充為準。\n\n${rootEntries}\n\n## 🔗 相關連結\n\n- [[職業索引|職業索引 (Classes Index)]]\n`;
-fs.mkdirSync(outputRoot, { recursive: true });
-fs.writeFileSync(path.join(outputRoot, "職業索引.md"), rootIndex, "utf8");
+queueWrite(path.join(outputRoot, "職業索引.md"), rootIndex, "Chapter 1: Character Options");
 
 const glossaryPath = path.join(ROOT, "附件", "翻譯詞彙表.md");
 let glossary = fs.readFileSync(glossaryPath, "utf8");
@@ -330,6 +345,20 @@ const additions = [...new Map(terms.map((term) => [term.english, term])).values(
 const heading = "## 艾伯倫戰役設定";
 const xgeSection = `## 珊娜薩的萬事指南\n\n| 英文 | 本 Wiki 標準譯名 | 來源 ID | 定位 | 狀態 |\n| :--- | :--- | :--- | :--- | :--- |\n${additions.join("\n")}\n\n`;
 glossary = glossary.replace(/## 珊娜薩的萬事指南[\s\S]*?(?=## 艾伯倫戰役設定)/, "").replace(heading, `${xgeSection}${heading}`);
-fs.writeFileSync(glossaryPath, glossary, "utf8");
+queueWrite(glossaryPath, glossary, "珊娜薩的萬事指南譯名表");
 
 console.log(`完成：${[...byParent.values()].reduce((sum, value) => sum + value.entries.length, 0)} 個 XGE 2014 子職，新增 ${additions.length} 個詞彙。`);
+
+const plan = planCandidateBatch(pending, { root: ROOT, lint: lintWiki });
+if (options.report) {
+  const reportPath = path.resolve(ROOT, options.report);
+  if (!reportPath.startsWith(`${path.join(ROOT, "reports")}${path.sep}`)) throw new Error("報告只能輸出至 reports/。");
+  fs.mkdirSync(path.dirname(reportPath), { recursive: true });
+  fs.writeFileSync(reportPath, `${JSON.stringify(plan, null, 2)}\n`, "utf8");
+}
+if (options.apply) {
+  const result = applyCandidateBatch(plan, { root: ROOT, lint: lintWiki });
+  console.log(`已套用 XGE 子職：${result.applied.length} 個候選變更。`);
+} else {
+  console.log(`預覽 XGE 子職：${plan.changes.length} 個候選變更；加入 --apply 才會寫入。`);
+}

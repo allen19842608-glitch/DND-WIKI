@@ -1,10 +1,15 @@
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
-import { ROOT, loadIngestProfile, loadPublication, today } from "../core/ingest-publication-utils.mjs";
+import {
+  ROOT, applyCandidateBatch, candidateChange, loadIngestProfile, loadPublication, parseOptions, planCandidateBatch, today,
+} from "../core/ingest-publication-utils.mjs";
+import { lintWiki } from "../core/wiki-lint.mjs";
 
 const publicationId = "XGE2017";
 const publication = loadPublication(publicationId);
+const options = parseOptions(process.argv.slice(2));
+if (options.apply && !options.report) throw new Error("套用 Wiki 變更必須指定 --report reports/<plan>.json，以保留可追溯報告。");
 const profile = loadIngestProfile(publicationId);
 const inputRoot = path.join(ROOT, profile.source_root, profile.inputs.spells);
 const outputRoot = path.join(ROOT, profile.outputs.spells);
@@ -22,6 +27,8 @@ const classNames = new Map([
   ["術士", ["術士", "Sorcerer"]], ["魔契師", ["契術師", "Warlock"]], ["邪術師", ["契術師", "Warlock"]],
   ["契術師", ["契術師", "Warlock"]], ["法師", ["法師", "Wizard"]], ["奇械師", ["奇械師", "Artificer"]],
 ]);
+const pending = [];
+const staged = new Map();
 
 function traditional(text) {
   if (!fs.existsSync(converterRoot)) throw new Error(`找不到 OpenCC：${converterRoot}。請設定 XGE_OPENCC_PATH。`);
@@ -39,6 +46,16 @@ function quote(value) { return String(value).replaceAll("\\", "\\\\").replaceAll
 function safeName(value) { return value.replace(/[\\/:*?"<>|]/g, "-").replace(/\s+/g, " ").trim(); }
 function slug(value) { return value.toLowerCase().replace(/^the\s+/i, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""); }
 function relative(file) { return path.relative(ROOT, file).split(path.sep).join("/"); }
+function queueWrite(destination, content, locator) {
+  const before = fs.existsSync(destination) ? fs.readFileSync(destination, "utf8") : null;
+  if (before === content || staged.get(destination) === content) return;
+  staged.set(destination, content);
+  const change = candidateChange({ destination, before, after: content, operation: before === null ? "create" : "update", source: sourceBook, locator });
+  const index = pending.findIndex((item) => item.target === change.target);
+  if (index >= 0) pending[index] = change;
+  else pending.push(change);
+}
+function readWorking(file) { return staged.has(file) ? staged.get(file) : fs.readFileSync(file, "utf8"); }
 
 function ringForFile(file) {
   if (file === "戲法.md") return { number: 0, name: "戲法", directory: "戲法" };
@@ -98,10 +115,10 @@ function currentCounterpart(english) {
 }
 function addBacklink(current, legacyLink) {
   if (!current) return;
-  let content = fs.readFileSync(current, "utf8");
+  let content = readWorking(current);
   if (content.includes(legacyLink)) return;
   content = content.replace(/(## 🔗 相關連結\r?\n)/, `$1\n- ${legacyLink}\n`);
-  fs.writeFileSync(current, content, "utf8");
+  queueWrite(current, content, "現行法術反向連結");
 }
 function frontmatter({ title, english, source, locator, ring }) {
   return [
@@ -189,8 +206,7 @@ for (const entry of fs.readdirSync(inputRoot).filter((name) => ringForFile(name)
       ...(check ? ["- [[法術攻擊與豁免|法術攻擊與豁免 (Spell Attacks and Saving Throws)]]"] : []),
       ...(currentLink ? ["", `> 同名 2024 條目：${currentLink}。兩版本是否機制相同，須逐條比對後才另行註記。`] : []), "",
     ].join("\n");
-    fs.mkdirSync(path.dirname(destination), { recursive: true });
-    fs.writeFileSync(destination, content, "utf8");
+    queueWrite(destination, content, `#### ${spell.chinese}｜${spell.english}`);
     addBacklink(current, legacyLink);
     entries.push({ ...spell, file: safeName(spell.chinese) });
     terms.push({ ...spell, source });
@@ -201,28 +217,28 @@ for (const entry of fs.readdirSync(inputRoot).filter((name) => ringForFile(name)
 const indexSections = [...byRing.values()].sort((a, b) => a.ring.number - b.ring.number).map(({ ring, entries }) =>
   `## ${ring.name}（${entries.length} 道）\n\n${entries.map((spell) => `- [[法術/2014/${ring.directory}/${spell.file}|${spell.chinese} (${spell.english})]]`).join("\n")}`).join("\n\n");
 const index = `---\ntitle: "珊娜薩法術索引 (XGE 2014 Legacy)"\nentity_id: "entry:${publicationId}:spell-index:xge"\nconcept_id: "concept:spell-index:xge-2014"\nruleset: "2014"\ncontent_scope: "expansion"\nstatus: "legacy"\ncategory: "法術"\nversion: "2014-Legacy"\ntags:\n  - "${publication.wiki.tag}"\n  - "法術_索引"\nsources:\n  - file: "${sourceBook}/法術/法術列表.md"\n    locator: "法術詳述 0–9 環"\n    authority: "官方"\n    translation: "community"\n  - file: "${sourcePdf}"\n    locator: "Chapter 3: Spells"\n    authority: "官方"\n    translation: "none"\nsource_type: "official"\nconfidence: "interpreted"\nrules_sources:\n  - "${publication.canonical_rules_source}"\nerrata: []\nupdated: "${today()}"\n---\n\n# 珊娜薩法術索引 (XGE 2014 Legacy)\n\n> 收錄《${publication.title_zh}》新增的 95 道 2014 法術；不與《玩家手冊 2014》法術索引混寫。\n\n${indexSections}\n\n## 🔗 相關連結\n\n- [[法術/2014/法術索引|2014 法術索引 (2014 Spells Index)]]\n- [[法術索引|法術索引 (Spells Index)]]\n`;
-fs.writeFileSync(path.join(outputRoot, "珊娜薩法術索引.md"), index, "utf8");
+queueWrite(path.join(outputRoot, "珊娜薩法術索引.md"), index, "法術詳述 0–9 環");
 for (const { ring, entries } of byRing.values()) {
   const indexName = ring.number === 0 ? "戲法法術索引" : `${ring.name}法術索引`;
   const ringIndexPath = path.join(outputRoot, ring.directory, `${indexName}.md`);
   if (!fs.existsSync(ringIndexPath)) continue;
-  let ringIndex = fs.readFileSync(ringIndexPath, "utf8");
+  let ringIndex = readWorking(ringIndexPath);
   const additions = entries
     .filter((spell) => !ringIndex.includes(`/${spell.file}|`))
     .map((spell) => `- [[法術/2014/${ring.directory}/${spell.file}|${spell.chinese} (${spell.english}，2014 Legacy)]]`)
     .join("\n");
   if (additions) {
     ringIndex = ringIndex.replace(/\n## 🔗 相關連結/, `\n${additions}\n\n## 🔗 相關連結`);
-    fs.writeFileSync(ringIndexPath, ringIndex, "utf8");
+    queueWrite(ringIndexPath, ringIndex, `${ring.name}法術索引`);
   }
 }
 const legacyIndexPath = path.join(outputRoot, "法術索引.md");
 const xgeIndexLink = "[[法術/2014/珊娜薩法術索引|珊娜薩法術索引 (XGE 2014 Legacy)]]";
 if (fs.existsSync(legacyIndexPath)) {
-  let legacyIndex = fs.readFileSync(legacyIndexPath, "utf8");
+  let legacyIndex = readWorking(legacyIndexPath);
   if (!legacyIndex.includes(xgeIndexLink)) {
     legacyIndex = legacyIndex.replace(/(## 🔗 相關連結\r?\n)/, `$1\n- ${xgeIndexLink}\n`);
-    fs.writeFileSync(legacyIndexPath, legacyIndex, "utf8");
+    queueWrite(legacyIndexPath, legacyIndex, "2014 法術索引");
   }
 }
 
@@ -232,6 +248,20 @@ const additions = [...new Map(terms.map((term) => [term.english, term])).values(
   .map((term) => `| ${term.english} | ${term.chinese} | XGE2017 | 簡轉繁；${term.source.replace(`${sourceBook}/`, "")}；#### ${term.chinese}｜${term.english} | approved |`);
 const section = `## 珊娜薩的萬事指南\n\n| 英文 | 本 Wiki 標準譯名 | 來源 ID | 定位 | 狀態 |\n| :--- | :--- | :--- | :--- | :--- |\n${additions.join("\n")}\n\n`;
 glossary = glossary.replace(/## 珊娜薩的萬事指南[\s\S]*?(?=## 艾伯倫戰役設定)/, "").replace("## 艾伯倫戰役設定", `${section}## 艾伯倫戰役設定`);
-fs.writeFileSync(glossaryPath, glossary, "utf8");
+queueWrite(glossaryPath, glossary, "珊娜薩的萬事指南譯名表");
 
 console.log(`完成：${terms.length} 道 XGE 2014 法術。`);
+
+const plan = planCandidateBatch(pending, { root: ROOT, lint: lintWiki });
+if (options.report) {
+  const reportPath = path.resolve(ROOT, options.report);
+  if (!reportPath.startsWith(`${path.join(ROOT, "reports")}${path.sep}`)) throw new Error("報告只能輸出至 reports/。");
+  fs.mkdirSync(path.dirname(reportPath), { recursive: true });
+  fs.writeFileSync(reportPath, `${JSON.stringify(plan, null, 2)}\n`, "utf8");
+}
+if (options.apply) {
+  const result = applyCandidateBatch(plan, { root: ROOT, lint: lintWiki });
+  console.log(`已套用 XGE 法術：${result.applied.length} 個候選變更。`);
+} else {
+  console.log(`預覽 XGE 法術：${plan.changes.length} 個候選變更；加入 --apply 才會寫入。`);
+}

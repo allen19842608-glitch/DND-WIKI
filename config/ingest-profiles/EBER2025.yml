@@ -8,6 +8,9 @@ canonical_mirror:
   url: "https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/book/book-efa.json"
   output_root: "原始資料/外部來源鏡像/EBER2025"
   datasets:
+    - file: "原始資料/外部來源鏡像/PHB2024/datasets/feats.json"
+      url: "https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/feats.json"
+      locator_prefix: "feat:"
     - file: "原始資料/外部來源鏡像/EBER2025/datasets/spells-efa.json"
       url: "https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/spells/spells-efa.json"
       locator_prefix: "spell:"
@@ -29,9 +32,25 @@ outputs:
   settings: "wiki/戰役設定/艾伯倫"
 inputs:
   classes: "第一章"
+  class_sources:
+    layout: "flat"
+    parent:
+      file: "奇械師.md"
+      chinese: "奇械師"
+      english: "Artificer"
+    subclasses:
+      - { file: "煉金師.md", chinese: "煉金師", english: "Alchemist" }
+      - { file: "裝甲師.md", chinese: "裝甲師", english: "Armorer" }
+      - { file: "魔炮師.md", chinese: "魔炮師", english: "Artillerist" }
+      - { file: "戰地匠師.md", chinese: "戰地匠師", english: "Battle Smith" }
+      - { file: "製圖師.md", chinese: "製圖師", english: "Cartographer" }
   species: "第二章"
   backgrounds: "第二章/背景"
   feats: "第二章"
+  feat_sources:
+    - { file: "通用專長.md", directory: "通用專長", tag: "專長_通用" }
+    - { file: "龍紋專長.md", directory: "龍紋專長", tag: "專長_起源" }
+    - { file: "傳奇恩惠.md", directory: "史詩恩賜專長", tag: "專長_史詩恩賜" }
   spells: "第一章/法術.md"
   lore:
     include:

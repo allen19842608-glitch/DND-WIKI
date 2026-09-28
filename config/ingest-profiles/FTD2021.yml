@@ -2,6 +2,11 @@ publication_id: "FTD2021"
 source_root: "原始資料/費資本的巨龍寶庫"
 setting: "多元宇宙"
 ruleset: "2014"
+character_options:
+  - "subclasses"
+  - "species"
+  - "feats"
+  - "spells"
 canonical_mirror:
   provider: "5e.tools"
   book_id: "ftd"
@@ -14,12 +19,46 @@ canonical_mirror:
 outputs:
   classes: "wiki/職業/2014"
   spells: "wiki/法術/2014"
+  monsters: "wiki/怪物/2014"
   feats: "wiki/專長/2014"
   species: "wiki/種族/2014"
   magic_items: "wiki/魔法物品/2014"
 inputs:
   player_options: "玩家選項"
+  classes: "玩家選項"
   spells: "巨龍魔法/法術.md"
+  monsters: "怪物圖鑑"
+  # 這組怪物 Markdown 為繁體字形；不沿用來源目錄層級的簡體標記。
+  monsters_language: "zh-Hant"
+  feats_file: "玩家選項/龍類專長.md"
+  feats_language: "zh-Hant"
+  flat_player_options:
+    subclasses:
+      - file: "武僧-神龍宗.md"
+        chinese: "神龍宗"
+        english: "Way of the Ascendant Dragon"
+        source_english: "Way of the Ascendant Dragon"
+        parent_class: "武僧"
+        parent_english: "Monk"
+      - file: "遊俠-龍獸守衛.md"
+        chinese: "龍獸守衛"
+        english: "Drakewarden"
+        source_english: "Drakewarden"
+        parent_class: "遊俠"
+        parent_english: "Ranger"
+    species:
+      - file: "色彩龍裔.md"
+        chinese: "色彩龍裔"
+        english: "Dragonborn (Chromatic)"
+        source_english: "Chromatic Dragonborn"
+      - file: "寶石龍裔.md"
+        chinese: "寶石龍裔"
+        english: "Dragonborn (Gem)"
+        source_english: "Gem Dragonborn"
+      - file: "金屬龍裔.md"
+        chinese: "金屬龍裔"
+        english: "Dragonborn (Metallic)"
+        source_english: "Metallic Dragonborn"
   magic_items: "巨龍魔法"
   lore:
     include:
@@ -32,3 +71,7 @@ inputs:
       - "遊戲中龍/定製龍類.md"
       - "遊戲中龍/扮演龍類.md"
       - "遊戲中龍/龍之冒險.md"
+parsers:
+  種族:
+    candidate_ready: false
+    incomplete_reason: "三份龍裔變體的平鋪特質已逐項盤點；金屬龍裔另有無粗體標記的特質，且英文鏡像缺各實體自身頁碼，共用種族解析器尚不能安全生成完整候選。"

@@ -4,6 +4,7 @@ import path from "node:path";
 import { ROOT, frontmatter, loadIngestProfile, loadPublication, parseOptions, writableCandidate } from "../core/ingest-publication-utils.mjs";
 
 const options = parseOptions(); const publicationId = options.publicationId ?? "TCE2020";
+if (options.apply) throw new Error("舊 TCE 城主工具匯入已退役，不再直接複製附件或寫入 Wiki；請使用 wiki:preview 產生候選。");
 const publication = loadPublication(publicationId); const profile = loadIngestProfile(publicationId);
 const sourceRoot = path.join(ROOT, profile.source_root, profile.inputs.dungeon_master_tools);
 const outputRoot = path.join(ROOT, profile.outputs.rules);

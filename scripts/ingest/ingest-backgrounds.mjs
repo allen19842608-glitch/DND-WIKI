@@ -3,9 +3,12 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import YAML from "yaml";
 import {
-  ROOT, defaultSource, loadIngestProfile, loadPublication, parseOptions, quote, slug, today,
+  ROOT, defaultSource, loadIngestProfile, loadPublication, parseOptions, planCandidateBatch, quote, slug, today,
   versionForPublication, walkMarkdown, writableCandidate, writeIngestReport,
 } from "../core/ingest-publication-utils.mjs";
+import { withIndexEffects } from "../core/index-candidates.mjs";
+import { mirrorEntityPage } from "../core/mirror-entity-page.mjs";
+import { lintWiki } from "../core/wiki-lint.mjs";
 
 function stripMarkup(value) {
   return String(value ?? "").replace(/\*\*/g, "").replace(/^\s*[-*]\s*/, "").trim();
@@ -73,49 +76,26 @@ function existingBackgrounds(outputRoot) {
   return result;
 }
 
-function mirrorBackgroundNames(publicationId) {
-  const manifestPath = path.join(ROOT, "原始資料", "外部來源鏡像", publicationId, "manifest.yml");
-  if (!fs.existsSync(manifestPath)) return new Map();
+function mirrorBackgroundNames(profile, publicationId) {
+  const rawRoot = `${path.resolve(ROOT, "原始資料")}${path.sep}`;
+  const mirrorRoot = profile.canonical_mirror?.output_root;
+  const manifestPath = path.resolve(ROOT, mirrorRoot ?? "", "manifest.yml");
+  if (!mirrorRoot || !manifestPath.startsWith(rawRoot) || !fs.existsSync(manifestPath)) return { names: new Map(), files: [] };
   const manifest = YAML.parse(fs.readFileSync(manifestPath, "utf8"));
-  const snapshot = path.join(ROOT, manifest.snapshot?.file ?? "");
-  if (!fs.existsSync(snapshot)) return new Map();
-  const text = fs.readFileSync(snapshot, "utf8");
-  const names = new Set([...text.matchAll(/\{@background\s+([^|}]+)/g)].map((match) => match[1].trim()));
-  const book = JSON.parse(text);
+  const manifestFile = path.relative(ROOT, manifestPath).replaceAll("\\", "/");
+  const snapshot = path.resolve(ROOT, manifest.snapshot?.file ?? "");
+  if (manifest.publication_id !== publicationId || !manifest.snapshot?.file || !snapshot.startsWith(rawRoot) || !fs.existsSync(snapshot)) {
+    return { names: new Map(), files: [manifestFile] };
+  }
+  const book = JSON.parse(fs.readFileSync(snapshot, "utf8"));
+  const names = new Set();
   (function visit(value) {
     if (!value || typeof value !== "object") return;
-    if (value.type === "statblock" && value.tag === "background" && value.name) names.add(value.name);
+    if (value.type === "statblock" && value.tag === "background" && value.source?.toLowerCase() === profile.canonical_mirror.book_id?.toLowerCase() && value.name) names.add(value.name);
     Object.values(value).forEach((child) => Array.isArray(child) ? child.forEach(visit) : visit(child));
   })(book);
-  return new Map([...names].map((name) => [slug(name, name), name]));
-}
-
-function mirrorInfo(publicationId, english) {
-  const manifestPath = path.join(ROOT, "原始資料", "外部來源鏡像", publicationId, "manifest.yml");
-  if (!fs.existsSync(manifestPath)) return undefined;
-  const manifest = YAML.parse(fs.readFileSync(manifestPath, "utf8"));
-  const snapshot = path.join(ROOT, manifest.snapshot?.file ?? "");
-  if (!manifest.snapshot?.file || !fs.existsSync(snapshot)) return undefined;
-  const book = JSON.parse(fs.readFileSync(snapshot, "utf8"));
-  let found;
-  function visit(value, inheritedPage) {
-    if (found || value === null || typeof value !== "object") return;
-    const page = value.page ?? inheritedPage;
-    const serialized = JSON.stringify(value);
-    if (value.name === english && (value.type === "statblock" || value.tag === "background")) found = { page };
-    if (!found && serialized.length < 8000 && new RegExp(`\\{@background\\s+${english.replace(/[.*+?^${}()|[\\]\\]/g, "\\$&")}(?:\\||})`, "i").test(serialized)) found = { page };
-    for (const child of Object.values(value)) {
-      if (Array.isArray(child)) child.forEach((item) => visit(item, page));
-      else visit(child, page);
-    }
-  }
-  visit(book, undefined);
-  if (!found) return undefined;
-  return {
-    file: manifest.snapshot.file.replaceAll("\\", "/"),
-    url: manifest.upstream_url,
-    locator: `${manifest.publication_title}${found.page ? `, p. ${found.page}` : ""}：${english}；5e.tools 鏡像快照`,
-  };
+  return { names: new Map([...names].map((name) => [slug(name, name), name])),
+    files: [manifestFile, path.relative(ROOT, snapshot).replaceAll("\\", "/")] };
 }
 
 export function featReference(feat, outputRoot = path.join(ROOT, "wiki", "專長")) {
@@ -137,8 +117,8 @@ export function featReference(feat, outputRoot = path.join(ROOT, "wiki", "專長
   return { link: `${chinese}${qualifier}（條目待建立或待確認）` };
 }
 
-export function ensureFeatBacklink(reference, backgroundFile, backgroundTitle, options) {
-  if (!reference.file || !options.apply) return;
+export function ensureFeatBacklink(reference, backgroundFile, backgroundTitle, options, { source = null, locator = null, writeCandidate = writableCandidate } = {}) {
+  if (!reference.file) return;
   const target = path.relative(path.join(ROOT, "wiki"), backgroundFile).split(path.sep).join("/").replace(/\.md$/, "");
   const link = `[[${target}|${backgroundTitle}]]`;
   const current = fs.readFileSync(reference.file, "utf8");
@@ -146,8 +126,17 @@ export function ensureFeatBacklink(reference, backgroundFile, backgroundTitle, o
   let updated;
   if (/## 🔗 相關連結\r?\n/.test(current)) updated = current.replace(/(## 🔗 相關連結\r?\n)/, `$1\n- ${link}\n`);
   else updated = `${current.trimEnd()}\n\n## 🔗 相關連結\n\n- ${link}\n`;
-  fs.writeFileSync(reference.file, updated, "utf8");
-  options.results.push({ target: path.relative(ROOT, reference.file).split(path.sep).join("/"), status: "linked", reason: "background_origin_feat_backlink" });
+  const status = writeCandidate({
+    destination: reference.file,
+    content: updated,
+    options: { ...options, replace: true },
+    matchValues: [reference.title ?? "", backgroundTitle],
+    source,
+    locator,
+  });
+  if (status === "preview") {
+    options.results.push({ target: path.relative(ROOT, reference.file).split(path.sep).join("/"), status: "preview", reason: "background_origin_feat_backlink" });
+  }
 }
 
 function rulesBlock(data, linkedFeat) {
@@ -178,19 +167,29 @@ function newPage({ data, english, publication, publicationId, source, mirror, li
 
 export function runBackgroundIngest(args = process.argv.slice(2)) {
   const options = parseOptions(args);
+  if (options.apply) throw new Error("背景解析器不直接寫入 Wiki；請先以 wiki:preview 儲存候選計畫，再以 wiki:apply 套用。");
   const publication = loadPublication(options.publicationId);
   const profile = loadIngestProfile(options.publicationId);
   if (!profile.character_options?.includes("backgrounds")) throw new Error(`出版品 ${options.publicationId} 未宣告 backgrounds 角色選項。`);
   const sourceRoot = options.source ? path.resolve(ROOT, options.source) : defaultSource(publication);
   const input = path.join(sourceRoot, profile.inputs.backgrounds ?? "角色起源/背景");
   const outputRoot = path.join(ROOT, profile.outputs.backgrounds ?? "wiki/背景");
+  if (!fs.existsSync(input)) {
+    options.results.push({ source: path.relative(ROOT, input).split(path.sep).join("/"), status: "incomplete", reason: "configured_background_input_missing" });
+    writeIngestReport({ options, publicationId: options.publicationId, category: "backgrounds" });
+    return options.results;
+  }
   const files = fs.statSync(input).isDirectory() ? walkMarkdown(input) : [input];
   const existing = existingBackgrounds(outputRoot);
-  const mirrorNames = mirrorBackgroundNames(options.publicationId);
+  const mirror = mirrorBackgroundNames(profile, options.publicationId);
+  const mirrorNames = mirror.names;
   for (const sourcePath of files) {
-    const data = parseBackgroundSource(fs.readFileSync(sourcePath, "utf8"));
-    if (!data.chinese || !data.abilities || !data.feat || !data.skills || !data.equipment) continue;
     const source = path.relative(ROOT, sourcePath).split(path.sep).join("/");
+    const data = parseBackgroundSource(fs.readFileSync(sourcePath, "utf8"));
+    if (!data.chinese || !data.abilities || !data.feat || !data.skills || !data.equipment) {
+      options.results.push({ source, status: "incomplete", reason: "background_required_fields_missing" });
+      continue;
+    }
     const current = existing.get(data.chinese) ?? existing.get(`source:${source}`);
     const conceptSlug = String(current?.conceptId ?? "").match(/^concept:background:(.+)$/)?.[1];
     const english = data.english ?? current?.english ?? mirrorNames.get(conceptSlug);
@@ -198,26 +197,41 @@ export function runBackgroundIngest(args = process.argv.slice(2)) {
       options.results.push({ source, status: "ambiguous", reason: "english_name_unresolved" });
       continue;
     }
-    const mirror = mirrorInfo(options.publicationId, english);
-    if (!mirror) {
-      options.results.push({ source, english_name: english, status: "blocked", reason: "english_mirror_entity_missing" });
+    const entityMirror = mirrorEntityPage({ root: ROOT, profile, publicationId: options.publicationId,
+      english, kind: "background" });
+    if (entityMirror.status !== "matched") {
+      options.results.push({ source, english_name: english, status: entityMirror.status, reason: entityMirror.reason });
       continue;
     }
     const reference = featReference(data.feat);
     const linkedFeat = reference.link;
     const destination = current?.file ?? path.join(outputRoot, `${data.chinese}.md`);
     const generated = current && !options.replace
-      ? mergeBackgroundContent(current.text, data, linkedFeat, mirror)
-      : newPage({ data, english, publication, publicationId: options.publicationId, source, mirror, linkedFeat });
+      ? mergeBackgroundContent(current.text, data, linkedFeat, entityMirror)
+      : newPage({ data, english, publication, publicationId: options.publicationId, source, mirror: entityMirror, linkedFeat });
     if (current && !options.replace && generated === current.text) {
       options.results.push({ target: path.relative(ROOT, destination).split(path.sep).join("/"), english_name: english, status: "unchanged" });
-      ensureFeatBacklink(reference, destination, `${data.chinese} (${english})`, options);
+      ensureFeatBacklink(reference, destination, `${data.chinese} (${english})`, options, { source, locator: `# ${data.chinese}` });
       continue;
     }
-    const status = writableCandidate({ destination, content: generated, options: { ...options, replace: Boolean(current) }, matchValues: [data.chinese, english, source] });
-    if (status === "written") ensureFeatBacklink(reference, destination, `${data.chinese} (${english})`, options);
+    const status = writableCandidate({
+      destination,
+      content: generated,
+      options: { ...options, replace: Boolean(current) },
+      matchValues: [data.chinese, english, source],
+      source,
+      locator: `# ${data.chinese}`,
+    });
+    if (status === "preview") ensureFeatBacklink(reference, destination, `${data.chinese} (${english})`, options, { source, locator: `# ${data.chinese}` });
   }
-  writeIngestReport({ options, publicationId: options.publicationId, category: "backgrounds" });
+  const changes = withIndexEffects(options.candidates, { root: ROOT, source: "background-index" });
+  const plan = planCandidateBatch(changes, { root: ROOT, lint: lintWiki,
+    sourceFiles: [...files.map((file) => path.relative(ROOT, file).replaceAll("\\", "/")), ...mirror.files],
+    dependencyFiles: [`config/ingest-profiles/${options.publicationId}.yml`, "config/publications.yml"],
+  });
+  writeIngestReport({ options, publicationId: options.publicationId, category: "backgrounds",
+    extra: { changes: plan.changes, source_fingerprints: plan.source_fingerprints,
+      dependency_fingerprints: plan.dependency_fingerprints, summary: plan.summary, lint: plan.lint } });
   return options.results;
 }
 

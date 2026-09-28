@@ -1,7 +1,12 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { ROOT, applyCandidateBatch, candidateChange, parseOptions, planCandidateBatch, writeCandidatePlan } from '../core/ingest-publication-utils.mjs';
+import { lintWiki } from '../core/wiki-lint.mjs';
 
-const root = path.resolve('wiki', '魔法物品');
+const options = parseOptions(process.argv.slice(2));
+if (options.apply && !options.report) throw new Error("套用 Wiki 變更必須指定 --report reports/<plan>.json，以保留可追溯報告。");
+const root = path.join(ROOT, 'wiki', '魔法物品');
+const pending = [];
 
 function walk(dir) {
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
@@ -38,7 +43,7 @@ for (const file of walk(root)) {
   text = cleaned.join('\n');
 
   if (text !== original) {
-    fs.writeFileSync(file, text, 'utf8');
+    pending.push(candidateChange({ destination: file, before: original, after: text, operation: 'update', source: 'wiki/魔法物品', locator: path.relative(ROOT, file) }));
     changed.push(path.relative(process.cwd(), file));
   }
 }
@@ -47,3 +52,12 @@ console.log(`已更新 ${changed.length} 個魔法物品條目。`);
 console.log(`移除 ${placeholderSections} 個空白 DM 樣板區塊。`);
 console.log(`移除 ${duplicateLimits} 個重複的限制列。`);
 for (const file of changed) console.log(`- ${file}`);
+
+const plan = planCandidateBatch(pending, { root: ROOT, lint: lintWiki });
+writeCandidatePlan(plan, options.report, { root: ROOT });
+if (options.apply) {
+  const result = applyCandidateBatch(plan, { root: ROOT, lint: lintWiki });
+  console.log(`已套用魔法物品結構清理：${result.applied.length} 個候選變更。`);
+} else {
+  console.log(`預覽魔法物品結構清理：${plan.changes.length} 個候選變更；加入 --apply 才會寫入。`);
+}

@@ -1,11 +1,16 @@
 import fs from "node:fs";
 import path from "node:path";
-import { ROOT } from "../core/ingest-publication-utils.mjs";
+import {
+  ROOT, applyCandidateBatch, candidateChange, parseOptions, planCandidateBatch, writeCandidatePlan,
+} from "../core/ingest-publication-utils.mjs";
+import { lintWiki } from "../core/wiki-lint.mjs";
 
-const args = new Set(process.argv.slice(2));
-const apply = args.has("--apply");
+const rawArgs = process.argv.slice(2);
+const normalizedArgs = rawArgs.flatMap((arg) => arg.startsWith("--only=") ? ["--only", arg.slice("--only=".length)] : [arg]);
+const options = parseOptions(normalizedArgs);
+if (options.apply && !options.report) throw new Error("套用 Wiki 變更必須指定 --report reports/<plan>.json，以保留可追溯報告。");
 const TODAY = "2026-09-10";
-const only = [...args].find((arg) => arg.startsWith("--only="))?.slice("--only=".length);
+const only = options.only;
 const SPECIES_ROOT = path.join(ROOT, "wiki", "種族");
 
 function walk(directory) {
@@ -158,6 +163,7 @@ const pages = walk(SPECIES_ROOT).filter((file) => {
 });
 
 const report = { changed: [], unchanged: [], missingIntroduction: [] };
+const pending = [];
 for (const file of pages) {
   const original = fs.readFileSync(file, "utf8");
   const title = readTitle(original);
@@ -179,9 +185,17 @@ for (const file of pages) {
   if (next === original) report.unchanged.push({ title, file: path.relative(ROOT, file) });
   else {
     report.changed.push({ title, file: path.relative(ROOT, file) });
-    if (apply) fs.writeFileSync(file, next, "utf8");
+    pending.push(candidateChange({ destination: file, before: original, after: next, operation: "update", source: "種族介紹正規化", locator: title }));
   }
 }
 
-console.log(`${apply ? "套用" : "預覽"}：種族頁 ${pages.length}；變更 ${report.changed.length}；未變更 ${report.unchanged.length}；缺介紹 ${report.missingIntroduction.length}`);
+for (const item of report.missingIntroduction) {
+  const file = path.join(ROOT, item.file);
+  const before = fs.readFileSync(file, "utf8");
+  pending.push(candidateChange({ destination: file, before, after: before, operation: "unchanged", status: "manual_review", review: [`尚未提供 ${item.title} 的來源支持介紹，保留原文。`] }));
+}
+const plan = planCandidateBatch(pending, { root: ROOT, lint: lintWiki });
+writeCandidatePlan(plan, options.report, { root: ROOT });
+if (options.apply) applyCandidateBatch(plan, { root: ROOT, lint: lintWiki });
+console.log(`${options.apply ? "套用" : "預覽"}：種族頁 ${pages.length}；變更 ${report.changed.length}；未變更 ${report.unchanged.length}；缺介紹 ${report.missingIntroduction.length}；可套用 ${plan.summary.ready}`);
 for (const item of report.missingIntroduction) console.log(`待補介紹：${item.file}｜${item.title}`);

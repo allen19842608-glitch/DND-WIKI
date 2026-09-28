@@ -1,9 +1,10 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { ROOT } from "../core/ingest-publication-utils.mjs";
-import { readWikiPages, englishTitle, writeReport } from "../core/wiki-records.mjs";
+import { ROOT, candidateChange, planCandidateBatch, validateCliOptions, writeCandidatePlan, writeCandidateReview } from "../core/ingest-publication-utils.mjs";
+import { readWikiPages, englishTitle } from "../core/wiki-records.mjs";
 import { pageCatalog, resolvePage } from "../core/generic-indexes.mjs";
+import { lintWiki } from "../core/wiki-lint.mjs";
 
 export function approvedTerms(text) {
   return text.split(/\r?\n/).filter(line => line.startsWith("|")).map(line => line.split("|").slice(1, -1).map(cell => cell.trim()))
@@ -75,21 +76,27 @@ export function planSearchMetadata(pages, terms, { category = null } = {}) {
   }
   return { changes, review };
 }
-export function syncSearchMetadata({ root = ROOT, category = null, apply = false, report = false } = {}) {
+export function syncSearchMetadata({ root = ROOT, category = null, apply = false, report = null } = {}) {
   const pages = readWikiPages(root);
   if (category && !pages.some(p => p.data?.category === category)) throw new Error(`未知類別：${category}`);
   const plan = planSearchMetadata(pages, approvedTerms(fs.readFileSync(path.join(root, "附件/翻譯詞彙表.md"), "utf8")), { category });
-  if (apply) for (const change of plan.changes) fs.writeFileSync(path.join(root, change.file), change.text);
-  const result = { generated_at: new Date().toISOString(), scope: category ?? "全庫", mode: apply ? "apply" : "preview", changes: plan.changes.map(({ text, ...change }) => change), review: plan.review };
-  if (report) writeReport(root, `reports/search-${category ?? "all"}-${apply ? "apply" : "preview"}.json`, result);
+  if (apply) throw new Error("搜尋欄位同步不直接套用；請以 --report 儲存候選計畫，再使用 wiki:apply -- --plan reports/<plan>.json。");
+  const candidates = planCandidateBatch(plan.changes.map((change) => {
+    const destination = path.join(root, change.file);
+    return candidateChange({ destination, before: fs.readFileSync(destination, "utf8"), after: change.text, operation: "update", source: "search-metadata", locator: change.file, review: change.links });
+  }), { root, lint: lintWiki });
+  const result = { ...candidates, generated_at: new Date().toISOString(), scope: category ?? "全庫", review: plan.review };
+  writeCandidatePlan(result, report, { root });
+  writeCandidateReview(result, report, { root });
   const byCategory = {};
   for (const change of plan.changes) byCategory[change.category] = (byCategory[change.category] ?? 0) + 1;
-  console.log(JSON.stringify({ scope: result.scope, mode: result.mode, pages: result.changes.length, by_category: byCategory, manual_review: result.review.length }, null, 2));
+  console.log(JSON.stringify({ scope: result.scope, mode: result.mode, pages: candidates.changes.length, by_category: byCategory, manual_review: result.review.length }, null, 2));
   return result;
 }
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const args = process.argv.slice(2), at = args.indexOf("--category");
-  if (args.some((a, i) => !["--category", "--apply", "--report"].includes(a) && !(at >= 0 && i === at + 1))) throw new Error("僅支援 --category 類別、--apply、--report。");
+  validateCliOptions(args, { extraValueOptions: ["--category"] });
   if (at >= 0 && (!args[at + 1] || args[at + 1].startsWith("--"))) throw new Error("--category 必須指定類別。");
-  syncSearchMetadata({ category: at >= 0 ? args[at + 1] : null, apply: args.includes("--apply"), report: args.includes("--report") });
+  const report = args.includes("--report") ? args[args.indexOf("--report") + 1] : null;
+  syncSearchMetadata({ category: at >= 0 ? args[at + 1] : null, apply: args.includes("--apply"), report });
 }

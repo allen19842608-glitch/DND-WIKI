@@ -1,10 +1,16 @@
 import fs from "node:fs";
 import path from "node:path";
 import YAML from "yaml";
-import { ROOT, walkMarkdown } from "./ingest-publication-utils.mjs";
+import { ROOT, reportTargetPath, walkMarkdown } from "./ingest-publication-utils.mjs";
 
-export function readWikiPages(root = ROOT) {
-  return walkMarkdown(path.join(root, "wiki")).sort().map((absolute) => {
+export function readWikiPages(root = ROOT, { directory = "wiki" } = {}) {
+  const wikiRoot = path.resolve(root, "wiki");
+  const scope = path.resolve(root, directory);
+  if (scope !== wikiRoot && !scope.startsWith(`${wikiRoot}${path.sep}`)) throw new Error(`Wiki 讀取範圍越出 wiki/：${directory}`);
+  if (fs.existsSync(scope) && scope !== wikiRoot && !fs.realpathSync(scope).startsWith(`${wikiRoot}${path.sep}`)) {
+    throw new Error(`Wiki 讀取範圍經連結越出 wiki/：${directory}`);
+  }
+  return walkMarkdown(scope).sort().map((absolute) => {
     const text = fs.readFileSync(absolute, "utf8");
     const match = text.match(/^\uFEFF?---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/);
     const data = match ? YAML.parse(match[1]) : null;
@@ -24,9 +30,7 @@ export function englishTitle(title = "") {
 }
 
 export function writeReport(root, relative, value) {
-  const target = path.resolve(root, relative);
-  const reports = path.resolve(root, "reports");
-  if (!target.startsWith(`${reports}${path.sep}`)) throw new Error("報告必須輸出至 reports/。");
+  const target = reportTargetPath(relative, { root });
   fs.mkdirSync(path.dirname(target), { recursive: true });
   fs.writeFileSync(target, typeof value === "string" ? value : `${JSON.stringify(value, null, 2)}\n`);
 }

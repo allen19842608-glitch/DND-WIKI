@@ -1,6 +1,6 @@
 ---
 name: dnd-wiki-maintainer
-description: 維護此 D&D 5.5e Markdown 知識庫的規則、來源、版本、索引與 Obsidian 連結；用於 Wiki 吸收、修正、比對、lint 與維護自動化。
+description: 維護此 D&D 5.5e Markdown 知識庫的來源、版本、索引與 Obsidian 連結；用於吸收、比對、稽核與安全套用 Wiki 變更。
 ---
 
 # D&D Wiki 維護
@@ -19,8 +19,7 @@ description: 維護此 D&D 5.5e Markdown 知識庫的規則、來源、版本、
 
 ## 規則條目與來源
 
-- 新增、重建或實質改寫前，完整讀取對應 `模板/`。
-- 新增或實質改寫條目的 Frontmatter 必須符合模板與 lint，並包含共通必要欄位：`entity_id`、`concept_id`、`ruleset`、`content_scope`、`status`、`category`、`version`、`sources`、`source_type`、`confidence`、`rules_sources`、`errata`、`updated`；其他條件欄位依類別與版本加入，例如子職的 `entry_type`／`parent_class`、2014 Legacy 角色選項的 `compatibility_2024`，以及戰役設定的連續性與分類欄位。
+- 新增、重建或實質改寫前，完整讀取對應 `模板/`；欄位與格式以模板、`AGENTS.md` 及 lint 為準，本技能不另維護欄位清單。
 - 每項規則主張必須有可定位的 `sources.file`／`locator`。可唯一對照正式出版品的英文原文鏡像是內容與事實的首要來源，鏡像提供者不得標示成官方網站；中文 `原始資料/` 優先用於核定譯名與譯文對照。英文與同版中文譯文若衝突，列出雙方內容與定位交由人類判定，不得靜默覆寫。
 - 官方規則的中文社群翻譯使用 `authority: "官方"`、`translation: "community"`，其 `source_type` 仍由來源權威性推導為 `official`；社群翻譯不得稱為官方中文譯本。
 - 同名不等於同規則。非戰役設定的 2014 與 2024 條目預設分頁保存；逐條證實機制相同才可註明並互相連結，不得合併未比對的條文。非組織遊戲戰役設定則使用 `setting_continuity: "continuous"`，來源年代只供追溯，不建立 2014／2024 世界觀分頁。
@@ -31,10 +30,10 @@ description: 維護此 D&D 5.5e Markdown 知識庫的規則、來源、版本、
 
 1. **盤點**：確認出版品、規則版本、來源定位與可編譯正文；先以 `npm.cmd run sources:status` 與 `npm.cmd run sources:unabsorbed` 檢查涵蓋狀態。`sources:unabsorbed` 只表示原始檔尚未被 `sources.file` 引用，不等於缺少 Wiki 頁面；實際缺漏須按出版品、類別、英文實體、識別碼、版本與定位逐項比對。
 2. **比對**：以 `entity_id`、`concept_id`、版本與現有條目比對；先判斷是新增、增量更新、版本對照、素材或重複來源。
-3. **選擇流程**：先依 `AGENTS.md` 讀取指定規範，再從 `package.json` 選用現有的 ingest、audit、mirror、lore、索引或同步工具；不要為已有專用流程的工作另寫一次性腳本。
-4. **預覽**：使用 `npm.cmd run ingest -- --category "類別"` 或對應工具的預覽模式；除非使用者明確要求套用，禁止使用 `--apply`。JSON Patch 另須完整讀取 `.agents/JSON增量編譯器.md`，只更新唯一指定的既有頁面，不建立新頁、分類或索引。
+3. **選擇流程**：先依 `AGENTS.md` 讀取指定規範，再從 `package.json` 選用現有的專用解析器；日常入口優先使用 `wiki:inspect`、`wiki:preview`、`wiki:apply`、`wiki:check`，不要為已有專用流程另寫一次性腳本。
+4. **預覽**：使用 `npm.cmd run wiki:preview -- --category "類別"` 或專用工具的預覽模式；除非使用者明確要求套用，禁止使用 `--apply`。JSON Patch 另須完整讀取 `.agents/JSON增量編譯器.md`，只更新唯一指定的既有頁面，不建立新頁、分類或索引。
 5. **確認**：來源衝突、譯名、無法唯一映射的連結與規則差異交由使用者決定；不以排除清單隱藏真正缺漏。
-6. **套用與驗證**：套用後同步必要索引、反向連結與版本說明，再依下方決策表驗證。
+6. **套用與驗證**：以 `wiki:apply -- --plan reports/<plan>.json` 套用已審閱計畫；套用後同步必要索引、反向連結與版本說明，再依下方決策表驗證。
 
 ## 類別完成檢查
 
@@ -50,21 +49,30 @@ description: 維護此 D&D 5.5e Markdown 知識庫的規則、來源、版本、
 - 使用中文目標檔名或允許的中文相對路徑；表格別名連結必須跳脫管道符號：`[[目標\|顯示名稱]]`。
 - 不建立空白頁消除斷鏈。無法唯一判斷的目標，報告來源檔與候選項目，等待人類決定。
 - 更新、移動或新增條目時，同步所屬索引與必要反向連結。相關連結只收錄延伸規則、版本對照、父子條目、索引或正文尚未連結的關鍵概念；不得重複正文／表格已有連結。
-- 修正 Markdown 表格時，另確認表格前空白列、標頭分隔列、欄位數、未跳脫管道符號與換行拆欄。
+- 表格或連結異動交由共用 lint 與索引檢查驗證；不以建立空白頁掩蓋斷鏈。
 
 ## 驗證決策表
 
 | 情境 | 指令 |
 | :--- | :--- |
-| 一般 Wiki 內容異動 | `npm.cmd run lint` |
+| 一般 Wiki 內容異動 | `npm.cmd run wiki:check` |
 | 維護腳本異動 | `npm.cmd run test`，再執行 `npm.cmd run lint` |
 | 使用者要求全庫檢查、合併前驗證 | `npm.cmd run lint:all`；若含腳本異動，另執行 `npm.cmd run test` |
 | 來源涵蓋或新書吸收 | `npm.cmd run sources:status`、`npm.cmd run sources:unabsorbed` |
-| 索引或雙向連結異動 | `npm.cmd run indexes:check` |
+| 索引或雙向連結異動 | `npm.cmd run indexes:strict` |
 | 可機械補入索引 | `npm.cmd run indexes:sync` |
 | 使用者已明確要求準備提交 | `npm.cmd run prepare:commit` |
 
 回報時固定區分**錯誤**、**警告**與**資訊**；清楚列出未修正且需要人類判定的項目。
+
+## 共用工具與安全套用
+
+- 盤點來源、版本與待辦：`npm.cmd run wiki:inspect`；預覽吸收：`npm.cmd run wiki:preview -- --category "類別"`。
+- 套用候選計畫：`npm.cmd run wiki:apply -- --plan reports/<plan>.json`；只有使用者明確要求套用時才使用。
+- 日常驗證使用 `npm.cmd run wiki:check`；全庫或合併前使用 `npm.cmd run check:all`。
+- 所有 Wiki 寫入應遵守「建立候選 → 顯示差異 → 虛擬 lint → 明確套用 → 套用後驗證」；報告只寫入 `reports/`。
+- `--apply` 與 `--dry-run` 不可同時使用；未知旗標、缺值選項、多重連結候選及來源衝突必須拒絕或標記人工覆核。
+- 「未引用來源」是追蹤佇列，不等於缺頁；同名不等於同規則；移動或重建頁面要保留 `entity_id` 與 `concept_id`。
 
 ## Git 與 GitHub
 

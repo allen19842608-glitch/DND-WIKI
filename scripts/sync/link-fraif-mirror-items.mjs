@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
-import { ROOT } from "../core/ingest-publication-utils.mjs";
+import { ROOT, applyCandidateBatch, candidateChange, planCandidateBatch, writeCandidatePlan } from "../core/ingest-publication-utils.mjs";
+import { lintWiki } from "../core/wiki-lint.mjs";
 
 const DATASET = "原始資料/外部來源鏡像/FRAIF2025/datasets/items-fraif.json";
 const TARGETS = new Map([
@@ -16,18 +17,23 @@ const TARGETS = new Map([
   ["Windskiff", "wiki/魔法物品/奇物/乘風板.md"],
 ]);
 
-export function linkFraifMirrorItems({ apply = false } = {}) {
+export function linkFraifMirrorItems({ apply = false, report = null } = {}) {
+  if (apply && !report) throw new Error("套用 Wiki 變更必須指定 --report reports/<plan>.json，以保留可追溯報告。");
   const known = new Set(JSON.parse(fs.readFileSync(path.join(ROOT, DATASET), "utf8")).item.map((item) => item.name));
   const changes = [];
+  const candidates = [];
   for (const [english, rel] of TARGETS) {
     if (!known.has(english)) throw new Error(`鏡像缺少預期物品：${english}`);
     const file = path.join(ROOT, ...rel.split("/"));
-    let text = fs.readFileSync(file, "utf8");
-    if (text.includes(`locator: "item: ${english}"`)) continue;
-    text = text.replace(/^source_type:/m, `  - file: "${DATASET}"\n    locator: "item: ${english}"\n    authority: "官方"\n    translation: "none"\nsource_type:`);
-    if (apply) fs.writeFileSync(file, text, "utf8");
+    const before = fs.readFileSync(file, "utf8");
+    if (before.includes(`locator: "item: ${english}"`)) continue;
+    const text = before.replace(/^source_type:/m, `  - file: "${DATASET}"\n    locator: "item: ${english}"\n    authority: "官方"\n    translation: "none"\nsource_type:`);
+    candidates.push(candidateChange({ destination: file, before, after: text, operation: "update", source: DATASET, locator: `item: ${english}` }));
     changes.push({ page: rel, english });
   }
   const pending = [...known].filter((name) => !TARGETS.has(name));
-  return { changes, pending };
+  const plan = planCandidateBatch(candidates, { root: ROOT, lint: lintWiki });
+  writeCandidatePlan({ ...plan, unmatched: pending }, report, { root: ROOT });
+  if (apply) applyCandidateBatch(plan, { root: ROOT, lint: lintWiki });
+  return { ...plan, changes, pending };
 }

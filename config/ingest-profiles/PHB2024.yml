@@ -29,6 +29,13 @@ outputs:
   backgrounds: "wiki/背景"
   rules: "wiki/規則"
 inputs:
+  character_creation: "創建角色"
+  character_creation_tables:
+    "角色建立與成長/創建角色.md": ["創建你的角色.md", "第一步：選擇職業.md", "第二步：確定起源.md", "第四步：選擇陣營.md"]
+    "角色建立與成長/屬性值與角色細節.md": ["第三步：確定屬性值.md", "第五步：豐富細節.md"]
+    "角色建立與成長/兼職.md": ["兼職.md"]
+    "角色建立與成長/等級提升.md": ["等級提升.md", "以更高等級開始.md"]
+    "角色建立與成長/飾品.md": ["飾品.md"]
   species: "角色起源/種族"
   classes: "角色職業"
   spells: "法術詳述"

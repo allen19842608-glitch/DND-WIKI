@@ -3,7 +3,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import YAML from "yaml";
 import { walk } from "../migrate/organize-multiverse.mjs";
-import { syncLoreIndexes } from "../core/lore-indexes.mjs";
+import { applyCandidateBatch, candidateChange, parseOptions, planCandidateBatch, writeCandidatePlan } from "../core/ingest-publication-utils.mjs";
+import { lintWiki } from "../core/wiki-lint.mjs";
 const ROOT = fileURLToPath(new URL("../../", import.meta.url));
 const BASE = "wiki/戰役設定/多元宇宙";
 const link = p => `[[${p.rel.replace(/\.md$/, "")}|${p.data.title}]]`;
@@ -12,17 +13,20 @@ const section = (text, heading, body) => {
   const replacement = `## ${heading}\n\n${body}\n\n`;
   return (re.test(text) ? text.replace(re, replacement) : `${text.trimEnd()}\n\n${replacement}`).trimEnd()+"\n";
 };
-export function syncNavigation({apply = false} = {}) {
+export function syncNavigation({apply = false, report = null} = {}) {
+  if (apply && !report) throw new Error("套用 Wiki 變更必須指定 --report reports/<plan>.json，以保留可追溯報告。");
   const pages = walk(path.join(ROOT, BASE)).map(file => {
     const text = fs.readFileSync(file,"utf8");
     return {file, text, rel:path.relative(ROOT,file).replaceAll("\\","/"),data:YAML.parse(text.match(/^---\r?\n([\s\S]*?)\r?\n---/)[1])};
   });
   let changed = 0;
+  const pending = [];
   const write = (rel, text) => {
     const file=path.join(ROOT,rel);
-    if(fs.existsSync(file)&&fs.readFileSync(file,"utf8")===text)return;
+    const before=fs.existsSync(file)?fs.readFileSync(file,"utf8"):null;
+    if(before===text)return;
     changed++;
-    if(apply){fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,text,"utf8");}
+    pending.push(candidateChange({destination:file,before,after:text,operation:before===null?"create":"update",source:"multiverse-navigation",locator:rel}));
   };
   for(const [directory, slug] of [["地理/位面","planes"],["地理/巨人飛地","giant-enclaves"],["地理/城市與聚居地/外域門鎮","gate-towns"]]){
     const members=pages.filter(p=>path.posix.dirname(p.rel)===`${BASE}/${directory}`&&p.data.lore_type!=="索引");
@@ -51,8 +55,13 @@ export function syncNavigation({apply = false} = {}) {
   const index=`${campaign}/主題素材索引.md`;
   write(index,section(fs.readFileSync(path.join(ROOT,index),"utf8"),"多元宇宙冒險素材",cp.map(m=>`- [[${m.to.replace(/\.md$/,"")}|${path.basename(m.to,".md")}]]`).join("\n")));
   for(const m of cp)write(m.to,section(fs.readFileSync(path.join(ROOT,m.to),"utf8"),"所屬導覽",`- [[${index.replace(/\.md$/,"")}|主題素材索引]]`));
+  const plan=planCandidateBatch(pending,{root:ROOT,lint:lintWiki});
+  writeCandidatePlan(plan,report,{root:ROOT});
+  if(apply)applyCandidateBatch(plan,{root:ROOT,lint:lintWiki});
   console.log(`多元宇宙導覽${apply?"套用":"預覽"}：${changed} 頁`);
-  if(apply)syncLoreIndexes({apply:true,setting:"多元宇宙"});
-  return changed;
+  return plan;
 }
-if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url))syncNavigation({apply:process.argv.includes("--apply")});
+if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){
+  const options=parseOptions(process.argv.slice(2));
+  syncNavigation({apply:options.apply,report:options.report});
+}

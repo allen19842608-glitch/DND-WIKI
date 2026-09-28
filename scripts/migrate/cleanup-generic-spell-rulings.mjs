@@ -1,9 +1,11 @@
 import fs from "node:fs";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
-import { ROOT } from "../core/ingest-publication-utils.mjs";
+import { ROOT, applyCandidateBatch, candidateChange, parseOptions, planCandidateBatch, writeCandidatePlan } from "../core/ingest-publication-utils.mjs";
+import { lintWiki } from "../core/wiki-lint.mjs";
 
-const apply = process.argv.includes("--apply");
+const options = parseOptions(process.argv.slice(2), { extraBooleanOptions: ["--refresh-updated"] });
+if (options.apply && !options.report) throw new Error("套用 Wiki 變更必須指定 --report reports/<plan>.json，以保留可追溯報告。");
 const refreshUpdated = process.argv.includes("--refresh-updated");
 const TODAY = "2026-09-10";
 const SPELL_ROOT = path.join(ROOT, "wiki", "法術");
@@ -46,12 +48,16 @@ const targets = walk(SPELL_ROOT).filter((file) => {
 });
 
 let changed = 0;
+const pending = [];
 for (const file of targets) {
   const original = fs.readFileSync(file, "utf8");
   let next = cleanup(original);
   if (next !== original || refreshUpdated) next = refreshUpdatedDate(next);
   if (next === original) continue;
   changed += 1;
-  if (apply) fs.writeFileSync(file, next, "utf8");
+  pending.push(candidateChange({ destination: file, before: original, after: next, operation: "update", source: "generic-spell-rulings", locator: path.relative(ROOT, file) }));
 }
-console.log(`${apply ? "套用" : "預覽"}：現行法術 ${targets.length}；清理 ${changed}`);
+const plan = planCandidateBatch(pending, { root: ROOT, lint: lintWiki });
+writeCandidatePlan(plan, options.report, { root: ROOT });
+if (options.apply) applyCandidateBatch(plan, { root: ROOT, lint: lintWiki });
+console.log(`${options.apply ? "套用" : "預覽"}：現行法術 ${targets.length}；清理 ${changed}`);

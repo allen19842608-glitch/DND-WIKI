@@ -3,18 +3,22 @@ import path from "node:path";
 import { execFileSync } from "node:child_process";
 import {
   ROOT,
+  applyCandidateBatch,
+  candidateChange,
   frontmatter,
   loadIngestProfile,
   loadPublication,
   parseOptions,
+  planCandidateBatch,
   walkMarkdown,
-  writableCandidate,
 } from "../core/ingest-publication-utils.mjs";
+import { lintWiki } from "../core/wiki-lint.mjs";
 
 const publicationId = "BPGG2023";
 const publication = loadPublication(publicationId);
 const profile = loadIngestProfile(publicationId);
-const options = parseOptions();
+const options = parseOptions(process.argv.slice(2), { extraBooleanOptions: ["--debug"] });
+if (options.apply && !options.report) fail("套用 Wiki 變更必須指定 --report reports/<plan>.json，以保留可追溯報告。");
 const sourceRoot = path.join(ROOT, profile.source_root, "圖鑑");
 const outputRoot = path.join(ROOT, "wiki", "怪物", "2014");
 const glossaryPath = path.join(ROOT, "附件", "翻譯詞彙表.md");
@@ -233,9 +237,34 @@ for (const card of discovered) console.log(`${options.apply ? "寫入" : "預覽
 for (const card of missing) console.log(`待補詞彙：${card.english} | ${card.chinese} | ${card.source}；${card.locator}`);
 for (const duplicate of duplicateEnglish) console.log(`略過重複英文資料卡：${duplicate.english}；保留 ${duplicate.selected.source}，未吸收 ${duplicate.skipped.source}`);
 if (options.apply && missing.length) fail("仍有主標題詞彙未登錄；請先審核並補入詞彙表後再使用 --apply。");
+const pending = [];
+function queue(destination, content, source, locator) {
+  const target = path.relative(ROOT, destination).split(path.sep).join("/");
+  if (fs.existsSync(destination) && !options.replace) {
+    options.results.push({ target, status: "skipped", reason: "existing_page_preserved" });
+    return;
+  }
+  const before = fs.existsSync(destination) ? fs.readFileSync(destination, "utf8") : null;
+  if (before === content) {
+    options.results.push({ target, status: "unchanged" });
+    return;
+  }
+  pending.push(candidateChange({ destination, before, after: content, operation: before === null ? "create" : "update", source, locator }));
+  options.results.push({ target, status: "preview" });
+}
 for (const card of discovered) {
-  writableCandidate({ destination: path.join(outputRoot, card.folder, `${card.chinese}.md`), content: render(card), options });
+  queue(path.join(outputRoot, card.folder, `${card.chinese}.md`), render(card), card.source, card.locator);
 }
 for (const [folder, cardsInFolder] of Object.entries(Object.groupBy(discovered, (card) => card.folder))) {
-  writableCandidate({ destination: path.join(outputRoot, folder, `2014${folder}索引.md`), content: renderIndex(folder, cardsInFolder), options: { ...options, replace: false } });
+  const indexPath = path.join(outputRoot, folder, `2014${folder}索引.md`);
+  const existing = fs.existsSync(indexPath) ? fs.readFileSync(indexPath, "utf8") : null;
+  const content = renderIndex(folder, cardsInFolder);
+  if (existing !== content) pending.push(candidateChange({ destination: indexPath, before: existing, after: content, operation: existing === null ? "create" : "update", source: cardsInFolder[0].source, locator: "Wiki 導覽結構" }));
 }
+const plan = planCandidateBatch(pending, { root: ROOT, lint: lintWiki });
+if (options.report) {
+  const reportPath = path.resolve(ROOT, options.report);
+  fs.mkdirSync(path.dirname(reportPath), { recursive: true });
+  fs.writeFileSync(reportPath, `${JSON.stringify({ ...plan, publication_id: publicationId, category: "monsters", results: options.results }, null, 2)}\n`, "utf8");
+}
+if (options.apply) applyCandidateBatch(plan, { root: ROOT, lint: lintWiki });

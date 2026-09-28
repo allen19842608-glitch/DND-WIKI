@@ -104,7 +104,7 @@ function updateManualCounts(text, counts) {
 function write(file, content, apply, changes, root = ROOT) {
   const current = fs.existsSync(file) ? fs.readFileSync(file, "utf8") : null;
   if (current === content) return;
-  changes.push(relative(file, root));
+  changes.push({ file: relative(file, root), before: current, after: content });
   if (!apply) return;
   fs.mkdirSync(path.dirname(file), { recursive: true });
   fs.writeFileSync(file, content, "utf8");
@@ -179,10 +179,28 @@ function syncWorld({ config, worldId, world, worldPages, apply, changes, root = 
   write(worldIndexFile, replaceAutoBlock(counted, [featured, topics].filter(Boolean).join("\n\n")), apply, changes, root);
 }
 
-export function syncLoreIndexes({ apply = false, setting = null, root = ROOT } = {}) {
+export function syncLoreIndexes({ apply = false, setting = null, changedFiles = null, root = ROOT } = {}) {
+  if (apply && path.resolve(root) === path.resolve(ROOT)) {
+    throw new Error("正式 Wiki 索引不得直接寫入；請使用 wiki:preview -- --category 索引 儲存候選。 ");
+  }
   const configPath = path.join(root, "config", "lore.yml");
   const wikiRoot = path.join(root, "wiki", "戰役設定");
   const config = YAML.parse(fs.readFileSync(configPath, "utf8"));
+  const worlds = Object.entries(config.worlds);
+  const changed = changedFiles === null ? null : [...changedFiles].map((file) => String(file).replaceAll("\\", "/"));
+  const configChanged = changed?.includes("config/lore.yml") ?? false;
+  const loreChanged = changed?.filter((file) => file.startsWith("wiki/戰役設定/") && file.endsWith(".md")) ?? [];
+  const changedWorldIds = new Set();
+  let unknownLorePath = false;
+  for (const file of loreChanged) {
+    if (file === "wiki/戰役設定/戰役設定索引.md") continue;
+    const match = worlds.find(([, world]) => file.startsWith(`${world.root}/`));
+    if (match) changedWorldIds.add(match[0]);
+    else unknownLorePath = true;
+  }
+  const checkAllWorlds = changed === null || configChanged || unknownLorePath;
+  const checkGlobal = changed === null || configChanged || loreChanged.length > 0;
+  if (!checkGlobal) return { apply, pages: 0, checked_worlds: [], checked_global: false, changes: [], candidate_changes: [] };
   const records = walk(wikiRoot).map((file) => page(file, root)).filter(Boolean);
   const contentPages = records.filter((record) => record.data?.category === "戰役設定"
     && record.data?.setting && record.data?.lore_type && record.data.lore_type !== "索引"
@@ -190,24 +208,31 @@ export function syncLoreIndexes({ apply = false, setting = null, root = ROOT } =
   const pagesByWorld = new Map(Object.values(config.worlds).map((world) => [world.label, contentPages.filter((record) => record.data.setting === world.label)]));
   const changes = [];
 
-  for (const [worldId, world] of Object.entries(config.worlds)) {
+  for (const [worldId, world] of worlds) {
     if (setting && world.label !== setting) continue;
+    if (!checkAllWorlds && !changedWorldIds.has(worldId)) continue;
     syncWorld({ config, worldId, world, worldPages: pagesByWorld.get(world.label) ?? [], apply, changes, root });
   }
 
   const globalFile = path.join(wikiRoot, "戰役設定索引.md");
-  if (fs.existsSync(globalFile)) {
+  if (checkGlobal && fs.existsSync(globalFile)) {
     const current = fs.readFileSync(globalFile, "utf8");
     const counts = new Map(Object.values(config.worlds).map((world) => [linkTarget(world.index), (pagesByWorld.get(world.label) ?? []).length]));
     const counted = updateManualCounts(current, counts);
     write(globalFile, replaceAutoBlock(counted, renderGlobalNavigation(config, pagesByWorld, linkTargetsOutsideAuto(counted))), apply, changes, root);
   }
-  return { apply, pages: contentPages.length, changes: [...new Set(changes)].sort() };
+  return { apply, pages: contentPages.length, checked_worlds: worlds.filter(([id, world]) => (!setting || world.label === setting) && (checkAllWorlds || changedWorldIds.has(id))).map(([id]) => id), checked_global: checkGlobal,
+    changes: [...new Set(changes.map((change) => change.file))].sort(), candidate_changes: changes };
 }
 
 if (path.resolve(process.argv[1] ?? "") === fileURLToPath(import.meta.url)) {
   const settingAt = process.argv.indexOf("--setting");
-  const result = syncLoreIndexes({ apply: process.argv.includes("--apply"), setting: settingAt >= 0 ? process.argv[settingAt + 1] : null });
-  process.stdout.write(`故事頁：${result.pages}；${result.apply ? "已更新" : "待更新"}：${result.changes.length}\n`);
-  for (const file of result.changes) process.stdout.write(`- ${file}\n`);
+  try {
+    const result = syncLoreIndexes({ apply: process.argv.includes("--apply"), setting: settingAt >= 0 ? process.argv[settingAt + 1] : null });
+    process.stdout.write(`故事頁：${result.pages}；${result.apply ? "已更新" : "待更新"}：${result.changes.length}\n`);
+    for (const file of result.changes) process.stdout.write(`- ${file}\n`);
+  } catch (error) {
+    process.stderr.write(`錯誤：${error.message}\n`);
+    process.exitCode = 1;
+  }
 }

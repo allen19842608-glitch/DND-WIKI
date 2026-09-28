@@ -3,6 +3,8 @@ import path from "node:path";
 import crypto from "node:crypto";
 import { fileURLToPath } from "node:url";
 import YAML from "yaml";
+import { applyCandidateBatch, candidateChange, parseOptions, planCandidateBatch, writeCandidatePlan } from "../core/ingest-publication-utils.mjs";
+import { lintWiki } from "../core/wiki-lint.mjs";
 
 const ROOT = fileURLToPath(new URL("../../", import.meta.url));
 const BASE = "wiki/戰役設定/多元宇宙";
@@ -57,7 +59,8 @@ export function buildMoves(records, layout, types) {
   }
   return moves;
 }
-export function organize({ apply = false } = {}) {
+export function organize({ apply = false, report = null } = {}) {
+  if (apply && !report) throw new Error("套用 Wiki 變更必須指定 --report reports/<plan>.json，以保留可追溯報告。");
   const records = walk(path.join(ROOT, "wiki")).map(page);
   const layout = JSON.parse(fs.readFileSync(path.join(ROOT, "config/multiverse-layout.json"), "utf8"));
   const types = YAML.parse(fs.readFileSync(path.join(ROOT, "config/lore.yml"), "utf8")).lore_types;
@@ -71,28 +74,20 @@ export function organize({ apply = false } = {}) {
   const moveMap = new Map(moves.map(m => [m.rel, m]));
   const edits = records.map(p => ({ ...p, target: moveMap.get(p.rel)?.target ?? p.rel,
     next: rewriteLinks(moveMap.get(p.rel)?.next ?? p.text, mapping) })).filter(p => p.target !== p.rel || p.next !== p.text);
-  // Preflight every input before any writes; moving never replaces an existing destination.
+  // Preflight every input before producing a candidate plan; moving never replaces an existing destination.
   for (const p of edits) if (fs.readFileSync(p.file, "utf8") !== p.text) throw new Error(`檔案已修改：${p.rel}`);
-  if (apply) {
-    for (const p of edits) {
-      const destination = path.join(ROOT, p.target);
-      fs.mkdirSync(path.dirname(destination), { recursive: true });
-      fs.writeFileSync(destination, p.next, "utf8");
-      if (fs.readFileSync(destination, "utf8") !== p.next) throw new Error(`寫入驗證失敗：${p.target}`);
-    }
-    for (const m of moves) {
-      if (hash(fs.readFileSync(m.file, "utf8")) !== m.expected_hash) throw new Error(`刪除舊路徑前內容衝突：${m.rel}`);
-      fs.unlinkSync(m.file);
-    }
-    if (moves.length) {
-      const reportFile = path.join(ROOT, "reports/multiverse-migration.json");
-      const prior = fs.existsSync(reportFile) ? JSON.parse(fs.readFileSync(reportFile,"utf8")) : [];
-      const history = new Map(prior.map(m=>[m.entity_id,m]));
-      for(const m of moves)history.set(m.data.entity_id,{entity_id:m.data.entity_id,from:history.get(m.data.entity_id)?.from??m.rel,to:m.target,old_concept_id:history.get(m.data.entity_id)?.old_concept_id??m.data.concept_id,new_concept_id:m.concept,reason:m.reason,source_hash:m.expected_hash});
-      fs.writeFileSync(reportFile, JSON.stringify([...history.values()],null,2)+"\n");
-    }
-  }
+  const pending = [
+    ...edits.map((p) => candidateChange({ destination: path.join(ROOT, p.target), before: p.target === p.rel ? p.text : null, after: p.next, operation: p.target === p.rel ? "update" : "create", source: "multiverse-layout", locator: p.rel })),
+    ...moves.map((m) => candidateChange({ destination: m.file, before: m.text, after: null, operation: "delete", source: "multiverse-layout", locator: m.rel })),
+  ];
+  const plan = planCandidateBatch(pending, { root: ROOT, lint: lintWiki });
+  const history = moves.map((m) => ({ entity_id: m.data.entity_id, from: m.rel, to: m.target, old_concept_id: m.data.concept_id, new_concept_id: m.concept, reason: m.reason, source_hash: m.expected_hash }));
+  writeCandidatePlan({ ...plan, moves: history }, report, { root: ROOT });
+  if (apply) applyCandidateBatch(plan, { root: ROOT, lint: lintWiki });
   console.log(`${apply ? "套用" : "預覽"}：搬移 ${moves.length} 頁，連結與內容更新 ${edits.length} 頁`);
-  return { moves, edits };
+  return { ...plan, moves: history, edits };
 }
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) organize({ apply: process.argv.includes("--apply") });
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  const options = parseOptions(process.argv.slice(2));
+  organize({ apply: options.apply, report: options.report });
+}

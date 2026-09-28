@@ -1,10 +1,13 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { applyCandidateBatch, candidateChange, parseOptions, planCandidateBatch, writeCandidatePlan } from "../core/ingest-publication-utils.mjs";
+import { lintWiki } from "../core/wiki-lint.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const REPORT = path.join(ROOT, "reports", "wiki-health-current.json");
-const APPLY = process.argv.includes("--apply");
+const options = parseOptions(process.argv.slice(2));
+if (options.apply && !options.report) throw new Error("套用 Wiki 變更必須指定 --report reports/<plan>.json，以保留可追溯報告。");
 const MIRROR_ROOT = "原始資料/外部來源鏡像/XGE2017";
 const URL = "https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/book/book-xge.json";
 const chapterByCategory = { 法術: ["04-Spells.md", "Chapter 04: Spells"], 背景: ["02-Character Options.md", "Chapter 02: Character Options > Backgrounds"], 職業: ["02-Character Options.md", "Chapter 02: Character Options > Classes and Subclasses"], 專長: ["02-Character Options.md", "Chapter 02: Character Options > Feats"] };
@@ -20,12 +23,16 @@ function update(text, entry) {
   return next;
 }
 const results = [];
+const pending = [];
 for (const entry of targets) {
   const file = path.join(ROOT, entry.file);
   if (!fs.existsSync(file)) { results.push({ file: entry.file, status: "missing_file" }); continue; }
   const before = fs.readFileSync(file, "utf8"); const after = update(before, entry); const changed = before !== after;
-  if (APPLY && changed) fs.writeFileSync(file, after, "utf8");
-  results.push({ file: entry.file, category: entry.category, status: changed ? (APPLY ? "written" : "preview") : "unchanged" });
+  if (changed) pending.push(candidateChange({ destination: file, before, after, operation: "update", source: MIRROR_ROOT, locator: entry.category }));
+  results.push({ file: entry.file, category: entry.category, status: changed ? (options.apply ? "written" : "preview") : "unchanged" });
 }
+const plan = planCandidateBatch(pending, { root: ROOT, lint: lintWiki });
+writeCandidatePlan({ ...plan, results }, options.report, { root: ROOT });
+if (options.apply) applyCandidateBatch(plan, { root: ROOT, lint: lintWiki });
 const summary = results.reduce((acc, item) => { acc[item.status] = (acc[item.status] ?? 0) + 1; return acc; }, {});
-process.stdout.write(`XGE2017 舊版章節鏡像同步${APPLY ? "套用" : "預覽"}：${JSON.stringify(summary)}\n`);
+process.stdout.write(`XGE2017 舊版章節鏡像同步${options.apply ? "套用" : "預覽"}：${JSON.stringify(summary)}\n`);

@@ -2,7 +2,8 @@ import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
-import { ROOT, loadIngestProfile, today } from "../core/ingest-publication-utils.mjs";
+import { ROOT, applyCandidateBatch, candidateChange, loadIngestProfile, parseOptions, planCandidateBatch, today, writeCandidatePlan } from "../core/ingest-publication-utils.mjs";
+import { lintWiki } from "../core/wiki-lint.mjs";
 
 const WIKI_ROOT = path.join(ROOT, "wiki", "法術", "2014");
 
@@ -20,11 +21,6 @@ function walk(directory) {
     if (entry.isDirectory()) return walk(target);
     return entry.isFile() && entry.name.endsWith(".md") ? [target] : [];
   });
-}
-
-function option(args, name) {
-  const index = args.indexOf(name);
-  return index >= 0 ? args[index + 1] : undefined;
 }
 
 function mirrorInfo(publicationId) {
@@ -70,8 +66,9 @@ function normalizedName(value) {
 }
 
 function main(args = process.argv.slice(2)) {
-  const publicationId = option(args, "--publication") ?? "XGE2017";
-  const apply = args.includes("--apply");
+  const options = parseOptions(args);
+  const publicationId = options.publicationId === "PHB2024" ? "XGE2017" : options.publicationId;
+  if (options.apply && !options.report) throw new Error("套用 Wiki 變更必須指定 --report reports/<plan>.json，以保留可追溯報告。");
   const mirror = mirrorInfo(publicationId);
   const mirrorPath = path.join(ROOT, ...mirror.file.split("/"));
   if (!fs.existsSync(mirrorPath)) throw new Error(`找不到鏡像資料集：${mirror.file}`);
@@ -81,7 +78,8 @@ function main(args = process.argv.slice(2)) {
   // The 5e.tools entry uses the published plural while the existing Wiki
   // title follows the Chinese source's singular English heading.
   if (publicationId === "XGE2017") byName.set(normalizedName("Summon Lesser Demon"), "Summon Lesser Demons");
-  const report = { mode: apply ? "apply" : "preview", total: 0, preview: 0, written: 0, skipped: [] };
+  const report = { total: 0, preview: 0, written: 0, skipped: [] };
+  const pending = [];
   for (const file of walk(WIKI_ROOT)) {
     const original = fs.readFileSync(file, "utf8");
     const entity = original.match(new RegExp(`^entity_id:\\s*"entry:${publicationId}:spell:([^\\"]+)"\\s*$`, "m"));
@@ -98,16 +96,18 @@ function main(args = process.argv.slice(2)) {
       continue;
     }
     report.preview += 1;
-    if (apply) {
-      fs.writeFileSync(file, result.text, "utf8");
-      report.written += 1;
-    }
+    pending.push(candidateChange({ destination: file, before: original, after: result.text, operation: "update", source: mirror.file, locator: `spell:${english}` }));
   }
-  process.stdout.write(`${apply ? "套用" : "預覽"} ${publicationId} 法術資料集引用：總計 ${report.total}；${apply ? `寫入 ${report.written}` : `預計 ${report.preview}`}；跳過 ${report.skipped.length}。\n`);
+  const plan = planCandidateBatch(pending, { root: ROOT, lint: lintWiki });
+  const fullReport = { ...plan, publication_id: publicationId, ...report };
+  writeCandidatePlan(fullReport, options.report, { root: ROOT });
+  if (options.apply) {
+    const applied = applyCandidateBatch(plan, { root: ROOT, lint: lintWiki });
+    report.written = applied.applied.length;
+  }
+  process.stdout.write(`${options.apply ? "套用" : "預覽"} ${publicationId} 法術資料集引用：總計 ${report.total}；${options.apply ? `寫入 ${report.written}` : `預計 ${report.preview}`}；跳過 ${report.skipped.length}。\n`);
   if (report.skipped.length) process.stdout.write(`${JSON.stringify(report.skipped, null, 2)}\n`);
-  const reportPath = args[args.indexOf("--report") + 1];
-  if (reportPath) fs.writeFileSync(path.resolve(ROOT, reportPath), `${JSON.stringify(report, null, 2)}\n`, "utf8");
-  return report;
+  return fullReport;
 }
 
 if (path.resolve(process.argv[1] ?? "") === fileURLToPath(import.meta.url)) main();

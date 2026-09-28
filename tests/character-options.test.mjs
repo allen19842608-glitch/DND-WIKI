@@ -2,11 +2,32 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { spawnSync } from "node:child_process";
 import test from "node:test";
-import { classifyEntity, createAuditReport, extractSourceEntities } from "../scripts/audit/character-options-lib.mjs";
-import { loadIngestProfile, loadPublication, writableCandidate } from "../scripts/core/ingest-publication-utils.mjs";
-import { ensureFeatBacklink, featReference, mergeBackgroundContent, parseBackgroundSource, splitEquipment } from "../scripts/ingest/ingest-backgrounds.mjs";
+import { classifyEntity, compactCoverage, createAuditReport, extractSourceEntities } from "../scripts/core/character-options-lib.mjs";
+import { ROOT, loadIngestProfile, loadPublication, writableCandidate } from "../scripts/core/ingest-publication-utils.mjs";
+import { ensureFeatBacklink, featReference, mergeBackgroundContent, parseBackgroundSource, runBackgroundIngest, splitEquipment } from "../scripts/ingest/ingest-backgrounds.mjs";
 import { updateCharacterOptionSource } from "../scripts/ingest/sync-character-option-sources.mjs";
+
+test("角色選項來源同步只經共用預覽產生具來源與設定指紋的計畫", (context) => {
+  const directory = fs.mkdtempSync(path.join(ROOT, "reports", "test-character-source-"));
+  context.after(() => fs.rmSync(directory, { recursive: true, force: true }));
+  const report = path.relative(ROOT, path.join(directory, "plan.json"));
+  const preview = spawnSync(process.execPath, ["scripts/core/wiki-tools.mjs", "preview", "--category", "角色選項來源",
+    "--publication", "EBER2025", "--only", "__none__", "--report", report], { cwd: ROOT, encoding: "utf8" });
+  assert.equal(preview.status, 0, preview.stderr);
+  const plan = JSON.parse(fs.readFileSync(path.join(ROOT, report), "utf8"));
+  assert.equal(plan.summary.ready, 0);
+  assert.ok(plan.results.every((entry) => entry.status === "out_of_scope"));
+  assert.ok(Object.keys(plan.source_fingerprints).some((file) => file.endsWith("book-efa.json")));
+  assert.ok(plan.dependency_fingerprints["config/ingest-profiles/EBER2025.yml"]);
+  assert.ok(fs.existsSync(path.join(directory, "plan.summary.md")));
+  const directApply = spawnSync(process.execPath, ["scripts/ingest/sync-character-option-sources.mjs", "--publication", "EBER2025", "--apply"], {
+    cwd: ROOT, encoding: "utf8",
+  });
+  assert.equal(directApply.status, 1);
+  assert.match(directApply.stderr, /只產生候選/);
+});
 
 const mirrorFile = "原始資料/外部來源鏡像/TEST/book-test.json";
 const entity = {
@@ -32,6 +53,19 @@ test("角色選項稽核可精確匹配英文名稱與 concept_id", () => {
   assert.equal(classifyEntity(entity, [page()], { publicationId: "TEST", mirrorFile }).status, "matched");
 });
 
+test("龍裔變體的括號式鏡像名稱只對應同一變體而非泛稱龍裔", () => {
+  const chromatic = { target: "wiki/種族/2014/色彩龍裔.md", english: "Chromatic Dragonborn",
+    text: "## 種族特質\n體型：中型；速度：30 呎。", data: { category: "種族", version: "2014-Legacy",
+      entity_id: "entry:FTD2021:species:chromatic-dragonborn", concept_id: "concept:species:chromatic-dragonborn",
+      sources: [{ file: mirrorFile }] } };
+  const gem = { ...chromatic, target: "wiki/種族/2014/寶石龍裔.md", english: "Gem Dragonborn",
+    data: { ...chromatic.data, entity_id: "entry:FTD2021:species:gem-dragonborn", concept_id: "concept:species:gem-dragonborn" } };
+  const result = classifyEntity({ category: "species", english_name: "Dragonborn (Chromatic)", source_file: mirrorFile,
+    locator: "test", page: 10 }, [chromatic, gem], { publicationId: "FTD2021", ruleset: "2014", mirrorFile });
+  assert.equal(result.wiki_target, chromatic.target);
+  assert.equal(result.status, "matched");
+});
+
 test("角色選項稽核接受同出版品登錄的英文資料集", () => {
   const datasetFile = "原始資料/外部來源鏡像/TEST/datasets/feats.json";
   const datasetPage = page({ sources: [{ file: datasetFile }] });
@@ -54,6 +88,98 @@ test("法術英文資料集可取代書籍中的簡略 statblock 引用", () => 
     source_shape: "dataset",
     locator: "spell:Homunculus Servant",
   }]);
+});
+
+test("專長稽核以同出版品資料集的實體頁碼取代書籍章節頁碼", () => {
+  const book = { data: [{ type: "section", name: "Feats", page: 39, entries: [
+    { type: "statblock", tag: "feat", name: "Greater Mark of Handling" },
+  ] }] };
+  const settings = {
+    publicationId: "EBER2025",
+    manifest: { publication_title: "Eberron: Forge of the Artificer (2025)", snapshot: { file: mirrorFile }, character_options: ["feats"] },
+  };
+  const withoutDataset = extractSourceEntities(book, settings);
+  assert.equal(withoutDataset[0].page, null);
+  const withDataset = extractSourceEntities(book, { ...settings, datasets: [{ file: "原始資料/外部來源鏡像/PHB2024/datasets/feats.json",
+    url: "https://example.invalid/feats.json", locator_prefix: "feat:", feats: [
+      { name: "Greater Mark of Handling", source: "EFA", page: 43 },
+      { name: "Greater Mark of Handling", source: "XPHB", page: 200 },
+    ] }] });
+  assert.equal(withDataset.length, 1);
+  assert.equal(withDataset[0].source_shape, "dataset");
+  assert.equal(withDataset[0].page, 43);
+});
+
+test("來源資料卡及引用標籤不繼承章節頁碼；未有實體頁碼不可標 matched", () => {
+  const book = { data: [{ type: "section", name: "Feats", page: 39, entries: [
+    { type: "statblock", tag: "feat", name: "Sample Feat" },
+    "{@feat Other Feat|EFA}",
+  ] }] };
+  const entities = extractSourceEntities(book, { publicationId: "EBER2025",
+    manifest: { publication_title: "Test Book", snapshot: { file: mirrorFile }, character_options: ["feats"] } });
+  assert.deepEqual(entities.map((item) => item.page), [null, null]);
+  const featPage = page({ title: "樣本專長 (Sample Feat)", entity_id: "entry:EBER2025:feat:sample-feat" });
+  featPage.english = "Sample Feat";
+  assert.equal(classifyEntity(entities[0], [featPage], { publicationId: "EBER2025", mirrorFile }).status, "ambiguous");
+});
+
+test("新出版品可由設定來源代碼配對同名跨書專長，不需寫死出版品 ID", () => {
+  const entities = extractSourceEntities({}, {
+    publicationId: "TEST2026", sourceCode: "tst",
+    manifest: { publication_title: "Test Book", snapshot: { file: mirrorFile }, character_options: ["feats"] },
+    datasets: [{ file: "原始資料/外部來源鏡像/TEST/feats.json", feats: [
+      { name: "Shared Feat", source: "OLD", page: 11 },
+      { name: "Shared Feat", source: "TST", page: 42 },
+    ] }],
+  });
+  assert.equal(entities.length, 1);
+  assert.equal(entities[0].page, 42);
+});
+
+test("書籍快照的子職 statblock 以職業與自身頁碼列入實體清單", () => {
+  const book = { data: [{ type: "section", name: "Character Classes", page: 7, entries: [
+    { type: "statblock", prop: "subclass", name: "Cartographer", className: "Artificer", source: "EFA", page: 20 },
+  ] }] };
+  const entities = extractSourceEntities(book, { publicationId: "EBER2025",
+    manifest: { publication_title: "Eberron", snapshot: { file: mirrorFile }, character_options: ["subclasses"] } });
+  assert.deepEqual(entities.map((item) => ({ name: item.english_name, parent: item.parent_class, page: item.page })), [
+    { name: "Cartographer", parent: "Artificer", page: 20 },
+  ]);
+});
+
+test("子職資料卡的職業前綴與同書引用合併為同一實體", () => {
+  const book = { data: [{ type: "section", name: "Character Creation", entries: [
+    { type: "statblock", prop: "subclass", name: "Monk: Way of the Ascendant Dragon", className: "monk", source: "FTD" },
+    "{@class monk||Way of the Ascendant Dragon||FTD}",
+  ] }] };
+  const entities = extractSourceEntities(book, { publicationId: "FTD2021", sourceCode: "FTD",
+    manifest: { publication_title: "Fizban", snapshot: { file: mirrorFile }, character_options: ["subclasses"] } });
+  assert.equal(entities.length, 1);
+  assert.equal(entities[0].english_name, "Way of the Ascendant Dragon");
+  assert.equal(entities[0].parent_class, "monk");
+  assert.equal(entities[0].source_shape, "statblock");
+});
+
+test("同書兩處子職引用的職業前綴不產生重複實體", () => {
+  const book = { data: [
+    { name: "Character Creation", entries: ["{@class monk||Monk: Way of the Ascendant Dragon||FTD}"] },
+    { name: "Followers", entries: ["{@class monk||Way of the Ascendant Dragon||FTD}"] },
+  ] };
+  const entities = extractSourceEntities(book, { publicationId: "FTD2021", sourceCode: "FTD",
+    manifest: { publication_title: "Fizban", snapshot: { file: mirrorFile }, character_options: ["subclasses"] } });
+  assert.deepEqual(entities.map((item) => [item.english_name, item.parent_class]), [["Way of the Ascendant Dragon", "monk"]]);
+});
+
+test("同出版品子職沿用 entry 類別識別碼時列明類別問題，不自行改 ID", () => {
+  const subclass = { ...entity, category: "subclasses", english_name: "Alchemist", parent_class: "Artificer", page: 12 };
+  const existing = page({ title: "煉金師 (Alchemist)", category: "職業", entry_type: "子職",
+    entity_id: "entry:EBER2025:entry:alchemist" });
+  existing.english = "Alchemist";
+  existing.text = "## 子職特性\n- 3 級：煉金師";
+  const result = classifyEntity(subclass, [existing], { publicationId: "EBER2025", mirrorFile });
+  assert.equal(result.status, "stale");
+  assert.ok(result.reasons.some((reason) => reason.includes("類別不是 subclass")));
+  assert.equal(existing.data.entity_id, "entry:EBER2025:entry:alchemist");
 });
 
 test("同名不同概念有多個候選時標為 ambiguous", () => {
@@ -167,14 +293,54 @@ test("缺漏、不完整與來源衝突有固定狀態", () => {
 test("具備法術正文資料集時，艾伯倫法術可列入正常稽核", () => {
   const eber = createAuditReport({ publicationId: "EBER2025", publication: loadPublication("EBER2025"), profile: loadIngestProfile("EBER2025"), pages: [] });
   assert.equal(eber.mirror.status, "available");
-  assert.equal(eber.mirror.datasets.length, 1);
-  assert.equal(eber.mirror.datasets[0].file, "原始資料/外部來源鏡像/EBER2025/datasets/spells-efa.json");
-  assert.equal(eber.mirror.datasets[0].url, "https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/spells/spells-efa.json");
+  const spells = eber.mirror.datasets.find((dataset) => dataset.file.endsWith("/spells-efa.json"));
+  const feats = eber.mirror.datasets.find((dataset) => dataset.file.endsWith("/feats.json"));
+  assert.equal(spells.file, "原始資料/外部來源鏡像/EBER2025/datasets/spells-efa.json");
+  assert.equal(spells.url, "https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/spells/spells-efa.json");
+  assert.equal(feats.file, "原始資料/外部來源鏡像/PHB2024/datasets/feats.json");
   assert.ok(eber.entities.some((item) => item.status === "missing"));
   assert.ok(eber.entities.some((item) => item.category === "spells" && item.status === "missing"));
   assert.ok(!eber.entities.some((item) => item.category === "spells" && item.status === "blocked"));
   const dmg = createAuditReport({ publicationId: "DMG2024", publication: loadPublication("DMG2024"), profile: loadIngestProfile("DMG2024"), pages: [] });
   assert.deepEqual(dmg.entities.map((item) => item.status), ["out_of_scope"]);
+});
+
+test("稽核身分 matched 不會吞掉獨立的未核定譯名待辦", () => {
+  const report = createAuditReport({ publicationId: "EBER2025", publication: loadPublication("EBER2025"),
+    profile: loadIngestProfile("EBER2025"), category: "feats" });
+  assert.equal(report.summary.matched, 28);
+  assert.ok(report.entities.some((item) => item.review_flags?.includes("translation_unapproved")));
+  const compact = compactCoverage(report);
+  assert.ok(compact.categories[0].review_total > 0);
+});
+
+test("已設定適用類別卻無實體不得標 out_of_scope；資料集缺失須阻擋", () => {
+  const publication = loadPublication("EBER2025");
+  const profile = loadIngestProfile("EBER2025");
+  const empty = createAuditReport({ publicationId: "EBER2025", publication,
+    profile: { ...profile, character_options: ["dependencies"] }, category: "dependencies", pages: [] });
+  assert.equal(empty.entities.length, 1);
+  assert.equal(empty.entities[0].status, "incomplete");
+  const absent = createAuditReport({ publicationId: "EBER2025", publication,
+    profile: { ...profile, canonical_mirror: { ...profile.canonical_mirror, datasets: [
+      { file: "原始資料/外部來源鏡像/EBER2025/datasets/not-present-feats.json", locator_prefix: "feat:" },
+    ] } }, category: "feats", pages: [] });
+  assert.ok(absent.entities.some((item) => item.status === "blocked"));
+  assert.ok(!absent.entities.some((item) => item.status === "matched"));
+});
+
+test("出版品涵蓋摘要保留未完成原因與剩餘數，不把未引用來源當缺頁", () => {
+  const report = { publication_id: "TEST2026", character_options: ["feats"], entities: [
+    { category: "feats", english_name: "A", status: "matched", review_flags: ["translation_unapproved"] },
+    { category: "feats", english_name: "B", status: "ambiguous", source: { page: null }, reasons: ["實體頁碼未定"] },
+    { category: "feats", english_name: "C", status: "incomplete", source: { page: 42 }, reasons: ["來源結構未支援"] },
+  ] };
+  const summary = compactCoverage(report, { maxItems: 1 });
+  assert.equal(summary.categories[0].statuses.matched, 1);
+  assert.equal(summary.categories[0].statuses.ambiguous, 1);
+  assert.equal(summary.categories[0].review_items[0].english_name, "A");
+  assert.deepEqual(summary.categories[0].review_items[0].review_flags, ["translation_unapproved"]);
+  assert.equal(summary.categories[0].review_items_remaining, 2);
 });
 
 test("必要資料卡不會把一般怪物章節納入", () => {
@@ -186,7 +352,33 @@ test("必要資料卡不會把一般怪物章節納入", () => {
   assert.deepEqual(entities, []);
 });
 
-test("舊版書籍快照的背景資料卡會列入稽核範圍", () => {
+test("PHB 附錄必要怪物只接受資料卡自身頁碼，不繼承附錄頁碼", () => {
+  const book = { data: [{ name: "Appendix B: Creature Stat Blocks", page: 345, entries: [
+    { type: "statblock", tag: "creature", name: "Helper A", source: "XPHB" },
+    { type: "statblock", tag: "creature", name: "Helper B", source: "XPHB", page: 346 },
+  ] }] };
+  const entities = extractSourceEntities(book, { publicationId: "PHB2024",
+    manifest: { publication_title: "Player's Handbook (2024)", snapshot: { file: mirrorFile }, character_options: ["dependencies"] } });
+  assert.deepEqual(entities.map((item) => [item.english_name, item.page]), [["Helper A", null], ["Helper B", 346]]);
+});
+
+test("同出版品同名資料卡的自身頁碼衝突列 ambiguous，不取第一筆", () => {
+  const book = { data: [{ name: "Feats", entries: [
+    { type: "statblock", tag: "feat", name: "Shared Feat", source: "TST", page: 20 },
+    { type: "statblock", tag: "feat", name: "Shared Feat", source: "TST", page: 22 },
+  ] }] };
+  const entities = extractSourceEntities(book, { publicationId: "TEST2026", sourceCode: "TST",
+    manifest: { publication_title: "Test Book", snapshot: { file: mirrorFile }, character_options: ["feats"] } });
+  assert.equal(entities.length, 1);
+  assert.deepEqual(entities[0].source_conflicts.map((item) => item.page), [20, 22]);
+  const result = classifyEntity(entities[0], [page()], { publicationId: "TEST2026", mirrorFile });
+  assert.equal(result.status, "ambiguous");
+  assert.deepEqual(result.source_candidates.map((item) => item.page), [20, 22]);
+  const compact = compactCoverage({ publication_id: "TEST2026", character_options: ["feats"], entities: [result] });
+  assert.deepEqual(compact.categories[0].review_items[0].source_candidates.map((item) => item.page), [20, 22]);
+});
+
+test("舊版背景資料卡會列入稽核，但不繼承章節頁碼", () => {
   const book = { data: [{ name: "Backgrounds", page: 145, entries: [{ type: "statblock", tag: "background", source: "SCAG", name: "City Watch" }] }] };
   const entities = extractSourceEntities(book, {
     publicationId: "SCAG2015",
@@ -195,7 +387,7 @@ test("舊版書籍快照的背景資料卡會列入稽核範圍", () => {
   assert.equal(entities.length, 1);
   assert.equal(entities[0].category, "backgrounds");
   assert.equal(entities[0].english_name, "City Watch");
-  assert.equal(entities[0].page, 145);
+  assert.equal(entities[0].page, null);
 });
 
 test("身高體重表中的種族參照不會誤列為角色選項", () => {
@@ -260,17 +452,29 @@ test("背景增量合併保留人工區塊且第二次無差異", () => {
   assert.equal(twice, once);
 });
 
-test("背景與起源專長可建立反向連結", () => {
+test("背景與起源專長反向連結會納入候選而不直寫", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "dnd-background-link-"));
   const feat = path.join(root, "feat.md");
   const background = path.join(root, "background.md");
   try {
     fs.writeFileSync(feat, "# 警覺\n\n## 🔗 相關連結\n", "utf8");
-    const options = { apply: true, results: [] };
-    ensureFeatBacklink({ file: feat }, background, "測試背景 (Test Background)", options);
-    assert.match(fs.readFileSync(feat, "utf8"), /測試背景 \(Test Background\)/);
+    const before = fs.readFileSync(feat, "utf8");
+    const options = { apply: false, replace: true, candidates: [], results: [] };
+    ensureFeatBacklink({ file: feat }, background, "測試背景 (Test Background)", options, {
+      writeCandidate: ({ content }) => { options.candidates.push({ after: content }); return "preview"; },
+    });
+    assert.equal(fs.readFileSync(feat, "utf8"), before);
+    assert.equal(options.candidates.length, 1);
+    assert.match(options.candidates[0].after, /測試背景 \(Test Background\)/);
     assert.equal(options.results.at(-1).reason, "background_origin_feat_backlink");
   } finally { fs.rmSync(root, { recursive: true, force: true }); }
+});
+
+test("背景解析器拒絕直接套用", () => {
+  assert.throws(
+    () => runBackgroundIngest(["--apply"]),
+    /背景解析器不直接寫入 Wiki/,
+  );
 });
 
 test("來源同步第二次套用無差異並保留人工正文", () => {

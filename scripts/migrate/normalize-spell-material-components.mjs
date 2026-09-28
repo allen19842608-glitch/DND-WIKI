@@ -2,10 +2,13 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { applyCandidateBatch, candidateChange, parseOptions, planCandidateBatch, writeCandidatePlan } from "../core/ingest-publication-utils.mjs";
+import { lintWiki } from "../core/wiki-lint.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const SPELL_ROOT = path.join(ROOT, "wiki", "法術");
-const apply = process.argv.includes("--apply");
+const options = parseOptions(process.argv.slice(2));
+if (options.apply && !options.report) throw new Error("套用 Wiki 變更必須指定 --report reports/<plan>.json，以保留可追溯報告。");
 
 function walk(directory) {
   return fs.readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
@@ -29,12 +32,16 @@ export function normalizeMaterialComponents(source) {
 
 let candidates = 0;
 let changed = 0;
+const pending = [];
 for (const file of walk(SPELL_ROOT).filter((file) => !path.basename(file).includes("索引"))) {
   const source = fs.readFileSync(file, "utf8");
   const result = normalizeMaterialComponents(source);
   if (!result.changed) continue;
   candidates += 1;
-  if (apply) fs.writeFileSync(file, result.source, "utf8");
-  changed += apply ? 1 : 0;
+  pending.push(candidateChange({ destination: file, before: source, after: result.source, operation: "update", source: "spell-material-components", locator: path.relative(ROOT, file) }));
+  changed += options.apply ? 1 : 0;
 }
-console.log(`${apply ? "已套用" : "預覽"}：${candidates} 頁可簡化；${changed} 頁已修改。`);
+const plan = planCandidateBatch(pending, { root: ROOT, lint: lintWiki });
+writeCandidatePlan(plan, options.report, { root: ROOT });
+if (options.apply) applyCandidateBatch(plan, { root: ROOT, lint: lintWiki });
+console.log(`${options.apply ? "已套用" : "預覽"}：${candidates} 頁可簡化；${changed} 頁已修改。`);

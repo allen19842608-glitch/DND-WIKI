@@ -2,6 +2,10 @@ import fs from "node:fs";
 import path from "node:path";
 
 const apply = process.argv.includes("--apply");
+if (apply) {
+  process.stderr.write("舊圖片嵌入入口已退役，不再直接寫入 Wiki；請先用 wiki:preview 產生可審閱候選。\n");
+  process.exit(1);
+}
 const ROOT = process.cwd();
 const IMAGE_ROOT = "原始資料/外部來源鏡像/EBER2025/images/book/EFA";
 const MIRROR = "原始資料/外部來源鏡像/EBER2025/book-efa.json";

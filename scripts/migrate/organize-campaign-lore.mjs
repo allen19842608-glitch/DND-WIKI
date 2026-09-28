@@ -4,15 +4,15 @@ import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 import YAML from "yaml";
+import { applyCandidateBatch, candidateChange, parseOptions, planCandidateBatch, writeCandidatePlan } from "../core/ingest-publication-utils.mjs";
+import { lintWiki } from "../core/wiki-lint.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const WIKI_ROOT = path.join(ROOT, "wiki");
 const LORE_ROOT = "wiki/戰役設定";
 const GREYHAWK_LEGACY_ROOT = `${LORE_ROOT}/戰役創作/戰役設計/灰鷹`;
-const options = {
-  apply: process.argv.includes("--apply"),
-  report: valueAfter("--report"),
-};
+const options = parseOptions(process.argv.slice(2));
+if (options.apply && !options.report) throw new Error("套用 Wiki 變更必須指定 --report reports/<plan>.json，以保留可追溯報告。");
 
 function valueAfter(name) {
   const index = process.argv.indexOf(name);
@@ -62,6 +62,8 @@ function legacySubpath(rel, world) {
 }
 
 function representedType(world, subpath, basename) {
+  // 世界根索引不屬於實體類型；分類結果只用來保留既有概念 ID 的類型尾碼。
+  if (basename === path.posix.basename(world.index, ".md")) return "世界觀";
   const existingDirectory = subpath.split("/")[0];
   const configuredType = Object.values(types).find(
     (item) => item.id !== "index" && item.directory === existingDirectory,
@@ -206,6 +208,15 @@ let entries = walk(path.join(ROOT, "wiki", "戰役設定"))
   .map((oldRel) => {
     const world = worldFor(oldRel);
     if (!world) return null;
+    const existing = fs.readFileSync(absolute(oldRel), "utf8");
+    if (/^(?:"content_scope"|content_scope): "organized_play"$/m.test(existing)) return null;
+    const existingSetting = existing.match(/^(?:"setting"|setting): "([^"]+)"$/m)?.[1];
+    const existingLoreType = existing.match(/^(?:"lore_type"|lore_type): "([^"]+)"$/m)?.[1];
+    // 現行三層架構已經有明確 metadata 時，不以舊式路徑啟發式覆蓋它；
+    // 特別是索引頁無法可靠反推其所代表的實體類型。
+    if (existingSetting === world.label && types[existingLoreType]) {
+      return { oldRel, newRel: oldRel, world, loreType: existingLoreType, represented: existingLoreType === "索引" ? "世界觀" : existingLoreType, preserve: true, content: existing };
+    }
     const subpath = legacySubpath(oldRel, world);
     const { loreType, represented } = classification(world, subpath);
     const basename = path.posix.basename(subpath);
@@ -282,13 +293,13 @@ for (const entry of entries) {
   if (entry.oldRel !== entry.newRel && fs.existsSync(absolute(entry.newRel))) {
     throw new Error(`目標已存在，停止遷移：${entry.newRel}`);
   }
-  let text = fs.readFileSync(absolute(entry.oldRel), "utf8");
+  let text = entry.content ?? fs.readFileSync(absolute(entry.oldRel), "utf8");
   if (entry.mergeFrom) {
     const older = fs.readFileSync(absolute(entry.mergeFrom.entry.oldRel), "utf8");
     text = entry.mergeFrom.merge(text, older);
   }
-  const next = updateFrontmatter(text, entry);
-  const concept = next.match(/^concept_id: "([^"]+)"$/m)?.[1];
+  const next = entry.preserve ? text : updateFrontmatter(text, entry);
+  const concept = next.match(/^(?:"concept_id"|concept_id): "([^"]+)"$/m)?.[1];
   if (concepts.has(concept)) {
     throw new Error(`concept_id 衝突：${concepts.get(concept)} 與 ${entry.oldRel} -> ${concept}`);
   }
@@ -318,31 +329,6 @@ const report = {
   })),
 };
 
-if (options.report) {
-  const target = path.resolve(ROOT, options.report);
-  if (!target.startsWith(`${ROOT}${path.sep}`)) throw new Error("--report 必須位於工作區內。");
-  fs.mkdirSync(path.dirname(target), { recursive: true });
-  fs.writeFileSync(target, `${JSON.stringify(report, null, 2)}\n`, "utf8");
-}
-
-for (const item of counts) console.log(`${item.world}: ${item.count}`);
-console.log(`${options.apply ? "套用" : "預覽"}：${report.entries} 頁，${report.moves} 個路徑移動。`);
-if (!options.apply) process.exit(0);
-
-for (const entry of entries) {
-  const source = absolute(entry.oldRel);
-  const destination = absolute(entry.newRel);
-  fs.mkdirSync(path.dirname(destination), { recursive: true });
-  if (entry.oldRel === entry.newRel) {
-    fs.writeFileSync(source, entry.content, "utf8");
-  } else {
-    fs.writeFileSync(destination, entry.content, "utf8");
-    fs.unlinkSync(source);
-  }
-}
-
-for (const item of mergedAway) fs.unlinkSync(absolute(item.oldRel));
-
 const linkMappings = entries
   .filter((entry) => entry.oldRel !== entry.newRel)
   .map((entry) => ({
@@ -355,7 +341,25 @@ const linkMappings = entries
   })))
   .sort((a, b) => b.oldTarget.length - a.oldTarget.length);
 
+const pending = [];
+for (const entry of entries) {
+  const source = absolute(entry.oldRel);
+  const destination = absolute(entry.newRel);
+  const before = fs.readFileSync(source, "utf8");
+  if (entry.oldRel === entry.newRel) {
+    if (entry.content !== before) pending.push(candidateChange({ destination: source, before, after: entry.content, operation: "update", source: "config/lore.yml", locator: `${entry.world.label}／${entry.loreType}` }));
+  }
+  else {
+    pending.push(candidateChange({ destination, before: null, after: entry.content, operation: "create", source: "config/lore.yml", locator: `${entry.world.label}／${entry.loreType}` }));
+    pending.push(candidateChange({ destination: source, before, after: null, operation: "delete", source: "config/lore.yml", locator: `遷移至 ${entry.newRel}` }));
+  }
+}
+for (const item of mergedAway) {
+  const source = absolute(item.oldRel);
+  pending.push(candidateChange({ destination: source, before: fs.readFileSync(source, "utf8"), after: null, operation: "delete", source: "連續設定合併", locator: `合併至 ${item.targetEntry.newRel}` }));
+}
 for (const file of walk(WIKI_ROOT)) {
+  if (pending.some((change) => change.operation === "delete" && absolute(change.target) === file)) continue;
   const original = fs.readFileSync(file, "utf8");
   let next = original;
   for (const mapping of linkMappings) {
@@ -363,7 +367,10 @@ for (const file of walk(WIKI_ROOT)) {
     next = next.replaceAll(`[[${mapping.oldTarget}#`, `[[${mapping.newTarget}#`);
     next = next.replaceAll(`[[${mapping.oldTarget}]]`, `[[${mapping.newTarget}]]`);
   }
-  if (next !== original) fs.writeFileSync(file, next, "utf8");
+  if (next !== original) pending.push(candidateChange({ destination: file, before: original, after: next, operation: "link", source: "戰役目錄遷移", locator: "完整路徑連結" }));
 }
-
-console.log("已更新明確使用完整路徑的 Wiki 連結。 ");
+const plan = planCandidateBatch(pending, { root: ROOT, lint: lintWiki });
+writeCandidatePlan({ ...plan, campaign_report: report }, options.report, { root: ROOT });
+if (options.apply) applyCandidateBatch(plan, { root: ROOT, lint: lintWiki });
+for (const item of counts) console.log(`${item.world}: ${item.count}`);
+console.log(`${options.apply ? "套用" : "預覽"}：${report.entries} 頁，${report.moves} 個路徑移動；可套用 ${plan.summary.ready}；人工覆核 ${plan.summary.manual_review}。`);

@@ -2,6 +2,9 @@ import fs from "node:fs";
 import path from "node:path";
 import { ROOT, frontmatter, loadPublication } from "../core/ingest-publication-utils.mjs";
 
+process.stderr.write("舊版艾伯倫第二章整批匯入已退役，不再直接寫入 Wiki 或複製附件；請使用 wiki:preview -- --category 戰役設定 --publication ERLW2019 產生候選。\n");
+process.exit(1);
+
 const publicationId = "ERLW2019";
 const publication = loadPublication(publicationId);
 const sourceRoot = path.join(ROOT, "原始資料", "艾伯倫：從終末戰爭中崛起", "第二章");

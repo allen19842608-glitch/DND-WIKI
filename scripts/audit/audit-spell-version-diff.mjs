@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { ROOT } from "../core/ingest-publication-utils.mjs";
+import { ROOT, reportTargetPath } from "../core/ingest-publication-utils.mjs";
 
 const sourceDirectories = {
   "2014": path.join(ROOT, "原始資料", "玩家手冊2014", "魔法", "法術詳述"),
@@ -80,7 +80,7 @@ if (process.argv.includes("--report")) {
     }),
     "",
   ].join("\n");
-  const reportPath = path.join(ROOT, "reports", "玩家手冊法術2014-2024嚴格比對.md");
+  const reportPath = reportTargetPath("reports/玩家手冊法術2014-2024嚴格比對.md");
   fs.mkdirSync(path.dirname(reportPath), { recursive: true });
   fs.writeFileSync(reportPath, report, "utf8");
   console.log(`報告：${path.relative(ROOT, reportPath)}`);

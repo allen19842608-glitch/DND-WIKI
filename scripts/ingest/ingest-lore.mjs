@@ -1,20 +1,27 @@
 import crypto from "node:crypto";
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 import YAML from "yaml";
 import {
   ROOT,
+  candidateChange,
   loadIngestProfile,
   loadPublication,
+  normalizeCandidatePlanResults,
   option,
+  planCandidateBatch,
   slug,
   today,
   versionForPublication,
   walkMarkdown,
+  writeCandidatePlan,
 } from "../core/ingest-publication-utils.mjs";
+import { withIndexEffects } from "../core/index-candidates.mjs";
 import { syncLoreIndexes } from "../core/lore-indexes.mjs";
+import { lintWiki } from "../core/wiki-lint.mjs";
 
 const SCRIPT = fileURLToPath(import.meta.url);
 const CURATED_LAYOUT = JSON.parse(fs.readFileSync(path.join(ROOT, "config/multiverse-layout.json"), "utf8"));
@@ -285,17 +292,75 @@ function addStatBlockSection(content, links) {
   return content.replace(/^## 來源差異與不確定性\s*$/m, `## 怪物資料卡\n\n${lines.join("\n")}\n\n## 來源差異與不確定性`);
 }
 
-function addMonsterBacklink(monsterRel, candidate, apply, changes) {
+function addMonsterBacklink(monsterRel, candidate, changes) {
   const file = path.join(ROOT, "wiki", ...monsterRel.split("/"));
   const target = candidate.destinationRel.replace(/^wiki\//, "").replace(/\.md$/, "");
-  let text = fs.readFileSync(file, "utf8");
+  const targetRel = rel(file);
+  const previous = changes.get(targetRel);
+  let text = previous?.after ?? fs.readFileSync(file, "utf8");
   if (text.includes(`[[${target}|`)) return;
   const link = `- [[${target}|${candidate.chinese}]]`;
   text = /^## 🔗 相關連結\s*$/m.test(text)
     ? text.replace(/^## 🔗 相關連結\s*$/m, `## 🔗 相關連結\n\n${link}`)
     : `${text.trimEnd()}\n\n## 🔗 相關連結\n\n${link}\n`;
-  changes.set(rel(file), text);
-  if (apply) fs.writeFileSync(file, text, "utf8");
+  changes.set(targetRel, {
+    before: previous?.before ?? fs.readFileSync(file, "utf8"), after: text,
+    source: candidate.source, locator: candidate.locator, status: previous?.status ?? "ready", review: previous?.review ?? [],
+  });
+}
+
+function exactMirrorPage(candidate, profile) {
+  const declared = profile.canonical_mirror?.entity_pages;
+  const names = [candidate.english, candidate.chinese].filter(Boolean);
+  const entry = names.map((name) => declared?.[name]).find(Boolean);
+  const page = typeof entry === "object" ? entry.page : entry;
+  if (Number.isInteger(page) && page > 0) return { ok: true, page };
+  const mirror = profile.canonical_mirror?.output_root;
+  return {
+    ok: false,
+    reason: mirror
+      ? `英文鏡像 ${mirror} 尚未為「${candidate.english ?? candidate.chinese}」登錄實體精確頁碼；章節起始頁不可替代。`
+      : `出版品未登錄英文鏡像實體頁碼，無法依「${candidate.english ?? candidate.chinese}」核定。`,
+  };
+}
+
+export function materializeLoreIndexEffects(changes, { setting, root = ROOT }) {
+  const ready = [...changes.entries()].filter(([target, change]) => target.startsWith("wiki/戰役設定/") && change.status === "ready");
+  if (!ready.length) return changes;
+  const temporary = fs.mkdtempSync(path.join(os.tmpdir(), "dnd-wiki-lore-plan-"));
+  try {
+    const wiki = path.join(root, "wiki", "戰役設定");
+    fs.cpSync(wiki, path.join(temporary, "wiki", "戰役設定"), { recursive: true });
+    fs.mkdirSync(path.join(temporary, "config"), { recursive: true });
+    fs.copyFileSync(path.join(root, "config", "lore.yml"), path.join(temporary, "config", "lore.yml"));
+    for (const [target, change] of ready) {
+      const destination = path.join(temporary, ...target.split("/"));
+      fs.mkdirSync(path.dirname(destination), { recursive: true });
+      fs.writeFileSync(destination, change.after, "utf8");
+    }
+    const indexes = syncLoreIndexes({ root: temporary, apply: true, setting });
+    for (const target of indexes.changes) {
+      const after = fs.readFileSync(path.join(temporary, ...target.split("/")), "utf8");
+      const beforeFile = path.join(root, ...target.split("/"));
+      const before = fs.existsSync(beforeFile) ? fs.readFileSync(beforeFile, "utf8") : null;
+      const original = changes.get(target);
+      changes.set(target, {
+        before: original?.before ?? before, after, source: original?.source ?? "lore-index",
+        locator: original?.locator ?? `${setting} 索引與反向連結`, status: original?.status ?? "ready", review: original?.review ?? [],
+      });
+    }
+    return changes;
+  } finally {
+    fs.rmSync(temporary, { recursive: true, force: true });
+  }
+}
+
+function asCandidateChanges(changes) {
+  return [...changes.entries()].map(([target, change]) => candidateChange({
+    destination: path.join(ROOT, ...target.split("/")), before: change.before, after: change.after,
+    operation: change.before === null ? "create" : change.before === change.after ? "unchanged" : "update",
+    source: change.source, locator: change.locator, status: change.status, review: change.review,
+  }));
 }
 
 function makeCandidates({ files, publicationId, publication, profile, sourceRoot, setting, typeOverride, loreConfig, only }) {
@@ -416,11 +481,6 @@ function makeCandidates({ files, publicationId, publication, profile, sourceRoot
   return candidates;
 }
 
-function writeReport(reportPath, report) {
-  fs.mkdirSync(path.dirname(reportPath), { recursive: true });
-  fs.writeFileSync(reportPath, `${JSON.stringify(report, null, 2)}\n`, "utf8");
-}
-
 function showDiff(candidate, content, existing) {
   process.stdout.write(`--- ${existing ? candidate.target : "/dev/null"}\n+++ ${candidate.destinationRel}\n`);
   const lines = content.split(/\r?\n/);
@@ -429,6 +489,10 @@ function showDiff(candidate, content, existing) {
 }
 
 export function runLoreIngest(args = process.argv.slice(2)) {
+  // 解析器只產生候選；舊的直寫分支不得繞過 wiki:apply 的範圍、過期與回復保護。
+  if (args.includes("--apply")) {
+    throw new Error("戰役設定解析器只支援預覽；請使用 wiki:apply 套用已審閱計畫。");
+  }
   const publicationId = option(args, "--publication");
   if (!publicationId) throw new Error("戰役設定吸收必須指定 --publication。");
   const publication = loadPublication(publicationId);
@@ -436,7 +500,6 @@ export function runLoreIngest(args = process.argv.slice(2)) {
   const setting = option(args, "--setting") ?? profile.setting ?? publication.setting;
   if (!setting) throw new Error(`出版品 ${publicationId} 未指定世界；請使用 --setting。`);
   if (profile.setting && profile.setting !== setting) throw new Error(`--setting ${setting} 與匯入設定的 ${profile.setting} 不一致。`);
-  const apply = args.includes("--apply");
   const diff = args.includes("--diff");
   const typeOverride = option(args, "--type");
   const only = option(args, "--only");
@@ -456,57 +519,70 @@ export function runLoreIngest(args = process.argv.slice(2)) {
   for (const candidate of candidates) candidate.stat_links = statLinks(candidate, monsters);
   const actionable = candidates.filter((candidate) => candidate.status === "新增"
     || (candidate.status === "合併" && !candidate.reason.includes("已引用相同來源定位")));
-  const actionableEntities = new Set(actionable.map((candidate) => candidate.target ?? candidate.destinationRel));
-  if (apply && actionableEntities.size > 25) throw new Error(`本批有 ${actionableEntities.size} 個可寫入實體，超過每批 25 個上限；請用 --only 或 --type 縮小範圍。`);
-
   const changes = new Map();
+  const actionableByTarget = new Map();
   for (const candidate of actionable) {
     const targetRel = candidate.target ?? candidate.destinationRel;
-    const existing = changes.has(targetRel)
-      ? pageFromText(targetRel, changes.get(targetRel))
+    const previous = changes.get(targetRel);
+    const existing = previous
+      ? pageFromText(targetRel, previous.after)
       : candidate.target ? readPage(path.join(ROOT, ...candidate.target.split("/"))) : null;
     let content = existing ? mergePage(existing, candidate, publication) : newPage(candidate, publication, candidate.world, candidate.loreType);
     content = addStatBlockSection(content, candidate.stat_links);
     const destinationRel = existing ? existing.rel : candidate.destinationRel;
     candidate.destinationRel = destinationRel;
+    const mirror = exactMirrorPage(candidate, profile);
+    candidate.mirror_page = mirror.page ?? null;
+    candidate.review = mirror.ok ? [] : [mirror.reason];
     if (content === existing?.text) continue;
-    changes.set(destinationRel, content);
-    if (diff && sourceMode !== "canonical") showDiff(candidate, content, existing);
-    if (apply) {
-      const destination = path.join(ROOT, ...destinationRel.split("/"));
-      fs.mkdirSync(path.dirname(destination), { recursive: true });
-      fs.writeFileSync(destination, content, "utf8");
-      for (const stat of candidate.stat_links.filter((item) => item.status === "linked")) addMonsterBacklink(`${stat.target}.md`, candidate, apply, changes);
-    }
+    changes.set(destinationRel, {
+      before: previous?.before ?? existing?.text ?? null, after: content, source: candidate.source, locator: candidate.locator,
+      status: mirror.ok && previous?.status !== "manual_review" ? "ready" : "manual_review",
+      review: [...(previous?.review ?? []), ...candidate.review],
+    });
+    if (!actionableByTarget.has(destinationRel)) actionableByTarget.set(destinationRel, []);
+    actionableByTarget.get(destinationRel).push(candidate);
   }
 
-  let indexResult = { changes: [] };
-  if (apply && changes.size) indexResult = syncLoreIndexes({ apply: true });
+  for (const [target, group] of actionableByTarget) {
+    if (changes.get(target)?.status !== "ready") continue;
+    for (const candidate of group) {
+      for (const stat of candidate.stat_links.filter((item) => item.status === "linked")) addMonsterBacklink(`${stat.target}.md`, candidate, changes);
+    }
+  }
+  const withLoreIndexes = materializeLoreIndexEffects(changes, { setting, root: ROOT });
+  const plannedChanges = withIndexEffects(asCandidateChanges(withLoreIndexes), { root: ROOT, source: "lore-generic-index" });
+  const plan = planCandidateBatch(plannedChanges, {
+    root: ROOT,
+    lint: lintWiki,
+    sourceFiles: selection.included.map(rel),
+  });
   const excluded = selection.excluded.map((item) => ({
     id: `${publicationId}:${crypto.createHash("sha1").update(rel(item.file)).digest("hex").slice(0, 10)}`,
-    source: rel(item.file), status: "排除", reason: item.reason,
+    source: rel(item.file), status: "out_of_scope", reason: item.reason,
   }));
   const missingStat = candidates.flatMap((candidate) => candidate.stat_links
     .filter((item) => item.status === "missing-stat-link")
     .map((item) => ({ candidate: candidate.id, source: candidate.source, name: item.name, code: "missing-stat-link" })));
   const publicCandidates = candidates.map(({ body, world, loreType, ...candidate }) => candidate);
-  const report = {
-    schema_version: 1,
-    generated_at: new Date().toISOString(),
-    mode: apply ? "apply" : "preview",
+  const results = [
+    ...publicCandidates.map((candidate) => {
+      const target = candidate.destinationRel;
+      const change = changes.get(target);
+      if (candidate.status === "排除") return { source: candidate.source, target, status: "out_of_scope", reason: candidate.reason };
+      if (candidate.status === "來源衝突") return { source: candidate.source, target, status: "conflict", reason: candidate.reason };
+      if (candidate.status === "譯名待確認" || candidate.review?.length) return { source: candidate.source, target, status: "manual_review", reason: [...(candidate.review ?? []), candidate.status === "譯名待確認" ? candidate.reason : null].filter(Boolean).join("；") };
+      return { source: candidate.source, target, status: change ? "preview" : "matched", reason: change ? null : "內容與既有頁相同。" };
+    }),
+    ...excluded,
+  ];
+  const report = normalizeCandidatePlanResults({
+    ...plan,
+    category: "戰役設定",
     publication_id: publicationId,
     setting,
     filters: { type: typeOverride ?? null, only: only ?? null, source_mode: sourceMode },
-    summary: {
-      candidates: candidates.length,
-      actionable_candidates: actionable.length,
-      writable: changes.size,
-      changed_files: changes.size,
-      index_changes: indexResult.changes.length,
-      excluded: excluded.length + candidates.filter((item) => item.status === "排除").length,
-      errors: candidates.filter((item) => item.status === "來源衝突").length,
-      warnings: missingStat.length + candidates.filter((item) => item.status === "譯名待確認").length,
-    },
+    candidate_summary: { candidates: candidates.length, actionable_candidates: actionable.length, excluded: excluded.length + candidates.filter((item) => item.status === "排除").length },
     errors: publicCandidates.filter((item) => item.status === "來源衝突"),
     warnings: [
       ...publicCandidates.filter((item) => item.status === "譯名待確認"),
@@ -514,17 +590,18 @@ export function runLoreIngest(args = process.argv.slice(2)) {
     ],
     information: publicCandidates.filter((item) => ["新增", "合併", "別名"].includes(item.status)),
     manual_review: publicCandidates.filter((item) => ["來源衝突", "譯名待確認"].includes(item.status)),
-    candidates: [...publicCandidates, ...excluded],
-  };
-  if (diff && sourceMode === "canonical") process.stdout.write(`英文鏡像候選差異：${changes.size} 個 Wiki 條目待人工整理；為避免在終端重複原文，不輸出全文差異。\n`);
+    candidates: [...publicCandidates, ...excluded], results,
+  });
+  if (diff && sourceMode === "canonical") process.stdout.write(`英文鏡像候選差異：${plan.summary.ready} 個可套用、${plan.summary.manual_review} 個待人工覆核；完整差異請使用 --report。\n`);
   const reportFlag = args.indexOf("--report");
   if (reportFlag >= 0) {
     const supplied = args[reportFlag + 1];
     const reportRel = supplied && !supplied.startsWith("--") ? supplied : `reports/lore-ingest-${publicationId}.json`;
-    writeReport(path.resolve(ROOT, reportRel), report);
-    process.stdout.write(`報告：${rel(path.resolve(ROOT, reportRel))}\n`);
+    writeCandidatePlan(report, reportRel, { root: ROOT });
+    process.stdout.write(`報告：${reportRel}\n`);
   }
-  process.stdout.write(`${apply ? "套用" : "預覽"} ${publicationId}：候選 ${candidates.length}；需評估合併 ${actionable.length}；可寫入 ${changes.size}；排除 ${excluded.length}。\n`);
+  const sourceReviewCount = results.filter((item) => ["manual_review", "ambiguous", "incomplete", "conflict", "blocked"].includes(item.status)).length;
+  process.stdout.write(`預覽 ${publicationId}：候選 ${candidates.length}；需評估合併 ${actionable.length}；可套用 ${plan.summary.ready}；候選檔案待覆核 ${plan.summary.manual_review}；來源待覆核 ${sourceReviewCount}；排除 ${excluded.length}。\n`);
   for (const status of STATUS) {
     const count = [...candidates, ...excluded].filter((item) => item.status === status).length;
     if (count) process.stdout.write(`- ${status}：${count}\n`);

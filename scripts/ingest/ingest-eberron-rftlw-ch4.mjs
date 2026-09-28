@@ -1,11 +1,17 @@
 import fs from "node:fs";
 import path from "node:path";
+import { ROOT, applyCandidateBatch, candidateChange, parseOptions, planCandidateBatch } from "../core/ingest-publication-utils.mjs";
+import { lintWiki } from "../core/wiki-lint.mjs";
 
-const root = process.cwd();
+const root = ROOT;
+const options = parseOptions(process.argv.slice(2));
+if (options.apply && !options.report) throw new Error("套用 Wiki 變更必須指定 --report reports/<plan>.json，以保留可追溯報告。");
 const sourceRoot = path.join(root, "原始資料", "艾伯倫：從終末戰爭中崛起", "第四章");
 const base = path.join(root, "wiki", "戰役設定", "艾伯倫");
 const sourcePrefix = "原始資料/艾伯倫：從終末戰爭中崛起/第四章";
 const publication = "艾伯倫從終末戰爭中崛起2019";
+const pending = [];
+const staged = new Map();
 
 const entries = [
   ["冒險主題", "Adventure Themes", "冒險主題", "冒險與勢力", "冒險設計"],
@@ -107,11 +113,20 @@ updated: "2026-08-13"
 ---`;
 }
 
+function queueWrite(destination, text, locator) {
+  const before = fs.existsSync(destination) ? fs.readFileSync(destination, "utf8") : null;
+  if (before === text || staged.get(destination) === text) return;
+  staged.set(destination, text);
+  const change = candidateChange({ destination, before, after: text, operation: before === null ? "create" : "update", source: sourcePrefix, locator });
+  const index = pending.findIndex((item) => item.target === change.target);
+  if (index >= 0) pending[index] = change;
+  else pending.push(change);
+}
+
 function page([source, english, title, folder, section]) {
   const dir = path.join(base, folder);
   const indexFolder = "冒險與勢力";
   const localIndex = folder === "薩恩" ? "- [[戰役設定/艾伯倫/薩恩/薩恩索引|薩恩索引 (Sharn Index)]]\n" : "";
-  fs.mkdirSync(dir, { recursive: true });
   const text = `${frontmatter(title, english, source)}
 
 # ${title} (${english})
@@ -126,12 +141,12 @@ ${content(source)}
 ${localIndex}- [[戰役設定/艾伯倫/艾伯倫索引|艾伯倫索引 (Eberron Index)]]
 `;
   const target = path.join(dir, `${title}.md`);
-  fs.writeFileSync(target, text, "utf8");
+  queueWrite(target, text, `標題：${source}`);
   console.log(`匯入：${path.relative(root, target)}`);
 }
 
 function supplement(source, target, heading) {
-  let text = fs.readFileSync(target, "utf8");
+  let text = staged.get(target) ?? fs.readFileSync(target, "utf8");
   const legacyHeading = `第四章補充：${heading}`;
   if (text.includes(`## ${legacyHeading}`)) text = text.replace(`## ${legacyHeading}`, `## ${heading}`);
   const marker = `## ${heading}`;
@@ -141,7 +156,7 @@ function supplement(source, target, heading) {
   if (!text.includes(`file: "${sourcePath(source)}"`)) text = text.replace("source_type:", `${sourceRecord}source_type:`);
   const adventureIndex = "- [[戰役設定/艾伯倫/冒險與勢力/冒險與勢力索引|冒險與勢力索引 (Adventure and Factions Index)]]";
   if (!text.includes("|冒險與勢力索引")) text = text.replace("## 🔗 相關連結", `## 🔗 相關連結\n\n${adventureIndex}`);
-  fs.writeFileSync(target, text, "utf8");
+  queueWrite(target, text, `標題：${source}`);
   console.log(`補充：${path.relative(root, target)}`);
 }
 
@@ -177,6 +192,20 @@ ${content("第四章：構建艾伯倫冒險")}
 
 - [[戰役設定/艾伯倫/艾伯倫索引|艾伯倫索引 (Eberron Index)]]
 `;
-fs.writeFileSync(path.join(indexDir, "冒險與勢力索引.md"), index, "utf8");
+queueWrite(path.join(indexDir, "冒險與勢力索引.md"), index, "第四章：構建艾伯倫冒險");
 console.log(`匯入：${path.relative(root, path.join(indexDir, "冒險與勢力索引.md"))}`);
 console.log(`完成：${entries.length} 個第四章條目、3 個既有條目補充與 1 個索引。`);
+
+const plan = planCandidateBatch(pending, { root: ROOT, lint: lintWiki });
+if (options.report) {
+  const reportPath = path.resolve(ROOT, options.report);
+  if (!reportPath.startsWith(`${path.join(ROOT, "reports")}${path.sep}`)) throw new Error("報告只能輸出至 reports/。");
+  fs.mkdirSync(path.dirname(reportPath), { recursive: true });
+  fs.writeFileSync(reportPath, `${JSON.stringify(plan, null, 2)}\n`, "utf8");
+}
+if (options.apply) {
+  const result = applyCandidateBatch(plan, { root: ROOT, lint: lintWiki });
+  console.log(`已套用 Eberron 第四章：${result.applied.length} 個候選變更。`);
+} else {
+  console.log(`預覽 Eberron 第四章：${plan.changes.length} 個候選變更；加入 --apply 才會寫入。`);
+}

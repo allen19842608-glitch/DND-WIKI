@@ -11,6 +11,11 @@ const apply = process.argv.includes("--apply");
 const normalize = process.argv.includes("--normalize-headings");
 const date = "2026-08-22";
 
+if (apply || normalize) {
+  process.stderr.write("舊 DMG 批次匯入與標題修補已退役，不再直接寫入 Wiki；請使用 wiki:preview 產生候選，審閱後由 wiki:apply 套用。\n");
+  process.exit(1);
+}
+
 function walk(dir) {
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
     const file = path.join(dir, entry.name);

@@ -1,12 +1,15 @@
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
+import { ROOT, applyCandidateBatch, candidateChange, parseOptions, planCandidateBatch, writeCandidatePlan } from "../core/ingest-publication-utils.mjs";
+import { lintWiki } from "../core/wiki-lint.mjs";
 
-const root = process.cwd();
+const root = ROOT;
 const spellRoot = path.join(root, "wiki", "法術");
 const monsterRoot = path.join(root, "wiki", "怪物");
-const apply = process.argv.includes("--apply");
-const reportPath = process.argv.includes("--report") ? process.argv[process.argv.indexOf("--report") + 1] : undefined;
+const options = parseOptions(process.argv.slice(2));
+if (options.apply && !options.report) throw new Error("套用 Wiki 變更必須指定 --report reports/<plan>.json，以保留可追溯報告。");
+const pending = [];
 
 const spells = new Map();
 for (const relative of fs.readdirSync(spellRoot, { recursive: true })) {
@@ -48,13 +51,17 @@ for (const relative of fs.readdirSync(monsterRoot, { recursive: true })) {
   const file = path.join(monsterRoot, relative);
   const before = fs.readFileSync(file, "utf8");
   let matches = 0;
-  const after = before.replace(/_([^_\n]+?)_/g, (raw, inner) => {
+  const after = before.replace(/_([^_\n]+?)_/g, (raw, inner, offset) => {
     let linkedInner = inner;
     let innerMatches = 0;
     for (const label of labels) {
       const spell = variants.get(label);
       if (!linkedInner.includes(label)) continue;
-      const rendered = `[[${spell.target}|${spell.chinese} (${spell.english})]]`;
+      // Obsidian aliases in a Markdown table must escape their pipe, otherwise
+      // the rendered link changes the table's column count.
+      const lineStart = before.lastIndexOf("\n", offset) + 1;
+      const inTable = before.slice(lineStart, offset).trimStart().startsWith("|");
+      const rendered = `[[${spell.target}${inTable ? "\\|" : "|"}${spell.chinese} (${spell.english})]]`;
       const occurrences = linkedInner.split(label).length - 1;
       linkedInner = linkedInner.replaceAll(label, rendered);
       matches += occurrences;
@@ -73,11 +80,13 @@ for (const relative of fs.readdirSync(monsterRoot, { recursive: true })) {
   if (!matches) continue;
   results.files += 1;
   results.linked += matches;
-  if (apply) fs.writeFileSync(file, after);
+  pending.push(candidateChange({ destination: file, before, after, operation: "link", source: "wiki/法術", locator: path.relative(root, file) }));
 }
-const report = { spell_pages: spells.size, ...results, unmatched: Object.entries(results.unmatched).sort((a, b) => b[1] - a[1]) };
+const plan = planCandidateBatch(pending, { root, lint: lintWiki });
+const report = { ...plan, spell_pages: spells.size, ...results, unmatched: Object.entries(results.unmatched).sort((a, b) => b[1] - a[1]) };
 console.log(`法術頁：${report.spell_pages}`);
 console.log(`可精確連結：${report.linked} 處／${report.files} 個怪物頁`);
 console.log(`未比對雙語斜體片段：${report.unmatched.length}`);
 for (const [term, count] of report.unmatched.slice(0, 20)) console.log(`  ${count}× ${term}`);
-if (reportPath) fs.writeFileSync(path.resolve(root, reportPath), `${JSON.stringify(report, null, 2)}\n`);
+writeCandidatePlan(report, options.report, { root });
+if (options.apply) applyCandidateBatch(plan, { root, lint: lintWiki });

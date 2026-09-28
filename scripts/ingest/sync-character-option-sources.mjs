@@ -2,9 +2,10 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
-  ROOT, loadIngestProfile, loadPublication, option, quote, slug, today,
+  ROOT, candidateChange, loadIngestProfile, loadPublication, parseOptions, planCandidateBatch, quote, slug, today, writeCandidatePlan, writeCandidateReview,
 } from "../core/ingest-publication-utils.mjs";
-import { createAuditReport } from "../audit/character-options-lib.mjs";
+import { createAuditReport } from "../core/character-options-lib.mjs";
+import { lintWiki } from "../core/wiki-lint.mjs";
 
 const KIND = Object.freeze({ classes: "class", subclasses: "subclass", species: "species", backgrounds: "background", feats: "feat", spells: "spell" });
 
@@ -41,23 +42,27 @@ export function updateCharacterOptionSource(text, entity, { publicationId, publi
 }
 
 export function syncCharacterOptionSources(args = process.argv.slice(2)) {
-  const publicationId = option(args, "--publication");
-  const category = option(args, "--category");
-  const only = option(args, "--only");
-  const reportPath = option(args, "--report");
-  const apply = args.includes("--apply");
-  if (!publicationId) throw new Error("缺少 --publication <ID>。");
+  const options = parseOptions(args, { extraValueOptions: ["--category"] });
+  const publicationId = options.publicationId;
+  const category = args.includes("--category") ? args[args.indexOf("--category") + 1] : undefined;
+  const { only, apply } = options;
+  if (!args.includes("--publication")) throw new Error("缺少 --publication <ID>。");
+  if (apply) throw new Error("角色選項來源同步只產生候選；請使用 wiki:preview -- --category 角色選項來源 儲存計畫，再以 wiki:apply 套用。 ");
   const publication = loadPublication(publicationId);
   const profile = loadIngestProfile(publicationId);
   const audit = createAuditReport({ publicationId, publication, profile, category });
   const results = [];
+  const pending = [];
   for (const entity of audit.entities) {
+    const filterValues = [entity.english_name, entity.category, entity.wiki_target].map((value) => String(value ?? "").normalize("NFKC").toLowerCase());
+    if (only && !filterValues.some((value) => value.includes(only.normalize("NFKC").toLowerCase()))) {
+      results.push({ english_name: entity.english_name, category: entity.category, target: entity.wiki_target, status: "out_of_scope", reason: "only_filter" });
+      continue;
+    }
     if (typeof entity.wiki_target !== "string" || ["conflict", "ambiguous", "blocked", "out_of_scope", "missing"].includes(entity.status)) {
       results.push({ english_name: entity.english_name, category: entity.category, target: entity.wiki_target, status: "skipped", reason: entity.status });
       continue;
     }
-    const filterValues = [entity.english_name, entity.category, entity.wiki_target].map((value) => String(value ?? "").normalize("NFKC").toLowerCase());
-    if (only && !filterValues.some((value) => value.includes(only.normalize("NFKC").toLowerCase()))) continue;
     const file = path.join(ROOT, entity.wiki_target);
     const current = fs.readFileSync(file, "utf8");
     const sourceMirror = entity.source?.file
@@ -66,24 +71,22 @@ export function syncCharacterOptionSources(args = process.argv.slice(2)) {
     const next = updateCharacterOptionSource(current, entity, { publicationId, publication, mirror: sourceMirror });
     if (next === current) {
       results.push({ english_name: entity.english_name, category: entity.category, target: entity.wiki_target, status: "unchanged" });
-    } else if (!apply) {
-      results.push({ english_name: entity.english_name, category: entity.category, target: entity.wiki_target, status: "preview" });
     } else {
-      fs.writeFileSync(file, next, "utf8");
-      results.push({ english_name: entity.english_name, category: entity.category, target: entity.wiki_target, status: "written" });
+      pending.push(candidateChange({ destination: file, before: current, after: next, operation: "update", source: sourceMirror.file, locator: entity.source?.locator ?? null }));
+      results.push({ english_name: entity.english_name, category: entity.category, target: entity.wiki_target, status: "preview" });
     }
   }
-  const report = { schema_version: 1, publication_id: publicationId, category: category ?? null, mode: apply ? "apply" : "preview", generated_at: new Date().toISOString(), results };
-  if (reportPath) {
-    const target = path.resolve(ROOT, reportPath);
-    const rawRoot = path.join(ROOT, "原始資料") + path.sep;
-    if (target === rawRoot.slice(0, -1) || target.startsWith(rawRoot)) throw new Error("同步報告不得寫入原始資料/。");
-    fs.mkdirSync(path.dirname(target), { recursive: true });
-    fs.writeFileSync(target, `${JSON.stringify(report, null, 2)}\n`, "utf8");
-  }
+  const mirrorSources = [audit.mirror?.file, `${profile.canonical_mirror?.output_root ?? ""}/manifest.yml`,
+    ...(audit.mirror?.datasets ?? []).filter((dataset) => dataset.available).map((dataset) => dataset.file)]
+    .filter((file) => typeof file === "string" && file.startsWith("原始資料/") && fs.existsSync(path.join(ROOT, file)));
+  const plan = planCandidateBatch(pending, { root: ROOT, lint: lintWiki, sourceFiles: mirrorSources,
+    dependencyFiles: [`config/ingest-profiles/${publicationId}.yml`, "config/publications.yml"] });
+  const report = { ...plan, publication_id: publicationId, category: category ?? null, generated_at: new Date().toISOString(), results };
+  writeCandidatePlan(report, options.report, { root: ROOT });
+  if (options.report) writeCandidateReview(report, options.report, { root: ROOT });
   const counts = new Map();
   results.forEach((item) => counts.set(item.status, (counts.get(item.status) ?? 0) + 1));
-  process.stdout.write(`${publicationId} 角色選項來源同步${apply ? "套用" : "預覽"}：${[...counts].map(([status, count]) => `${status} ${count}`).join("；")}。\n`);
+  process.stdout.write(`${publicationId} 角色選項來源同步預覽：${[...counts].map(([status, count]) => `${status} ${count}`).join("；")}。\n`);
   return report;
 }
 

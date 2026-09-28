@@ -1,9 +1,12 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { applyCandidateBatch, candidateChange, parseOptions, planCandidateBatch, writeCandidatePlan } from "../core/ingest-publication-utils.mjs";
+import { lintWiki } from "../core/wiki-lint.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
-const APPLY = process.argv.includes("--apply");
+const options = parseOptions(process.argv.slice(2));
+if (options.apply && !options.report) throw new Error("套用 Wiki 變更必須指定 --report reports/<plan>.json，以保留可追溯報告。");
 const map = new Map([
   ["異種後裔", "異種後裔.md"], ["考古學家", "考古學家.md"], ["家族代理人", "家族代理人.md"],
   ["坎尼斯家族後裔", "坎尼斯家族後裔.md"], ["鄧內斯家族後裔", "鄧內斯家族後裔.md"], ["伽藍達家族後裔", "伽藍達家族後裔.md"],
@@ -35,12 +38,16 @@ function transform(text) {
   return next;
 }
 const results = [];
+const pending = [];
 for (const [chinese, filename] of map) {
   const file = path.join(ROOT, "wiki", "背景", filename);
   const before = fs.readFileSync(file, "utf8");
   const after = transform(before);
   const changed = before !== after;
-  if (APPLY && changed) fs.writeFileSync(file, after, "utf8");
-  results.push({ chinese, status: changed ? (APPLY ? "written" : "preview") : "unchanged" });
+  if (changed) pending.push(candidateChange({ destination: file, before, after, operation: "update", source: "EBER2025-background-fields", locator: chinese }));
+  results.push({ chinese, status: changed ? (options.apply ? "written" : "preview") : "unchanged" });
 }
-process.stdout.write(`EBER2025 背景欄位正規化${APPLY ? "套用" : "預覽"}：${JSON.stringify(results)}\n`);
+const plan = planCandidateBatch(pending, { root: ROOT, lint: lintWiki });
+writeCandidatePlan({ ...plan, results }, options.report, { root: ROOT });
+if (options.apply) applyCandidateBatch(plan, { root: ROOT, lint: lintWiki });
+process.stdout.write(`EBER2025 背景欄位正規化${options.apply ? "套用" : "預覽"}：${JSON.stringify(results)}\n`);

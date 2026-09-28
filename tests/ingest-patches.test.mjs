@@ -3,7 +3,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
-import { applyPreparedPatch, preparePatch } from "../scripts/ingest/ingest-patches.mjs";
+import { applyPreparedPatch, planPreparedPatch, preparePatch } from "../scripts/ingest/ingest-patches.mjs";
 
 function fixture() {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "dnd-patch-"));
@@ -110,8 +110,10 @@ test("Patch 可在指定章節追加規則、合併 Frontmatter，並保持冪�
   assert.match(candidate, /原始資料\/勘誤\.md/);
   assert.match(candidate, /rules_sources:\n  - "Test Rules"\n  - "Test Errata"/);
   assert.ok(candidate.indexOf("測試術語適用") < candidate.indexOf("## 來源衝突"));
+  const plan = planPreparedPatch(prepared);
+  assert.ok(plan.source_fingerprints["原始資料/勘誤.md"], "Patch 計畫應記錄官方來源指紋");
 
-  assert.equal(applyPreparedPatch(prepared).errors, 0);
+  assert.equal(applyPreparedPatch(prepared, { authorization: "wiki:apply" }).errors, 0);
   const repeated = preparePatch(operations, { root, lint: lintSuccess });
   assert.equal(repeated.candidates.size, 0);
   assert.deepEqual(repeated.status.map((item) => item.status), ["skipped", "skipped"]);

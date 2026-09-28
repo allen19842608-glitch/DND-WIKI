@@ -265,11 +265,11 @@ function runGit(args) {
   return result.stdout.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
 }
 
-function changedWikiFiles() {
+export function changedWikiFiles({ git = runGit } = {}) {
   const candidates = new Set([
-    ...runGit(["diff", "--name-only", "--diff-filter=ACMR", "HEAD"]),
-    ...runGit(["diff", "--cached", "--name-only", "--diff-filter=ACMR"]),
-    ...runGit(["ls-files", "--others", "--exclude-standard"]),
+    ...git(["diff", "--name-only", "--diff-filter=ACMRD", "HEAD"]),
+    ...git(["diff", "--cached", "--name-only", "--diff-filter=ACMRD"]),
+    ...git(["ls-files", "--others", "--exclude-standard"]),
   ]);
   return [...candidates]
     .map((file) => file.replace(/\\/g, "/"))
@@ -1139,6 +1139,33 @@ function printDiagnostics(diagnostics, scopeSize, totalSize) {
   console.log(`\n檢查範圍：${scopeSize}/${totalSize} 個 Wiki 頁面`);
 }
 
+/** Stable identifiers are the cross-publication identity boundary.  Check the
+ * complete (including virtual) document universe, then report every in-scope
+ * participant so a create/update preview cannot hide a collision in an
+ * unchanged page. */
+function validateStableIdentifiers(records, diagnostics, scope) {
+  // concept_id intentionally groups equivalent 2014／2024 incarnations; only
+  // entity_id is a per-publication unique identifier.
+  for (const field of ["entity_id"]) {
+    const grouped = new Map();
+    for (const record of records) {
+      const value = record.data?.[field];
+      if (typeof value !== "string" || !value) continue;
+      const matches = grouped.get(value) ?? [];
+      matches.push(record);
+      grouped.set(value, matches);
+    }
+    for (const [value, matches] of grouped) {
+      if (matches.length < 2) continue;
+      const locations = matches.map((record) => record.rel).join("、");
+      for (const record of matches) {
+        if (!scope.has(record.rel)) continue;
+        addDiagnostic(diagnostics, "error", record.rel, 1, "IDENTIFIER_DUPLICATE", `${field} 重複：${value}（${locations}）。`);
+      }
+    }
+  }
+}
+
 function validateMirrorCitationFormat(record, diagnostics, publications) {
   const sourceIds = new Set();
   for (const source of Array.isArray(record.data?.sources) ? record.data.sources : []) {
@@ -1238,12 +1265,26 @@ export function lintWiki({ all = false, files, overrides } = {}) {
   const publications = loadPublicationRegistry();
   const taxonomy = loadTaxonomy();
   const lore = loadLoreRegistry();
-  const markdownFiles = walk(WIKI_ROOT).filter((file) => file.endsWith(".md"));
+  // Use the complete post-apply document universe: virtual new pages enter
+  // the catalog and virtual deletions leave it before links/IDs are checked.
+  const virtual = new Map();
+  for (const [target, content] of overrides ?? []) {
+    const normalized = String(target).replace(/\\/g, "/");
+    if (!normalized.startsWith("wiki/") || !normalized.endsWith(".md") || normalized.split("/").includes("..")) {
+      throw new Error(`虛擬 lint 目標必須是 wiki/ 內的 Markdown 檔案：${target}`);
+    }
+    virtual.set(normalized, content);
+  }
+  const existing = new Map(walk(WIKI_ROOT).filter((file) => file.endsWith(".md")).map((file) => [repoRelative(file), file]));
+  for (const [target, content] of virtual) {
+    if (content === null) existing.delete(target);
+    else if (!existing.has(target)) existing.set(target, path.join(ROOT, target));
+  }
+  const markdownFiles = [...existing.entries()].sort(([left], [right]) => left.localeCompare(right, "zh-Hant"));
   const records = [];
 
-  for (const absolute of markdownFiles) {
-    const rel = repoRelative(absolute);
-    const text = overrides?.get(rel) ?? fs.readFileSync(absolute, "utf8");
+  for (const [rel, absolute] of markdownFiles) {
+    const text = virtual.has(rel) ? virtual.get(rel) : fs.readFileSync(absolute, "utf8");
     const extracted = extractFrontmatter(text);
     if (!extracted) {
       records.push({ absolute, rel, text, body: text, bodyStartLine: 1, fm: "", data: null, links: extractWikiLinks(text) });
@@ -1278,11 +1319,17 @@ export function lintWiki({ all = false, files, overrides } = {}) {
     ? [...new Set(files.map((file) => String(file).replace(/\\/g, "/")))]
     : null;
   const initial = all ? records.map((record) => record.rel) : (explicitFiles ?? changedWikiFiles());
-  const scope = all ? new Set(initial) : expandScope(initial, records, catalog);
+  // Deleted pages are absent from the post-apply catalog. Keep their former
+  // paths only while finding inbound links for incremental lint scope.
+  const deleted = initial.filter((rel) => !catalog.exact.has(rel)).map((rel) => ({ rel }));
+  const scopeCatalog = deleted.length ? buildWikiCatalog([...records, ...deleted]) : catalog;
+  const scope = all ? new Set(initial) : expandScope(initial, records, scopeCatalog);
 
   if (!all && initial.length === 0) {
     addDiagnostic(diagnostics, "info", "wiki", 1, "NO_CHANGES", "沒有可辨識的 Wiki 異動；如需全庫檢查請使用 --all。" );
   }
+
+  validateStableIdentifiers(records, diagnostics, scope);
 
   for (const record of records) {
     if (!scope.has(record.rel)) continue;

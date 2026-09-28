@@ -4,15 +4,10 @@ import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 import YAML from "yaml";
-import { ROOT } from "../core/ingest-publication-utils.mjs";
+import { ROOT, option, reportTargetPath, writeReportText } from "../core/ingest-publication-utils.mjs";
 
 const IMAGE_BASE_URL = "https://raw.githubusercontent.com/5etools-mirror-3/5etools-img/main/";
 const TIMEOUT_MS = 30_000;
-
-function option(args, name) {
-  const index = args.indexOf(name);
-  return index >= 0 ? args[index + 1] : undefined;
-}
 
 function sha256(buffer) {
   return crypto.createHash("sha256").update(buffer).digest("hex");
@@ -77,8 +72,11 @@ function localImages(paths, root) {
 }
 
 export async function mirrorImages(args = process.argv.slice(2)) {
+  const reportPath = option(args, "--report");
+  if (reportPath) reportTargetPath(reportPath);
   const publicationId = option(args, "--publication");
   if (!publicationId) throw new Error("請指定 --publication <ID>。");
+  if (!/^[A-Za-z0-9_-]+$/.test(publicationId)) throw new Error("出版品 ID 格式錯誤。");
   const root = `原始資料/外部來源鏡像/${publicationId}`;
   const manifestPath = path.join(ROOT, ...`${root}/manifest.yml`.split("/"));
   if (!fs.existsSync(manifestPath)) throw new Error(`${publicationId} 缺少鏡像 manifest。`);
@@ -106,8 +104,7 @@ export async function mirrorImages(args = process.argv.slice(2)) {
     fs.writeFileSync(manifestPath, YAML.stringify(manifest), "utf8");
   }
   const result = { publication_id: publicationId, mode: apply ? "apply" : "preview", images: records, total_bytes: records.reduce((sum, image) => sum + image.bytes, 0) };
-  const report = option(args, "--report");
-  if (report) fs.writeFileSync(path.resolve(ROOT, report), `${JSON.stringify(result, null, 2)}\n`, "utf8");
+  if (reportPath) writeReportText(`${JSON.stringify(result, null, 2)}\n`, reportPath);
   process.stdout.write(`${apply ? "套用" : "預覽"} ${publicationId}：圖片 ${records.length} 張；${result.total_bytes} bytes。\n`);
   return result;
 }
