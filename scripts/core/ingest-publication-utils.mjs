@@ -89,11 +89,37 @@ function relativeTarget(destination) {
 
 /** Wiki candidate plans are intentionally narrower than the repository. */
 export function assertWikiTarget(target) {
-  const normalized = String(target ?? "").replaceAll("\\", "/");
-  if (!normalized.startsWith("wiki/") || !normalized.endsWith(".md") || normalized.split("/").includes("..")) {
+  const normalized = String(target ?? "");
+  const segments = normalized.split("/");
+  if (segments[0] !== "wiki" || segments.length < 2 || !normalized.endsWith(".md")
+    || segments.some((segment) => !segment || segment === "." || segment === ".."
+      || /[\\:*?"<>|\x00-\x1f]/u.test(segment) || /[. ]$/u.test(segment)
+      || /^(?:CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])(?:\.|$)/iu.test(segment))) {
     throw new Error(`Wiki 候選目標必須是 wiki/ 內的 Markdown 檔案：${target}`);
   }
   return normalized;
+}
+
+// Windows paths are case-insensitive; NFC also prevents visually identical
+// spellings from bypassing the one-target-per-plan invariant.
+function wikiTargetIdentity(target) {
+  return assertWikiTarget(target).normalize("NFC").toLowerCase();
+}
+
+const CANDIDATE_OPERATIONS = new Set(["create", "update", "delete", "link", "unchanged"]);
+const WRITABLE_OPERATIONS = new Set(["create", "update", "delete", "link"]);
+
+function assertCandidateOperation(change) {
+  if (!CANDIDATE_OPERATIONS.has(change.operation)) {
+    throw new Error(`不支援的候選操作：${change.operation}`);
+  }
+  if (!WRITABLE_OPERATIONS.has(change.operation)) return;
+  const creating = change.operation === "create";
+  const deleting = change.operation === "delete";
+  if ((creating ? change.before !== null : typeof change.before !== "string")
+    || (deleting ? change.after !== null : typeof change.after !== "string")) {
+    throw new Error(`候選操作與變更內容不一致：${change.target}（${change.operation}）。`);
+  }
 }
 
 /** Resolve a publication input without accepting a configured escape from
@@ -253,11 +279,13 @@ export function planCandidateBatch(changes, { root = ROOT, lint, sourceFiles = [
     if (!change?.target) throw new Error("候選變更缺少 target。");
     assertWikiTarget(change.target);
     const normalized = { ...change, status: change.status ?? "ready" };
-    const previous = unique.get(change.target);
-    if (previous && ["before", "after", "operation", "status", "source", "locator"].some((field) => previous[field] !== normalized[field])) {
+    assertCandidateOperation(normalized);
+    const identity = wikiTargetIdentity(change.target);
+    const previous = unique.get(identity);
+    if (previous && ["target", "before", "after", "operation", "status", "source", "locator"].some((field) => previous[field] !== normalized[field])) {
       throw new Error(`同一目標存在互相衝突的候選變更：${change.target}`);
     }
-    unique.set(change.target, normalized);
+    unique.set(identity, normalized);
   }
   const candidates = [...unique.values()].filter((change) => change.operation !== "unchanged" && change.status === "ready");
   const overrides = new Map(candidates.map((change) => [change.target, change.after]));
@@ -283,8 +311,10 @@ export function applyCandidateBatch(plan, { root = ROOT, lint, postApply, author
   const uniqueTargets = new Set();
   for (const change of plan.changes) {
     assertWikiTarget(change.target);
-    if (uniqueTargets.has(change.target)) throw new Error(`同一目標存在重複候選變更：${change.target}`);
-    uniqueTargets.add(change.target);
+    assertCandidateOperation(change);
+    const identity = wikiTargetIdentity(change.target);
+    if (uniqueTargets.has(identity)) throw new Error(`同一目標存在重複候選變更：${change.target}`);
+    uniqueTargets.add(identity);
   }
   const writable = plan.changes.filter((change) => ["create", "update", "link", "delete"].includes(change.operation) && change.status === "ready");
   const overrides = new Map(writable.map((change) => [change.target, change.after]));

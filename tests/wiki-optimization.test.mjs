@@ -205,6 +205,10 @@ test("戰役設定預覽以英文鏡像實體頁碼決定是否可套用", () =>
 test("Wiki 候選範圍拒絕原始資料與治理檔案", () => {
   assert.throws(() => assertWikiTarget("原始資料/example.md"), /wiki\//);
   assert.throws(() => assertWikiTarget("AGENTS.md"), /wiki\//);
+  for (const target of ["wiki/./page.md", "wiki//page.md", "wiki/section/../page.md",
+    "wiki\\page.md", "wiki/page.md:stream.md", "wiki/page. /entry.md", "wiki/CON.md"]) {
+    assert.throws(() => assertWikiTarget(target), /wiki\//, target);
+  }
 });
 
 test("真實虛擬文件集合會納入新頁與移除頁", () => {
@@ -290,6 +294,37 @@ test("同目標候選即使正文相同，來源或審閱狀態不同也會拒�
   const candidate = { target: "wiki/page.md", operation: "create", before: null, after: "same\n", source: "source-a", status: "ready" };
   assert.throws(() => planCandidateBatch([candidate, { ...candidate, source: "source-b" }], { root }), /互相衝突/);
   assert.throws(() => planCandidateBatch([candidate, { ...candidate, status: "manual_review" }], { root }), /互相衝突/);
+  assert.throws(() => planCandidateBatch([candidate, { ...candidate, target: "wiki/Page.md" }], { root }), /互相衝突/);
+  const accent = { ...candidate, target: "wiki/café.md" };
+  assert.throws(() => planCandidateBatch([accent, { ...accent, target: "wiki/cafe\u0301.md" }], { root }), /互相衝突/);
+  const plan = planCandidateBatch([candidate], { root });
+  plan.changes.push({ ...candidate, target: "wiki/Page.md" });
+  assert.throws(() => applyCandidateBatch(plan, { root, authorization: "wiki:apply" }), /重複候選/);
+  assert.equal(fs.existsSync(path.join(root, "wiki", "page.md")), false);
+});
+
+test("預覽與套用都拒絕操作標籤和建立、更新、刪除內容不一致", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "dnd-wiki-operation-shape-"));
+  const target = "wiki/page.md";
+  for (const change of [
+    { target, operation: "create", before: "old\n", after: "new\n" },
+    { target, operation: "update", before: null, after: "new\n" },
+    { target, operation: "link", before: null, after: "new\n" },
+    { target, operation: "delete", before: "old\n", after: "new\n" },
+  ]) {
+    assert.throws(() => planCandidateBatch([change], { root }), /候選操作與變更內容不一致/);
+  }
+  assert.throws(() => planCandidateBatch([{ target, operation: "erase", before: "old\n", after: null }], { root }), /不支援的候選操作/);
+  const valid = planCandidateBatch([{ target, operation: "create", before: null, after: "new\n" }], { root });
+  for (const malformed of [
+    { operation: "create", before: "old\n", after: "new\n" },
+    { operation: "update", before: null, after: "new\n" },
+    { operation: "delete", before: null, after: "new\n" },
+  ]) {
+    const edited = { ...valid, changes: [{ ...valid.changes[0], ...malformed }] };
+    assert.throws(() => applyCandidateBatch(edited, { root, authorization: "wiki:apply" }), /候選操作與變更內容不一致/);
+    assert.equal(fs.existsSync(path.join(root, "wiki", "page.md")), false);
+  }
 });
 
 test("共用套用器拒絕解析器直接寫入", () => {

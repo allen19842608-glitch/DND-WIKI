@@ -70,6 +70,20 @@ test("FTD 型 tag 子職也必須使用 statblock 自身頁碼", () => {
   });
 });
 
+test("BPGG 專長鏡像已設定但不可繼承 Feats 節的頁碼", () => {
+  const profile = loadIngestProfile("BPGG2023");
+  assert.equal(profile.canonical_mirror.book_id, "bgg");
+  const feat = mirrorEntityPage({ root: ROOT, profile, publicationId: "BPGG2023",
+    english: "Rune Shaper", kind: "feat" });
+  assert.deepEqual({ status: feat.status, reason: feat.reason }, {
+    status: "ambiguous", reason: "english_mirror_entity_page_unresolved",
+  });
+  assert.deepEqual(mirrorEvidenceFiles({ root: ROOT, profile, kind: "feat" }).sort(), [
+    "原始資料/外部來源鏡像/BPGG2023/book-bgg.json",
+    "原始資料/外部來源鏡像/BPGG2023/manifest.yml",
+  ]);
+});
+
 test("同名子職的明示來源代碼必須符合出版品", () => {
   const editions = { data: [
     { type: "statblock", tag: "subclass", source: "OLD", name: "Drakewarden", className: "Ranger", page: 9 },

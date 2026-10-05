@@ -2,6 +2,11 @@ publication_id: "BPGG2023"
 source_root: "原始資料/畢格比鉅獻：巨人之榮耀"
 setting: "多元宇宙"
 ruleset: "2014"
+canonical_mirror:
+  provider: "5e.tools"
+  book_id: "bgg"
+  url: "https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/book/book-bgg.json"
+  output_root: "原始資料/外部來源鏡像/BPGG2023"
 outputs:
   classes: "wiki/職業/2014"
   backgrounds: "wiki/背景/2014"
