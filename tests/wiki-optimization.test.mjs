@@ -4,6 +4,7 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { spawnSync } from "node:child_process";
 import YAML from "yaml";
 import { extractSpellRules } from "../scripts/core/spell-content.mjs";
 import { assessSpell, SPELL_DATASET } from "../scripts/audit/audit-spell-completeness.mjs";
@@ -255,6 +256,18 @@ test("共用 CLI 解析器拒絕未知旗標與互斥套用模式", () => {
   assert.throws(() => parseOptions(["--report", "--apply"]), /必須指定值/);
 });
 
+test("舊 ingest Patch 入口會轉交共同預覽，不再呼叫直接套用解析器", () => {
+  const result = spawnSync(process.execPath, ["scripts/core/ingest.mjs", "--patch", "reports/missing-patch.json",
+    "--report", "reports/missing-patch-plan.json"], { cwd: process.cwd(), encoding: "utf8" });
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /相容入口已轉交 wiki:preview/);
+  assert.match(result.stderr, /找不到 Patch 檔/);
+  const direct = spawnSync(process.execPath, ["scripts/ingest/ingest-patches.mjs", "--patch"], { cwd: process.cwd(), encoding: "utf8" });
+  assert.equal(direct.status, 1);
+  assert.match(direct.stderr, /wiki:preview/);
+  assert.doesNotMatch(direct.stderr, /\[--apply\]/);
+});
+
 test("候選變更批次先虛擬 lint，錯誤時不寫入", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "dnd-wiki-candidates-"));
   const changes = [{ target: "wiki/test.md", operation: "create", before: null, after: "---\ntitle: Test\n---\n" }];
@@ -330,7 +343,7 @@ test("預覽與套用都拒絕操作標籤和建立、更新、刪除內容不�
 test("共用套用器拒絕解析器直接寫入", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "dnd-wiki-candidates-"));
   const plan = planCandidateBatch([{ target: "wiki/test.md", operation: "create", before: null, after: "content\\n" }], { root });
-  assert.throws(() => applyCandidateBatch(plan, { root }), /解析器不得直接套用/);
+  assert.throws(() => applyCandidateBatch(plan, { root }), /入口已退役.*不得直接套用/);
   assert.equal(fs.existsSync(path.join(root, "wiki", "test.md")), false);
 });
 
@@ -775,6 +788,23 @@ test("儲存候選計畫會同時產生摘要與逐檔差異", (t) => {
   assert.match(appliedSummary, /計畫狀態：已套用/);
   assert.match(appliedSummary, /已套用：1/);
   assert.match(appliedSummary, /可套用：0/);
+});
+
+test("所有儲存候選計畫都提供固定的涵蓋結果彙總", (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "dnd-wiki-outcome-contract-"));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const plan = { schema_version: 2, root, changes: [], results: [
+    { status: "preview" }, { status: "filtered" }, { status: "blocked" }, { status: "manual_review" },
+  ] };
+  const saved = writeCandidatePlan(plan, "reports/outcome-contract.json", { root });
+  const persisted = JSON.parse(fs.readFileSync(saved, "utf8"));
+  assert.deepEqual(persisted.outcome_summary, {
+    matched: 1, missing: 0, incomplete: 1, conflict: 0, ambiguous: 1, out_of_scope: 1,
+  });
+  assert.deepEqual(persisted.results.map((item) => [item.status, item.original_status, item.outcome]), [
+    ["preview", "preview", "matched"], ["filtered", "filtered", "out_of_scope"],
+    ["blocked", "blocked", "incomplete"], ["manual_review", "manual_review", "ambiguous"],
+  ]);
 });
 
 test("零檔案差異仍在摘要顯示來源待覆核數", (t) => {

@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { ROOT } from "../core/ingest-publication-utils.mjs";
 
 const entries = [
@@ -27,18 +28,25 @@ function formatCard(raw) {
   const sections = text.split(/(?=^### )/m);
   return sections.map((section, index) => index === 0 ? section : section.replace(/^\*\*([^*]+?)\*\*\s*/gm, "- **$1**：")).join("").trim();
 }
-for (const [level, spell, sourceFile, spirit] of entries) {
-  const source = fs.readFileSync(path.join(ROOT, "原始資料", "玩家手冊2024", "法術詳述", sourceFile), "utf8");
-  const start = source.indexOf(`## ${spirit}`); const end = source.indexOf("\n#### ", start);
-  if (start < 0 || end < 0) throw new Error(`找不到資料卡：${spirit}`);
-  const raw = formatCard(source.slice(start, end).replace(/^## .+\r?\n/, "").trim());
-  const page = path.join(ROOT, "wiki", "法術", level, `${spell}.md`); let text = fs.readFileSync(page, "utf8");
-  text = text.replace(/^\- \*\*豁免／法術攻擊\*\*：無\r?\n/m, "");
-  const section = `## ${spirit.split(" ")[0]}資料\n\n${raw}\n\n`;
-  const existing = new RegExp(`\\n## ${spirit.split(" ")[0]}資料[\\s\\S]*?(?=\\n## (?:來源衝突與適用範圍|💡 實戰應用與裁量|🔗 相關連結)|$)`);
-  if (existing.test(text)) text = text.replace(existing, `\n${section.trimEnd()}`);
-  else if (/\n## 來源衝突與適用範圍/.test(text)) text = text.replace(/\n## 來源衝突與適用範圍/, `\n\n${section}## 來源衝突與適用範圍`);
-  else if (/\n## 🔗 相關連結/.test(text)) text = text.replace(/\n## 🔗 相關連結/, `\n\n${section}## 🔗 相關連結`);
-  else text = `${text.trimEnd()}\n\n${section}`;
-  fs.writeFileSync(page, text, "utf8"); console.log(`已補齊：${spell}`);
+export function legacyFillSummonSpiritCards() {
+  for (const [level, spell, sourceFile, spirit] of entries) {
+    const source = fs.readFileSync(path.join(ROOT, "原始資料", "玩家手冊2024", "法術詳述", sourceFile), "utf8");
+    const start = source.indexOf(`## ${spirit}`); const end = source.indexOf("\n#### ", start);
+    if (start < 0 || end < 0) throw new Error(`找不到資料卡：${spirit}`);
+    const raw = formatCard(source.slice(start, end).replace(/^## .+\r?\n/, "").trim());
+    const page = path.join(ROOT, "wiki", "法術", level, `${spell}.md`); let text = fs.readFileSync(page, "utf8");
+    text = text.replace(/^\- \*\*豁免／法術攻擊\*\*：無\r?\n/m, "");
+    const section = `## ${spirit.split(" ")[0]}資料\n\n${raw}\n\n`;
+    const existing = new RegExp(`\\n## ${spirit.split(" ")[0]}資料[\\s\\S]*?(?=\\n## (?:來源衝突與適用範圍|💡 實戰應用與裁量|🔗 相關連結)|$)`);
+    if (existing.test(text)) text = text.replace(existing, `\n${section.trimEnd()}`);
+    else if (/\n## 來源衝突與適用範圍/.test(text)) text = text.replace(/\n## 來源衝突與適用範圍/, `\n\n${section}## 來源衝突與適用範圍`);
+    else if (/\n## 🔗 相關連結/.test(text)) text = text.replace(/\n## 🔗 相關連結/, `\n\n${section}## 🔗 相關連結`);
+    else text = `${text.trimEnd()}\n\n${section}`;
+    fs.writeFileSync(page, text, "utf8"); console.log(`已補齊：${spell}`);
+  }
+}
+
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  process.stderr.write("召喚靈魄補卡入口已退役，不再直接寫入 Wiki；請先指定來源與目標，使用 wiki:preview 產生精確候選。\n");
+  process.exitCode = 1;
 }

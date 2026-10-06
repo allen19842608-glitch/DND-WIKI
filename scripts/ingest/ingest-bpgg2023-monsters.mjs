@@ -3,7 +3,6 @@ import path from "node:path";
 import { execFileSync } from "node:child_process";
 import {
   ROOT,
-  applyCandidateBatch,
   candidateChange,
   frontmatter,
   loadIngestProfile,
@@ -11,6 +10,7 @@ import {
   parseOptions,
   planCandidateBatch,
   walkMarkdown,
+  writeCandidatePlan,
 } from "../core/ingest-publication-utils.mjs";
 import { lintWiki } from "../core/wiki-lint.mjs";
 
@@ -18,7 +18,7 @@ const publicationId = "BPGG2023";
 const publication = loadPublication(publicationId);
 const profile = loadIngestProfile(publicationId);
 const options = parseOptions(process.argv.slice(2), { extraBooleanOptions: ["--debug"] });
-if (options.apply && !options.report) fail("套用 Wiki 變更必須指定 --report reports/<plan>.json，以保留可追溯報告。");
+if (options.apply) fail("BPGG2023 怪物解析器已退役，不再直接寫入 Wiki；請使用 wiki:preview 建立候選計畫，再以 wiki:apply 套用。");
 const sourceRoot = path.join(ROOT, profile.source_root, "圖鑑");
 const outputRoot = path.join(ROOT, "wiki", "怪物", "2014");
 const glossaryPath = path.join(ROOT, "附件", "翻譯詞彙表.md");
@@ -263,8 +263,5 @@ for (const [folder, cardsInFolder] of Object.entries(Object.groupBy(discovered, 
 }
 const plan = planCandidateBatch(pending, { root: ROOT, lint: lintWiki });
 if (options.report) {
-  const reportPath = path.resolve(ROOT, options.report);
-  fs.mkdirSync(path.dirname(reportPath), { recursive: true });
-  fs.writeFileSync(reportPath, `${JSON.stringify({ ...plan, publication_id: publicationId, category: "monsters", results: options.results }, null, 2)}\n`, "utf8");
+  writeCandidatePlan({ ...plan, publication_id: publicationId, category: "monsters", results: options.results }, options.report, { root: ROOT });
 }
-if (options.apply) applyCandidateBatch(plan, { root: ROOT, lint: lintWiki });

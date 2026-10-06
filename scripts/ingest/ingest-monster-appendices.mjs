@@ -1,14 +1,14 @@
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
-import { ROOT, applyCandidateBatch, candidateChange, frontmatter, loadPublication, parseOptions, planCandidateBatch } from "../core/ingest-publication-utils.mjs";
+import { ROOT, candidateChange, frontmatter, loadPublication, parseOptions, planCandidateBatch, writeCandidatePlan } from "../core/ingest-publication-utils.mjs";
 import { lintWiki } from "../core/wiki-lint.mjs";
 
 const root = ROOT;
 const sourceRoot = path.join(root, "原始資料", "怪物圖鑑2025", "附錄B");
 const wikiRoot = path.join(root, "wiki", "怪物");
 const options = parseOptions();
-if (options.apply && !options.report) throw new Error("套用 Wiki 變更必須指定 --report reports/<plan>.json，以保留可追溯報告。");
+if (options.apply) throw new Error("怪物附錄解析器已退役，不再直接寫入 Wiki；請使用 wiki:preview 建立候選計畫，再以 wiki:apply 套用。 ");
 const updated = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Taipei" }).format(new Date());
 const publicationId = process.argv.includes("--publication") ? options.publicationId : "MM2025";
 const publication = loadPublication(publicationId);
@@ -84,12 +84,6 @@ const pending = outputs.map((output) => {
 for (const output of pending) console.log(`預覽：${output.target}`);
 const plan = planCandidateBatch(pending, { root: ROOT, lint: lintWiki });
 if (options.report) {
-  const reportPath = path.resolve(ROOT, options.report);
-  fs.mkdirSync(path.dirname(reportPath), { recursive: true });
-  fs.writeFileSync(reportPath, `${JSON.stringify({ ...plan, publication_id: publicationId, category: "monster-appendices" }, null, 2)}\n`, "utf8");
+  const reportPath = writeCandidatePlan({ ...plan, publication_id: publicationId, category: "monster-appendices" }, options.report, { root: ROOT });
   console.log(`報告：${path.relative(ROOT, reportPath).split(path.sep).join("/")}`);
-}
-if (options.apply) {
-  const result = applyCandidateBatch(plan, { root: ROOT, lint: lintWiki });
-  console.log(`已套用怪物附錄：${result.applied.length} 個候選變更。`);
 }

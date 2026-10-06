@@ -68,7 +68,7 @@ function fail(message) {
 }
 
 function usage() {
-  return `用法：npm run ingest -- --category "怪物" --source "原始資料/怪物圖鑑2025" [--only "中文或英文名稱"] [--include-overviews] [--prune-stale] [--report "報告.json"] [--apply] [--replace] [--diff]\n\n預設為預覽；只有 --apply 才會建立條目。--include-overviews 會將「總」介紹頁寫入 wiki/怪物 根目錄並連結同群資料卡。--prune-stale 只移除來源已不存在的本書舊生成頁。中文名稱以原始資料為準；config/monster-name-map.json 僅用於補入英文名稱。`;
+  return `用法：npm.cmd run wiki:preview -- --category "怪物" --publication <出版品 ID> [--only "中文或英文名稱"] [--include-overviews] [--prune-stale] [--report "reports/<計畫>.json"] [--replace] [--diff]\n\n怪物解析器只產生候選，不能以 --apply 直接寫入；先審閱儲存計畫，再以 wiki:apply 套用。--include-overviews 只把「總」介紹頁與同群資料卡的異動納入候選。--prune-stale 只把來源已不存在的本書舊生成頁列入刪除候選。中文名稱以原始資料為準；config/monster-name-map.json 僅用於補入英文名稱。`;
 }
 
 if (has("--help") || has("-h")) {

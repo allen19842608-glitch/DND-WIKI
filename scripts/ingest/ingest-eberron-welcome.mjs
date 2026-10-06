@@ -1,14 +1,14 @@
 import fs from "node:fs";
 import path from "node:path";
 import {
-  ROOT, applyCandidateBatch, candidateChange, frontmatter, loadPublication, parseOptions, planCandidateBatch,
+  ROOT, candidateChange, frontmatter, loadPublication, parseOptions, planCandidateBatch, writeCandidatePlan,
 } from "../core/ingest-publication-utils.mjs";
 import { lintWiki } from "../core/wiki-lint.mjs";
 
 const publicationId = "ERLW2019";
 const publication = loadPublication(publicationId);
 const options = parseOptions(process.argv.slice(2));
-if (options.apply && !options.report) throw new Error("套用 Wiki 變更必須指定 --report reports/<plan>.json，以保留可追溯報告。");
+if (options.apply) throw new Error("舊匯入入口已退役，不再直接寫入 Wiki；請使用 wiki:preview 建立候選計畫，再以 wiki:apply 套用。");
 const sourceRoot = path.join(ROOT, "原始資料", "艾伯倫：從終末戰爭中崛起", "歡迎來到艾伯倫");
 const eberronRoot = path.join(ROOT, "wiki", "戰役設定", "艾伯倫");
 const worldviewRoot = path.join(eberronRoot, "世界觀");
@@ -137,14 +137,7 @@ console.log(`更新：${path.relative(ROOT, warPath)}`);
 
 const plan = planCandidateBatch(pending, { root: ROOT, lint: lintWiki });
 if (options.report) {
-  const reportPath = path.resolve(ROOT, options.report);
-  if (!reportPath.startsWith(`${path.join(ROOT, "reports")}${path.sep}`)) throw new Error("報告只能輸出至 reports/。");
-  fs.mkdirSync(path.dirname(reportPath), { recursive: true });
-  fs.writeFileSync(reportPath, `${JSON.stringify(plan, null, 2)}\n`, "utf8");
-}
-if (options.apply) {
-  const result = applyCandidateBatch(plan, { root: ROOT, lint: lintWiki });
-  console.log(`已套用 Eberron 歡迎章節：${result.applied.length} 個候選變更。`);
+  writeCandidatePlan(plan, options.report, { root: ROOT });
 } else {
-  console.log(`預覽 Eberron 歡迎章節：${plan.changes.length} 個候選變更；加入 --apply 才會寫入。`);
+  console.log(`預覽 Eberron 歡迎章節：${plan.changes.length} 個候選變更；請以 wiki:apply 套用已儲存計畫。`);
 }

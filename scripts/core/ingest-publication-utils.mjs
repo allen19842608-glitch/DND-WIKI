@@ -303,7 +303,7 @@ export function planCandidateBatch(changes, { root = ROOT, lint, sourceFiles = [
  */
 export function applyCandidateBatch(plan, { root = ROOT, lint, postApply, authorization } = {}) {
   if (authorization !== "wiki:apply") {
-    throw new Error("解析器不得直接套用 Wiki 候選；請使用 wiki:apply -- --plan reports/<plan>.json。");
+    throw new Error("舊解析器套用入口已退役，不得直接套用 Wiki 候選；請使用 wiki:apply -- --plan reports/<plan>.json。");
   }
   if (!plan || plan.schema_version !== 2 || !Array.isArray(plan.changes)) throw new Error("無效的候選變更計畫。");
   if (path.resolve(plan.root ?? "") !== path.resolve(root)) throw new Error("候選計畫缺少目前工作區的根目錄資訊；請重新預覽後再套用。");
@@ -400,8 +400,13 @@ export function applyCandidateBatch(plan, { root = ROOT, lint, postApply, author
 export function writeCandidatePlan(plan, report, { root = ROOT } = {}) {
   if (!report) return null;
   const destination = reportTargetPath(report, { root });
+  // Every persisted candidate plan, including reports from retained
+  // compatibility tools, exposes the daily preview outcome contract.  Keep
+  // the original parser status for review while providing a uniform summary
+  // for automation and publication coverage reports.
+  const normalized = normalizeCandidatePlanResults(plan);
   fs.mkdirSync(path.dirname(destination), { recursive: true });
-  fs.writeFileSync(destination, `${JSON.stringify(plan, null, 2)}\n`, "utf8");
+  fs.writeFileSync(destination, `${JSON.stringify(normalized, null, 2)}\n`, "utf8");
   return destination;
 }
 
@@ -774,8 +779,7 @@ export function writeIngestReport({ options, publicationId, category, extra = {}
     })),
     ...extra,
   };
-  fs.mkdirSync(path.dirname(destination), { recursive: true });
-  fs.writeFileSync(destination, `${JSON.stringify(report, null, 2)}\n`, "utf8");
+  writeCandidatePlan(report, options.report);
   console.log(`報告：${path.relative(ROOT, destination).split(path.sep).join("/")}`);
 }
 

@@ -12,9 +12,16 @@
     { "prefix": "scripts/migrate/", "class": "historical", "purpose": "歷史搬移或格式修補", "writes": "不得作為日常 Wiki 寫入入口" },
     { "prefix": "scripts/sync/", "class": "historical", "purpose": "歷史同步或連結整理", "writes": "不得作為日常 Wiki 寫入入口" },
     { "prefix": "scripts/audit/", "class": "historical", "purpose": "稽核或一次性覆核", "writes": "報告或候選，不得直接套用 Wiki" },
+    { "prefix": "scripts/maintenance/", "class": "historical", "purpose": "一次性維護或內容補全工具", "writes": "不得作為日常 Wiki 寫入入口" },
     { "prefix": "scripts/publish/", "class": "independent_integration", "purpose": "外部發布整合", "writes": "外部系統，非 Wiki 更新鏈" }
   ],
   "details": {
+    "scripts/maintenance/fill-summon-spirit-cards.mjs": {
+      "purpose": "一次性將召喚靈魄資料卡嵌入既有法術頁",
+      "writes": "舊直接寫入模式已退役；不得修改 Wiki",
+      "replacement": "無等價日常批次入口；需指定來源與目標後以 wiki:preview 建立精確候選",
+      "verification": "舊入口退役子程序測試、wiki:check 與逐檔來源差異"
+    },
     "scripts/core/approved-translation.mjs": {
       "purpose": "由核定詞彙表建立譯名對照並拒絕未核定或衝突名稱",
       "writes": "純比對函式，無寫入",

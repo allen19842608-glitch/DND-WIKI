@@ -1,13 +1,13 @@
 import fs from "node:fs";
 import path from "node:path";
 import {
-  ROOT, applyCandidateBatch, candidateChange, frontmatter, parseOptions, planCandidateBatch,
+  ROOT, candidateChange, frontmatter, parseOptions, planCandidateBatch, writeCandidatePlan,
 } from "../core/ingest-publication-utils.mjs";
 import { lintWiki } from "../core/wiki-lint.mjs";
 
 const publicationId = "EBER2025";
 const options = parseOptions(process.argv.slice(2));
-if (options.apply && !options.report) throw new Error("套用 Wiki 變更必須指定 --report reports/<plan>.json，以保留可追溯報告。");
+if (options.apply) throw new Error("舊匯入入口已退役，不再直接寫入 Wiki；請使用 wiki:preview 建立候選計畫，再以 wiki:apply 套用。");
 const publication = {
   ruleset: "2024",
   content_scope: "expansion",
@@ -67,14 +67,7 @@ console.log(`完成：${items.length} 件魔法物品。`);
 
 const plan = planCandidateBatch(pending, { root: ROOT, lint: lintWiki });
 if (options.report) {
-  const reportPath = path.resolve(ROOT, options.report);
-  if (!reportPath.startsWith(`${path.join(ROOT, "reports")}${path.sep}`)) throw new Error("報告只能輸出至 reports/。");
-  fs.mkdirSync(path.dirname(reportPath), { recursive: true });
-  fs.writeFileSync(reportPath, `${JSON.stringify(plan, null, 2)}\n`, "utf8");
-}
-if (options.apply) {
-  const result = applyCandidateBatch(plan, { root: ROOT, lint: lintWiki });
-  console.log(`已套用 EBER2025 魔法物品：${result.applied.length} 個候選變更。`);
+  writeCandidatePlan(plan, options.report, { root: ROOT });
 } else {
-  console.log(`預覽 EBER2025 魔法物品：${plan.changes.length} 個候選變更；加入 --apply 才會寫入。`);
+  console.log(`預覽 EBER2025 魔法物品：${plan.changes.length} 個候選變更；請以 wiki:apply 套用已儲存計畫。`);
 }

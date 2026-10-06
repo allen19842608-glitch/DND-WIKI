@@ -336,7 +336,7 @@ function cli() {
   const patchFile = patchIndex >= 0 ? args[patchIndex + 1] : undefined;
   const apply = args.includes("--apply");
   if (!patchFile || args.some((value, index) => value === "--patch" && !args[index + 1])) {
-    fail("用法：node scripts/ingest/ingest-patches.mjs --patch <patch.json> [--apply]");
+    fail("請使用：npm.cmd run wiki:preview -- --patch <patch.json> [--report reports/<計畫>.json]");
   }
   const absolute = path.resolve(ROOT, patchFile);
   if (!fs.existsSync(absolute)) fail(`找不到 Patch 檔：${patchFile}`);
@@ -349,7 +349,7 @@ function cli() {
   const prepared = preparePatch(operations);
   for (const item of prepared.status) process.stdout.write(`${item.status === "ready" ? "可套用" : "略過既有"}：${item.patchId} → ${item.target}\n`);
   if (!apply) {
-    process.stdout.write(`預覽完成：${prepared.candidates.size} 個檔案可更新；加入 --apply 才會寫入。\n`);
+    process.stdout.write(`預覽完成：${prepared.candidates.size} 個檔案可更新；請以 wiki:preview 儲存計畫，再用 wiki:apply 套用。\n`);
     return;
   }
   fail("JSON Patch 不直接套用；請以 wiki:preview 產生候選計畫，再用 wiki:apply 套用。");

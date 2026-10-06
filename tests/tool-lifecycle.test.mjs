@@ -41,6 +41,10 @@ test("目前四個日常入口不再依賴歷史工具", () => {
   assert.equal(report.tools.find((tool) => tool.script === "scripts/migrate/restore-lore-source-text.mjs").detail_status, "specific_recorded");
   assert.ok(report.tools.find((tool) => tool.script === "scripts/core/wiki-tools.mjs")
     .depends_on_scripts.includes("scripts/core/character-options-lib.mjs"));
+  const retiredMaintenance = report.tools.find((tool) => tool.script === "scripts/maintenance/fill-summon-spirit-cards.mjs");
+  assert.equal(retiredMaintenance.classification, "historical");
+  assert.equal(retiredMaintenance.detail_status, "specific_recorded");
+  assert.ok(retiredMaintenance.write_footprint.includes("wiki_possible"));
 });
 
 test("生命週期明細拒絕不存在的工具與缺少的欄位", (context) => {
@@ -72,6 +76,23 @@ test("歷史直寫程式的舊執行入口會在寫入前退役", () => {
     ["scripts/ingest/insert-eber-direct-candidate-images.mjs", ["--apply"]],
     ["scripts/ingest/ingest-tce-dm-tools.mjs", ["--apply"]],
     ["scripts/ingest/rebuild-lore.mjs", ["--apply"]],
+    ["scripts/ingest/ingest-bpgg2023-monsters.mjs", ["--apply"]],
+    ["scripts/ingest/ingest-monster-appendices.mjs", ["--apply"]],
+    ["scripts/ingest/ingest-eberron-magic-items.mjs", ["--apply"]],
+    ["scripts/ingest/ingest-eberron-character-options.mjs", ["--apply"]],
+    ["scripts/ingest/ingest-eberron-rftlw-ch3.mjs", ["--apply"]],
+    ["scripts/ingest/ingest-eberron-welcome.mjs", ["--apply"]],
+    ["scripts/ingest/ingest-eberron-rftlw-ch4.mjs", ["--apply"]],
+    ["scripts/ingest/ingest-legacy-backgrounds.mjs", ["--apply"]],
+    ["scripts/ingest/ingest-xge-character-options.mjs", ["--apply"]],
+    ["scripts/ingest/ingest-tce-subclasses.mjs", ["--apply"]],
+    ["scripts/ingest/ingest-xge-racial-feats.mjs", ["--apply"]],
+    ["scripts/ingest/ingest-xge-common-magic-items.mjs", ["--apply"]],
+    ["scripts/ingest/ingest-xge-character-rules.mjs", ["--apply"]],
+    ["scripts/ingest/ingest-xge-spells.mjs", ["--apply"]],
+    ["scripts/ingest/ingest-xge-reference-sections.mjs", ["--apply"]],
+    ["scripts/migrate/reclassify-lore.mjs", ["--apply"]],
+    ["scripts/maintenance/fill-summon-spirit-cards.mjs", []],
   ];
   for (const [script, args] of cases) {
     const result = spawnSync(process.execPath, [script, ...args], { cwd: root, encoding: "utf8" });

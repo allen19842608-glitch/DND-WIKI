@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { ROOT, applyCandidateBatch, candidateChange, defaultSource, frontmatter, loadIngestProfile, loadPublication, parseOptions, planCandidateBatch, walkMarkdown } from "../core/ingest-publication-utils.mjs";
+import { ROOT, applyCandidateBatch, candidateChange, defaultSource, frontmatter, loadIngestProfile, loadPublication, parseOptions, planCandidateBatch, walkMarkdown, writeCandidatePlan } from "../core/ingest-publication-utils.mjs";
 import { lintWiki } from "../core/wiki-lint.mjs";
 
 function field(text, label) {
@@ -66,7 +66,7 @@ function pageFor(data, publication, publicationId, source, current) {
 }
 
 const options = parseOptions();
-if (options.apply && !options.report) throw new Error("套用 Wiki 變更必須指定 --report reports/<plan>.json，以保留可追溯報告。");
+if (options.apply) throw new Error("舊匯入入口已退役，不再直接寫入 Wiki；請使用 wiki:preview 建立候選計畫，再以 wiki:apply 套用。");
 const publicationId = options.publicationId;
 const publication = loadPublication(publicationId);
 const profile = loadIngestProfile(publicationId);
@@ -104,8 +104,6 @@ for (const sourcePath of walkMarkdown(input)) {
 }
 const plan = planCandidateBatch(pending, { root: ROOT, lint: lintWiki });
 if (options.report) {
-  const reportPath = path.resolve(ROOT, options.report);
-  fs.mkdirSync(path.dirname(reportPath), { recursive: true });
-  fs.writeFileSync(reportPath, `${JSON.stringify({ ...plan, publication_id: publicationId, category: "legacy-backgrounds", results: options.results }, null, 2)}\n`, "utf8");
+  writeCandidatePlan({ ...plan, publication_id: publicationId, category: "legacy-backgrounds", results: options.results }, options.report, { root: ROOT });
 }
 if (options.apply) applyCandidateBatch(plan, { root: ROOT, lint: lintWiki });

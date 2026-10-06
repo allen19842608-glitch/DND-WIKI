@@ -5,7 +5,7 @@ import YAML from "yaml";
 import { reportTargetPath } from "./ingest-publication-utils.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
-const DIRECTORIES = ["scripts/core", "scripts/ingest", "scripts/migrate", "scripts/sync", "scripts/audit", "scripts/publish"];
+const DIRECTORIES = ["scripts/core", "scripts/ingest", "scripts/migrate", "scripts/sync", "scripts/audit", "scripts/maintenance", "scripts/publish"];
 
 function files(root, directory) {
   const absolute = path.join(root, directory);
@@ -26,9 +26,10 @@ function callers(packageJson, script) {
 function writeFootprint(root, script) {
   const text = fs.readFileSync(path.join(root, script), "utf8");
   const paths = [];
-  if (/writeFileSync|appendFileSync|rmSync|renameSync|copyFileSync/.test(text)) paths.push("local_files");
-  if (/wiki[\\/]/.test(text) && /writeFileSync|appendFileSync|rmSync|renameSync|copyFileSync/.test(text)) paths.push("wiki_possible");
-  if (/原始資料[\\/]/.test(text) && /writeFileSync|appendFileSync|rmSync|renameSync|copyFileSync/.test(text)) paths.push("raw_or_mirror_possible");
+  const writes = /\b(?:writeFileSync|writeFile|appendFileSync|appendFile|rmSync|rm|renameSync|rename|copyFileSync|copyFile)\b/.test(text);
+  if (writes) paths.push("local_files");
+  if (writes && /["']wiki["']|wiki[\\/]/.test(text)) paths.push("wiki_possible");
+  if (writes && /["']原始資料["']|原始資料[\\/]/.test(text)) paths.push("raw_or_mirror_possible");
   if (/notion|api\.notion/i.test(text)) paths.push("external_publish");
   return paths;
 }
@@ -43,7 +44,7 @@ function referencedScripts(root, script, known) {
   }
   // Child-process invocations use repository-relative script strings rather
   // than import specifiers.  Keep these edges in the same dependency graph.
-  for (const match of text.matchAll(/["'](scripts\/(?:core|ingest|migrate|sync|audit|publish)\/[^"'\s]+\.mjs)["']/g)) {
+  for (const match of text.matchAll(/["'](scripts\/(?:core|ingest|migrate|sync|audit|maintenance|publish)\/[^"'\s]+\.mjs)["']/g)) {
     if (known.has(match[1]) && match[1] !== script) references.add(match[1]);
   }
   return [...references].sort();

@@ -51,5 +51,5 @@ if (options.apply) {
   const result = applyCandidateBatch(plan, { root: ROOT, lint: lintWiki });
   console.log(`已套用怪物介紹引言修正：${result.applied.length} 個候選變更。`);
 } else {
-  console.log(`預覽怪物介紹引言修正：${plan.changes.length} 個候選變更；加入 --apply 才會寫入。`);
+  console.log(`預覽怪物介紹引言修正：${plan.changes.length} 個候選變更；請以 wiki:apply 套用已儲存計畫。`);
 }

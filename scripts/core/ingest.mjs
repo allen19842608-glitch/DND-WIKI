@@ -54,9 +54,13 @@ if (patch) {
     process.stderr.write("--patch 不能與 --category 同時使用。\n");
     process.exit(1);
   }
-  requireRelevantOptions(["--patch", "--dry-run"], "Patch 預覽");
-  const args = ["scripts/ingest/ingest-patches.mjs", "--patch", patch];
-  if (apply) args.push("--apply");
+  requireRelevantOptions(["--patch", "--report"], "Patch 預覽");
+  // Retain the old `ingest --patch` spelling as a compatibility hand-off,
+  // but make the daily preview entry responsible for saving its candidate
+  // plan and review bundle.  The retired parser must never become a writer.
+  const args = ["scripts/core/wiki-tools.mjs", "preview", "--patch", patch];
+  if (report) args.push("--report", report);
+  process.stderr.write("ingest 的 Patch 相容入口已轉交 wiki:preview；請以 wiki:apply 套用已儲存的計畫。\n");
   const result = spawnSync(process.execPath, args, { cwd: root, encoding: "utf8", stdio: "inherit" });
   process.exit(result.status ?? 1);
 }

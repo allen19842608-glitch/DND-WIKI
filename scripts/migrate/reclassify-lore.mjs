@@ -17,11 +17,11 @@ function rewriteLinks(text, mappings) { let next = text; for (const mapping of m
 
 export function run(args = process.argv.slice(2)) {
   const options = parseOptions(args, { extraValueOptions: ["--setting", "--from", "--to", "--group"] });
-  if (options.apply && !options.report) throw new Error("套用 Wiki 變更必須指定 --report reports/<plan>.json，以保留可追溯報告。");
+  if (options.apply) throw new Error("舊分類遷移入口已退役，不再直接寫入 Wiki；請使用 wiki:preview 建立候選計畫，再以 wiki:apply 套用。");
   const value = (name) => args[args.indexOf(name) + 1];
   const setting = value("--setting"); const from = value("--from"); const to = value("--to"); const group = value("--group") ?? "";
   const only = new Set((options.only ?? "").split(",").map((item) => item.trim()).filter(Boolean));
-  if (!setting || !from || !to || !only.size) throw new Error("用法：--setting <世界> --from <類型> --to <類型> --only <檔名,...> [--group <子目錄>] [--report reports/<plan>.json] [--apply]");
+  if (!setting || !from || !to || !only.size) throw new Error("用法：--setting <世界> --from <類型> --to <類型> --only <檔名,...> [--group <子目錄>] [--report reports/<plan>.json]");
   if (group && (!/^[^\\/]+(?:\/[^\\/]+)*$/u.test(group) || group.split("/").includes(".."))) throw new Error("--group 必須是工作區內的相對子目錄。");
   const world = Object.entries(LORE_CONFIG.worlds).find(([, item]) => item.label === setting)?.[1]; if (!world) throw new Error(`未知世界：${setting}`);
   const sourceType = loreType(from); const destinationType = loreType(to);
