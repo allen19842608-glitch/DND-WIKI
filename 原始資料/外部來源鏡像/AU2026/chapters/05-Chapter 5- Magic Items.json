@@ -1,0 +1,1199 @@
+{
+  "type": "section",
+  "name": "Chapter 5: Magic Items",
+  "id": "273",
+  "page": 115,
+  "entries": [
+    {
+      "type": "image",
+      "href": {
+        "type": "internal",
+        "path": "book/AU/058-05-001.ch-5-splash.webp"
+      },
+      "width": 2075,
+      "height": 3004,
+      "title": "A retired adventurer shows his grandchild the artifact he found long ago in a dragon's lair: {@item Queen Ehlissa's Marvelous Nightingale|AU}.",
+      "credit": "Rudy Siswanto"
+    },
+    "This chapter describes magic items particularly suited for settings brimming with arcane power. It also presents rules for magic item evolution, allowing you to create magic items that grow in might as your characters do, and ready-made evolving magic items meant as special rewards.",
+    {
+      "type": "section",
+      "name": "Magic Items",
+      "id": "274",
+      "page": 115,
+      "entries": [
+        "The Magic Items table lists the magic items in this section and whether they require {@variantrule Attunement|XPHB}, ordered by item rarity. These items use the magic item rules in the {@book Dungeon Master's Guide|XDMG}. The descriptions that follow are presented in alphabetical order.",
+        {
+          "type": "table",
+          "caption": "Magic Items",
+          "page": 115,
+          "colLabels": [
+            "Rarity",
+            "Item",
+            "Attunement"
+          ],
+          "colStyles": [
+            "col-2 text-center",
+            "col-8",
+            "col-2 text-center"
+          ],
+          "rows": [
+            [
+              "Varies",
+              "{@item Necklace of the Beastly Familiar|AU}",
+              "Yes"
+            ],
+            [
+              "Common",
+              "{@item Conjurer's Canopy|AU}",
+              "No"
+            ],
+            [
+              "Common",
+              "{@item Dictation Quill|AU}",
+              "No"
+            ],
+            [
+              "Common",
+              "{@item Elocutionist's Lexicon|AU}",
+              "No"
+            ],
+            [
+              "Common",
+              "{@item Ensorcelled Missive|AU}",
+              "No"
+            ],
+            [
+              "Common",
+              "{@item Evergreen Fertilizer|AU}",
+              "No"
+            ],
+            [
+              "Common",
+              "{@item Homeward Compass|AU}",
+              "No"
+            ],
+            [
+              "Common",
+              "{@item Lucky Foot|AU}",
+              "No"
+            ],
+            [
+              "Common",
+              "{@item Spell Component Ring|AU}",
+              "No"
+            ],
+            [
+              "Common",
+              "{@item Sweeping Broom|AU}",
+              "No"
+            ],
+            [
+              "Uncommon",
+              "{@item Boon Companions' Bands|AU}",
+              "No"
+            ],
+            [
+              "Uncommon",
+              "{@item Dispelling Ammunition|AU}",
+              "No"
+            ],
+            [
+              "Uncommon",
+              "{@item Goading Ammunition|AU}",
+              "No"
+            ],
+            [
+              "Uncommon",
+              "{@item Magewright's Gloves|AU}",
+              "Yes"
+            ],
+            [
+              "Uncommon",
+              "{@item Martialist's Quarterstaff|AU}",
+              "Yes"
+            ],
+            [
+              "Uncommon",
+              "{@item Orb of Divination Detection|AU}",
+              "Yes"
+            ],
+            [
+              "Uncommon",
+              "{@item Orb of Sorcery|AU}",
+              "Yes"
+            ],
+            [
+              "Uncommon",
+              "{@item Potion of Dragon's Breath|AU}",
+              "No"
+            ],
+            [
+              "Uncommon",
+              "{@item Potion of Tirelessness|AU}",
+              "No"
+            ],
+            [
+              "Uncommon",
+              "{@item Ring of Dedicated Focus|AU}",
+              "Yes"
+            ],
+            [
+              "Uncommon",
+              "{@item Spell-Slinger's Puppet|AU}",
+              "Yes"
+            ],
+            [
+              "Uncommon",
+              "{@item Thespian's Playbill|AU}",
+              "Yes"
+            ],
+            [
+              "Uncommon",
+              "{@item Thief's Thimble|AU}",
+              "Yes"
+            ],
+            [
+              "Uncommon",
+              "{@item Wand of Freshness|AU}",
+              "No"
+            ],
+            [
+              "Rare",
+              "{@item Arcane Chatelaine|AU}",
+              "No"
+            ],
+            [
+              "Rare",
+              "{@item Arcanist's Bestiary|AU}",
+              "Yes"
+            ],
+            [
+              "Rare",
+              "{@item Bellows of Strangulation|AU}",
+              "No"
+            ],
+            [
+              "Rare",
+              "{@item Blood Amulet|AU}",
+              "Yes"
+            ],
+            [
+              "Rare",
+              "{@item Dissuader|AU}",
+              "Yes"
+            ],
+            [
+              "Rare",
+              "{@item Dream Weaver|AU}",
+              "Yes"
+            ],
+            [
+              "Rare",
+              "{@item Mage Breaker|AU}",
+              "No"
+            ],
+            [
+              "Rare",
+              "{@item Mage's Manacle|AU}",
+              "No"
+            ],
+            [
+              "Rare",
+              "{@item Namer's Needle|AU}",
+              "No"
+            ],
+            [
+              "Rare",
+              "{@item Prismatic Rune|AU}",
+              "Yes"
+            ],
+            [
+              "Rare",
+              "{@item Scholar's Anchoring Bangle|AU}",
+              "Yes"
+            ],
+            [
+              "Rare",
+              "{@item Secret Keeper's Circlet|AU}",
+              "Yes"
+            ],
+            [
+              "Rare",
+              "{@item Spell Duelist's Trophy|AU}",
+              "Yes"
+            ],
+            [
+              "Rare",
+              "{@item Wand of Slumber|AU}",
+              "Yes"
+            ],
+            [
+              "Rare",
+              "{@item Wand of Teeth|AU}",
+              "No"
+            ],
+            [
+              "Very Rare",
+              "{@item Staff of the Lost|AU}",
+              "Yes"
+            ],
+            [
+              "Very Rare",
+              "{@item Tramontane Armor|AU}",
+              "Yes"
+            ],
+            [
+              "Very Rare",
+              "{@item Workshop Wrecker|AU}",
+              "No"
+            ],
+            [
+              "Legendary",
+              "{@item Diamond Staff|AU}",
+              "Yes"
+            ],
+            [
+              "Legendary",
+              "{@item Grave Reaper|AU}",
+              "Yes"
+            ],
+            [
+              "Legendary",
+              "{@item Traveler's Pearl|AU}",
+              "Yes"
+            ],
+            [
+              "Artifact",
+              "{@item Queen Ehlissa's Marvelous Nightingale|AU}",
+              "Yes"
+            ],
+            [
+              "Artifact",
+              "{@item Universal Pantograph|AU}",
+              "No"
+            ]
+          ]
+        },
+        {
+          "type": "insetReadaloud",
+          "id": "275",
+          "page": 115,
+          "entries": [
+            {
+              "type": "quote",
+              "entries": [
+                "The multiverse teems with magic items, each imbued with a speck of Mystra's might. Isn't it grand to be stewards of that power?"
+              ],
+              "by": "Alustriel"
+            }
+          ]
+        },
+        {
+          "type": "statblock",
+          "tag": "item",
+          "name": "Arcane Chatelaine",
+          "source": "AU",
+          "page": 116
+        },
+        {
+          "type": "statblock",
+          "tag": "item",
+          "name": "Arcanist's Bestiary",
+          "source": "AU",
+          "page": 116
+        },
+        {
+          "type": "statblock",
+          "tag": "item",
+          "name": "Bellows of Strangulation",
+          "source": "AU",
+          "page": 116
+        },
+        {
+          "type": "statblock",
+          "tag": "item",
+          "name": "Blood Amulet",
+          "source": "AU",
+          "page": 116
+        },
+        {
+          "type": "statblock",
+          "tag": "item",
+          "name": "Boon Companions' Bands",
+          "source": "AU",
+          "page": 117
+        },
+        {
+          "type": "statblock",
+          "tag": "item",
+          "name": "Conjurer's Canopy",
+          "source": "AU",
+          "page": 117
+        },
+        {
+          "type": "statblock",
+          "tag": "item",
+          "name": "Diamond Staff",
+          "source": "AU",
+          "page": 117
+        },
+        {
+          "type": "statblock",
+          "tag": "item",
+          "name": "Dictation Quill",
+          "source": "AU",
+          "page": 118
+        },
+        {
+          "type": "statblock",
+          "tag": "item",
+          "name": "Dispelling Ammunition",
+          "source": "AU",
+          "page": 118
+        },
+        {
+          "type": "statblock",
+          "tag": "item",
+          "name": "Dissuader",
+          "source": "AU",
+          "page": 118
+        },
+        {
+          "type": "statblock",
+          "tag": "item",
+          "name": "Dream Weaver",
+          "source": "AU",
+          "page": 119
+        },
+        {
+          "type": "statblock",
+          "tag": "item",
+          "name": "Elocutionist's Lexicon",
+          "source": "AU",
+          "page": 119
+        },
+        {
+          "type": "statblock",
+          "tag": "item",
+          "name": "Ensorcelled Missive",
+          "source": "AU",
+          "page": 119
+        },
+        {
+          "type": "statblock",
+          "tag": "item",
+          "name": "Evergreen Fertilizer",
+          "source": "AU",
+          "page": 119
+        },
+        {
+          "type": "statblock",
+          "tag": "item",
+          "name": "Goading Ammunition",
+          "source": "AU",
+          "page": 119
+        },
+        {
+          "type": "statblock",
+          "tag": "item",
+          "name": "Grave Reaper",
+          "source": "AU",
+          "page": 119
+        },
+        {
+          "type": "statblock",
+          "tag": "item",
+          "name": "Homeward Compass",
+          "source": "AU",
+          "page": 119
+        },
+        {
+          "type": "statblock",
+          "tag": "item",
+          "name": "Lucky Foot",
+          "source": "AU",
+          "page": 119
+        },
+        {
+          "type": "statblock",
+          "tag": "item",
+          "name": "Mage Breaker",
+          "source": "AU",
+          "page": 120
+        },
+        {
+          "type": "statblock",
+          "tag": "item",
+          "name": "Mage's Manacle",
+          "source": "AU",
+          "page": 120
+        },
+        {
+          "type": "statblock",
+          "tag": "item",
+          "name": "Magewright's Gloves",
+          "source": "AU",
+          "page": 120
+        },
+        {
+          "type": "statblock",
+          "tag": "item",
+          "name": "Martialist's Quarterstaff",
+          "source": "AU",
+          "page": 120
+        },
+        {
+          "type": "statblock",
+          "tag": "item",
+          "name": "Namer's Needle",
+          "source": "AU",
+          "page": 120
+        },
+        {
+          "type": "statblock",
+          "tag": "item",
+          "name": "Necklace of the Beastly Familiar",
+          "source": "AU",
+          "page": 120
+        },
+        {
+          "type": "statblock",
+          "tag": "item",
+          "name": "Orb of Divination Detection",
+          "source": "AU",
+          "page": 121
+        },
+        {
+          "type": "statblock",
+          "tag": "item",
+          "name": "Orb of Sorcery",
+          "source": "AU",
+          "page": 121
+        },
+        {
+          "type": "statblock",
+          "tag": "item",
+          "name": "Potion of Dragon's Breath",
+          "source": "AU",
+          "page": 121
+        },
+        {
+          "type": "statblock",
+          "tag": "item",
+          "name": "Potion of Tirelessness",
+          "source": "AU",
+          "page": 121
+        },
+        {
+          "type": "statblock",
+          "tag": "item",
+          "name": "Prismatic Rune",
+          "source": "AU",
+          "page": 122
+        },
+        {
+          "type": "statblock",
+          "tag": "item",
+          "name": "Queen Ehlissa's Marvelous Nightingale",
+          "source": "AU",
+          "page": 122
+        },
+        {
+          "type": "statblock",
+          "tag": "item",
+          "name": "Ring of Dedicated Focus",
+          "source": "AU",
+          "page": 122
+        },
+        {
+          "type": "statblock",
+          "tag": "item",
+          "name": "Scholar's Anchoring Bangle",
+          "source": "AU",
+          "page": 122
+        },
+        {
+          "type": "statblock",
+          "tag": "item",
+          "name": "Secret Keeper's Circlet",
+          "source": "AU",
+          "page": 122
+        },
+        {
+          "type": "statblock",
+          "tag": "item",
+          "name": "Spell Component Ring",
+          "source": "AU",
+          "page": 123
+        },
+        {
+          "type": "statblock",
+          "tag": "item",
+          "name": "Spell Duelist's Trophy",
+          "source": "AU",
+          "page": 123
+        },
+        {
+          "type": "statblock",
+          "tag": "item",
+          "name": "Spell-Slinger's Puppet",
+          "source": "AU",
+          "page": 123
+        },
+        {
+          "type": "statblock",
+          "tag": "item",
+          "name": "Staff of the Lost",
+          "source": "AU",
+          "page": 123
+        },
+        {
+          "type": "statblock",
+          "tag": "item",
+          "name": "Sweeping Broom",
+          "source": "AU",
+          "page": 123
+        },
+        {
+          "type": "statblock",
+          "tag": "item",
+          "name": "Thespian's Playbill",
+          "source": "AU",
+          "page": 124
+        },
+        {
+          "type": "statblock",
+          "tag": "item",
+          "name": "Thief's Thimble",
+          "source": "AU",
+          "page": 124
+        },
+        {
+          "type": "statblock",
+          "tag": "item",
+          "name": "Tramontane Armor",
+          "source": "AU",
+          "page": 124
+        },
+        {
+          "type": "statblock",
+          "tag": "item",
+          "name": "Traveler's Pearl",
+          "source": "AU",
+          "page": 124
+        },
+        {
+          "type": "statblock",
+          "tag": "item",
+          "name": "Universal Pantograph",
+          "source": "AU",
+          "page": 124
+        },
+        {
+          "type": "statblock",
+          "tag": "item",
+          "name": "Wand of Freshness",
+          "source": "AU",
+          "page": 125
+        },
+        {
+          "type": "statblock",
+          "tag": "item",
+          "name": "Wand of Slumber",
+          "source": "AU",
+          "page": 125
+        },
+        {
+          "type": "statblock",
+          "tag": "item",
+          "name": "Wand of Teeth",
+          "source": "AU",
+          "page": 125
+        },
+        {
+          "type": "statblock",
+          "tag": "item",
+          "name": "Workshop Wrecker",
+          "source": "AU",
+          "page": 125
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "name": "Evolving Magic Items",
+      "id": "2d9",
+      "page": 126,
+      "entries": [
+        "Few experiences infuse players with more wonder than their characters finding exciting magic items. Characters often grow fond of magic items that have personal significance, such as items that remind them of a beloved companion or a heroic deed.",
+        "As characters grow in power, though, that fondness can turn to frustration. A level 1 character's beloved Uncommon item might no longer be as useful by the time that character reaches level 5. Eventually, the character might have a dilemma: abandon their favorite magic item in favor of one with less personal significance, or keep the favored item, potentially forgoing a mechanically stronger option.",
+        "The magic item evolution rules in this section allow you to grant a magic item additional properties and increase its rarity as characters become more powerful. With these tools, you can build narrative significance into your characters' magic items and enable the items to grow in power as the characters do. This section presents several ready-made evolving magic items and rules for evolving certain magic items from the {@book Dungeon Master's Guide|XDMG} or other sources.",
+        {
+          "type": "entries",
+          "name": "When to Evolve Magic Items",
+          "id": "2da",
+          "page": 126,
+          "entries": [
+            "You decide when a magic item evolves. In general, a magic item evolves when a character's power level increases to the next tier of play. Treat this as a guideline, not a rule.",
+            {
+              "type": "entries",
+              "name": "Repeated Evolutions",
+              "id": "2db",
+              "page": 126,
+              "entries": [
+                "You can evolve a magic item multiple times. Each time you evolve it, the magic item retains its properties from its previous rarity (or rarities) and gains a property from its new rarity.",
+                "You can evolve a magic item before or after awarding it to a character. In either case, you can increase the item's rarity as the character gains power until its rarity becomes Legendary."
+              ]
+            },
+            {
+              "type": "entries",
+              "name": "Crafting Evolution",
+              "id": "2dc",
+              "page": 126,
+              "entries": [
+                "You might also decide that characters can evolve their magic items using the rules for crafting magic items in the {@book Dungeon Master's Guide|XDMG|6|Crafting Magic Items}. If you allow this, the time required to evolve the item equals the difference between the time required to craft an item of the evolving item's new rarity and the time required to craft an item of its previous rarity. Likewise, the cost required is the difference between the cost to craft an item of the evolving item's new rarity and the cost to craft an item of its previous rarity. So evolving an Uncommon item (which requires 10 days and 200 GP to craft) into a Rare item (which requires 50 days and 2,000 GP to craft) requires 40 days and 1,800 GP in raw materials."
+              ]
+            }
+          ]
+        },
+        {
+          "type": "entries",
+          "name": "Results of Evolution",
+          "id": "2dd",
+          "page": 126,
+          "entries": [
+            "This section describes the results of magic item evolution.",
+            {
+              "type": "entries",
+              "name": "Name and Appearance",
+              "id": "2de",
+              "page": 126,
+              "entries": [
+                "Each item's name changes when it evolves, as noted for that type of evolving magic item. Its appearance also changes as it evolves."
+              ]
+            },
+            {
+              "type": "entries",
+              "name": "Rarity",
+              "id": "2df",
+              "page": 126,
+              "entries": [
+                "When a magic item evolves, its rarity increases to the next highest rarity: from Common to Uncommon, from Rare to Very Rare, and so forth. A Legendary magic item can't evolve."
+              ]
+            },
+            {
+              "type": "entries",
+              "name": "Attunement",
+              "id": "2e0",
+              "page": 126,
+              "entries": [
+                "A magic item keeps its {@variantrule Attunement|XPHB} requirement (or lack thereof) as it evolves. If a creature is attuned to a magic item when the item evolves, the creature retains its {@variantrule Attunement|XPHB} to that item."
+              ]
+            },
+            {
+              "type": "entries",
+              "name": "Cumulative Abilities",
+              "id": "2e1",
+              "page": 126,
+              "entries": [
+                "When an evolving magic item evolves, it retains the properties described in its previous rarities and gains the properties described in its new rarity. If an evolving weapon grants a bonus to attack rolls and damage rolls, however, that bonus replaces any similar bonus granted by a lower rarity instead of being added to it. For instance, in \"Ready-Made Evolving Magic Items,\" a {@item Keyholes Dagger|AU}'s bonus to attack and damage rolls is +1 when Uncommon, +2 when Rare, and +3 when Very Rare."
+              ]
+            }
+          ]
+        },
+        {
+          "type": "entries",
+          "name": "Ready-Made Evolving Magic Items",
+          "id": "2e2",
+          "page": 126,
+          "entries": [
+            "The ready-made evolving magic items presented in this section and listed in the Ready-Made Evolving Magic Items table are special rewards. You might award a Ranger a {@item Blossom Rod|AU}, for example, to reinforce the character's connection with nature, gradually increasing the rod's rarity to reward the Ranger for their heroics. Similarly, a Necromancer might receive a {@item Staff of Skulls|AU} as a gift if their mentor works with the Covenant of the Grave magical faction (see {@area chapter 4|1ed|x}).",
+            "You can structure a campaign arc around one of these items—use it to point the characters toward adventures related to its narrative, similar to how you might use an Artifact.",
+            {
+              "type": "table",
+              "caption": "Ready-Made Evolving Magic Items",
+              "page": 127,
+              "colLabels": [
+                "Rarity",
+                "Item",
+                "Attunement"
+              ],
+              "colStyles": [
+                "col-2 text-center",
+                "col-8",
+                "col-2 text-center"
+              ],
+              "rows": [
+                [
+                  "Varies",
+                  "{@item Blossom Rod|AU}",
+                  "Yes"
+                ],
+                [
+                  "Varies",
+                  "{@item Idol of Good Fortunes|AU}",
+                  "Yes"
+                ],
+                [
+                  "Varies",
+                  "{@item Keyholes Dagger|AU}",
+                  "Yes"
+                ],
+                [
+                  "Varies",
+                  "{@item Staff of Skulls|AU}",
+                  "Yes"
+                ],
+                [
+                  "Varies",
+                  "{@item Wave-Swept Weapon|AU}",
+                  "Yes"
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "type": "entries",
+          "name": "Ready-Made Evolving Item Names",
+          "id": "2e3",
+          "page": 127,
+          "entries": [
+            "When referring to one of these items, use the word that corresponds with the item's rarity before its name. For example, an Uncommon {@item Blossom Rod|AU} is a {@item Budding Blossom Rod|AU}, a Rare one is a {@item Flowering Blossom Rod|AU}, and a Very Rare one is a {@item Somniferous Blossom Rod|AU}.",
+            {
+              "type": "statblock",
+              "tag": "item",
+              "name": "Blossom Rod",
+              "source": "AU",
+              "page": 127
+            },
+            {
+              "type": "statblock",
+              "tag": "item",
+              "name": "Idol of Good Fortunes",
+              "source": "AU",
+              "page": 127
+            },
+            {
+              "type": "statblock",
+              "tag": "item",
+              "name": "Keyholes Dagger",
+              "source": "AU",
+              "page": 128
+            },
+            {
+              "type": "statblock",
+              "tag": "item",
+              "name": "Staff of Skulls",
+              "source": "AU",
+              "page": 128
+            },
+            {
+              "type": "statblock",
+              "tag": "item",
+              "name": "Wave-Swept Weapon",
+              "source": "AU",
+              "page": 129
+            }
+          ]
+        },
+        {
+          "type": "entries",
+          "name": "Custom Evolving Magic Items",
+          "id": "2f8",
+          "page": 129,
+          "entries": [
+            "You can use magic items from the {@i Dungeon Master's Guide} as the basis for evolving magic items.",
+            "This section presents two methods for creating your own evolving magic items: simple evolution and complex evolution.",
+            {
+              "type": "entries",
+              "name": "Simple Evolution",
+              "id": "2f9",
+              "page": 130,
+              "entries": [
+                "If a character has one of the magic items in the Simple Magic Item Evolution table, you can evolve that item as shown on the table. For example, a {@item +1 Longsword|XDMG} that evolves becomes a {@item +2 Longsword|XDMG}, and if it evolves again, it becomes a {@item +3 Longsword|XDMG}.",
+                {
+                  "type": "image",
+                  "href": {
+                    "type": "internal",
+                    "path": "book/AU/069-05-012.regal-arrow-catching-shield.webp"
+                  },
+                  "width": 850,
+                  "height": 1347,
+                  "maxWidth": 360,
+                  "title": "An Arrow-Catching Shield That Has Evolved into a Regal Arrow-Catching Shield",
+                  "credit": "Conceptopolis"
+                },
+                {
+                  "type": "table",
+                  "caption": "Simple Magic Item Evolution",
+                  "page": 130,
+                  "colLabels": [
+                    "Item",
+                    "Evolved Item"
+                  ],
+                  "colStyles": [
+                    "col-6",
+                    "col-6"
+                  ],
+                  "rows": [
+                    [
+                      "{@item +1 Armor|XDMG}",
+                      "{@item +2 Armor|XDMG}"
+                    ],
+                    [
+                      "{@item +2 Armor|XDMG}",
+                      "{@item +3 Armor|XDMG}"
+                    ],
+                    [
+                      "{@item +1 Shield|XDMG}",
+                      "{@item +2 Shield|XDMG}"
+                    ],
+                    [
+                      "{@item +2 Shield|XDMG}",
+                      "{@item +3 Shield|XDMG}"
+                    ],
+                    [
+                      "{@item +1 Rod of the Pact Keeper|XDMG|Rod of the Pact Keeper (Uncommon)}",
+                      "{@item +2 Rod of the Pact Keeper|XDMG|Rod of the Pact Keeper (Rare)}"
+                    ],
+                    [
+                      "{@item +2 Rod of the Pact Keeper|XDMG|Rod of the Pact Keeper (Rare)}",
+                      "{@item +3 Rod of the Pact Keeper|XDMG|Rod of the Pact Keeper (Very Rare)}"
+                    ],
+                    [
+                      "{@item +1 Wand of the War Mage|XDMG}",
+                      "{@item +2 Wand of the War Mage|XDMG}"
+                    ],
+                    [
+                      "{@item +2 Wand of the War Mage|XDMG}",
+                      "{@item +3 Wand of the War Mage|XDMG}"
+                    ],
+                    [
+                      "{@item +1 Weapon|XDMG}",
+                      "{@item +2 Weapon|XDMG}"
+                    ],
+                    [
+                      "{@item +2 Weapon|XDMG}",
+                      "{@item +3 Weapon|XDMG}"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "entries",
+              "name": "Complex Evolution",
+              "id": "2fa",
+              "page": 130,
+              "entries": [
+                "Some magic items can grow in strength beyond increasing the bonuses they grant. By granting a magic item new and more powerful magical properties, you can create an evolving magic item that grows in exciting ways.",
+                "Using the rules in this section, you can evolve eligible magic items from the {@book Dungeon Master's Guide|XDMG}. At your discretion, items from other sources might be eligible for evolution using these rules.",
+                "The following magic items are eligible for complex evolution:",
+                {
+                  "type": "list",
+                  "page": 130,
+                  "style": "list-hang-notitle",
+                  "items": [
+                    {
+                      "type": "item",
+                      "name": "Certain Rods and Wands:",
+                      "entry": "Any {@item Rod of the Pact Keeper|XDMG} or {@item Wand of the War Mage|XDMG}"
+                    },
+                    {
+                      "type": "item",
+                      "name": "Certain Other Uncommon or Rarer Magic Items:",
+                      "entry": "Any Armor, Staff, or Weapon that requires {@variantrule Attunement|XPHB}, that isn't cursed, and whose rarity is at most Very Rare"
+                    }
+                  ]
+                },
+                {
+                  "type": "entries",
+                  "name": "Complex Evolution Steps",
+                  "id": "2fb",
+                  "page": 130,
+                  "entries": [
+                    "To evolve an item with this system, use the following steps in conjunction with the instructions from \"When to Evolve Magic Items\" earlier in this chapter:",
+                    {
+                      "type": "list",
+                      "page": 130,
+                      "style": "list-hang-notitle",
+                      "items": [
+                        {
+                          "type": "item",
+                          "name": "1: Choose a Magic Item to Evolve",
+                          "entry": "Pick the eligible magic item you plan to evolve, and note its current rarity."
+                        },
+                        {
+                          "type": "item",
+                          "name": "2: Determine the Item's New Rarity",
+                          "entry": "The item's new rarity is the next highest rarity."
+                        },
+                        {
+                          "type": "item",
+                          "name": "3: Roll on or Choose from the New Rarity's Table",
+                          "entry": "Use the {@book Magic Item Properties table|AU|5|Rare Magic Item Properties} for the item's new rarity to select a new property, noting any details such as limited usage. (If the magic item grants a bonus to {@variantrule Armor Class|XPHB}, attack and damage rolls, saving throws, or spell save DCs, don't increase the bonus as part of evolving the item with this system. For example, if you evolve a {@item +1 Wand of the War Mage|XDMG} and give it a new property from this system, the item's bonus remains +1.)"
+                        },
+                        {
+                          "type": "item",
+                          "name": "4: Determine the Item's New Name and Physical Characteristics",
+                          "entries": [
+                            "Change the evolved item's name to represent its newfound power. If you like, you can give the item a new, more dramatic name. Either way, preface its name with the name of the property it just gained. For example, if you evolve a {@item Sword of Sharpness|XDMG} to be Legendary and grant it the {@table Magic Item Property Tables; Legendary Magic Item Properties|AU|Prismatic} property, it would be called a Prismatic Sword of Sharpness.",
+                            "Evolution also causes physical changes; examples include the appearance of magical runes or additional filigree."
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "entries",
+                  "name": "Magic Item Property Tables",
+                  "id": "2fc",
+                  "page": 130,
+                  "entries": [
+                    "Roll on or choose from the tables that follow when determining new properties for complex evolving magic items.",
+                    {
+                      "type": "table",
+                      "caption": "Rare Magic Item Properties",
+                      "page": 131,
+                      "colLabels": [
+                        "1d12",
+                        "Property"
+                      ],
+                      "colStyles": [
+                        "col-2 text-center",
+                        "col-10"
+                      ],
+                      "rows": [
+                        [
+                          "1",
+                          "Amicable. When you fail an ability check made to influence a creature while holding or wearing this item, you can roll {@dice 1d6} and add the number rolled to the check, potentially turning the failure into a success. This property can be used three times, and the item regains expended uses of this property daily at dawn."
+                        ],
+                        [
+                          "2",
+                          "Conversational. While holding or wearing this item, you can cast {@spell Tongues|XPHB} from it. Once the item has been used to cast this spell, this property can't be used again until the next dawn."
+                        ],
+                        [
+                          "3",
+                          "Crusading. While holding or wearing this item, you can cast {@spell Crusader's Mantle|XPHB} from it. Once the item has been used to cast this spell, this property can't be used again until the next dawn."
+                        ],
+                        [
+                          "4",
+                          "Displacing. While holding or wearing this item, you can cast {@spell Blur|XPHB} from it. Once the item has been used to cast this spell, this property can't be used again until the next dawn."
+                        ],
+                        [
+                          "5",
+                          "Frightening. While holding or wearing this item, you can cast {@spell Fear|XPHB} (save {@dc 15}) from it. Once the item has been used to cast this spell, this property can't be used again until the next dawn."
+                        ],
+                        [
+                          "6",
+                          "Fulminating. While holding or wearing this item, you can cast {@spell Lightning Bolt|XPHB} (save {@dc 15}) from it. Once the item has been used to cast this spell, this property can't be used again until the next dawn."
+                        ],
+                        [
+                          "7",
+                          "Immolating. While holding or wearing this item, you can cast {@spell Fireball|XPHB} (save {@dc 15}) from it. Once the item has been used to cast this spell, this property can't be used again until the next dawn."
+                        ],
+                        [
+                          "8",
+                          "Quickening. As a {@variantrule Bonus Action|XPHB} while holding or wearing this item, you can infuse yourself with magical velocity for 1 minute or until your {@status Concentration|XPHB} ends. While you are infused, your {@variantrule Speed|XPHB} is doubled, and {@action opportunity attack|XPHB|Opportunity Attacks} against you are made with {@variantrule Disadvantage|XPHB}. Once this property has been used, it can't be used again until the next dawn."
+                        ],
+                        [
+                          "9",
+                          "Restorative. While holding or wearing this item, you can take a {@action Magic|XPHB} action to cast both {@spell Cure Wounds|XPHB} and {@spell Lesser Restoration|XPHB}, targeting the same creature. Once this property has been used, it can't be used again until the next dawn."
+                        ],
+                        [
+                          "10",
+                          "Skulking. While holding or wearing this item, you can cast {@spell Pass without Trace|XPHB|Pass Without A Trace} from it. Once the item has been used to cast this spell, this property can't be used again until the next dawn."
+                        ],
+                        [
+                          "11",
+                          "Studious. When you fail an ability check made as part of the {@action Study|XPHB} action while holding or wearing this item, you can roll {@dice 1d6} and add the number rolled to the check, potentially turning the failure into a success. This property can be used three times, and the item regains expended uses of this property daily at dawn."
+                        ],
+                        [
+                          "12",
+                          "Vigilant. While holding or wearing this item, you have {@variantrule Advantage|XPHB} on {@variantrule Initiative|XPHB} rolls and Wisdom ({@skill Perception|XPHB}) checks."
+                        ]
+                      ]
+                    },
+                    {
+                      "type": "insetReadaloud",
+                      "id": "2fd",
+                      "page": 131,
+                      "entries": [
+                        {
+                          "type": "quote",
+                          "entries": [
+                            "Some magic items are far more special than the wondrous trinkets you would find in a shop. Your parent's sword or your mentor's wand—hold these close and shut your eyes. That's when you'll feel their power."
+                          ],
+                          "by": "Alustriel"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "table",
+                      "caption": "Very Rare Magic Item Properties",
+                      "page": 132,
+                      "colLabels": [
+                        "1d12",
+                        "Property"
+                      ],
+                      "colStyles": [
+                        "col-2 text-center",
+                        "col-10"
+                      ],
+                      "rows": [
+                        [
+                          "1",
+                          "Chilling. While holding or wearing this item, you can cast {@spell Cone of Cold|XPHB} (save {@dc 17}) from it. Once the item has been used to cast this spell, this property can't be used again until the next dawn."
+                        ],
+                        [
+                          "2",
+                          "Deceptive. While holding or wearing this item, you can cast {@spell Mislead|XPHB} (save {@dc 17}) from it. Once the item has been used to cast this spell, this property can't be used again until the next dawn."
+                        ],
+                        [
+                          "3",
+                          "Far-Seeing. While holding or wearing this item, you can cast {@spell Scrying|XPHB} (save {@dc 17}) from it. Once the item has been used to cast this spell, this property can't be used again until the next dawn."
+                        ],
+                        [
+                          "4",
+                          "Fortunate. While attuned to this magic item, you can reroll one failed {@variantrule D20 Test|XPHB}, and you must used the second roll. This property can be used twice, and the item regains expended uses of this property daily at dawn."
+                        ],
+                        [
+                          "5",
+                          "Lunar. While holding or wearing this item, you can cast {@spell Fount of Moonlight|XPHB} or {@spell Moonbeam|XPHB} (save {@dc 17}) from it. Once the item has been used to cast a spell, it can't be used to cast that spell again until the next dawn."
+                        ],
+                        [
+                          "6",
+                          "Paralyzing. While holding or wearing this item, you can cast {@spell Hold Monster|XPHB} (save {@dc 17}) from it. Once the item has been used to cast this spell, this property can't be used again until the next dawn."
+                        ],
+                        [
+                          "7",
+                          "Psionic. While holding or wearing this item, you have telepathy with a range of 30 feet, and you can cast {@spell Synaptic Static|XPHB} (save {@dc 17}) from it. Once the item has been used to cast this spell, this property can't be used again until the next dawn."
+                        ],
+                        [
+                          "8",
+                          "Regal. While holding or wearing this item, you can cast {@spell Yolande's Regal Presence|XPHB} (save {@dc 17}) from it. Once the item has been used to cast this spell, this property can't be used again until the next dawn."
+                        ],
+                        [
+                          "9",
+                          "Resilient. While holding or wearing this item, you can cast {@spell Otiluke's Resilient Sphere|XPHB} (save {@dc 17}) from it. Once the item has been used to cast this spell, this property can't be used again until the next dawn."
+                        ],
+                        [
+                          "10",
+                          "Resistant. While attuned to this item, you have {@variantrule Resistance|XPHB} to one of the following damage types (DM's choice): Acid, Cold, Fire, Lightning, Necrotic, Poison, Psychic, Radiant, or Thunder."
+                        ],
+                        [
+                          "11",
+                          "Traversing. While holding or wearing this item, you can cast {@spell Dimension Door|XPHB} or {@spell Freedom of Movement|XPHB} from it. Once the item has been used to cast a spell, it can't be used to cast that spell again until the next dawn."
+                        ],
+                        [
+                          "12",
+                          "Withering. While holding or wearing this item, you can cast {@spell Blight|XPHB} or {@spell Vampiric Touch|XPHB} (save {@dc 17}, +9 to hit with spell attacks) from it. Once the item has been used to cast a spell, it can't be used to cast that spell again until the next dawn."
+                        ]
+                      ]
+                    },
+                    {
+                      "type": "table",
+                      "caption": "Legendary Magic Item Properties",
+                      "page": 133,
+                      "colLabels": [
+                        "1d10",
+                        "Property"
+                      ],
+                      "colStyles": [
+                        "col-2 text-center",
+                        "col-10"
+                      ],
+                      "rows": [
+                        [
+                          "1",
+                          "All-Seeing. While attuned to this item, you have {@sense Truesight|XPHB} with a range of 30 feet."
+                        ],
+                        [
+                          "2",
+                          "Empowering. While attuned to this item, one of your ability scores (DM's choice) increases by 2, to a maximum of 24."
+                        ],
+                        [
+                          "3",
+                          "Gravitational. While holding or wearing this item, you can cast {@spell Reverse Gravity|XPHB} (save {@dc 18}) from it. Once the item has been used to cast this spell, this property can't be used again until the next dawn."
+                        ],
+                        [
+                          "4",
+                          "Heliacal. While holding or wearing this item, you can cast {@spell Sunburst|XPHB} (save {@dc 18}) from it. Once the item has been used to cast this spell, this property can't be used again until the next dawn."
+                        ],
+                        [
+                          "5",
+                          "Prismatic. While holding or wearing this item, you can cast {@spell Prismatic Spray|XPHB} (save {@dc 18}) from it. Once the item has been used to cast this spell, this property can't be used again until the next dawn."
+                        ],
+                        [
+                          "6",
+                          "Spellguarding. While holding or wearing this item, you have {@variantrule Advantage|XPHB} on saving throws against spells and other magical effects."
+                        ],
+                        [
+                          "7",
+                          "Stupefying. While holding or wearing this item, you can cast {@spell Power Word Stun|XPHB} (save {@dc 18}) from it. Once the item has been used to cast this spell, this property can't be used again until the next dawn."
+                        ],
+                        [
+                          "8",
+                          "Subjugating. While holding or wearing this item, you can cast {@spell Dominate Monster|XPHB} (save {@dc 18}) from it. Once the item has been used to cast this spell, this property can't be used again until the next dawn."
+                        ],
+                        [
+                          "9",
+                          "Tranquil. While holding or wearing this item, you can cast {@spell Mind Blank|XPHB} (targeting yourself only) from it. Once the item has been used to cast this spell, this property can't be used again until the next dawn."
+                        ],
+                        [
+                          "10",
+                          "Vanishing. While holding or wearing this item, you can take a {@action Magic|XPHB} action to give yourself the {@condition Invisible|XPHB} condition for 1 hour or until you end it (no action required). Once this property has been used, it can't be used again until the next dawn."
+                        ]
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "entries",
+          "name": "Complex Evolution Examples",
+          "id": "2fe",
+          "page": 132,
+          "entries": [
+            "The following examples show how to apply the rules for complex evolution to magic items from the {@book Dungeon Master's Guide|XDMG}. These examples give fantastical new names to the base items and provide story details to show how you can use these elements to enhance your game.",
+            "When referring to one of these items, use the word that corresponds with the item's rarity before its name. For example, a Rare {@item Blade of the Guardian|AU} is a {@item Studious Blade of the Guardian|AU}, a Very Rare one is a {@item Resistant Blade of the Guardian|AU}, and a Legendary one is an All-Seeing {@item Blade of the Guardian|AU}.",
+            {
+              "type": "statblock",
+              "tag": "item",
+              "name": "Blade of the Guardian",
+              "source": "AU",
+              "page": 132
+            },
+            {
+              "type": "statblock",
+              "tag": "item",
+              "name": "Breastplate of the Tyrant",
+              "source": "AU",
+              "page": 132
+            },
+            {
+              "type": "statblock",
+              "tag": "item",
+              "name": "Rod of the Honed Mind",
+              "source": "AU",
+              "page": 133
+            },
+            {
+              "type": "statblock",
+              "tag": "item",
+              "name": "Wand of Celestial Prowess",
+              "source": "AU",
+              "page": 133
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

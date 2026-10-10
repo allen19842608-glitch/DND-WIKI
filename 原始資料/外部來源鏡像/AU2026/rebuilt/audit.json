@@ -1,0 +1,111 @@
+{
+  "chapters": [
+    {
+      "name": "00-Introduction- A Multiverse of Magic.md",
+      "title": "Introduction: A Multiverse of Magic",
+      "bytes": 6515
+    },
+    {
+      "name": "01-Chapter 1- Character Options.md",
+      "title": "Chapter 1: Character Options",
+      "bytes": 136993
+    },
+    {
+      "name": "02-Chapter 2- Spells.md",
+      "title": "Chapter 2: Spells",
+      "bytes": 48591
+    },
+    {
+      "name": "03-Chapter 3- Creating Magical Worlds.md",
+      "title": "Chapter 3: Creating Magical Worlds",
+      "bytes": 126227
+    },
+    {
+      "name": "04-Chapter 4- Magical Factions.md",
+      "title": "Chapter 4: Magical Factions",
+      "bytes": 134369
+    },
+    {
+      "name": "05-Chapter 5- Magic Items.md",
+      "title": "Chapter 5: Magic Items",
+      "bytes": 123587
+    },
+    {
+      "name": "06-Chapter 6- Magical Creatures.md",
+      "title": "Chapter 6: Magical Creatures",
+      "bytes": 69487
+    },
+    {
+      "name": "07-Appendix- Tomb of the Shadow Serpents.md",
+      "title": "Appendix: Tomb of the Shadow Serpents",
+      "bytes": 32997
+    },
+    {
+      "name": "08-Credits.md",
+      "title": "Credits",
+      "bytes": 15932
+    }
+  ],
+  "resolved_count": 271,
+  "unresolved": [],
+  "unsupported": [],
+  "source_sha256": "0c0e88ec1c1ad5cbac34b2094586bace2fb19f2b58695697a3f0d2e0ca60ef7f",
+  "inputs": [
+    {
+      "file": "backgrounds.json",
+      "sha256": "b12d7a0b273ab264bc8aec59a24b9741cb87532b90e225c2d376ddf4b017901b"
+    },
+    {
+      "file": "bastions.json",
+      "sha256": "fbfcc8c109ca89427afeb82c7cc7ee2c2d062048e483293adff8c543141ad99f"
+    },
+    {
+      "file": "bestiary--bestiary-au.json",
+      "sha256": "2bcd7fee056524c01f6f64a3544423e77a23f5975d50aff6aee729966b58437d"
+    },
+    {
+      "file": "bestiary--fluff-bestiary-au.json",
+      "sha256": "8fbd9703068cb6001180f9a17a8c6dbdbea3c70413157f10b0d6152eda354706"
+    },
+    {
+      "file": "class--class-cleric.json",
+      "sha256": "604d81ad5012ca92f56a5aadacdf298a04d4889443e99644d4bf2af46f5a0900"
+    },
+    {
+      "file": "class--class-fighter.json",
+      "sha256": "9c8a328bb03f6ee806d3d993942c2603d02bfc2c61f5306c77b15f9ba05b33ae"
+    },
+    {
+      "file": "class--class-monk.json",
+      "sha256": "381b5b1a80da79b661b9656d65b266d0bca290cf83d261c5f15ce8d0ecba4ff5"
+    },
+    {
+      "file": "class--class-warlock.json",
+      "sha256": "867a945c460be5925df0e6d87238b226912e7f2eb567fde0a88c05179eadbcac"
+    },
+    {
+      "file": "class--class-wizard.json",
+      "sha256": "833066cec97469353092424ae9878bab1b591c0da782f81625bb3e54850393fe"
+    },
+    {
+      "file": "feats.json",
+      "sha256": "381d51a5444cc5dac1e5f9af673a3fabb476662ee6229bda1a372ca49033a3b5"
+    },
+    {
+      "file": "items.json",
+      "sha256": "3af773b48cb874682aae36c14f2e89b89ae1380dd4ae877f7b1e545ec4d27968"
+    },
+    {
+      "file": "magicvariants.json",
+      "sha256": "1280cf53e969ad1874df7c8dd1325ec9be780570779a1706fd632665562913f8"
+    },
+    {
+      "file": "spells--spells-au.json",
+      "sha256": "805a3ccb583e8415ee494e582c6172d900ebd63f85d599b785f260591992ead7"
+    }
+  ],
+  "notes": [
+    "Structured fields retained verbatim; inline cross-book tags are textual references, not expanded full external books.",
+    "Image URLs preserved; image binaries not downloaded."
+  ]
+}

@@ -1,0 +1,265 @@
+{
+  "total": 181,
+  "resolved": 152,
+  "missing": [
+    {
+      "type": "statblock",
+      "tag": "subclass",
+      "name": "Arcana Domain (Cleric)",
+      "shortName": "Arcana",
+      "className": "Cleric",
+      "classSource": "XPHB",
+      "source": "AU",
+      "page": 8
+    },
+    {
+      "type": "statblock",
+      "tag": "subclass",
+      "name": "Arcane Archer (Fighter)",
+      "shortName": "Arcane Archer",
+      "className": "Fighter",
+      "classSource": "XPHB",
+      "source": "AU",
+      "page": 9
+    },
+    {
+      "type": "statblock",
+      "tag": "subclass",
+      "name": "Warrior of the Mystic Arts (Monk)",
+      "shortName": "Mystic Arts",
+      "className": "Monk",
+      "classSource": "XPHB",
+      "source": "AU",
+      "page": 11
+    },
+    {
+      "type": "statblock",
+      "tag": "subclass",
+      "name": "Vestige Patron (Warlock)",
+      "shortName": "Vestige",
+      "className": "Warlock",
+      "classSource": "XPHB",
+      "source": "AU",
+      "page": 13
+    },
+    {
+      "type": "statblock",
+      "tag": "subclass",
+      "name": "Conjurer (Wizard)",
+      "shortName": "Conjurer",
+      "className": "Wizard",
+      "classSource": "XPHB",
+      "source": "AU",
+      "page": 15
+    },
+    {
+      "type": "statblock",
+      "tag": "subclass",
+      "name": "Enchanter (Wizard)",
+      "shortName": "Enchanter",
+      "className": "Wizard",
+      "classSource": "XPHB",
+      "source": "AU",
+      "page": 16
+    },
+    {
+      "type": "statblock",
+      "tag": "subclass",
+      "name": "Necromancer (Wizard)",
+      "shortName": "Necromancer",
+      "className": "Wizard",
+      "classSource": "XPHB",
+      "source": "AU",
+      "page": 17
+    },
+    {
+      "type": "statblock",
+      "tag": "subclass",
+      "name": "Transmuter (Wizard)",
+      "shortName": "Transmuter",
+      "className": "Wizard",
+      "classSource": "XPHB",
+      "source": "AU",
+      "page": 19
+    },
+    {
+      "type": "statblock",
+      "tag": "item",
+      "name": "Dispelling Ammunition",
+      "source": "AU",
+      "page": 118
+    },
+    {
+      "type": "statblock",
+      "tag": "item",
+      "name": "Goading Ammunition",
+      "source": "AU",
+      "page": 119
+    },
+    {
+      "type": "statblock",
+      "tag": "item",
+      "name": "Necklace of the Beastly Familiar",
+      "source": "AU",
+      "page": 120
+    },
+    {
+      "type": "statblock",
+      "tag": "item",
+      "name": "Tramontane Armor",
+      "source": "AU",
+      "page": 124
+    },
+    {
+      "type": "statblock",
+      "tag": "item",
+      "name": "Blossom Rod",
+      "source": "AU",
+      "page": 127
+    },
+    {
+      "type": "statblock",
+      "tag": "item",
+      "name": "Idol of Good Fortunes",
+      "source": "AU",
+      "page": 127
+    },
+    {
+      "type": "statblock",
+      "tag": "item",
+      "name": "Keyholes Dagger",
+      "source": "AU",
+      "page": 128
+    },
+    {
+      "type": "statblock",
+      "tag": "item",
+      "name": "Staff of Skulls",
+      "source": "AU",
+      "page": 128
+    },
+    {
+      "type": "statblock",
+      "tag": "item",
+      "name": "Wave-Swept Weapon",
+      "source": "AU",
+      "page": 129
+    },
+    {
+      "type": "statblock",
+      "tag": "item",
+      "name": "Blade of the Guardian",
+      "source": "AU",
+      "page": 132
+    },
+    {
+      "type": "statblock",
+      "tag": "item",
+      "name": "Breastplate of the Tyrant",
+      "source": "AU",
+      "page": 132
+    },
+    {
+      "type": "statblock",
+      "tag": "item",
+      "name": "Rod of the Honed Mind",
+      "source": "AU",
+      "page": 133
+    },
+    {
+      "type": "statblock",
+      "tag": "item",
+      "name": "Wand of Celestial Prowess",
+      "source": "AU",
+      "page": 133
+    },
+    {
+      "type": "statblock",
+      "prop": "monsterFluff",
+      "name": "Archmages",
+      "source": "AU",
+      "data": {
+        "renderCompact": {
+          "isSkipRootName": true
+        }
+      }
+    },
+    {
+      "type": "statblock",
+      "prop": "monsterFluff",
+      "name": "Baelnorn",
+      "source": "AU",
+      "data": {
+        "renderCompact": {
+          "isSkipRootName": true
+        }
+      }
+    },
+    {
+      "type": "statblock",
+      "prop": "monsterFluff",
+      "name": "Darkenbeast",
+      "source": "AU",
+      "data": {
+        "renderCompact": {
+          "isSkipRootName": true
+        }
+      }
+    },
+    {
+      "type": "statblock",
+      "prop": "monsterFluff",
+      "name": "Groundlings",
+      "source": "AU",
+      "data": {
+        "renderCompact": {
+          "isSkipRootName": true
+        }
+      }
+    },
+    {
+      "type": "statblock",
+      "prop": "monsterFluff",
+      "name": "Living Spells",
+      "source": "AU",
+      "data": {
+        "renderCompact": {
+          "isSkipRootName": true
+        }
+      }
+    },
+    {
+      "type": "statblock",
+      "prop": "monsterFluff",
+      "name": "Spellguard",
+      "source": "AU",
+      "data": {
+        "renderCompact": {
+          "isSkipRootName": true
+        }
+      }
+    },
+    {
+      "type": "statblock",
+      "prop": "monsterFluff",
+      "name": "Taisus",
+      "source": "AU",
+      "data": {
+        "renderCompact": {
+          "isSkipRootName": true
+        }
+      }
+    },
+    {
+      "type": "statblock",
+      "prop": "monsterFluff",
+      "name": "Venger",
+      "source": "AU",
+      "data": {
+        "renderCompact": {
+          "isSkipRootName": true
+        }
+      }
+    }
+  ]
+}

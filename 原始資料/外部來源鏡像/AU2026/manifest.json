@@ -1,0 +1,72 @@
+{
+  "publication": "Arcana Unleashed (2026)",
+  "provider": "5e.tools",
+  "upstream_url": "https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/main/data/book/book-au.json",
+  "retrieved_at": "2026-10-09T19:45:37.566Z",
+  "snapshot": "book-au.json",
+  "sha256": "0c0e88ec1c1ad5cbac34b2094586bace2fb19f2b58695697a3f0d2e0ca60ef7f",
+  "chapters": [
+    {
+      "title": "Introduction: A Multiverse of Magic",
+      "page": 4,
+      "json": "chapters/00-Introduction- A Multiverse of Magic.json",
+      "markdown": "rebuilt/chapters/00-Introduction- A Multiverse of Magic.md"
+    },
+    {
+      "title": "Chapter 1: Character Options",
+      "page": 7,
+      "json": "chapters/01-Chapter 1- Character Options.json",
+      "markdown": "rebuilt/chapters/01-Chapter 1- Character Options.md"
+    },
+    {
+      "title": "Chapter 2: Spells",
+      "page": 35,
+      "json": "chapters/02-Chapter 2- Spells.json",
+      "markdown": "rebuilt/chapters/02-Chapter 2- Spells.md"
+    },
+    {
+      "title": "Chapter 3: Creating Magical Worlds",
+      "page": 47,
+      "json": "chapters/03-Chapter 3- Creating Magical Worlds.json",
+      "markdown": "rebuilt/chapters/03-Chapter 3- Creating Magical Worlds.md"
+    },
+    {
+      "title": "Chapter 4: Magical Factions",
+      "page": 79,
+      "json": "chapters/04-Chapter 4- Magical Factions.json",
+      "markdown": "rebuilt/chapters/04-Chapter 4- Magical Factions.md"
+    },
+    {
+      "title": "Chapter 5: Magic Items",
+      "page": 115,
+      "json": "chapters/05-Chapter 5- Magic Items.json",
+      "markdown": "rebuilt/chapters/05-Chapter 5- Magic Items.md"
+    },
+    {
+      "title": "Chapter 6: Magical Creatures",
+      "page": 135,
+      "json": "chapters/06-Chapter 6- Magical Creatures.json",
+      "markdown": "rebuilt/chapters/06-Chapter 6- Magical Creatures.md"
+    },
+    {
+      "title": "Appendix: Tomb of the Shadow Serpents",
+      "page": 151,
+      "json": "chapters/07-Appendix- Tomb of the Shadow Serpents.json",
+      "markdown": "rebuilt/chapters/07-Appendix- Tomb of the Shadow Serpents.md"
+    },
+    {
+      "title": "Credits",
+      "json": "chapters/08-Credits.json",
+      "markdown": "rebuilt/chapters/08-Credits.md"
+    }
+  ],
+  "notes": [
+    "Upstream snapshot preserved byte-for-byte; JSON chapter extracts retained.",
+    "Canonical readable Markdown paths point to rebuilt/chapters; obsolete unexpanded Markdown removed.",
+    "Referenced datasets and hashes recorded in rebuilt/audit.json.",
+    "Images linked online; image binaries not downloaded."
+  ],
+  "publication_id": "AU2026",
+  "audit": "rebuilt/audit.json",
+  "verification": "rebuilt/verification.json"
+}

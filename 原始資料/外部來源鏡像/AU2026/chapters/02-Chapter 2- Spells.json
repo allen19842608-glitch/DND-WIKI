@@ -1,0 +1,512 @@
+{
+  "type": "section",
+  "name": "Chapter 2: Spells",
+  "id": "0ee",
+  "page": 35,
+  "entries": [
+    {
+      "type": "image",
+      "href": {
+        "type": "internal",
+        "path": "book/AU/024-02-001.ch-2-splash.webp"
+      },
+      "width": 1700,
+      "height": 2221,
+      "title": "A seasoned mage teaches apprentices about illusions.",
+      "credit": "Dao Le"
+    },
+    "The following new and revised spells can help players bring a magical world to life. These spells harness great magical power, allowing characters to empower their familiars or detonate their enemies.",
+    "The spells are presented in alphabetical order, and the Spells table orders them by level. The table also notes each spell's school of magic and which classes have access to it. (The Artificer is described in {@book Eberron: Forge of the Artificer|EFA}.) In the Special column, {@i C} means the spell requires Concentration, {@i R} means it's a Ritual, and {@i M} means it requires a specific Material component.",
+    {
+      "type": "table",
+      "caption": "Spells",
+      "page": 36,
+      "colLabels": [
+        "Level",
+        "Spell",
+        "School",
+        "Special",
+        "Class"
+      ],
+      "colStyles": [
+        "col-1 text-center",
+        "col-2 text-center",
+        "col-2 text-center",
+        "col-1 text-center",
+        "col-6"
+      ],
+      "rows": [
+        [
+          "2",
+          "{@spell Battle Familiar|AU}",
+          "Conjuration",
+          "M",
+          "{@class Druid|XPHB}, {@class Warlock|XPHB}, {@class Wizard|XPHB}"
+        ],
+        [
+          "2",
+          "{@spell Disruptive Tune|AU}",
+          "Abjuration",
+          "C",
+          "{@class Bard|XPHB}, {@class Sorcerer|XPHB}, {@class Wizard|XPHB}"
+        ],
+        [
+          "2",
+          "{@spell Dueling Ground|AU}",
+          "Abjuration",
+          "R, M",
+          "{@class Artificer|EFA}, {@class Bard|XPHB}, {@class Cleric|XPHB}, {@class Druid|XPHB}, {@class Paladin|XPHB}, {@class Ranger|XPHB}, {@class Sorcerer|XPHB}, {@class Warlock|XPHB}, {@class Wizard|XPHB}"
+        ],
+        [
+          "2",
+          "{@spell Uncertain Footing|AU}",
+          "Illusion",
+          "C",
+          "{@class Artificer|EFA}, {@class Bard|XPHB}, {@class Warlock|XPHB}, {@class Wizard|XPHB}"
+        ],
+        [
+          "2",
+          "{@spell Wither and Bloom|AU}",
+          "Necromancy",
+          "—",
+          "{@class Druid|XPHB}, {@class Sorcerer|XPHB}, {@class Wizard|XPHB}"
+        ],
+        [
+          "3",
+          "{@spell Catnap|AU}",
+          "Enchantment",
+          "—",
+          "{@class Artificer|EFA}, {@class Bard|XPHB}, {@class Sorcerer|XPHB}, {@class Wizard|XPHB}"
+        ],
+        [
+          "3",
+          "{@spell Inflict Doubt|AU}",
+          "Enchantment",
+          "C",
+          "{@class Bard|XPHB}, {@class Sorcerer|XPHB}, {@class Warlock|XPHB}, {@class Wizard|XPHB}"
+        ],
+        [
+          "4",
+          "{@spell Distorted Distance|AU}",
+          "Illusion",
+          "C",
+          "{@class Artificer|EFA}, {@class Bard|XPHB}, {@class Warlock|XPHB}, {@class Wizard|XPHB}"
+        ],
+        [
+          "4",
+          "{@spell Festering Blast|AU}",
+          "Necromancy",
+          "—",
+          "{@class Druid|XPHB}, {@class Sorcerer|XPHB}, {@class Warlock|XPHB}, {@class Wizard|XPHB}"
+        ],
+        [
+          "4",
+          "{@spell Zone of Amicability|AU}",
+          "Enchantment",
+          "—",
+          "{@class Bard|XPHB}, {@class Warlock|XPHB}"
+        ],
+        [
+          "5",
+          "{@spell Enervation|AU}",
+          "Necromancy",
+          "C",
+          "{@class Sorcerer|XPHB}, {@class Warlock|XPHB}, {@class Wizard|XPHB}"
+        ],
+        [
+          "5",
+          "{@spell Grave Ground|AU}",
+          "Necromancy",
+          "C",
+          "{@class Cleric|XPHB}, {@class Warlock|XPHB}, {@class Wizard|XPHB}"
+        ],
+        [
+          "5",
+          "{@spell Mordenkainen's Lucubration|AU}",
+          "Divination",
+          "—",
+          "{@class Wizard|XPHB}"
+        ],
+        [
+          "5",
+          "{@spell Negative Energy Flood|AU}",
+          "Necromancy",
+          "—",
+          "{@class Warlock|XPHB}, {@class Wizard|XPHB}"
+        ],
+        [
+          "5",
+          "{@spell Spirit Lantern|AU}",
+          "Necromancy",
+          "—",
+          "{@class Artificer|EFA}, {@class Cleric|XPHB}, {@class Warlock|XPHB}, {@class Wizard|XPHB}"
+        ],
+        [
+          "5",
+          "{@spell Summon Plant|AU}",
+          "Conjuration",
+          "C, M",
+          "{@class Druid|XPHB}, {@class Ranger|XPHB}"
+        ],
+        [
+          "5",
+          "{@spell Waves of Exhaustion|AU}",
+          "Necromancy",
+          "C",
+          "{@class Sorcerer|XPHB}, {@class Warlock|XPHB}, {@class Wizard|XPHB}"
+        ],
+        [
+          "6",
+          "{@spell Summon Dinosaur|AU}",
+          "Conjuration",
+          "C, M",
+          "{@class Druid|XPHB}"
+        ],
+        [
+          "7",
+          "{@spell Aura of Evasion|AU}",
+          "Abjuration",
+          "C",
+          "{@class Sorcerer|XPHB}, {@class Warlock|XPHB}, {@class Wizard|XPHB}"
+        ],
+        [
+          "7",
+          "{@spell Fractured Awareness|AU}",
+          "Divination",
+          "C",
+          "{@class Bard|XPHB}, {@class Sorcerer|XPHB}, {@class Warlock|XPHB}, {@class Wizard|XPHB}"
+        ],
+        [
+          "7",
+          "{@spell Power Word Pain|AU}",
+          "Enchantment",
+          "—",
+          "{@class Bard|XPHB}, {@class Sorcerer|XPHB}, {@class Warlock|XPHB}, {@class Wizard|XPHB}"
+        ],
+        [
+          "7",
+          "{@spell Reweave Fate|AU}",
+          "Divination",
+          "—",
+          "{@class Bard|XPHB}, {@class Cleric|XPHB}, {@class Warlock|XPHB}, {@class Wizard|XPHB}"
+        ],
+        [
+          "7",
+          "{@spell Transfix|AU}",
+          "Enchantment",
+          "C",
+          "{@class Bard|XPHB}, {@class Warlock|XPHB}, {@class Wizard|XPHB}"
+        ],
+        [
+          "8",
+          "{@spell Entrancing Mirrors|AU}",
+          "Illusion",
+          "C",
+          "{@class Bard|XPHB}, {@class Sorcerer|XPHB}, {@class Warlock|XPHB}, {@class Wizard|XPHB}"
+        ],
+        [
+          "8",
+          "{@spell Illusory Dragon|AU}",
+          "Illusion",
+          "C",
+          "{@class Wizard|XPHB}"
+        ],
+        [
+          "8",
+          "{@spell Iron Body|AU}",
+          "Transmutation",
+          "C, M",
+          "{@class Sorcerer|XPHB}, {@class Warlock|XPHB}, {@class Wizard|XPHB}"
+        ],
+        [
+          "8",
+          "{@spell Lightning Ring|AU}",
+          "Evocation",
+          "C",
+          "{@class Druid|XPHB}, {@class Sorcerer|XPHB}, {@class Warlock|XPHB}, {@class Wizard|XPHB}"
+        ],
+        [
+          "8",
+          "{@spell Moment of Prescience|AU}",
+          "Divination",
+          "—",
+          "{@class Wizard|XPHB}"
+        ],
+        [
+          "9",
+          "{@spell Detonate|AU}",
+          "Evocation",
+          "—",
+          "{@class Sorcerer|XPHB}, {@class Warlock|XPHB}, {@class Wizard|XPHB}"
+        ],
+        [
+          "9",
+          "{@spell Hindsight|AU}",
+          "Divination",
+          "C, M",
+          "{@class Wizard|XPHB}"
+        ],
+        [
+          "9",
+          "{@spell Invulnerability|AU}",
+          "Abjuration",
+          "C, M",
+          "{@class Wizard|XPHB}"
+        ],
+        [
+          "9",
+          "{@spell Vision of Elapsing Eons|AU}",
+          "Illusion",
+          "—",
+          "{@class Bard|XPHB}, {@class Sorcerer|XPHB}, {@class Warlock|XPHB}, {@class Wizard|XPHB}"
+        ],
+        [
+          "9",
+          "{@spell Wail of the Banshee|AU}",
+          "Necromancy",
+          "—",
+          "{@class Sorcerer|XPHB}, {@class Warlock|XPHB}, {@class Wizard|XPHB}"
+        ]
+      ]
+    },
+    {
+      "type": "section",
+      "name": "Spells",
+      "id": "0ef",
+      "page": 35,
+      "entries": [
+        {
+          "type": "statblock",
+          "tag": "spell",
+          "name": "Aura of Evasion",
+          "source": "AU",
+          "page": 35
+        },
+        {
+          "type": "statblock",
+          "tag": "spell",
+          "name": "Battle Familiar",
+          "source": "AU",
+          "page": 35
+        },
+        {
+          "type": "statblock",
+          "tag": "spell",
+          "name": "Catnap",
+          "source": "AU",
+          "page": 37
+        },
+        {
+          "type": "statblock",
+          "tag": "spell",
+          "name": "Detonate",
+          "source": "AU",
+          "page": 37
+        },
+        {
+          "type": "statblock",
+          "tag": "spell",
+          "name": "Disruptive Tune",
+          "source": "AU",
+          "page": 38
+        },
+        {
+          "type": "statblock",
+          "tag": "spell",
+          "name": "Distorted Distance",
+          "source": "AU",
+          "page": 38
+        },
+        {
+          "type": "statblock",
+          "tag": "spell",
+          "name": "Dueling Ground",
+          "source": "AU",
+          "page": 38
+        },
+        {
+          "type": "statblock",
+          "tag": "spell",
+          "name": "Enervation",
+          "source": "AU",
+          "page": 38
+        },
+        {
+          "type": "statblock",
+          "tag": "spell",
+          "name": "Entrancing Mirrors",
+          "source": "AU",
+          "page": 39
+        },
+        {
+          "type": "statblock",
+          "tag": "spell",
+          "name": "Festering Blast",
+          "source": "AU",
+          "page": 39
+        },
+        {
+          "type": "statblock",
+          "tag": "spell",
+          "name": "Fractured Awareness",
+          "source": "AU",
+          "page": 40
+        },
+        {
+          "type": "statblock",
+          "tag": "spell",
+          "name": "Grave Ground",
+          "source": "AU",
+          "page": 40
+        },
+        {
+          "type": "statblock",
+          "tag": "spell",
+          "name": "Hindsight",
+          "source": "AU",
+          "page": 40
+        },
+        {
+          "type": "statblock",
+          "tag": "spell",
+          "name": "Illusory Dragon",
+          "source": "AU",
+          "page": 40
+        },
+        {
+          "type": "statblock",
+          "tag": "spell",
+          "name": "Inflict Doubt",
+          "source": "AU",
+          "page": 40
+        },
+        {
+          "type": "statblock",
+          "tag": "spell",
+          "name": "Invulnerability",
+          "source": "AU",
+          "page": 41
+        },
+        {
+          "type": "statblock",
+          "tag": "spell",
+          "name": "Iron Body",
+          "source": "AU",
+          "page": 41
+        },
+        {
+          "type": "statblock",
+          "tag": "spell",
+          "name": "Lightning Ring",
+          "source": "AU",
+          "page": 41
+        },
+        {
+          "type": "statblock",
+          "tag": "spell",
+          "name": "Moment of Prescience",
+          "source": "AU",
+          "page": 42
+        },
+        {
+          "type": "statblock",
+          "tag": "spell",
+          "name": "Mordenkainen's Lucubration",
+          "source": "AU",
+          "page": 42
+        },
+        {
+          "type": "statblock",
+          "tag": "spell",
+          "name": "Negative Energy Flood",
+          "source": "AU",
+          "page": 42
+        },
+        {
+          "type": "statblock",
+          "tag": "spell",
+          "name": "Power Word Pain",
+          "source": "AU",
+          "page": 42
+        },
+        {
+          "type": "statblock",
+          "tag": "spell",
+          "name": "Reweave Fate",
+          "source": "AU",
+          "page": 42
+        },
+        {
+          "type": "statblock",
+          "tag": "spell",
+          "name": "Spirit Lantern",
+          "source": "AU",
+          "page": 43
+        },
+        {
+          "type": "statblock",
+          "tag": "spell",
+          "name": "Summon Dinosaur",
+          "source": "AU",
+          "page": 43
+        },
+        {
+          "type": "statblock",
+          "tag": "spell",
+          "name": "Summon Plant",
+          "source": "AU",
+          "page": 44
+        },
+        {
+          "type": "statblock",
+          "tag": "spell",
+          "name": "Transfix",
+          "source": "AU",
+          "page": 44
+        },
+        {
+          "type": "statblock",
+          "tag": "spell",
+          "name": "Uncertain Footing",
+          "source": "AU",
+          "page": 44
+        },
+        {
+          "type": "statblock",
+          "tag": "spell",
+          "name": "Vision of Elapsing Eons",
+          "source": "AU",
+          "page": 45
+        },
+        {
+          "type": "statblock",
+          "tag": "spell",
+          "name": "Wail of the Banshee",
+          "source": "AU",
+          "page": 45
+        },
+        {
+          "type": "statblock",
+          "tag": "spell",
+          "name": "Waves of Exhaustion",
+          "source": "AU",
+          "page": 45
+        },
+        {
+          "type": "statblock",
+          "tag": "spell",
+          "name": "Wither and Bloom",
+          "source": "AU",
+          "page": 45
+        },
+        {
+          "type": "statblock",
+          "tag": "spell",
+          "name": "Zone of Amicability",
+          "source": "AU",
+          "page": 45
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+import crypto from 'node:crypto';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+const mirrorRoot=path.dirname(fileURLToPath(import.meta.url));
+const root=path.join(mirrorRoot,'rebuilt');
+const audit=JSON.parse(fs.readFileSync(`${root}/audit.json`,'utf8'));
+const snapshot=fs.readFileSync(`${root}/book-au.json`);
+assert.equal(crypto.createHash('sha256').update(snapshot).digest('hex'),audit.source_sha256);
+assert.equal(audit.unresolved.length,0);
+assert.equal(audit.unsupported.length,0);
+const book=JSON.parse(snapshot).bookData.find(x=>x.id==='AU');
+assert.equal(audit.chapters.length,book.data.length);
+const outputs=audit.chapters.map(ch=>fs.readFileSync(`${root}/chapters/${ch.name}`,'utf8'));
+assert.ok(outputs.every(x=>x.length>100&&!x.includes('UNRESOLVED')));
+const visible=outputs.map(x=>x.replace(/```json[\s\S]*?```/g,''));
+for(const name of ['Modify Magic','Student of Arcana','Dispelling Recovery','Magical Mastery'])assert.ok(visible[1].includes(name),`Missing subclass feature: ${name}`);
+assert.ok(visible[6].includes('Actions'),'Monster actions absent from visible prose');
+assert.ok(visible[6].includes('Traits'),'Monster traits absent from visible prose');
+const tables=(visible.join('\n').match(/^\| ---/gm)||[]).length;
+assert.ok(tables>=42,'Book tables missing');
+assert.ok(!visible.join('\n').includes('{@'),'Unrendered inline tags in visible prose');
+for(const input of audit.inputs){const bytes=fs.readFileSync(`${mirrorRoot}/datasets/${input.file}`);assert.equal(crypto.createHash('sha256').update(bytes).digest('hex'),input.sha256);}
+const result={status:'passed',chapters:outputs.length,resolutions:audit.resolved_count,unresolved:0,unsupported:0,markdown_tables:tables,snapshot_hash:'verified',dataset_hashes:'verified',subclass_feature_body:'verified',monster_action_body:'verified',inline_tags:'rendered'};
+fs.writeFileSync(`${root}/verification.json`,JSON.stringify(result,null,2)+'\n');
+console.log(JSON.stringify(result));

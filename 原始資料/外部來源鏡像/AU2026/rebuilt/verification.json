@@ -1,0 +1,13 @@
+{
+  "status": "passed",
+  "chapters": 9,
+  "resolutions": 271,
+  "unresolved": 0,
+  "unsupported": 0,
+  "markdown_tables": 70,
+  "snapshot_hash": "verified",
+  "dataset_hashes": "verified",
+  "subclass_feature_body": "verified",
+  "monster_action_body": "verified",
+  "inline_tags": "rendered"
+}

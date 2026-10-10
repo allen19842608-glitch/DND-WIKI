@@ -1,0 +1,444 @@
+{
+  "type": "section",
+  "name": "Chapter 6: Magical Creatures",
+  "id": "30e",
+  "page": 135,
+  "entries": [
+    {
+      "type": "image",
+      "href": {
+        "type": "internal",
+        "path": "book/AU/070-06-001.ch-6-splash.webp"
+      },
+      "width": 2486,
+      "height": 3138,
+      "title": "A baelnorn gifts a brass dragon a scroll containing ancient magical knowledge.",
+      "credit": "Swatches Studio"
+    },
+    "Use the following creatures to populate your magic-themed campaigns. Consult the {@book Monster Manual|XMM} for additional details on monsters. Creatures are presented here in alphabetical order.",
+    {
+      "type": "section",
+      "name": "Archmages",
+      "id": "30f",
+      "page": 135,
+      "entries": [
+        "{@i Masters of Magic}",
+        {
+          "type": "list",
+          "style": "list-hang-notitle",
+          "items": [
+            {
+              "type": "item",
+              "name": "Habitat:",
+              "entry": "Any"
+            },
+            {
+              "type": "item",
+              "name": "Treasure:",
+              "entry": "Arcana, Individual"
+            }
+          ]
+        },
+        {
+          "type": "statblock",
+          "prop": "monsterFluff",
+          "name": "Archmages",
+          "source": "AU",
+          "data": {
+            "renderCompact": {
+              "isSkipRootName": true
+            }
+          }
+        },
+        {
+          "type": "statblock",
+          "tag": "creature",
+          "name": "Abjurer Archmage",
+          "source": "AU",
+          "page": 135,
+          "style": "narrow"
+        },
+        {
+          "type": "statblock",
+          "tag": "creature",
+          "name": "Conjurer Archmage",
+          "source": "AU",
+          "page": 136,
+          "style": "narrow"
+        },
+        {
+          "type": "statblock",
+          "tag": "creature",
+          "name": "Diviner Archmage",
+          "source": "AU",
+          "page": 137,
+          "style": "narrow"
+        },
+        {
+          "type": "statblock",
+          "tag": "creature",
+          "name": "Enchanter Archmage",
+          "source": "AU",
+          "page": 137,
+          "style": "narrow"
+        },
+        {
+          "type": "statblock",
+          "tag": "creature",
+          "name": "Evoker Archmage",
+          "source": "AU",
+          "page": 138,
+          "style": "narrow"
+        },
+        {
+          "type": "statblock",
+          "tag": "creature",
+          "name": "Illusionist Archmage",
+          "source": "AU",
+          "page": 138,
+          "style": "narrow"
+        },
+        {
+          "type": "statblock",
+          "tag": "creature",
+          "name": "Necromancer Archmage",
+          "source": "AU",
+          "page": 139,
+          "style": "narrow"
+        },
+        {
+          "type": "statblock",
+          "tag": "creature",
+          "name": "Transmuter Archmage",
+          "source": "AU",
+          "page": 139,
+          "style": "narrow"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "name": "Baelnorn",
+      "id": "319",
+      "page": 140,
+      "entries": [
+        "{@i Undead Protector of Ancient Sites}",
+        {
+          "type": "list",
+          "style": "list-hang-notitle",
+          "items": [
+            {
+              "type": "item",
+              "name": "Habitat:",
+              "entry": "Forest, Urban"
+            },
+            {
+              "type": "item",
+              "name": "Treasure:",
+              "entry": "Arcana"
+            }
+          ]
+        },
+        {
+          "type": "statblock",
+          "prop": "monsterFluff",
+          "name": "Baelnorn",
+          "source": "AU",
+          "data": {
+            "renderCompact": {
+              "isSkipRootName": true
+            }
+          }
+        },
+        {
+          "type": "statblock",
+          "tag": "creature",
+          "name": "Baelnorn",
+          "source": "AU",
+          "page": 141,
+          "style": "narrow"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "name": "Darkenbeast",
+      "id": "31c",
+      "page": 142,
+      "entries": [
+        "{@i Flying, Mutated Minion of Wickedness}",
+        {
+          "type": "list",
+          "style": "list-hang-notitle",
+          "items": [
+            {
+              "type": "item",
+              "name": "Habitat:",
+              "entry": "Grassland, Hill, Urban"
+            },
+            {
+              "type": "item",
+              "name": "Treasure:",
+              "entry": "None"
+            }
+          ]
+        },
+        {
+          "type": "statblock",
+          "prop": "monsterFluff",
+          "name": "Darkenbeast",
+          "source": "AU",
+          "data": {
+            "renderCompact": {
+              "isSkipRootName": true
+            }
+          }
+        },
+        {
+          "type": "statblock",
+          "tag": "creature",
+          "name": "Darkenbeast",
+          "source": "AU",
+          "page": 142,
+          "style": "narrow"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "name": "Groundlings",
+      "id": "31d",
+      "page": 143,
+      "entries": [
+        "{@i Skulking Hybrid Servitors}",
+        {
+          "type": "list",
+          "style": "list-hang-notitle",
+          "items": [
+            {
+              "type": "item",
+              "name": "Habitat:",
+              "entry": "Hill, Urban"
+            },
+            {
+              "type": "item",
+              "name": "Treasure:",
+              "entry": "Armaments"
+            }
+          ]
+        },
+        {
+          "type": "statblock",
+          "prop": "monsterFluff",
+          "name": "Groundlings",
+          "source": "AU",
+          "data": {
+            "renderCompact": {
+              "isSkipRootName": true
+            }
+          }
+        },
+        {
+          "type": "statblock",
+          "tag": "creature",
+          "name": "Groundling Grunt",
+          "source": "AU",
+          "page": 143,
+          "style": "narrow"
+        },
+        {
+          "type": "statblock",
+          "tag": "creature",
+          "name": "Groundling Stalker",
+          "source": "AU",
+          "page": 144,
+          "style": "narrow"
+        },
+        {
+          "type": "statblock",
+          "tag": "creature",
+          "name": "Groundling Slayer",
+          "source": "AU",
+          "page": 144,
+          "style": "narrow"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "name": "Living Spells",
+      "id": "322",
+      "page": 145,
+      "entries": [
+        "{@i Animate Magical Effects}",
+        {
+          "type": "list",
+          "style": "list-hang-notitle",
+          "items": [
+            {
+              "type": "item",
+              "name": "Habitat:",
+              "entry": "Any"
+            },
+            {
+              "type": "item",
+              "name": "Treasure:",
+              "entry": "None"
+            }
+          ]
+        },
+        {
+          "type": "statblock",
+          "prop": "monsterFluff",
+          "name": "Living Spells",
+          "source": "AU",
+          "data": {
+            "renderCompact": {
+              "isSkipRootName": true
+            }
+          }
+        },
+        {
+          "type": "statblock",
+          "tag": "creature",
+          "name": "Living Cone of Cold",
+          "source": "AU",
+          "page": 146,
+          "style": "narrow"
+        },
+        {
+          "type": "statblock",
+          "tag": "creature",
+          "name": "Living Thunderwave",
+          "source": "AU",
+          "page": 146,
+          "style": "narrow"
+        },
+        {
+          "type": "statblock",
+          "tag": "creature",
+          "name": "Living Vitriolic Sphere",
+          "source": "AU",
+          "page": 146,
+          "style": "narrow"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "name": "Spellguard",
+      "id": "327",
+      "page": 147,
+      "entries": [
+        "{@i Magic-Hardened Bodyguard}",
+        {
+          "type": "list",
+          "style": "list-hang-notitle",
+          "items": [
+            {
+              "type": "item",
+              "name": "Habitat:",
+              "entry": "Urban"
+            },
+            {
+              "type": "item",
+              "name": "Treasure:",
+              "entry": "Armaments"
+            }
+          ]
+        },
+        {
+          "type": "statblock",
+          "prop": "monsterFluff",
+          "name": "Spellguard",
+          "source": "AU",
+          "data": {
+            "renderCompact": {
+              "isSkipRootName": true
+            }
+          }
+        },
+        {
+          "type": "statblock",
+          "tag": "creature",
+          "name": "Spellguard",
+          "source": "AU",
+          "page": 147,
+          "style": "narrow"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "name": "Taisus",
+      "id": "329",
+      "page": 148,
+      "entries": [
+        "{@i Magically Ascended Mage}",
+        {
+          "type": "list",
+          "style": "list-hang-notitle",
+          "items": [
+            {
+              "type": "item",
+              "name": "Habitat:",
+              "entry": "Any"
+            },
+            {
+              "type": "item",
+              "name": "Treasure:",
+              "entry": "Arcana"
+            }
+          ]
+        },
+        {
+          "type": "statblock",
+          "prop": "monsterFluff",
+          "name": "Taisus",
+          "source": "AU",
+          "data": {
+            "renderCompact": {
+              "isSkipRootName": true
+            }
+          }
+        },
+        {
+          "type": "statblock",
+          "tag": "creature",
+          "name": "Taisus",
+          "source": "AU",
+          "page": 148,
+          "style": "narrow"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "name": "Venger",
+      "id": "32a",
+      "page": 149,
+      "entries": [
+        "{@i Corrupted Force of Evil}",
+        {
+          "type": "statblock",
+          "prop": "monsterFluff",
+          "name": "Venger",
+          "source": "AU",
+          "data": {
+            "renderCompact": {
+              "isSkipRootName": true
+            }
+          }
+        },
+        {
+          "type": "statblock",
+          "tag": "creature",
+          "name": "Venger",
+          "source": "AU",
+          "page": 150,
+          "style": "narrow"
+        }
+      ]
+    }
+  ]
+}

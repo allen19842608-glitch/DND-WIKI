@@ -1,0 +1,667 @@
+{
+  "type": "section",
+  "name": "Chapter 1: Character Options",
+  "id": "006",
+  "page": 7,
+  "entries": [
+    {
+      "type": "image",
+      "href": {
+        "type": "internal",
+        "path": "book/AU/002-01-001.ch-1-splash.webp"
+      },
+      "width": 1700,
+      "height": 2208,
+      "title": "When magic is involved, a hero's journey can take infinite paths.",
+      "credit": "Billy Christian"
+    },
+    "This chapter is full of new character options you can use to make characters suited to magical settings. The pages that follow include new and revised subclasses, new backgrounds, and new feats.",
+    {
+      "type": "section",
+      "name": "Subclasses",
+      "id": "007",
+      "page": 7,
+      "entries": [
+        "This chapter presents eight new subclasses that are particularly appropriate for characters in settings that emphasize magic:",
+        {
+          "type": "list",
+          "page": 7,
+          "style": "list-no-bullets",
+          "items": [
+            "{@class Cleric|XPHB|Arcana Domain (Cleric)|Arcana|AU}: A Cleric of a divine force who understands the secrets and potential of magic intimately",
+            "{@class Fighter|XPHB|Arcane Archer (Fighter)|Arcane Archer|AU}: A Fighter who draws on a unique tradition of elven archery to weave magic into their attacks",
+            "{@class Monk|XPHB|Warrior of the Mystic Arts (Monk)|Mystic Arts|AU}: A Monk who wields magic to supplement their martial skill",
+            "{@class Warlock|XPHB|Vestige Patron (Warlock)|Vestige|AU}: A Warlock who draws on the power of a dying god",
+            "{@class Wizard|XPHB|Conjurer (Wizard)|Conjurer|AU}: A Wizard who has mastered the arts of teleportation and summoning spirit allies",
+            "{@class Wizard|XPHB|Enchanter (Wizard)|Enchanter|AU}: A Wizard who has become an expert in clouding and captivating minds",
+            "{@class Wizard|XPHB|Necromancer (Wizard)|Necromancer|AU}: A Wizard who can manipulate and draw magic from life, death, and undeath",
+            "{@class Wizard|XPHB|Transmuter (Wizard)|Transmuter|AU}: A Wizard who has mastered modifying energy and matter"
+          ]
+        },
+        {
+          "type": "insetReadaloud",
+          "id": "008",
+          "page": 7,
+          "entries": [
+            {
+              "type": "quote",
+              "entries": [
+                "Mystra's gifts range from subtle to earthshakingly powerful. Infuse your day with a little magic or stop a mighty villain from causing suffering—or both. When you study magic, your options are unlimited."
+              ],
+              "by": "Alustriel"
+            }
+          ]
+        },
+        {
+          "type": "statblock",
+          "tag": "subclass",
+          "name": "Arcana Domain (Cleric)",
+          "shortName": "Arcana",
+          "className": "Cleric",
+          "classSource": "XPHB",
+          "source": "AU",
+          "page": 8
+        },
+        {
+          "type": "statblock",
+          "tag": "subclass",
+          "name": "Arcane Archer (Fighter)",
+          "shortName": "Arcane Archer",
+          "className": "Fighter",
+          "classSource": "XPHB",
+          "source": "AU",
+          "page": 9
+        },
+        {
+          "type": "statblock",
+          "tag": "subclass",
+          "name": "Warrior of the Mystic Arts (Monk)",
+          "shortName": "Mystic Arts",
+          "className": "Monk",
+          "classSource": "XPHB",
+          "source": "AU",
+          "page": 11
+        },
+        {
+          "type": "statblock",
+          "tag": "subclass",
+          "name": "Vestige Patron (Warlock)",
+          "shortName": "Vestige",
+          "className": "Warlock",
+          "classSource": "XPHB",
+          "source": "AU",
+          "page": 13
+        },
+        {
+          "type": "statblock",
+          "tag": "subclass",
+          "name": "Conjurer (Wizard)",
+          "shortName": "Conjurer",
+          "className": "Wizard",
+          "classSource": "XPHB",
+          "source": "AU",
+          "page": 15
+        },
+        {
+          "type": "statblock",
+          "tag": "subclass",
+          "name": "Enchanter (Wizard)",
+          "shortName": "Enchanter",
+          "className": "Wizard",
+          "classSource": "XPHB",
+          "source": "AU",
+          "page": 16
+        },
+        {
+          "type": "statblock",
+          "tag": "subclass",
+          "name": "Necromancer (Wizard)",
+          "shortName": "Necromancer",
+          "className": "Wizard",
+          "classSource": "XPHB",
+          "source": "AU",
+          "page": 17
+        },
+        {
+          "type": "statblock",
+          "tag": "subclass",
+          "name": "Transmuter (Wizard)",
+          "shortName": "Transmuter",
+          "className": "Wizard",
+          "classSource": "XPHB",
+          "source": "AU",
+          "page": 19
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "name": "Backgrounds",
+      "id": "079",
+      "page": 20,
+      "entries": [
+        "This section presents ten backgrounds using the same format as those in the {@book Player's Handbook|XPHB|4|Background Descriptions}. These backgrounds are listed in the Backgrounds table. Descriptions of the Origin feats granted by each background can be found later in this chapter.",
+        "Nine of these backgrounds connect characters to magical factions presented in chapter 4. These backgrounds describe the training associated with a faction but aren't required for affiliation with or membership in that faction.",
+        "The tenth background, {@background Familiar Trainer|AU}, supports any character who grew up with a magical animal companion.",
+        {
+          "type": "table",
+          "caption": "Backgrounds",
+          "page": 21,
+          "colLabels": [
+            "Background",
+            "Faction"
+          ],
+          "colStyles": [
+            "col-6",
+            "col-6"
+          ],
+          "rows": [
+            [
+              "{@background Agent of the Ninth Quill|AU}",
+              "{@area Ninth Quill|224|x}"
+            ],
+            [
+              "{@background Bejeweled Conclave Spy|AU}",
+              "{@area Bejeweled Conclave|1c8|x}"
+            ],
+            [
+              "{@background Cosmic Dawn Experiment|AU}",
+              "{@area Bringers of Cosmic Dawn|1d8|x}"
+            ],
+            [
+              "{@background Covenant of the Grave Recruit|AU}",
+              "{@area Covenant of the Grave|1ed|x}"
+            ],
+            [
+              "{@background Crucible Storm Chaser|AU}",
+              "{@area Crucible Keepers|201|x}"
+            ],
+            [
+              "{@background Familiar Trainer|AU}",
+              "—"
+            ],
+            [
+              "{@background Horizon Weaver Initiate|AU}",
+              "{@area Horizon Weavers|213|x}"
+            ],
+            [
+              "{@background Phantasmic Circus Trouper|AU}",
+              "{@area Phantasmic Circus|239|x}"
+            ],
+            [
+              "{@background Seer Apprentice|AU}",
+              "{@area Seers of Sea and Sky|24c|x}"
+            ],
+            [
+              "{@background Ward of the Sheltering Hands|AU}",
+              "{@area Sheltering Hands|261|x}"
+            ]
+          ]
+        },
+        {
+          "type": "statblock",
+          "tag": "background",
+          "name": "Agent of the Ninth Quill",
+          "source": "AU",
+          "page": 21
+        },
+        {
+          "type": "statblock",
+          "tag": "background",
+          "name": "Bejeweled Conclave Spy",
+          "source": "AU",
+          "page": 21
+        },
+        {
+          "type": "statblock",
+          "tag": "background",
+          "name": "Cosmic Dawn Experiment",
+          "source": "AU",
+          "page": 22
+        },
+        {
+          "type": "statblock",
+          "tag": "background",
+          "name": "Covenant of the Grave Recruit",
+          "source": "AU",
+          "page": 22
+        },
+        {
+          "type": "statblock",
+          "tag": "background",
+          "name": "Crucible Storm Chaser",
+          "source": "AU",
+          "page": 23
+        },
+        {
+          "type": "statblock",
+          "tag": "background",
+          "name": "Familiar Trainer",
+          "source": "AU",
+          "page": 23
+        },
+        {
+          "type": "statblock",
+          "tag": "background",
+          "name": "Horizon Weaver Initiate",
+          "source": "AU",
+          "page": 24
+        },
+        {
+          "type": "statblock",
+          "tag": "background",
+          "name": "Phantasmic Circus Trouper",
+          "source": "AU",
+          "page": 24
+        },
+        {
+          "type": "statblock",
+          "tag": "background",
+          "name": "Seer Apprentice",
+          "source": "AU",
+          "page": 25
+        },
+        {
+          "type": "statblock",
+          "tag": "background",
+          "name": "Ward of the Sheltering Hands",
+          "source": "AU",
+          "page": 25
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "name": "Feats",
+      "id": "084",
+      "page": 26,
+      "entries": [
+        "This section's feats are organized by category—Origin, General, Fighting Style, or Epic Boon—and alphabetized in each category. All the feats are listed alphabetically in the Feat List table.",
+        {
+          "type": "table",
+          "caption": "Feat List",
+          "page": 26,
+          "colLabels": [
+            "Feat",
+            "Category"
+          ],
+          "colStyles": [
+            "col-8",
+            "col-4"
+          ],
+          "rows": [
+            [
+              "{@feat Abjuration Adept|AU}",
+              "General"
+            ],
+            [
+              "{@feat Arcane Artist|AU}",
+              "Origin"
+            ],
+            [
+              "{@feat Arcane Eloquence|AU}",
+              "Origin"
+            ],
+            [
+              "{@feat Arcane Infiltrator|AU}",
+              "Origin"
+            ],
+            [
+              "{@feat Arcane Omens|AU}",
+              "Origin"
+            ],
+            [
+              "{@feat Arcane Overload|AU}",
+              "Origin"
+            ],
+            [
+              "{@feat Arcane Safeguard|AU}",
+              "Origin"
+            ],
+            [
+              "{@feat Arcane Undertaker|AU}",
+              "Origin"
+            ],
+            [
+              "{@feat Arcane Warrior|AU}",
+              "Fighting Style"
+            ],
+            [
+              "{@feat Boon of Erupting Spellpower|AU}",
+              "Epic Boon"
+            ],
+            [
+              "{@feat Boon of Magic School Mastery|AU}",
+              "Epic Boon"
+            ],
+            [
+              "{@feat Boon of the Iron Mind|AU}",
+              "Epic Boon"
+            ],
+            [
+              "{@feat Conjuration Adept|AU}",
+              "General"
+            ],
+            [
+              "{@feat Divination Adept|AU}",
+              "General"
+            ],
+            [
+              "{@feat Elemental Familiar|AU}",
+              "General"
+            ],
+            [
+              "{@feat Enchantment Adept|AU}",
+              "General"
+            ],
+            [
+              "{@feat Evocation Adept|AU}",
+              "General"
+            ],
+            [
+              "{@feat Familiar Friend|AU}",
+              "Origin"
+            ],
+            [
+              "{@feat Illusion Adept|AU}",
+              "General"
+            ],
+            [
+              "{@feat Magic Connoisseur|AU}",
+              "General"
+            ],
+            [
+              "{@feat Necromancy Adept|AU}",
+              "General"
+            ],
+            [
+              "{@feat Otherworldly Familiar|AU}",
+              "General"
+            ],
+            [
+              "{@feat Portal Jumper|AU}",
+              "Origin"
+            ],
+            [
+              "{@feat Soothing Familiar|AU}",
+              "General"
+            ],
+            [
+              "{@feat Spell Resistant|AU}",
+              "General"
+            ],
+            [
+              "{@feat Spell Subterfuge|AU}",
+              "General"
+            ],
+            [
+              "{@feat Transmutation Adept|AU}",
+              "General"
+            ],
+            [
+              "{@feat Transmuted Anatomy|AU}",
+              "Origin"
+            ],
+            [
+              "{@feat Warlike Familiar|AU}",
+              "General"
+            ]
+          ]
+        },
+        {
+          "type": "insetReadaloud",
+          "id": "085",
+          "page": 26,
+          "entries": [
+            {
+              "type": "quote",
+              "entries": [
+                "Magic can enhance any technique. Show me a hero who eschews magic, and I'll show you one who is limiting their potential."
+              ],
+              "by": "Alustriel"
+            }
+          ]
+        },
+        {
+          "type": "entries",
+          "name": "Origin Feats",
+          "id": "086",
+          "page": 26,
+          "entries": [
+            "These feats are in the Origin category.",
+            {
+              "type": "statblock",
+              "tag": "feat",
+              "name": "Arcane Artist",
+              "source": "AU",
+              "page": 26
+            },
+            {
+              "type": "statblock",
+              "tag": "feat",
+              "name": "Arcane Eloquence",
+              "source": "AU",
+              "page": 26
+            },
+            {
+              "type": "statblock",
+              "tag": "feat",
+              "name": "Arcane Infiltrator",
+              "source": "AU",
+              "page": 26
+            },
+            {
+              "type": "statblock",
+              "tag": "feat",
+              "name": "Arcane Omens",
+              "source": "AU",
+              "page": 27
+            },
+            {
+              "type": "statblock",
+              "tag": "feat",
+              "name": "Arcane Overload",
+              "source": "AU",
+              "page": 27
+            },
+            {
+              "type": "statblock",
+              "tag": "feat",
+              "name": "Arcane Safeguard",
+              "source": "AU",
+              "page": 27
+            },
+            {
+              "type": "statblock",
+              "tag": "feat",
+              "name": "Arcane Undertaker",
+              "source": "AU",
+              "page": 27
+            },
+            {
+              "type": "statblock",
+              "tag": "feat",
+              "name": "Familiar Friend",
+              "source": "AU",
+              "page": 27
+            },
+            {
+              "type": "statblock",
+              "tag": "feat",
+              "name": "Portal Jumper",
+              "source": "AU",
+              "page": 27
+            },
+            {
+              "type": "statblock",
+              "tag": "feat",
+              "name": "Transmuted Anatomy",
+              "source": "AU",
+              "page": 28
+            }
+          ]
+        },
+        {
+          "type": "entries",
+          "name": "General Feats",
+          "id": "0a7",
+          "page": 28,
+          "entries": [
+            "These feats are in the General category.",
+            {
+              "type": "statblock",
+              "tag": "feat",
+              "name": "Abjuration Adept",
+              "source": "AU",
+              "page": 28
+            },
+            {
+              "type": "statblock",
+              "tag": "feat",
+              "name": "Conjuration Adept",
+              "source": "AU",
+              "page": 28
+            },
+            {
+              "type": "statblock",
+              "tag": "feat",
+              "name": "Divination Adept",
+              "source": "AU",
+              "page": 29
+            },
+            {
+              "type": "statblock",
+              "tag": "feat",
+              "name": "Elemental Familiar",
+              "source": "AU",
+              "page": 29
+            },
+            {
+              "type": "statblock",
+              "tag": "feat",
+              "name": "Enchantment Adept",
+              "source": "AU",
+              "page": 30
+            },
+            {
+              "type": "statblock",
+              "tag": "feat",
+              "name": "Evocation Adept",
+              "source": "AU",
+              "page": 30
+            },
+            {
+              "type": "statblock",
+              "tag": "feat",
+              "name": "Illusion Adept",
+              "source": "AU",
+              "page": 30
+            },
+            {
+              "type": "statblock",
+              "tag": "feat",
+              "name": "Magic Connoisseur",
+              "source": "AU",
+              "page": 31
+            },
+            {
+              "type": "statblock",
+              "tag": "feat",
+              "name": "Necromancy Adept",
+              "source": "AU",
+              "page": 31
+            },
+            {
+              "type": "statblock",
+              "tag": "feat",
+              "name": "Otherworldly Familiar",
+              "source": "AU",
+              "page": 31
+            },
+            {
+              "type": "statblock",
+              "tag": "feat",
+              "name": "Soothing Familiar",
+              "source": "AU",
+              "page": 31
+            },
+            {
+              "type": "statblock",
+              "tag": "feat",
+              "name": "Spell Resistant",
+              "source": "AU",
+              "page": 31
+            },
+            {
+              "type": "statblock",
+              "tag": "feat",
+              "name": "Spell Subterfuge",
+              "source": "AU",
+              "page": 32
+            },
+            {
+              "type": "statblock",
+              "tag": "feat",
+              "name": "Transmutation Adept",
+              "source": "AU",
+              "page": 32
+            },
+            {
+              "type": "statblock",
+              "tag": "feat",
+              "name": "Warlike Familiar",
+              "source": "AU",
+              "page": 33
+            }
+          ]
+        },
+        {
+          "type": "entries",
+          "name": "Fighting Style Feat",
+          "id": "0e1",
+          "page": 33,
+          "entries": [
+            "This feat is in the Fighting Style category.",
+            {
+              "type": "statblock",
+              "tag": "feat",
+              "name": "Arcane Warrior",
+              "source": "AU",
+              "page": 33
+            }
+          ]
+        },
+        {
+          "type": "entries",
+          "name": "Epic Boon Feats",
+          "id": "0e3",
+          "page": 33,
+          "entries": [
+            "These feats are in the Epic Boon category.",
+            {
+              "type": "statblock",
+              "tag": "feat",
+              "name": "Boon of Erupting Spellpower",
+              "source": "AU",
+              "page": 33
+            },
+            {
+              "type": "statblock",
+              "tag": "feat",
+              "name": "Boon of Magic School Mastery",
+              "source": "AU",
+              "page": 33
+            },
+            {
+              "type": "statblock",
+              "tag": "feat",
+              "name": "Boon of the Iron Mind",
+              "source": "AU",
+              "page": 33
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

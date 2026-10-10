@@ -1,0 +1,999 @@
+{
+  "type": "section",
+  "name": "Credits",
+  "id": "36d",
+  "entries": [
+    {
+      "type": "image",
+      "href": {
+        "type": "internal",
+        "path": "book/AU/085-00-002.almiraj.webp"
+      },
+      "width": 850,
+      "height": 843,
+      "credit": "Gaboleps"
+    },
+    {
+      "type": "section",
+      "name": "Arcana Unleashed",
+      "id": "36e",
+      "entries": [
+        {
+          "type": "entries",
+          "name": "Project Leads",
+          "id": "36f",
+          "entries": [
+            {
+              "type": "list",
+              "style": "list-hang-notitle",
+              "columns": 2,
+              "items": [
+                {
+                  "type": "item",
+                  "name": "Game Designer:",
+                  "entry": "Amanda Hamon"
+                },
+                {
+                  "type": "item",
+                  "name": "Art Director:",
+                  "entry": "Sergio Jaramillo"
+                },
+                {
+                  "type": "item",
+                  "name": "Graphic Designer:",
+                  "entry": "Matt Cole"
+                },
+                {
+                  "type": "item",
+                  "name": "Editor:",
+                  "entry": "Judy Bauer"
+                },
+                {
+                  "type": "item",
+                  "name": "Product Architect:",
+                  "entry": "Greg Bilsland"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "entries",
+          "name": "Project Team",
+          "id": "370",
+          "entries": [
+            {
+              "type": "list",
+              "style": "list-hang-notitle",
+              "columns": 2,
+              "items": [
+                {
+                  "type": "item",
+                  "name": "Game Designers:",
+                  "entry": "Makenzie De Armas, Ron Lundeen, Ben Petrisor, Patrick Renie, Carl Sibley, Owen K.C. Stephens, Jason Tondro"
+                },
+                {
+                  "type": "item",
+                  "name": "Editors:",
+                  "entry": "Janica Carter, Michele Carter, Adrian Ng Di Spaltro, Hannah Rose, James Wyatt"
+                },
+                {
+                  "type": "item",
+                  "name": "Art Director:",
+                  "entry": "Kate Irwin"
+                },
+                {
+                  "type": "item",
+                  "name": "Graphic Designer:",
+                  "entry": "Bowen Welles"
+                },
+                {
+                  "type": "item",
+                  "name": "Cover Illustrator:",
+                  "entry": "Javier Charro"
+                },
+                {
+                  "type": "item",
+                  "name": "Interior Illustrators:",
+                  "entry": "Liliia Abdullina, Alba BG, Ignatius Budi, Ekaterina Burmak, Álvaro Calvo Escudero, Loïc Canavaggia, Eilene Cherie, Billy Christian, Conceptopolis, Pedro Correa, CoupleOfKooks, Julie Dillon, Luke Eidenschink, Gaboleps, Caroline Gariba, Michele Giorgi, Kevin Glint, Johan Grenier, Hendry Iwanaga, kelogsloops, Jordan Kerbow, Andrey Kuzinskiy, Katerina Ladon, Dao Le, Xavier Leroux, Erion Makuo, Alejandro Pacheco, Anna Podedworna, Joshua Raphael, Sylvain Sarrailh, Ivan Shavrin, Rudy Siswanto, Jason Smith, Swatches Studio, Leon Tukker, Brian Valeza, Magali Villeneuve, Ina Wong"
+                },
+                {
+                  "type": "item",
+                  "name": "Endpaper Illustrator:",
+                  "entry": "Kevin Glint"
+                },
+                {
+                  "type": "item",
+                  "name": "Cartographer:",
+                  "entry": "Gerralt Landman"
+                },
+                {
+                  "type": "item",
+                  "name": "Concept Art Director:",
+                  "entry": "Lake Hurwitz"
+                },
+                {
+                  "type": "item",
+                  "name": "Concept Artists:",
+                  "entry": "Alba Gonzales, Alexandra Irwin, Tara Quinsac, Bowen Welles"
+                },
+                {
+                  "type": "item",
+                  "name": "Producers:",
+                  "entry": "Bill Benham, Siera Bruggeman, Rob Hawkey, Vanessa Hoskins, Dan Tovar"
+                },
+                {
+                  "type": "item",
+                  "name": "Consultants:",
+                  "entry": "Elizabeth Banerjee, Shawn Banerjee, Daniel Delgado"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "entries",
+          "name": "D&D Studio",
+          "id": "371",
+          "entries": [
+            {
+              "type": "list",
+              "style": "list-hang-notitle",
+              "columns": 2,
+              "items": [
+                {
+                  "type": "item",
+                  "name": "Global Play Lead:",
+                  "entry": "Dan Ayoub"
+                },
+                {
+                  "type": "item",
+                  "name": "Art:",
+                  "entry": "Chelsea Burgess, Cindy Cacerez Sprague, Matt Cole, Trystan Falcone, Kate Irwin, Sergio Jaramillo, Emi Tanji, Paolo Vacala, Skyler Weissenfluh, Trish Yochum"
+                },
+                {
+                  "type": "item",
+                  "name": "Editing:",
+                  "entry": "Judy Bauer, Janica Carter, Adrian Ng Di Spaltro"
+                },
+                {
+                  "type": "item",
+                  "name": "Game Design:",
+                  "entry": "Justice Ramin Arman, Leon Barillaro, Makenzie De Armas, Joey Haeck, Amanda Hamon, Taylor Navarro, Ben Petrisor, Patrick Renie, Erin Roberts, F. Wesley Schneider, Carl Sibley, Jason Tondro, James Wyatt"
+                },
+                {
+                  "type": "item",
+                  "name": "Product Strategy:",
+                  "entry": "Greg Bilsland, Andy Chilton, Laura Hohman"
+                },
+                {
+                  "type": "item",
+                  "name": "Production:",
+                  "entry": "Will Ansell, Bill Benham, Siera Bruggeman, Emily Gitelman, Vanessa Hoskins, Andy Smith, Dan Tovar, Chris Tulach"
+                },
+                {
+                  "type": "item",
+                  "name": "World-Building:",
+                  "entry": "Josh Herman, Ovidio Cartagena, Noor Rahman"
+                },
+                {
+                  "type": "item",
+                  "name": "Other Support:",
+                  "entry": "Jay Jani, Hayley Schmelzer, Preston Swincher, Bailey Vaughan"
+                },
+                {
+                  "type": "item",
+                  "name": "Commercial:",
+                  "entry": "Kathy Dongo, Ian Messer"
+                },
+                {
+                  "type": "item",
+                  "name": "Franchise Business Team:",
+                  "entry": "Nick Strann, Dan Barrett, Kim Craig, Ann Earp, Paul Morrissey, Aaron Sobel, Angel Villeda"
+                },
+                {
+                  "type": "item",
+                  "name": "Franchise Creative Team:",
+                  "entry": "Kara Kenna, Paul Benjamin, Tori Egbert, AJ Hanneld, Chris Jennerjohn, Sarra Scherb"
+                },
+                {
+                  "type": "item",
+                  "name": "Marketing:",
+                  "entry": "David Silverman, Nick Bartoletti, Regina Buenaobra, Marco Caputo, Avery Freniere, Ariel Hernandez, Blain Howard, LaTia Jacquise, Esther Kao, Aaron Kaufman, Sabrina Kessler, Josh Morris, Ashlee Perkins, Matt Pruitt, David Schlosser, Jessi Sosnovskaya, Joe Starr, Jeffrey Stewart, Ian Tornay, Meg Trahan, Dennis Tran, Heather Zalewski"
+                },
+                {
+                  "type": "item",
+                  "name": "Print Operations:",
+                  "entry": "Catarina Smith, Jefferson Dunlap, Basil Hale, Joe Visconti, Scott West"
+                },
+                {
+                  "type": "item",
+                  "name": "Supply Chain:",
+                  "entry": "Lindsey Glomski, Nick White"
+                }
+              ]
+            },
+            {
+              "type": "inset",
+              "name": "Includes revised content from",
+              "id": "372",
+              "entries": [
+                "{@book Player's Handbook (2014)|PHB}, {@book Sword Coast Adventurer's Guide|SCAG} (2015), {@book Xanathar's Guide to Everything|XGE} (2017), {@book Tasha's Cauldron of Everything|TCE} (2020), and {@book Strixhaven: A Curriculum of Chaos|SCC} (2021)"
+              ]
+            },
+            {
+              "type": "inset",
+              "name": "Special Thanks",
+              "id": "373",
+              "entries": [
+                "Thank you to the playtesters whose feedback helped shape this book."
+              ]
+            },
+            {
+              "type": "inset",
+              "name": "In Memoriam",
+              "id": "374",
+              "entries": [
+                "In loving memory of Cynda Callaway, who shepherded dozens of D&D books over three editions."
+              ]
+            },
+            {
+              "type": "gallery",
+              "images": [
+                {
+                  "type": "image",
+                  "href": {
+                    "type": "internal",
+                    "path": "book/AU/089-au-cover.webp"
+                  },
+                  "width": 850,
+                  "height": 1113,
+                  "title": "On the Cover: Alustriel Silverhand, human daughter of the god of magic Mystra, harnesses incredible magical power in this cover by Javier Charro.",
+                  "credit": "Javier Charro"
+                },
+                {
+                  "type": "image",
+                  "href": {
+                    "type": "internal",
+                    "path": "book/AU/090-au-alt-cover.webp"
+                  },
+                  "width": 850,
+                  "height": 1113,
+                  "title": "On the Alt-Cover"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "name": "D&D Studio Team",
+      "id": "376",
+      "entries": [
+        {
+          "type": "list",
+          "style": "list-hang-notitle",
+          "columns": 2,
+          "items": [
+            {
+              "type": "item",
+              "name": "Global Play Lead:",
+              "entry": "Dan Ayoub"
+            },
+            {
+              "type": "item",
+              "name": "Executive Producer:",
+              "entry": "Greg Bilsland"
+            },
+            {
+              "type": "item",
+              "name": "Product Architect:",
+              "entry": "Andy Chilton, Laura Hohman"
+            }
+          ]
+        },
+        {
+          "type": "entries",
+          "name": "Art",
+          "id": "377",
+          "entries": [
+            {
+              "type": "list",
+              "style": "list-hang-notitle",
+              "columns": 2,
+              "items": [
+                {
+                  "type": "item",
+                  "name": "Head of Art:",
+                  "entry": "Josh Herman"
+                },
+                {
+                  "type": "item",
+                  "name": "Art Team Manager:",
+                  "entry": "Chelsea Burgess"
+                },
+                {
+                  "type": "item",
+                  "name": "Princial Art Director:",
+                  "entry": "Ovidio Cartagena, Kate Irwin"
+                },
+                {
+                  "type": "item",
+                  "name": "Senior Art Director:",
+                  "entry": "Emi Tanji"
+                },
+                {
+                  "type": "item",
+                  "name": "Art Director:",
+                  "entry": "Sergio Jaramillo"
+                },
+                {
+                  "type": "item",
+                  "name": "Senior Concept Illustrator:",
+                  "entry": "Noor Rahman"
+                },
+                {
+                  "type": "item",
+                  "name": "Principal Graphic Designer:",
+                  "entry": "Trish Yochum"
+                },
+                {
+                  "type": "item",
+                  "name": "Senior Graphic Designer:",
+                  "entry": "Cindy Cacerez Sprague"
+                },
+                {
+                  "type": "item",
+                  "name": "Associate Graphic Designer:",
+                  "entry": "Paolo Vacala, Skyler Weissenfluh"
+                },
+                {
+                  "type": "item",
+                  "name": "Digital Designer:",
+                  "entry": "Trystan Falcone"
+                },
+                {
+                  "type": "item",
+                  "name": "Production Artist:",
+                  "entry": "Juno Heo"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "entries",
+          "name": "Creative",
+          "id": "378",
+          "entries": [
+            {
+              "type": "list",
+              "style": "list-hang-notitle",
+              "columns": 2,
+              "items": [
+                {
+                  "type": "item",
+                  "name": "Franchise Creative Director:",
+                  "entry": "Kara Kenna"
+                },
+                {
+                  "type": "item",
+                  "name": "Senior Creative Lead:",
+                  "entry": "AJ Hanneld"
+                },
+                {
+                  "type": "item",
+                  "name": "Creative 5:",
+                  "entry": "Paul Benjamin, Chris Jennerjohn"
+                },
+                {
+                  "type": "item",
+                  "name": "Senior Narrative Designer, Lorekeeper:",
+                  "entry": "Sarra Scherb"
+                },
+                {
+                  "type": "item",
+                  "name": "Program Manager, D&D Franchise:",
+                  "entry": "Tori Egbert"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "entries",
+          "name": "D&D Beyond",
+          "id": "379",
+          "entries": [
+            {
+              "type": "list",
+              "style": "list-hang-notitle",
+              "columns": 2,
+              "items": [
+                {
+                  "type": "item",
+                  "name": "Executive Producer:",
+                  "entry": "Brian Perry"
+                },
+                {
+                  "type": "item",
+                  "name": "Senior BI Engineer:",
+                  "entry": "Jixi Teng"
+                },
+                {
+                  "type": "item",
+                  "name": "BI Engineer I:",
+                  "entry": "Kat Kennovin"
+                },
+                {
+                  "type": "item",
+                  "name": "Principal Technical Program Manager:",
+                  "entry": "Jen Barrick"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "entries",
+          "name": "Product & Program Management",
+          "id": "37a",
+          "entries": [
+            {
+              "type": "list",
+              "style": "list-hang-notitle",
+              "columns": 2,
+              "items": [
+                {
+                  "type": "item",
+                  "name": "Director, Product Management:",
+                  "entry": "Jeff Turriff"
+                },
+                {
+                  "type": "item",
+                  "name": "Senior Program Manager:",
+                  "entry": "Randy Balisalisa"
+                },
+                {
+                  "type": "item",
+                  "name": "Content QA Specialist:",
+                  "entry": "Lauren Erwin, Samuel Holder"
+                },
+                {
+                  "type": "item",
+                  "name": "Senior Content Specialist:",
+                  "entry": "Hayley Schmelzer, Preston Swincher, Bailey Vaughan"
+                },
+                {
+                  "type": "item",
+                  "name": "Content Specialist:",
+                  "entry": "Janelle Bawayan, Martin Frost, Veronica Harris, Cameron Powell, Nic Robbins, Cat Smedley, Justin Zerza"
+                },
+                {
+                  "type": "item",
+                  "name": "Principal Technical Product Manager:",
+                  "entry": "Scott Catlin, Zac Cohn, Adela Garrison"
+                },
+                {
+                  "type": "item",
+                  "name": "Product Manager:",
+                  "entry": "Jay Jani, Elliot Spilk"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "entries",
+          "name": "Technology",
+          "id": "37b",
+          "entries": [
+            {
+              "type": "list",
+              "style": "list-hang-notitle",
+              "columns": 2,
+              "items": [
+                {
+                  "type": "item",
+                  "name": "Senior Manager, Software Development Engineering:",
+                  "entry": "Daniel McKnight, Martin Rausch"
+                },
+                {
+                  "type": "item",
+                  "name": "Manager, Software Development Engineering:",
+                  "entry": "Dani Sadczenko, Laura Thompson, Kamil Tomaszewski"
+                },
+                {
+                  "type": "item",
+                  "name": "Lead Software Development Engineer:",
+                  "entry": "Michał Krzyżanowski, Rita Lyczywek"
+                },
+                {
+                  "type": "item",
+                  "name": "Data Designer:",
+                  "entry": "Uriah Belletto"
+                },
+                {
+                  "type": "item",
+                  "name": "DevOps Engineer:",
+                  "entry": "Matheus Fornazieri, Andres Zepeda"
+                },
+                {
+                  "type": "item",
+                  "name": "Principal Engineer:",
+                  "entry": "Christian Bradley, Cody Grant"
+                },
+                {
+                  "type": "item",
+                  "name": "Full-Stack Software Development Engineer:",
+                  "entry": "Samuel Mundo, Mauricio Merino"
+                },
+                {
+                  "type": "item",
+                  "name": "Quality Engineer:",
+                  "entry": "Susana Espinoza, Jorge Guevara"
+                },
+                {
+                  "type": "item",
+                  "name": "Senior Software Development Engineer:",
+                  "entry": "Daniel Agudelo, Brittany Allesandro, Bryce Anderson, Kasia Andrzejewska, Cody Banman, Sylwia Boronska-Liberda, Przemysław Celiński, Luis Chicas, Szymon Czerwinski, George Darling, Toby Drewry, Ben Dixon, Aaron Giordano-Barry, Michael Hammond, Matt Hayes, Julie Hawkings, Shea Hunter, Artur Kasprzak, Michael Kazmierczak, Pawel Kociubinski, Karol Kujawiak, Rafal Kwiatkowski, Tanner Lake, Emil Mądry, Artur Michna, Patrick Moore, Bernardo Montoya, Erick Nunez, Kajetan Pawliszyn, Tim Smith, Lee Smithson, Mario Vargas"
+                },
+                {
+                  "type": "item",
+                  "name": "Software Development Engineer:",
+                  "entry": "Przemyslaw Bartkowiak, Byron Carranza, Manuel Escalante, Samuel Hilson, Scott La Fetra, Filip Miklaś, Lukasz Modelski, Toni Pejic, Garrett Randall, Jessica Sills, Sean Stoves, Agata Tamiola, Serio Urrutia"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "entries",
+          "name": "UX Design",
+          "id": "37c",
+          "entries": [
+            {
+              "type": "list",
+              "style": "list-hang-notitle",
+              "columns": 2,
+              "items": [
+                {
+                  "type": "item",
+                  "name": "Senior Manager, UX Design:",
+                  "entry": "Kevin Warner"
+                },
+                {
+                  "type": "item",
+                  "name": "Lead Visual Designer:",
+                  "entry": "Nicholas Hamer"
+                },
+                {
+                  "type": "item",
+                  "name": "Senior UI Artist:",
+                  "entry": "Terry Boyd, Jackie Cisneros"
+                },
+                {
+                  "type": "item",
+                  "name": "UX Designer:",
+                  "entry": "Katrina King, Andrew Williams"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "entries",
+          "name": "Design",
+          "id": "37d",
+          "entries": [
+            {
+              "type": "list",
+              "style": "list-hang-notitle",
+              "columns": 2,
+              "items": [
+                {
+                  "type": "item",
+                  "name": "Game Design Director:",
+                  "entry": "Justice Ramin Arman"
+                },
+                {
+                  "type": "item",
+                  "name": "Game Design Manager:",
+                  "entry": "Ron Lundeen"
+                },
+                {
+                  "type": "item",
+                  "name": "Manager, Editing:",
+                  "entry": "Judy Bauer"
+                },
+                {
+                  "type": "item",
+                  "name": "Senior Editor:",
+                  "entry": "Janica Carter, Adrian Ng Di Spaltro"
+                },
+                {
+                  "type": "item",
+                  "name": "Principal Game Designer:",
+                  "entry": "F. Wesley Schneider, James Wyatt"
+                },
+                {
+                  "type": "item",
+                  "name": "Senior Game Designer:",
+                  "entry": "Makenzie De Armas, Joey Haeck, Amanda Hamon, Ben Petrisor, Patrick Renie, Jason Tondro"
+                },
+                {
+                  "type": "item",
+                  "name": "Game Designer:",
+                  "entry": "Leon Barillaro, Taylor Navarro, Erin Roberts, Carl Sibley"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "entries",
+          "name": "Franchise Strategy",
+          "id": "37e",
+          "entries": [
+            {
+              "type": "list",
+              "style": "list-hang-notitle",
+              "columns": 2,
+              "items": [
+                {
+                  "type": "item",
+                  "name": "Director, Franchise Strategy:",
+                  "entry": "Nick Strann"
+                },
+                {
+                  "type": "item",
+                  "name": "Director, Cateogry Licensing:",
+                  "entry": "Ann Earp"
+                },
+                {
+                  "type": "item",
+                  "name": "Senior Manager, Category Licensing:",
+                  "entry": "Aaron Sobel"
+                },
+                {
+                  "type": "item",
+                  "name": "Director, Commercial Business Strategy:",
+                  "entry": "Dan Barrett"
+                },
+                {
+                  "type": "item",
+                  "name": "Senior Manager, Consumer Insights and Analytics:",
+                  "entry": "Kim Craig"
+                },
+                {
+                  "type": "item",
+                  "name": "Principal Publishing Lead:",
+                  "entry": "Paul Morrissey"
+                }
+              ]
+            },
+            {
+              "type": "entries",
+              "name": "Marketing",
+              "id": "37f",
+              "entries": [
+                {
+                  "type": "list",
+                  "style": "list-hang-notitle",
+                  "columns": 2,
+                  "items": [
+                    {
+                      "type": "item",
+                      "name": "Vice President, Marketing - D&D:",
+                      "entry": "David Silverman"
+                    },
+                    {
+                      "type": "item",
+                      "name": "Director, Marketing:",
+                      "entry": "Jessi Sosnovskaya"
+                    },
+                    {
+                      "type": "item",
+                      "name": "Partner Marketing Manager:",
+                      "entry": "Ariel Hernandez"
+                    },
+                    {
+                      "type": "item",
+                      "name": "Product Marketing Manager:",
+                      "entry": "Joe Starr"
+                    },
+                    {
+                      "type": "item",
+                      "name": "Social Content Creator:",
+                      "entry": "Dennis Tran"
+                    },
+                    {
+                      "type": "item",
+                      "name": "Social Medial Manager:",
+                      "entry": "Avery Freniere, Josh Morris"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "entries",
+              "name": "Community",
+              "id": "380",
+              "entries": [
+                {
+                  "type": "list",
+                  "style": "list-hang-notitle",
+                  "columns": 2,
+                  "items": [
+                    {
+                      "type": "item",
+                      "name": "Director, Community:",
+                      "entry": "Aaron Kaufman"
+                    },
+                    {
+                      "type": "item",
+                      "name": "Senior Social and Community Manager:",
+                      "entry": "Regina Buenaobra"
+                    },
+                    {
+                      "type": "item",
+                      "name": "Manager, Influencer Marketing:",
+                      "entry": "Sabrina Kessler"
+                    },
+                    {
+                      "type": "item",
+                      "name": "Community Manager:",
+                      "entry": "LaTia Jacquise"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "entries",
+              "name": "Product Marketing",
+              "id": "381",
+              "entries": [
+                {
+                  "type": "list",
+                  "style": "list-hang-notitle",
+                  "columns": 2,
+                  "items": [
+                    {
+                      "type": "item",
+                      "name": "Director, Product Marketing:",
+                      "entry": "Matt Pruitt"
+                    },
+                    {
+                      "type": "item",
+                      "name": "Senior Product Marketing Manager:",
+                      "entry": "Ashlee Perkins"
+                    },
+                    {
+                      "type": "item",
+                      "name": "Product Marketing Manager:",
+                      "entry": "Marco Caputo"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "entries",
+          "name": "Operations",
+          "id": "382",
+          "entries": [
+            {
+              "type": "entries",
+              "name": "Print Operations",
+              "id": "383",
+              "entries": [
+                {
+                  "type": "list",
+                  "style": "list-hang-notitle",
+                  "columns": 2,
+                  "items": [
+                    {
+                      "type": "item",
+                      "name": "Senior Director:",
+                      "entry": "Stacie Balzer"
+                    },
+                    {
+                      "type": "item",
+                      "name": "Director, Quality Assurance:",
+                      "entry": "Jacqueline Rains"
+                    },
+                    {
+                      "type": "item",
+                      "name": "Manager, Quality Assurance:",
+                      "entry": "Jen Lim"
+                    },
+                    {
+                      "type": "item",
+                      "name": "Manager, Localization:",
+                      "entry": "Jose Teixeira"
+                    },
+                    {
+                      "type": "item",
+                      "name": "Principal Packaging Engineer:",
+                      "entry": "Roni Ruggenberg"
+                    },
+                    {
+                      "type": "item",
+                      "name": "Manager, Planning & Prepress:",
+                      "entry": "Catarina Smith"
+                    },
+                    {
+                      "type": "item",
+                      "name": "Senior Manager, Product Development:",
+                      "entry": "David Stevens"
+                    },
+                    {
+                      "type": "item",
+                      "name": "Lead Senior Product Engineer:",
+                      "entry": "Rachel Scott"
+                    },
+                    {
+                      "type": "item",
+                      "name": "Senior Buyer:",
+                      "entry": "Lindsey Glomski"
+                    },
+                    {
+                      "type": "item",
+                      "name": "Principal Innovation Engineer:",
+                      "entry": "Joe Visconti"
+                    },
+                    {
+                      "type": "item",
+                      "name": "Localization Engineer:",
+                      "entry": "Lee Williamson"
+                    },
+                    {
+                      "type": "item",
+                      "name": "Senior Localization Specialist:",
+                      "entry": "Rie Yamazaki"
+                    },
+                    {
+                      "type": "item",
+                      "name": "Localization Specialist:",
+                      "entry": "Gulnara Bixby, Caitlin Quiat"
+                    },
+                    {
+                      "type": "item",
+                      "name": "Associate Localization Specialist:",
+                      "entry": "April Bl"
+                    },
+                    {
+                      "type": "item",
+                      "name": "Associate Operations Administrator:",
+                      "entry": "Ryan Richford"
+                    },
+                    {
+                      "type": "item",
+                      "name": "Senior Packaging Engineer:",
+                      "entry": "Jenn Bahrs"
+                    },
+                    {
+                      "type": "item",
+                      "name": "Associate Packaging Engineer:",
+                      "entry": "Tori Dawson"
+                    },
+                    {
+                      "type": "item",
+                      "name": "Prepress & Asset Management Specialist:",
+                      "entry": "Carrie Oltendorf"
+                    },
+                    {
+                      "type": "item",
+                      "name": "Prepress Production Manager:",
+                      "entry": "Jefferson Dunlap"
+                    },
+                    {
+                      "type": "item",
+                      "name": "Print Poduct Specialist:",
+                      "entry": "Ken Beres, Seth Migdail"
+                    },
+                    {
+                      "type": "item",
+                      "name": "Associate Producer:",
+                      "entry": "Kim Van Allsburg"
+                    },
+                    {
+                      "type": "item",
+                      "name": "Senior Product Engineer:",
+                      "entry": "Godot Gutierre"
+                    },
+                    {
+                      "type": "item",
+                      "name": "Product Engineer:",
+                      "entry": "Ramon Castille III, Mike Daw, Basil Hale, Ting Lee-Foote"
+                    },
+                    {
+                      "type": "item",
+                      "name": "Production Engineer, Collation:",
+                      "entry": "Madison Parker"
+                    },
+                    {
+                      "type": "item",
+                      "name": "Senior Product Quality Engineer:",
+                      "entry": "Blake Mitchum"
+                    },
+                    {
+                      "type": "item",
+                      "name": "Product Quality Engineer:",
+                      "entry": "Nate Herring, K.C. Hopkins, Franke LoPinto, Scott West"
+                    },
+                    {
+                      "type": "item",
+                      "name": "Quality Engineer:",
+                      "entry": "Brandon Worley"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "entries",
+              "name": "Studio Operations",
+              "id": "384",
+              "entries": [
+                {
+                  "type": "list",
+                  "style": "list-hang-notitle",
+                  "columns": 2,
+                  "items": [
+                    {
+                      "type": "item",
+                      "name": "Director, Studio Operations:",
+                      "entry": "Will Ansell"
+                    },
+                    {
+                      "type": "item",
+                      "name": "Director, Franchise Operations:",
+                      "entry": "Kate Lancashire"
+                    },
+                    {
+                      "type": "item",
+                      "name": "Senior Business Operations Manager:",
+                      "entry": "Lillian Ai"
+                    },
+                    {
+                      "type": "item",
+                      "name": "Graphic Designer:",
+                      "entry": "Andrea Enfedaque"
+                    },
+                    {
+                      "type": "item",
+                      "name": "Senior Producer:",
+                      "entry": "Dan Tovar"
+                    },
+                    {
+                      "type": "item",
+                      "name": "Senior Project Manager, Digital Games:",
+                      "entry": "William Haymes"
+                    },
+                    {
+                      "type": "item",
+                      "name": "Senior Producer:",
+                      "entry": "Emily Gitelman"
+                    },
+                    {
+                      "type": "item",
+                      "name": "Producer:",
+                      "entry": "Bill Benham, Siera Bruggeman, Vanessa Hoskins, Simonoe Rehbein, Andy Smith, Chris Tulach"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

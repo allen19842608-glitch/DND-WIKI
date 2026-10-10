@@ -1,0 +1,106 @@
+[
+  {
+    "file": "backgrounds.json",
+    "status": 200,
+    "sha256": "b12d7a0b273ab264bc8aec59a24b9741cb87532b90e225c2d376ddf4b017901b",
+    "counts": {
+      "background": 10
+    }
+  },
+  {
+    "file": "feats.json",
+    "status": 200,
+    "sha256": "381d51a5444cc5dac1e5f9af673a3fabb476662ee6229bda1a372ca49033a3b5",
+    "counts": {
+      "feat": 29
+    }
+  },
+  {
+    "file": "items.json",
+    "status": 200,
+    "sha256": "3af773b48cb874682aae36c14f2e89b89ae1380dd4ae877f7b1e545ec4d27968",
+    "counts": {
+      "item": 75,
+      "itemGroup": 10
+    }
+  },
+  {
+    "file": "bastions.json",
+    "status": 200,
+    "sha256": "fbfcc8c109ca89427afeb82c7cc7ee2c2d062048e483293adff8c543141ad99f",
+    "counts": {
+      "facility": 9
+    }
+  },
+  {
+    "file": "spells/spells-au.json",
+    "status": 200,
+    "sha256": "805a3ccb583e8415ee494e582c6172d900ebd63f85d599b785f260591992ead7",
+    "counts": {
+      "spell": 33
+    }
+  },
+  {
+    "file": "bestiary/bestiary-au.json",
+    "status": 200,
+    "sha256": "2bcd7fee056524c01f6f64a3544423e77a23f5975d50aff6aee729966b58437d",
+    "counts": {
+      "monster": 23
+    }
+  },
+  {
+    "file": "class/class-cleric.json",
+    "status": 200,
+    "sha256": "604d81ad5012ca92f56a5aadacdf298a04d4889443e99644d4bf2af46f5a0900",
+    "counts": {
+      "class": 0,
+      "subclass": 1,
+      "classFeature": 0,
+      "subclassFeature": 8
+    }
+  },
+  {
+    "file": "class/class-fighter.json",
+    "status": 200,
+    "sha256": "9c8a328bb03f6ee806d3d993942c2603d02bfc2c61f5306c77b15f9ba05b33ae",
+    "counts": {
+      "class": 0,
+      "subclass": 1,
+      "classFeature": 0,
+      "subclassFeature": 9
+    }
+  },
+  {
+    "file": "class/class-monk.json",
+    "status": 200,
+    "sha256": "381b5b1a80da79b661b9656d65b266d0bca290cf83d261c5f15ce8d0ecba4ff5",
+    "counts": {
+      "class": 0,
+      "subclass": 1,
+      "classFeature": 0,
+      "subclassFeature": 6
+    }
+  },
+  {
+    "file": "class/class-warlock.json",
+    "status": 200,
+    "sha256": "867a945c460be5925df0e6d87238b226912e7f2eb567fde0a88c05179eadbcac",
+    "counts": {
+      "class": 0,
+      "subclass": 1,
+      "classFeature": 0,
+      "subclassFeature": 6
+    }
+  },
+  {
+    "file": "class/class-wizard.json",
+    "status": 200,
+    "sha256": "833066cec97469353092424ae9878bab1b591c0da782f81625bb3e54850393fe",
+    "counts": {
+      "class": 0,
+      "subclass": 4,
+      "classFeature": 0,
+      "subclassFeature": 29
+    }
+  }
+]
