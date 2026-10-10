@@ -43,6 +43,40 @@ registry:
     - "errata"
 
 publications:
+  AU2026:
+    entity_id: "publication:AU2026"
+    concept_id: "publication:arcana-unleashed"
+    title_zh: "啟封奧秘"
+    title_en: "Arcana Unleashed"
+    publisher: "Wizards of the Coast"
+    year: 2026
+    ruleset: "2024"
+    content_scope: "expansion"
+    status: "current"
+    authority: "官方"
+    canonical_rules_source: "Arcana Unleashed (2026)"
+    wiki:
+      tag: "Arcana-Unleashed-2026"
+      tag_aliases: []
+      supported_versions:
+        - "2024-Core"
+    source_assets:
+      - id: "AU2026_EN_MIRROR"
+        path: "原始資料/外部來源鏡像/AU2026"
+        format: "directory"
+        role: "rules_text"
+        language: "en"
+        authority: "官方"
+        translation: "none"
+        status: "available"
+      - id: "AU2026_ZH_MARKDOWN"
+        path: "原始資料/啟封奧秘"
+        format: "directory"
+        role: "translation"
+        language: "zh-Hant"
+        authority: "官方"
+        translation: "community"
+        status: "available"
   SCAG2015:
     entity_id: "publication:SCAG2015"
     concept_id: "publication:sword-coast-adventurers-guide"
