@@ -1,0 +1,94 @@
+schema_version: 1
+publication_id: DMG2014
+publication_title: Dungeon Master's Guide (2014)
+provider: 5e.tools
+upstream_url: https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/refs/heads/main/data/book/book-dmg.json
+retrieved_at: 2026-10-15T16:33:50.106Z
+snapshot:
+  file: 原始資料/外部來源鏡像/DMG2014/book-dmg.json
+  sha256: 26342b627266073c4f2f07fecbd2b4711d1359f63a634476fc8516389061e322
+chapters:
+  - kind: chapter
+    number: 1
+    title: Introduction
+    page: 4
+    file: 原始資料/外部來源鏡像/DMG2014/chapters/01-Introduction.md
+    status: complete
+  - kind: chapter
+    number: 2
+    title: A World of Your Own
+    page: 9
+    file: 原始資料/外部來源鏡像/DMG2014/chapters/02-A World of Your Own.md
+    status: complete
+  - kind: chapter
+    number: 3
+    title: Creating a Multiverse
+    page: 43
+    file: 原始資料/外部來源鏡像/DMG2014/chapters/03-Creating a Multiverse.md
+    status: complete
+  - kind: chapter
+    number: 4
+    title: Creating Adventures
+    page: 71
+    file: 原始資料/外部來源鏡像/DMG2014/chapters/04-Creating Adventures.md
+    status: complete
+  - kind: chapter
+    number: 5
+    title: Creating Nonplayer Characters
+    page: 88
+    file: 原始資料/外部來源鏡像/DMG2014/chapters/05-Creating Nonplayer Characters.md
+    status: complete
+  - kind: chapter
+    number: 6
+    title: Adventure Environments
+    page: 99
+    file: 原始資料/外部來源鏡像/DMG2014/chapters/06-Adventure Environments.md
+    status: complete
+  - kind: chapter
+    number: 7
+    title: Between Adventures
+    page: 125
+    file: 原始資料/外部來源鏡像/DMG2014/chapters/07-Between Adventures.md
+    status: complete
+  - kind: chapter
+    number: 8
+    title: Treasure
+    page: 133
+    file: 原始資料/外部來源鏡像/DMG2014/chapters/08-Treasure.md
+    status: complete
+  - kind: chapter
+    number: 9
+    title: Running the Game
+    page: 235
+    file: 原始資料/外部來源鏡像/DMG2014/chapters/09-Running the Game.md
+    status: complete
+  - kind: chapter
+    number: 10
+    title: Dungeon Master's Workshop
+    page: 263
+    file: 原始資料/外部來源鏡像/DMG2014/chapters/10-Dungeon Master's Workshop.md
+    status: complete
+  - kind: appendix
+    number: 11
+    title: "Appendix A: Random Dungeons"
+    page: 290
+    file: 原始資料/外部來源鏡像/DMG2014/chapters/appendix A- Random Dungeons.md
+    status: complete
+  - kind: appendix
+    number: 12
+    title: "Appendix B: Monster Lists"
+    page: 302
+    file: 原始資料/外部來源鏡像/DMG2014/chapters/appendix B- Monster Lists.md
+    status: complete
+  - kind: appendix
+    number: 13
+    title: "Appendix C: Maps"
+    page: 310
+    file: 原始資料/外部來源鏡像/DMG2014/chapters/appendix C- Maps.md
+    status: complete
+  - kind: appendix
+    number: 14
+    title: "Appendix D: Dungeon Master Inspiration"
+    page: 316
+    file: 原始資料/外部來源鏡像/DMG2014/chapters/appendix D- Dungeon Master Inspiration.md
+    status: complete

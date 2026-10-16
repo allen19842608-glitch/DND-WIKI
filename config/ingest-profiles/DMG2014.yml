@@ -1,0 +1,13 @@
+publication_id: "DMG2014"
+source_root: "原始資料/外部來源鏡像/DMG2014"
+ruleset: "2014"
+character_options: []
+canonical_mirror:
+  provider: "5e.tools"
+  book_id: "dmg"
+  url: "https://raw.githubusercontent.com/5etools-mirror-3/5etools-src/refs/heads/main/data/book/book-dmg.json"
+  output_root: "原始資料/外部來源鏡像/DMG2014"
+outputs:
+  rules: "wiki/規則/2014"
+  magic_items: "wiki/魔法物品/2014"
+inputs: {}

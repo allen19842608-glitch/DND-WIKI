@@ -49,6 +49,45 @@ function imageMarkdown(entry) {
   return `![${alt}](../images/${imagePath})`;
 }
 
+function tableCell(value) {
+  if (value == null) return "";
+  if (typeof value === "string" || typeof value === "number") return String(value).replaceAll("|", "\\|").replaceAll("\n", " ");
+  if (value.type === "table") return `見下方「${value.caption ?? "附表"}」`;
+  if (value.type === "cell" && value.roll) {
+    const { exact, min, max } = value.roll;
+    if (exact != null) return String(exact);
+    if (min != null && max != null) return `${min}-${max}`;
+  }
+  if (typeof value.entry === "string") return tableCell(value.entry);
+  if (Array.isArray(value.entries)) return value.entries.map(tableCell).join(" ");
+  return JSON.stringify(value).replaceAll("|", "\\|");
+}
+
+function tableMarkdown(entry) {
+  const rows = (entry.rows ?? []).map((row) => Array.isArray(row) ? row : row?.row).filter(Array.isArray);
+  const labels = Array.isArray(entry.colLabels) ? entry.colLabels : [];
+  const width = Math.max(labels.length, ...rows.map((row) => row.length), 0);
+  if (!width) return "";
+  const header = Array.from({ length: width }, (_, index) => tableCell(labels[index] ?? " "));
+  const lines = [];
+  if (entry.caption) lines.push(`**${entry.caption}**`, "");
+  lines.push(`| ${header.join(" | ")} |`, `| ${header.map(() => "---").join(" | ")} |`);
+  for (const row of rows) lines.push(`| ${Array.from({ length: width }, (_, index) => tableCell(row[index])).join(" | ")} |`);
+  for (const row of rows) for (const cell of row) if (cell?.type === "table") lines.push("", tableMarkdown(cell));
+  return lines.join("\n");
+}
+
+export function bookContent(parsed, bookId) {
+  if (Array.isArray(parsed?.data)) return parsed;
+  const books = parsed?.bookData;
+  if (Array.isArray(books)) {
+    const matching = books.filter((book) => Array.isArray(book?.data) && String(book.id ?? book.source).toLowerCase() === String(bookId).toLowerCase());
+    if (matching.length === 1) return matching[0];
+    if (books.length === 1 && Array.isArray(books[0]?.data)) return books[0];
+  }
+  throw new Error(`找不到 ${bookId} 的書籍章節資料。`);
+}
+
 export function isChapterSection(entry) {
   const title = headingText(entry).trim().toLowerCase();
   return entry?.type === "section" && title && !NON_CHAPTER_SECTIONS.has(title);
@@ -63,6 +102,16 @@ export function entriesToMarkdown(entries, level = 1) {
       continue;
     }
     if (!entry || typeof entry !== "object") continue;
+    if (entry.type === "table") {
+      const markdown = tableMarkdown(entry);
+      if (markdown) lines.push(markdown);
+      continue;
+    }
+    if (entry.type === "tableGroup") {
+      if (entry.name) lines.push(`${"#".repeat(Math.min(level, 6))} ${entry.name}`);
+      lines.push(entriesToMarkdown(entry.tables ?? [], entry.name ? level + 1 : level));
+      continue;
+    }
     if (entry.type === "image") {
       const markdown = imageMarkdown(entry);
       if (markdown) lines.push(markdown);
@@ -231,10 +280,16 @@ function writeAll(files, rawText) {
     ...files.chapterFiles.map(({ chapter, file }) => ({ relative: file, content: renderedChapter(chapter) })),
     ...(files.datasets ?? []).map(({ file, content }) => ({ relative: file, content: content.endsWith("\n") ? content : `${content}\n` })),
   ];
+  const written = [];
   for (const item of staged) {
     const absolute = path.join(ROOT, ...item.relative.split("/"));
+    if (fs.existsSync(absolute)) {
+      const existing = fs.readFileSync(absolute, "utf8");
+      if (existing === item.content || (item.relative === files.manifest && manifestEquivalent(existing, item.content))) continue;
+    }
     fs.mkdirSync(path.dirname(absolute), { recursive: true });
     fs.writeFileSync(absolute, item.content, "utf8");
+    written.push(item.relative);
   }
   // Credits is publication metadata, not a book chapter. Remove only the
   // obsolete auto-generated file within this mirror's own chapters directory.
@@ -244,7 +299,7 @@ function writeAll(files, rawText) {
       if (/-(credits)\.md$/i.test(name)) fs.unlinkSync(path.join(chaptersDirectory, name));
     }
   }
-  return staged.map((item) => item.relative);
+  return written;
 }
 
 function previewDiff(files, rawText) {
@@ -291,10 +346,11 @@ export async function mirrorPublication(args = process.argv.slice(2)) {
     const rawText = await readSource(args, mirror);
     let parsed;
     try { parsed = JSON.parse(rawText); } catch { throw new Error(`${profile.publication_id} 的來源不是有效 JSON。`); }
-    const inferredChapters = (parsed.data ?? [])
+    const book = bookContent(parsed, mirror.book_id);
+    const inferredChapters = (book.data ?? [])
       .filter(isChapterSection)
       .map((entry, index) => ({ kind: sectionKind(entry), number: index + 1, title: entry.name, page: entry.page ?? null }));
-    const allDocuments = chapterDocuments(parsed, mirror.chapters?.length ? mirror.chapters : inferredChapters);
+    const allDocuments = chapterDocuments(book, mirror.chapters?.length ? mirror.chapters : inferredChapters);
     let documents = allDocuments;
     if (chapterFilter) documents = documents.filter((chapter) => String(chapter.number) === chapterFilter || chapter.title.includes(chapterFilter));
     if (onlyMissing) documents = documents.filter((chapter) => !fs.existsSync(path.join(ROOT, ...`${mirror.output_root}/chapters/${String(chapter.number).padStart(2, "0")}-${safeName(chapter.title)}.md`.split("/"))));

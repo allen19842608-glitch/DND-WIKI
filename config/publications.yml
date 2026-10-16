@@ -469,6 +469,33 @@ publications:
         translation: "community"
         status: "available"
 
+  DMG2014:
+    entity_id: "publication:DMG2014"
+    concept_id: "publication:dungeon-masters-guide"
+    title_zh: "地下城主指南"
+    title_en: "Dungeon Master's Guide"
+    publisher: "Wizards of the Coast"
+    year: 2014
+    ruleset: "2014"
+    content_scope: "core"
+    status: "legacy"
+    authority: "官方"
+    canonical_rules_source: "Dungeon Master's Guide (2014)"
+    wiki:
+      tag: "地下城主指南2014"
+      tag_aliases: []
+      supported_versions:
+        - "2014-Legacy"
+    source_assets:
+      - id: "DMG2014_EN_MIRROR"
+        path: "原始資料/外部來源鏡像/DMG2014"
+        format: "directory"
+        role: "rules_text"
+        language: "en"
+        authority: "官方"
+        translation: "none"
+        status: "available"
+
   DMG2024:
     entity_id: "publication:DMG2024"
     concept_id: "publication:dungeon-masters-guide"

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { chapterDocuments, entriesToMarkdown, isChapterSection, manifestEquivalent, mirrorPublication, normalizeDatasets } from "../scripts/ingest/mirror-5etools.mjs";
+import { bookContent, chapterDocuments, entriesToMarkdown, isChapterSection, manifestEquivalent, mirrorPublication, normalizeDatasets } from "../scripts/ingest/mirror-5etools.mjs";
 import { mirrorImages } from "../scripts/ingest/mirror-5etools-images.mjs";
 
 test("5e.tools 章節鏡像保留原始標題與內容結構", () => {
@@ -10,6 +10,19 @@ test("5e.tools 章節鏡像保留原始標題與內容結構", () => {
   assert.match(chapter.markdown, /# The Dalelands/);
   assert.match(chapter.markdown, /## History/);
   assert.match(entriesToMarkdown(["text"]), /text/);
+});
+
+test("2014 書籍外層結構與隨機表格保留於分章鏡像", () => {
+  const raw = { bookData: [{ id: "DMG", data: [{ type: "section", name: "Treasure", page: 133, entries: [{ type: "table", caption: "Minor Beneficial Properties", colLabels: ["d100", "Property"], rows: [["01-20", "Gain a skill."], { type: "row", row: ["21-30", "Immune to disease."] }] }] }] }] };
+  const [chapter] = chapterDocuments(bookContent(raw, "dmg"), [{ number: 8, title: "Treasure", page: 133 }]);
+  assert.equal(chapter.found, true);
+  assert.match(chapter.markdown, /\*\*Minor Beneficial Properties\*\*/);
+  assert.match(chapter.markdown, /\| 01-20 \| Gain a skill\. \|/);
+  assert.match(chapter.markdown, /\| 21-30 \| Immune to disease\. \|/);
+  assert.match(entriesToMarkdown([{ type: "tableGroup", name: "Effects", tables: [{ type: "table", colLabels: ["d6", "Effect"], rows: [["1", "Result"]] }] }]), /\| 1 \| Result \|/);
+  const nested = entriesToMarkdown([{ type: "table", colLabels: ["d6", "Item"], rows: [["1", { type: "table", caption: "Subtable", colLabels: ["d4", "Effect"], rows: [["1", "Nested result"]] }]] }]);
+  assert.match(nested, /\*\*Subtable\*\*/);
+  assert.match(nested, /\| 1 \| Nested result \|/);
 });
 
 test("Credits 是出版資訊，不得推斷為書籍章節", () => {
