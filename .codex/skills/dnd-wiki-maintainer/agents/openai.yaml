@@ -1,4 +1,0 @@
-interface:
-  display_name: "D&D Wiki 維護"
-  short_description: "維護 D&D 5.5e Markdown 知識庫與稽核流程"
-  default_prompt: "Use $dnd-wiki-maintainer 維護這個 D&D Wiki，先依規範確認範圍與驗證方式。"
